@@ -7,30 +7,37 @@ STATS = [
     "receptions", "receiving_yards", "receiving_tds", "targets",
 ]
 
-# 1. read the active players (gsis_id is already the join key)
+
+def season_totals(year, suffix):
+    """Load one season's weekly stats and return REG-season totals per player,
+    keyed by gsis_id, with `suffix` (e.g. '_2024') added to each stat column."""
+    weekly = nfl.load_player_stats(seasons=[year]).to_pandas()
+    weekly = weekly[weekly["season_type"] == "REG"]
+    weekly = weekly[weekly["player_id"].notna()]
+    totals = weekly.groupby("player_id")[STATS].sum().reset_index()
+    rename_map = {"player_id": "gsis_id"}
+    rename_map.update({s: s + suffix for s in STATS})
+    return totals.rename(columns=rename_map)
+
+
+# 1. read the active players (gsis_id is the join key)
 active = pd.read_csv("players_active.csv", dtype={"player_id": str})
 
-# 2. load 2024 weekly stats (polars) and convert to pandas
-weekly = nfl.load_player_stats(seasons=[2024]).to_pandas()
+# 2. compute each season's totals, columns suffixed by year
+t2024 = season_totals(2024, "_2024")
+t2025 = season_totals(2025, "_2025")
 
-# 3. regular season only, and drop the null-id junk rows
-weekly = weekly[weekly["season_type"] == "REG"]
-weekly = weekly[weekly["player_id"].notna()]
+# 3. left join both onto the active players (all 929 survive)
+merged = active.merge(t2024, on="gsis_id", how="left").merge(t2025, on="gsis_id", how="left")
 
-# 4. aggregate weekly rows into 2024 season totals, one row per player
-totals = weekly.groupby("player_id")[STATS].sum().reset_index()
-
-# 5. the stats' player_id is a GSIS id -> rename so it joins to our gsis_id
-totals = totals.rename(columns={"player_id": "gsis_id"})
-
-# 6. left join: keep all active players, attach stats where they exist
-merged = active.merge(totals, on="gsis_id", how="left")
-
-# 7. save
+# 4. save (overwrites the single-season version)
 merged.to_csv("players_with_stats.csv", index=False)
 
-# 8. summary
-has_stats = merged[STATS].notna().any(axis=1).sum()
+# 5. summary: who has 2024 stats, 2025 stats, and neither
+has_2024 = merged[[s + "_2024" for s in STATS]].notna().any(axis=1)
+has_2025 = merged[[s + "_2025" for s in STATS]].notna().any(axis=1)
+neither = (~has_2024) & (~has_2025)
 print(f"{len(merged)} active players")
-print(f"  with 2024 stats: {has_stats}")
-print(f"  no 2024 stats (NaN): {len(merged) - has_stats}")
+print(f"  with 2024 stats: {int(has_2024.sum())}")
+print(f"  with 2025 stats: {int(has_2025.sum())}")
+print(f"  neither season:  {int(neither.sum())}")
