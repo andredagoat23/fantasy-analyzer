@@ -38,3 +38,28 @@
 - Architectural note: consolidated into load_player_stats.py instead of a separate compute_metrics.py — kept pipeline shorter. Reconsider if file bloats past ~150 lines.
 - Misread earlier: thought weekly data was added; it isn't. Output is season-aggregated only.
 - Next: Wed Jun 24 — FFC ADP integration (pulled forward).
+
+2026-06-24 (Wednesday, Pride Single Day, AI block ~90 min):
+- Did: built load_adp.py — fetches FFC ADP for 12-team PPR 2026, joins onto players_with_stats.csv by normalized name + position.
+- Refactor: extracted normalize_name into utils.py for reuse across files.
+- Result: [X of 929 players have ADP, Y unmatched from FFC side]
+- Next: Thu Jun 25 — FantasyPros ECR ingestion (manual CSV download + same name-normalization join).
+
+2026-06-24 → 2026-07-05 (12 days, mostly no AI):
+- Jun 24 Wed: built load_adp.py for FFC. Later diagnosed FFC sparseness (90 players, noisy).
+- Jun 25 Thu: recovery + pack for Carlton. No AI.
+- Jun 26 Fri: travel to Carlton Landing. No AI.
+- Jun 27 Sat: downloaded 2 of 8 planned FP CSVs (ECR + ESPN ADP).
+- Jun 28 Sun: Sabbath.
+- Jun 29 - Jul 5: Carlton tail + Driver's Ed + lake + 4th of July + Sabbath. No AI.
+
+2026-07-06 (Mon, Deload resume, block ~60 min):
+- Did: built load_fp_adp.py — parsed FP's compound "Player (Team / Bye)" column + position-rank suffix. 407 players with ADP (vs FFC's 72). Downloaded 4 more FP CSVs (Projections QB/RB/WR/TE/K). Deprecation of FFC loader deferred.
+
+2026-07-07 (Tue, Deload day 2, block ~60 min):
+- Did: deprecated old FFC loader (renamed to load_ffc_adp.py.deprecated). Built load_ecr.py — 10-column CSV with team/bye pre-separated. Joined ECR onto players_with_adp.csv → players_with_ecr.csv.
+- TD regression CSV confirmed not exportable from FP. Kept in v1.5 backlog (was never actually moved to v1.0 in spec — no revert needed).
+
+2026-07-08 (Wed, Deload day 3, block ~60 min):
+- Doing today: SPEC.md FP pivot edits + load_fp_projecti
+
