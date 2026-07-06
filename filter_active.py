@@ -1,17 +1,8 @@
-import re
 import pandas as pd
 import nflreadpy as nfl
+from utils import normalize_name
 
 SKILL = {"QB", "RB", "WR", "TE", "K"}
-
-
-def normalize_name(name):
-    """Lowercase, strip punctuation and Jr/Sr/III suffixes so names match across sources."""
-    s = str(name).lower().strip()
-    s = re.sub(r"[^a-z0-9 ]", " ", s)            # punctuation -> space
-    s = re.sub(r"\s+", " ", s).strip()           # squeeze spaces FIRST
-    s = re.sub(r" (jr|sr|ii|iii|iv|v)$", "", s)  # then strip a trailing suffix
-    return s
 
 
 # 1. read raw players; force player_id to text so it matches the crosswalk
@@ -83,8 +74,20 @@ for _, row in draft.iterrows():
 # 7. combine, fill rookie gsis ids, save, report
 final = players[players["player_id"].isin(keep_ids)].copy()
 final["gsis_id"] = final["gsis_id"].fillna(final["player_id"].map(rookie_gsis))
+# fill bye_week: each team plays 17 of 18 weeks; the missing week is its bye
+sch = nfl.load_schedules(seasons=[2026]).to_pandas()
+sch = sch[sch["game_type"] == "REG"]
+appear = pd.concat([
+    sch[["week", "home_team"]].rename(columns={"home_team": "team"}),
+    sch[["week", "away_team"]].rename(columns={"away_team": "team"}),
+])
+all_weeks = set(range(1, 19))
+bye = appear.groupby("team")["week"].apply(lambda w: list(all_weeks - set(w))[0])
+bye = bye.rename({"LA": "LAR"})        # Sleeper uses LAR for the Rams; nflverse uses LA
+final["bye_week"] = final["team"].map(bye)
 final.to_csv("players_active.csv", index=False)
 
+print(f"bye_week filled: {final['bye_week'].notna().sum()}")
 print(f"played:         {n_played}")
 print(f"+ 2025 rookies: {track_a}")
 print(f"+ 2026 rookies: {track_b}")
