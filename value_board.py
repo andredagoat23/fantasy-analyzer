@@ -30,16 +30,22 @@ def risk(row):
     return "Boom/Bust"
 board["risk_tier"] = board.apply(risk, axis=1)
 
-# 5. sort to master board order and save
+# 5. sort to master board order
 board = board.sort_values("overall_rank")
+
+# 5a. human-readable board (subset of columns)
 cols = ["overall_rank", "full_name", "pos_label", "total_points", "vols", "adp_rank", "ecr_rank",
         "value_gap", "market", "risk_tier", "availability", "floor", "ceiling", "bust_rate", "P_pos1"]
 board[cols].to_csv("value_board.csv", index=False)
 
+# 5b. COMPLETE dataset for the web app (every column), CSV + JSON
+app = board.round(3)
+app.to_csv("app_data.csv", index=False)
+app.to_json("app_data.json", orient="records", indent=2)   # list of player objects for JS
+
 # 6. the views you'll use on draft day
 pd.set_option("display.width", 230)
 show = ["overall_rank", "full_name", "pos_label", "vols", "adp_rank", "value_gap", "market", "risk_tier", "floor", "P_pos1"]
-print("=== TOP 20 OVERALL ===")
+print(f"board: {len(board)} players -> value_board.csv | app_data.csv | app_data.json ({len(app.columns)} cols)")
+print("\n=== TOP 20 OVERALL ===")
 print(board.head(20)[show].to_string(index=False))
-print("\n=== INJURY-RISK players in the top 60 (steady points, shaky availability) ===")
-print(board[(board.risk_tier == "Injury Risk") & (board.overall_rank <= 60)][show].to_string(index=False))
