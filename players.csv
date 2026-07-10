@@ -45,12 +45,12 @@ Evan Berry,WR,,26.0,,Active,4.0,5530,3115343.0,31450.0,8f12880d-0375-4b70-836b-c
 Taylor Grimes,WR,,23.0,,Active,1.0,11445,,,d15667f0-f31f-11ed-857b-51f5bc78307f
 Dalyn Dawkins,RB,,27.0,,Active,4.0,5619,3052449.0,31620.0,12c39c1f-d579-4bd5-b736-62afd23b8208
 Boston Scott,RB,,29.0,,Active,6.0,5122,3051439.0,31171.0,768f6afa-ba24-40d9-bdc1-3184bba2ec2b
-Devontez Walker,WR,BAL,24.0,,Active,2.0,11629,,,b5d1ed29-c72a-45ff-ae60-337e13728b2f
+Devontez Walker,WR,BAL,25.0,,Active,2.0,11629,,,b5d1ed29-c72a-45ff-ae60-337e13728b2f
 Behren Morton,QB,NE,24.0,,Active,0.0,13295,,,0fe9c501-799c-45f7-a48f-2b4d9d6e9452
 Melvin Gordon,RB,,30.0,,Active,9.0,2320,2576434.0,28403.0,0f8ccece-d663-4069-944b-f318f64c60b7
 AJ McCarron,QB,,33.0,,Active,10.0,1895,16810.0,27692.0,d4b30988-e8c5-4689-8037-f79a0d3c2774
 Ty James,WR,,23.0,,Active,1.0,11906,,,3baf0d30-0582-11ef-b69a-073c4b74ef80
-Oronde Gadsden,TE,LAC,22.0,,Active,1.0,12493,,,6af50530-145a-4b34-946d-ce1a7f7d3166
+Oronde Gadsden,TE,LAC,23.0,,Active,1.0,12493,,,6af50530-145a-4b34-946d-ce1a7f7d3166
 TaMerik Williams,RB,,,,Active,1.0,12028,,,ea252190-071e-11ef-b5d5-336b9ab73639
 LaJohntay Wester,WR,BAL,24.0,,Active,1.0,12699,,,f4e1d4de-95e9-452e-95ab-3555989d90bb
 D.J. Foster,RB,,28.0,,Inactive,6.0,3488,2978124.0,29872.0,39d12962-65a4-4107-8924-56f48fce31ef
@@ -65,7 +65,7 @@ Phillip Andersen,K,,30.0,,Active,3.0,5838,,31818.0,c961fdc7-20e7-4721-813a-3e68d
 Joshua Lingenfelter,TE,,,,Active,1.0,12300,,,2fe72450-0c7c-11ef-9f7f-d71d8b7aaba8
 E.J. Jenkins,TE,PHI,27.0,,Active,3.0,11304,,,626a1dd0-ebab-11ed-bb4c-e536974648f2
 Joe Flacco,QB,CIN,41.0,,Active,18.0,19,11252.0,8795.0,64797df2-efd3-4b27-86ee-1d48f7edb09f
-Lincoln Pare,RB,IND,24.0,,Active,0.0,13352,,,788ae010-4afb-11f1-aee4-ad51876b92ae
+Lincoln Pare,RB,IND,25.0,,Active,0.0,13352,,,788ae010-4afb-11f1-aee4-ad51876b92ae
 Jacolby George,WR,,22.0,,Active,1.0,12967,,,f64aff60-2510-11f0-abe6-9bfe83819280
 Brett Weaver,TE,,,,Active,0.0,14017,,,98e4f240-4bde-11f1-85c4-49f6e6330b49
 Ife Adeyi,WR,,25.0,,Active,1.0,13228,,,682757b0-4185-11f0-a2ae-b7e020a85e30
@@ -84,8 +84,8 @@ Marvin Bracy,WR,,28.0,,Active,5.0,4813,2969915.0,30930.0,b1dd4855-f72f-4d7c-9af3
 Jordan Matthews,TE,,32.0,,Active,11.0,1800,16763.0,27570.0,7b96a836-666b-47b6-a0a7-9dbb0b4c53e8
 Jordan Wilkins,RB,,29.0,,Active,5.0,5100,3051891.0,31139.0,070850a3-7387-4836-b3eb-b1c8f8731aab
 Hunter Kampmoyer,TE,,26.0,,Active,3.0,7938,,,d6e66d88-b014-4de0-84af-45358dc4bda0
-Josh Kelly,WR,HOU,24.0,,Active,1.0,12848,,,24e3eab0-23d8-11f0-addb-1faae35f163c
-Jake Tonges,TE,SF,26.0,,Active,4.0,8698,,,8d9236c0-ce09-11ec-9598-03840dd5f387
+Josh Kelly,WR,HOU,25.0,,Active,1.0,12848,,,24e3eab0-23d8-11f0-addb-1faae35f163c
+Jake Tonges,TE,SF,27.0,,Active,4.0,8698,,,8d9236c0-ce09-11ec-9598-03840dd5f387
 Josh Ferguson,RB,,28.0,,Active,6.0,3453,2576165.0,29599.0,1bdc067c-6376-4c35-b9f8-cebbb1ad595f
 Kalif Phillips,RB,,27.0,,Active,5.0,4385,3059488.0,30618.0,6c94dde8-296a-4bc9-8c44-052a109dce92
 Steven Montez,QB,,26.0,,Active,3.0,7013,3915436.0,33207.0,d446443f-130c-4bce-a300-a15cf66f27f1
@@ -181,7 +181,7 @@ Isaiah Wright,WR,,24.0,,Active,2.0,7407,4044121.0,33209.0,af534c7d-791e-4b7f-900
 Ben Johnson,TE,,27.0,,Active,4.0,5268,3039970.0,31682.0,31a408da-0c38-4046-8419-3ecfdd6d37f2
 Jesper Horsted,TE,,27.0,,Active,5.0,6075,3940587.0,32576.0,48c56733-6644-42ee-9020-07bd2deba1ad
 Will Ferrin,K,,,,Active,0.0,13838,,,eaaf5500-42bc-11f1-ac5c-3b447886e9e2
-Tanner Brown,K,,24.0,,Active,1.0,11145,,,c0323320-e84b-11ed-91d9-49980de29a21
+Tanner Brown,K,NO,26.0,,Active,3.0,11145,,,c0323320-e84b-11ed-91d9-49980de29a21
 Khalid Abdullah,RB,,26.0,,Active,5.0,4697,3049325.0,30851.0,10b9f8b2-7e94-4ecd-9d93-458091c290e4
 Tyler Kahmann,WR,,25.0,,Active,1.0,12831,,,f1e42550-23bc-11f0-980f-efd482ebc4ae
 Brevin Easton,WR,,24.0,,Active,1.0,12220,,,ab3d68b0-07dd-11ef-86db-2329a5757e98
@@ -238,7 +238,7 @@ Kadarius Toney,WR,,25.0,,Active,3.0,7606,,,b4af6462-3e3a-49d5-9d96-482ad9f3c0c8
 Quez Watkins,WR,PHI,28.0,,Active,6.0,6927,4050373.0,32870.0,ca85137c-205c-458e-8b77-8457849f614c
 Sione Houma,RB,,30.0,,Active,9.0,3615,2977614.0,29851.0,1fceb08d-a00b-4e4e-9b51-4193967f6597
 Anthony Boone,QB,,34.0,,Active,11.0,2561,,,4d3db596-07a4-451d-84b9-3592e3990155
-Jaden Smith,WR,DAL,,,Active,1.0,13246,,,576428f0-6db7-11f0-b5ca-2d18b46d5abd
+Jaden Smith,WR,DAL,24.0,,Active,1.0,13246,,,576428f0-6db7-11f0-b5ca-2d18b46d5abd
 Cade Otton,TE,TB,27.0,,Active,4.0,8111,,,f23517bd-ae85-484a-8ecb-1f7a2d851e48
 Adrian Coxson,WR,,33.0,,Active,10.0,2929,,,1402919d-2b00-4bd7-aaa2-164a3158c62a
 Marquis Young,RB,,26.0,,Active,3.0,6742,3914324.0,32652.0,3faaca60-7fef-467f-9d6e-9694b14fc502
@@ -287,7 +287,7 @@ Lew Nichols,RB,PIT,24.0,,Active,3.0,9510,,,72e4032d-8d7b-484f-95a2-a73fbb2c67f4
 Isaiah Davis,RB,NYJ,24.0,,Active,2.0,11571,,,849789be-b8f0-4d97-a777-2fcf336efa6a
 Jaylen Waddle,WR,DEN,27.0,,Active,5.0,7526,,,0ff9a975-669d-4851-a95d-ab28d9fc29c4
 Derrius Guice,RB,,24.0,,Active,4.0,4949,3843750.0,31029.0,1c42cbe4-115b-4f28-ac50-e9bc977371b2
-Jahdae Walker,WR,CHI,23.0,,Active,1.0,13079,,,46352a70-25f5-11f0-83f2-77ca9eeac893
+Jahdae Walker,WR,CHI,24.0,,Active,1.0,13079,,,46352a70-25f5-11f0-83f2-77ca9eeac893
 Jalen Wydermyer,TE,,22.0,,Active,1.0,8115,,,9f815930-d2e9-11ec-96a0-c3471a31202c
 Trevion Thompson,WR,,26.0,,Active,3.0,6248,3122838.0,32553.0,b7225517-96d9-469a-99af-cdd286144ef9
 Jacardia Wright,RB,SEA,25.0,,Active,1.0,13047,,,42cb24b0-2556-11f0-a3b7-37e42e45b4dd
@@ -309,7 +309,7 @@ Brian Hoyer,QB,,38.0,,Active,15.0,345,12477.0,9547.0,af4ba620-2f00-4b00-9111-789
 Clyde Edwards-Helaire,RB,,26.0,,Active,6.0,6820,4242214.0,32702.0,8aa01565-4481-443a-9951-642c98ded113
 Brian Lewerke,QB,,25.0,,Active,2.0,7008,3929824.0,33015.0,e8b4f505-28b2-4a87-8bf8-87041afab45c
 Julius Davis,RB,,,,Active,0.0,14001,,,9736f850-4bd7-11f1-846b-e3ca3679d5f6
-Justin Joly,TE,DEN,21.0,,Active,0.0,13400,,,014c6825-61ca-486d-9c4d-ca0968b58888
+Justin Joly,TE,DEN,22.0,,Active,0.0,13400,,,014c6825-61ca-486d-9c4d-ca0968b58888
 Malik Earl,WR,,25.0,,Active,4.0,5169,3139223.0,31281.0,52d32434-c0ad-4285-9f0d-506972583fbf
 Austin Reed,QB,,25.0,,Active,1.0,11931,,,3dd3c120-05b2-11ef-a7ec-77a76ba1f065
 Jaelon Darden,WR,,26.0,,Active,4.0,7713,,,ada174f6-9300-46ba-833f-018d007f20ce
@@ -333,9 +333,9 @@ Jared Scott,TE,,23.0,,Active,2.0,8878,,,f0cde0e0-d471-11ec-b66c-3b3d1654b222
 Shelton Gibson,WR,,27.0,,Active,5.0,4214,3042417.0,30279.0,c58e6a2c-2206-4d42-b368-fe6f0ecb1262
 David Johnson,RB,,31.0,,Active,8.0,2391,2508176.0,28474.0,2c8670ae-0c23-4d20-9d2b-f4c3e25f8938
 Darrynton Evans,RB,,27.0,,Inactive,5.0,7064,4036431.0,32763.0,eb3c219d-6489-4f2f-a542-bdbf7423a325
-Miles Davis,RB,CAR,,,Active,0.0,14044,,,c96287f0-52fc-11f1-a622-273ccf657a59
+Miles Davis,RB,CAR,26.0,,Active,0.0,14044,,,c96287f0-52fc-11f1-a622-273ccf657a59
 Xavier Jones,RB,,24.0,,Active,2.0,7088,3916209.0,33297.0,70110b01-060d-443d-b799-5d4edc9272de
-T.J. Hockenson,TE,MIN,28.0,,Active,7.0,5844,4036133.0,31840.0,bd1120b6-38b3-4225-a4b0-20660a149d0d
+T.J. Hockenson,TE,MIN,29.0,,Active,7.0,5844,4036133.0,31840.0,bd1120b6-38b3-4225-a4b0-20660a149d0d
 Harvey Binford,WR,,30.0,,Inactive,6.0,3920,4037285.0,30047.0,7073ea74-7a02-4273-9b7e-b70247e72f73
 Ryan Fitzgerald,K,CAR,25.0,,Active,1.0,12961,,,7bf5a2e0-2512-11f0-9825-33176da47896
 Austin Jones,RB,,23.0,,Active,1.0,11947,,,6b3b9f20-06ed-11ef-9326-e735973e362d
@@ -376,7 +376,7 @@ Caullin Lacy,WR,NYJ,24.0,,Active,0.0,13826,,,b3906110-42ba-11f1-894b-1bf81f6c216
 Jalen Hurts,QB,PHI,27.0,,Active,6.0,6904,4040715.0,32723.0,64bd0f02-6a5d-407e-98f1-fd02048ea21d
 Brett Hundley,QB,,29.0,,Active,8.0,2450,2577189.0,28535.0,e97f5ca9-186e-4346-ae65-1cd757ada455
 Josh Rounds,RB,,28.0,,Active,5.0,4797,2972140.0,30918.0,d6dbb566-cfa5-4e71-a3ee-f0a5e0615ae6
-Omari Evans,WR,KC,,,Active,0.0,13905,,,f4222620-458d-11f1-b387-6df914a75a80
+Omari Evans,WR,KC,22.0,,Active,0.0,13905,,,f4222620-458d-11f1-b387-6df914a75a80
 Sergio Castillo,K,,31.0,,Active,8.0,7515,,,1f2c7574-f56a-47b3-bd75-5dd0d5ff8d93
 Dylan Devezin,RB,,,,Active,0.0,13284,,,
 Ramiz Ahmed,K,,29.0,,Active,4.0,7105,,32670.0,b6549c8a-b837-415a-ac52-f46beea0cc39
@@ -386,7 +386,7 @@ Case Cookus,QB,,27.0,,Active,3.0,7376,,33036.0,9613d5fd-95c6-456e-8d78-50a0a309d
 Adonis Jennings,WR,,26.0,,Active,4.0,5129,3123935.0,31771.0,9f67736c-0a6d-433e-820b-55fea1bd9960
 Diontae Spencer,WR,,31.0,,Inactive,9.0,5828,17463.0,28279.0,379f98b1-2f12-4f9e-8332-61cb930ac97a
 Devontae Booker,RB,,29.0,,Active,6.0,3209,3122866.0,29370.0,cd705357-f282-4cbf-8f11-391618d981c3
-Damien Alford,WR,NO,25.0,,Active,0.0,13440,,,51aa7110-31cc-11f1-9c95-cd0098da2e9b
+Damien Alford,WR,,25.0,,Active,0.0,13440,,,51aa7110-31cc-11f1-9c95-cd0098da2e9b
 Tyler Snead,WR,,22.0,,Active,1.0,8409,,,4c3380f0-d54b-11ec-863e-d1768bcc6616
 Seth Henigan,QB,,23.0,,Active,1.0,12898,,,05125990-248e-11f0-b86d-cf6af77e85f8
 Dustin Hopkins,K,,34.0,,Active,12.0,1348,15965.0,26800.0,058c99fc-470c-4579-a165-03e043335cc1
@@ -400,7 +400,7 @@ Robert Burns,RB,,26.0,,Active,2.0,11060,,,7c779800-e6f2-11ed-abca-c7a3a205e21d
 Tyler Mabry,TE,,28.0,,Inactive,5.0,7427,3916587.0,33286.0,bad1a0c1-7ea2-4898-b5d9-ad1aec45c8b1
 Rob Gronkowski,TE,,32.0,,Active,12.0,515,13229.0,24017.0,2142a164-48ad-47d6-bb27-0bc58c6b2e62
 Dae'Quan Wright,TE,PHI,22.0,,Active,0.0,13331,,,1c7004d0-4192-11f1-907c-8b81f8d0e739
-Casey Washington,WR,ATL,25.0,,Active,2.0,11806,,,98b9b952-b31f-47c4-9fac-9d7516af34df
+Casey Washington,WR,,25.0,,Active,2.0,11806,,,98b9b952-b31f-47c4-9fac-9d7516af34df
 Felton Davis,WR,,24.0,,Active,3.0,5941,3929817.0,32356.0,c64e0229-181c-4a4d-9994-4501b09cd646
 Devine Ozigbo,RB,,27.0,,Active,4.0,6068,3699935.0,32390.0,25bc08ac-8420-4340-94c6-93993ff87d6f
 Jake Browning,QB,TB,30.0,,Active,7.0,6111,3886812.0,32138.0,f2f29019-7306-4b1c-a9d8-e9f802cb06e0
@@ -441,7 +441,7 @@ Jordan Love,QB,GB,27.0,,Active,6.0,6804,4036378.0,32696.0,e5094779-e94f-4052-859
 Tyler Boyd,WR,,30.0,,Active,9.0,3225,3045144.0,29288.0,76a5edec-5ff7-49fa-a8ec-5768a372279d
 Jordan Petaia,TE,,25.0,,Active,1.0,12549,,,5be8f6f0-10b3-11f0-a920-69f05600ba9e
 Jake Powell,TE,,25.0,,Active,3.0,6260,3117919.0,32391.0,82ef1c60-d735-4ebf-8197-eb31ef55ae31
-Keelan Marion,WR,ATL,,,Active,0.0,13973,,,6e9e95c0-4b36-11f1-8843-3d4078131da2
+Keelan Marion,WR,ATL,26.0,,Active,0.0,13973,,,6e9e95c0-4b36-11f1-8843-3d4078131da2
 Chandler Morris,QB,,25.0,,Active,0.0,13592,,,87b6ed70-418e-11f1-9cbc-a3347f6de241
 Jeremiah Haydel,WR,,22.0,,Active,1.0,7874,,,7eceb016-4032-4435-ada0-cf10dc94a5f1
 James Franklin,QB,,34.0,,Active,12.0,2119,,,94e4b4c4-87f5-4a95-9fa2-60fbd3629c12
@@ -469,7 +469,7 @@ Sincere Brown,WR,LAC,,,Active,0.0,13604,,,41877910-41a6-11f1-a013-8f89c4017ab0
 Kalif Raymond,WR,CHI,31.0,,Active,10.0,3634,2973405.0,29631.0,e0a31d02-9d1c-4dab-adb4-a5d9bbee8b36
 Sam Pinckney,WR,,25.0,,Active,1.0,12018,,,b46705e0-070b-11ef-9c12-0715c20c2990
 KhaDarel Hodge,WR,,31.0,,Active,8.0,5773,3047876.0,31769.0,6f124753-5c6c-454b-97c7-0f9b4d14e7c2
-Lucky Jackson,WR,,28.0,,Active,2.0,11520,,,ac54c7b0-f984-11ed-84ee-53af5769e939
+Lucky Jackson,WR,DET,28.0,,Active,3.0,11520,,,ac54c7b0-f984-11ed-84ee-53af5769e939
 Des Lawrence,WR,,27.0,,Active,5.0,2940,3039722.0,30771.0,27af2ee9-be1e-4aac-a59b-f8dcfe243211
 Dominic Zvada,K,NYG,22.0,,Active,0.0,13833,,,f2df2b00-42bd-11f1-a42d-413e277eb123
 Cooper Rush,QB,,32.0,,Active,9.0,4574,2972515.0,30788.0,4595c8ea-9d85-4504-8a34-2c8a02349105
@@ -520,7 +520,7 @@ Jake Burt,TE,,25.0,,Active,2.0,7460,3915308.0,33026.0,9d919856-fa8a-4f06-bd1c-89
 Jimmy Garoppolo,QB,,34.0,,Active,12.0,1837,16760.0,27590.0,42de9d1d-0352-460b-9172-9452414fd7fd
 Trevor Knight,QB,,28.0,,Active,5.0,4528,2976593.0,30490.0,e17c3db4-d8db-48ed-b96b-ef0ca21c429b
 Cameron Dicker,K,LAC,26.0,,Active,4.0,8259,,,ac5dd0b0-d060-11ec-b677-29e0f2526162
-Will Mallory,TE,IND,26.0,,Active,3.0,10220,,,5d4a5e4f-7c74-4b4c-b8e5-33bb831e3057
+Will Mallory,TE,IND,27.0,,Active,3.0,10220,,,5d4a5e4f-7c74-4b4c-b8e5-33bb831e3057
 Rocky Lombardi,QB,,26.0,,Active,1.0,12063,,,a169a5c0-0723-11ef-86c1-9f5ad4fb5e67
 Thomas Gordon,TE,DET,25.0,,Active,1.0,13249,,,7e7edc80-7287-11f0-8763-dd1069e97c84
 Rushawn Baker,RB,,22.0,,Active,1.0,13128,,,721b44f0-2634-11f0-827d-03947b7c1306
@@ -545,7 +545,7 @@ Josh Adams,RB,,25.0,,Active,4.0,5136,3932420.0,31567.0,23b17031-de21-412d-8182-5
 Devon Cajuste,WR,,28.0,,Active,6.0,3500,2577123.0,29764.0,d64fbf0c-f562-47cc-8bcd-a1a77517cc63
 Micky Crum,TE,,26.0,,Active,3.0,6737,3116661.0,32647.0,3465559b-8923-4342-8853-c59f8ffadcaa
 Isaiah Winstead,WR,,25.0,,Active,1.0,11232,,,23cd4b70-ea0b-11ed-9937-afc55efa97bf
-Le'Meke Brockington,WR,ATL,,,Active,0.0,13975,,,a524f000-4b34-11f1-92d0-696d3d5ed72e
+Le'Meke Brockington,WR,ATL,24.0,,Active,0.0,13975,,,a524f000-4b34-11f1-92d0-696d3d5ed72e
 Peewee Jarrett,QB,,,,Active,1.0,12239,,,7c3bf5f0-0976-11ef-94bd-4b7257e2f0c1
 Kermit Whitfield,WR,,28.0,,Active,5.0,4785,,,c9610dd0-298c-4dfe-a88c-bac4466d14e3
 Colton Dowell,WR,SF,27.0,,Active,3.0,11046,,,7939f84a-bb43-43d3-83e2-ce2fa4ca829d
@@ -571,7 +571,7 @@ N'Keal Harry,TE,,26.0,,Active,5.0,5878,4047839.0,31864.0,3e6e15ce-1c81-408e-9a94
 Brandon Brown-Dukes,RB,,29.0,,Active,6.0,3816,4012719.0,29903.0,5a1b445b-2a7b-483e-8a3e-b42c4d76e383
 Jimmy Holiday,WR,KC,24.0,,Active,1.0,13173,,,b60ec2f0-2ac5-11f0-b8db-bf17bad874d7
 Ben DiNucci,QB,,29.0,,Active,6.0,7143,3895785.0,32901.0,c744ade6-bce2-4c71-8f1b-742cb183c8eb
-Kole Wilson,WR,CLE,,,Active,0.0,13749,,,96ba6f80-427a-11f1-8713-1fbce8f11482
+Kole Wilson,WR,CLE,22.0,,Active,0.0,13749,,,96ba6f80-427a-11f1-8713-1fbce8f11482
 Jake Bobo,WR,SEA,27.0,,Active,3.0,10867,,,7d80dd50-e9f5-11ed-9c34-3f26f2e7ed88
 Isaiah Likely,TE,NYG,26.0,,Active,4.0,8131,,,f9279edb-cfa7-4f7d-91df-b81cbf3e133e
 Patrick Mahomes,QB,KC,30.0,,Active,9.0,4046,3139477.0,30123.0,11cad59d-90dd-449c-a839-dddaba4fe16c
@@ -594,17 +594,17 @@ Christopher Ezeala,RB,,26.0,,Active,6.0,5462,4339834.0,31335.0,5ab29759-c330-414
 Marcus Riley,WR,,25.0,,Active,1.0,12235,,,386b8cc0-0979-11ef-946b-f5c344c4b343
 Brandon Barnes,TE,,27.0,,Active,5.0,4593,3059165.0,30765.0,5079332c-3043-47a6-be13-89a76469057f
 Peter Pujals,QB,,26.0,,Active,4.0,5403,3048030.0,31239.0,2b136f32-c023-427c-a663-29b921e5ce90
-Brady Boyd,WR,JAX,,,Active,0.0,13658,,,7b3911e0-41c0-11f1-8d41-c7cc7f18a4c0
+Brady Boyd,WR,JAX,24.0,,Active,0.0,13658,,,7b3911e0-41c0-11f1-8d41-c7cc7f18a4c0
 Grant Calcaterra,TE,PHI,27.0,,Active,4.0,8177,,,f6988cfa-2dcf-490b-ac80-9af8e4292efa
 Alex Bullock,WR,,,,Active,0.0,13657,,,290ab590-41c0-11f1-a2e0-072e38835914
 Jordan Veasy,WR,,27.0,,Active,4.0,5293,4035853.0,31626.0,fb815f81-3759-4194-bff9-1982fb2dd9a0
 Calvin Austin,WR,NYG,27.0,,Active,4.0,8125,,,a95271f7-6dae-4b43-94fd-3ff04b15d4c4
-Austin Trammell,WR,JAX,27.0,,Active,5.0,7746,,,c1d52f55-4c65-4b37-8457-f0dc028c85bc
+Austin Trammell,WR,JAX,28.0,,Active,5.0,7746,,,c1d52f55-4c65-4b37-8457-f0dc028c85bc
 Dyami Brown,WR,WAS,26.0,,Active,5.0,7587,,,0fb60ada-bdd3-4d74-8c98-058303a1649a
 Jaren Kanak,TE,TEN,22.0,,Active,0.0,13422,,,8eedef76-e1ab-4345-adef-fa0f79f8216a
 ,DEF,LV,,,,,LV,,,
 Evan McPherson,K,CIN,26.0,,Active,5.0,7839,,,acc143ed-53b2-49c9-81bc-16e6c98ffcae
-Jacob Clark,QB,LV,,,Active,0.0,13802,,,684e3a30-429a-11f1-87f0-096da8903336
+Jacob Clark,QB,LV,25.0,,Active,0.0,13802,,,684e3a30-429a-11f1-87f0-096da8903336
 John Jackson,WR,,25.0,,Active,1.0,12410,,,ad2b5f00-113e-11ef-8903-07c57a65e644
 Jermaine Jackson,WR,,24.0,,Active,1.0,11897,,,9f2c6ea0-0570-11ef-af69-dfa5fe884ba6
 Graham Adomitis,TE,,25.0,,Active,1.0,8095,,,0fb21468-f4c9-4b11-a8fc-d4c2dbbf5319
@@ -615,7 +615,7 @@ Rhett Ellison,TE,,33.0,,Injured Reserve,10.0,1211,15003.0,25838.0,cccc9f16-9508-
 Jalen Tolbert,WR,MIA,27.0,,Active,4.0,8117,,,c6fb9f3a-f8ff-4224-a5f6-4d2d09501c9c
 Farrod Green,TE,,24.0,,Active,2.0,7483,3930097.0,33214.0,2c73720a-702f-4f39-9b54-c4da9d9f632c
 Justin Herbert,QB,LAC,28.0,,Active,6.0,6797,4038941.0,32676.0,f0a8f8e3-b9e9-46ed-85e4-eec6452a8a44
-Denzel Mims,WR,,26.0,,Active,4.0,6849,4035403.0,32729.0,adfc13b3-1eb6-49f3-9ba6-d4d87fd13685
+Denzel Mims,WR,DAL,28.0,,Active,6.0,6849,4035403.0,32729.0,adfc13b3-1eb6-49f3-9ba6-d4d87fd13685
 Alex Hale,K,,27.0,,Active,1.0,12438,,,c0f5daf0-5505-11ef-b7e3-6370a6e73976
 Jason Vander Laan,TE,,29.0,,Inactive,6.0,3774,3057863.0,29806.0,1532328d-614e-4cd6-a43f-ff56073e2ff2
 Jahmal Banks,WR,,24.0,,Active,1.0,13041,,,f18e7f90-254e-11f0-bbb1-dfff98110c96
@@ -697,7 +697,7 @@ Deneric Prince,RB,,25.0,,Active,3.0,10870,,,28f98460-ec3b-11ed-aeaf-cb0dc6206dc5
 Osirus Mitchell,WR,,23.0,,Active,1.0,7860,,,09903f88-830a-4db2-8de7-1647c1f2eb6c
 Eli Stowers,TE,PHI,23.0,,Active,0.0,13349,,,287b7f15-ebe2-433f-af00-b1755576f8f8
 Jalen McMillan,WR,TB,24.0,,Active,2.0,11618,,,c2b25795-8c63-425a-8790-f6d626dbf0d3
-RJ Maryland,TE,GB,21.0,,Active,0.0,13430,,,ee887ce0-4282-11f1-b4e9-874e09b60b90
+RJ Maryland,TE,GB,22.0,,Active,0.0,13430,,,ee887ce0-4282-11f1-b4e9-874e09b60b90
 Tucker McCann,K,,24.0,,Active,2.0,7446,4035098.0,33343.0,397901eb-5589-4f0e-8c02-f50509e22f3c
 Robbie Gould,K,,40.0,,Active,18.0,49,9354.0,7520.0,abd73d50-ce60-47f1-b37f-2f9a05b0d7b9
 Tom Brady,QB,,45.0,,Active,23.0,167,2330.0,5228.0,41c44740-d0f6-44ab-8347-3b5d515e5ecf
@@ -737,14 +737,14 @@ Khalil Dinkins,TE,SF,,,Active,0.0,13432,,,aade29a0-41d2-11f1-9a05-39136b423f8c
 Dorian Thompson-Robinson,QB,,25.0,,Active,2.0,10862,,,d66ae3ad-8a60-47e7-a3b2-18a1e8377e1b
 Soma Vainuku,RB,,29.0,,Active,6.0,3640,2510605.0,29810.0,fda9f1f1-9480-4418-8684-565c44edf7b4
 Jeremy Ruckert,TE,NYJ,25.0,,Active,4.0,8145,,,28f3732b-0910-4d09-9fd4-e43b821dc5bb
-Mason Pline,TE,,26.0,,Active,2.0,12068,,,b0f28450-0726-11ef-87d2-b788a7a4a635
+Mason Pline,TE,KC,26.0,,Active,2.0,12068,,,b0f28450-0726-11ef-87d2-b788a7a4a635
 Trey Edmunds,RB,,27.0,,Active,5.0,4696,2970090.0,30850.0,9b4e4d1d-ad88-4c10-b1c0-b9116755c184
 Emory Jones,QB,,25.0,,Active,2.0,11961,,,0fc82e70-06fb-11ef-884d-cbdb0bc0c89c
 Tyler Warren,TE,IND,24.0,,Active,1.0,12518,,,c8fe3913-1210-4142-b9c1-c119ef702ca5
 Jeremiah Hall,TE,,,,Active,1.0,8203,,,d4728400-d264-11ec-b16e-cf7159baf83d
 Andre Szmyt,K,CLE,27.0,,Active,4.0,11261,,,25f0b180-ead8-11ed-86b8-630d0ad2d5af
 Mark Gronowski,QB,MIA,24.0,,Active,0.0,13816,,,4dde2140-42ab-11f1-910d-8569d31b1363
-Dohnte Meyers,WR,CIN,25.0,,Active,3.0,13264,,,adf036f0-ebe3-11f0-b9c8-cb8413f2962c
+Dohnte Meyers,WR,CIN,26.0,,Active,3.0,13264,,,adf036f0-ebe3-11f0-b9c8-cb8413f2962c
 Nick Sciba,K,,23.0,,Active,2.0,8893,,,23c30690-d54b-11ec-863e-d1768bcc6616
 Mason Crosby,K,,39.0,,Active,17.0,59,10636.0,8447.0,e0856548-6fd5-4f83-9aa0-91f1bf4cbbd8
 Lawrence Cager,TE,WAS,28.0,,Active,6.0,7106,3917849.0,33329.0,2f2181f8-cb0a-42e4-9468-17f5f5a219cc
@@ -774,7 +774,7 @@ Nathan Carter,RB,ATL,24.0,,Active,1.0,12897,,,be0e5b20-2479-11f0-8e28-d7828261d2
 Dom Williams,WR,,29.0,,Active,6.0,3505,2578446.0,29533.0,a32ee92b-3d89-4218-b613-12273304d528
 Caleb Scott,WR,TEN,25.0,,Active,4.0,5223,3122167.0,31464.0,a3055591-6c57-4ff0-9a2f-5e2547c62820
 Golden Tate,WR,,33.0,,Active,12.0,642,13217.0,24035.0,c88d9352-b835-45ed-a909-1cfec09a58bc
-Will Levis,QB,TEN,26.0,,Active,3.0,9999,,,4c8a2f7e-f982-4eca-9d52-cf53df6985a4
+Will Levis,QB,TEN,27.0,,Active,3.0,9999,,,4c8a2f7e-f982-4eca-9d52-cf53df6985a4
 Preston Fox,WR,,,,Active,0.0,13344,,,
 Jon'Vea Johnson,WR,,26.0,,Active,3.0,6420,3126095.0,32200.0,bc67a9f0-8c96-4114-8b46-4c97fdd577d1
 Tre' Harris,WR,LAC,24.0,,Active,1.0,12509,,,a45328a1-7d0e-451a-8176-ea30f0e1c86f
@@ -791,7 +791,7 @@ Jadakis Bonds,WR,,23.0,,Active,1.0,11521,,,fb338d60-f990-11ed-90fe-43c6e67d44d0
 Dontae Fleming,WR,MIN,24.0,,Active,1.0,12946,,,d3f1c620-250f-11f0-860d-4396a96b1cd5
 Nigel King,WR,,32.0,,Active,10.0,2790,2577080.0,28910.0,be7b70b4-dca3-432b-ae05-8906e33d7e6e
 Carson Strong,QB,,23.0,,Active,1.0,8158,,,b6059220-ce1b-11ec-bebb-4fec1e38b0e5
-Isaac Guerendo,RB,SF,25.0,,Active,2.0,11651,,,eac64b21-6e9e-447a-bf18-8a00b5c12871
+Isaac Guerendo,RB,SF,26.0,,Active,2.0,11651,,,eac64b21-6e9e-447a-bf18-8a00b5c12871
 Taysir Mack,WR,,24.0,,Active,1.0,8613,,,3487ea70-ca80-11ec-97ae-e1573849d1a6
 J.J. Nelson,WR,,30.0,,Active,7.0,2462,2515759.0,28547.0,617269c1-88b3-45a6-b4a8-b2806a0cdaea
 Jude McAtamney,K,,25.0,,Active,1.0,12385,,,59390ff0-0eeb-11ef-966f-a152cdc308bf
@@ -873,11 +873,11 @@ Trevor Wood,TE,,25.0,,Active,3.0,6263,3134013.0,32173.0,324c013f-3e74-44cf-86a3-
 Rico Dowdle,RB,PIT,28.0,,Active,6.0,7021,4038815.0,33100.0,bba755a2-63b6-4ac1-b806-0609816135de
 Braxton Westfield,WR,,,,Active,1.0,11301,,,b1d5bc30-eba1-11ed-8b52-a11a185238e2
 Mason Tipton,WR,NO,25.0,,Active,2.0,11895,,,91918b20-0572-11ef-96c1-f73e6ad39631
-Dontae McMillan,RB,BAL,,,Active,0.0,13852,,,e908cf50-431c-11f1-a29d-11fb11746e9d
+Dontae McMillan,RB,BAL,24.0,,Active,0.0,13852,,,e908cf50-431c-11f1-a29d-11fb11746e9d
 Ahmad Wagner,WR,,25.0,,Inactive,2.0,7228,3935018.0,33182.0,0cdcabee-0c9b-4226-b20b-a15ab96dda36
 Vyncint Smith,WR,,27.0,,Active,5.0,5260,3155188.0,31588.0,a63918a5-da89-40d9-8518-30a3e0e46da1
 Eric Rogers,WR,,30.0,,Active,9.0,1701,,27338.0,bb710777-1fa3-45e0-877b-4331b35ce476
-Roman Wilson,WR,PIT,24.0,,Active,2.0,11630,,,43563ab6-46b9-44d3-aaf2-bc1eb4d1f8d1
+Roman Wilson,WR,PIT,25.0,,Active,2.0,11630,,,43563ab6-46b9-44d3-aaf2-bc1eb4d1f8d1
 Tyler Huntley,QB,BAL,28.0,,Active,6.0,7083,4035671.0,32993.0,7c226f73-a59f-4db6-ad98-2766d05d4d5a
 Caleb Lohner,TE,DEN,24.0,,Active,1.0,12735,,,88a09f4b-3cc1-4e70-bf4c-9b1503ecb89f
 Mathieu Severance,RB,,,,Active,1.0,12288,,,e8eb3a30-0c7d-11ef-ba0f-0dc4f02f932d
@@ -938,11 +938,11 @@ Elijah Cooks,WR,,27.0,,Active,3.0,11139,,,c2cce6c0-e841-11ed-9d79-63f6ad42423a
 Keenen Brown,TE,,26.0,,Active,3.0,6389,3122421.0,32128.0,d7e8585f-8213-4810-81d5-8005ecf55e5e
 J.J. Koski,WR,,26.0,,Active,3.0,7339,3910287.0,33254.0,ccf4746d-903a-4d51-8874-30953a304a84
 Daniel Bellinger,TE,TEN,25.0,,Active,4.0,8225,,,42a1c03e-790e-46ba-b0d5-d304e44c02c7
-Elijah Tau-Tolliver,RB,BAL,,,Active,0.0,13909,,,6fe63430-4594-11f1-b9ac-57fcf0dd2ce3
+Elijah Tau-Tolliver,RB,BAL,23.0,,Active,0.0,13909,,,6fe63430-4594-11f1-b9ac-57fcf0dd2ce3
 Bryce Pierre,TE,,25.0,,Inactive,1.0,12959,,,23516350-2516-11f0-9fc8-5769fbfd7cbb
 Lil'Jordan Humphrey,WR,DEN,28.0,,Active,7.0,5938,4039057.0,32494.0,b7f930af-ddd2-4a48-9617-96bda81b0334
 Travell Harris,WR,,,,Active,1.0,8252,,,6443f5d0-d307-11ec-8b77-45b1765fd110
-Marcus Sanders,WR,MIN,,,Active,0.0,13619,,,626ffd90-41a2-11f1-861e-556c0beae8b9
+Marcus Sanders,WR,MIN,21.0,,Active,0.0,13619,,,626ffd90-41a2-11f1-861e-556c0beae8b9
 Dalton Crossan,RB,,27.0,,Inactive,5.0,4322,2969103.0,30522.0,dbc8442c-9b94-4fe8-9c70-6d7cc1dab2fb
 Kaleb Johnson,RB,PIT,22.0,,Active,1.0,12504,,,9738de9a-7626-460f-a786-28433ef70a1f
 Treyton Welch,TE,NO,25.0,,Active,2.0,12079,,,07814d30-072a-11ef-ba75-176276cf11f0
@@ -989,7 +989,7 @@ Tyler Allgeier,RB,ARI,26.0,,Active,4.0,8132,,,f4529909-1a02-4f4b-a1f3-315cad1006
 Josh Smith,WR,,27.0,,Inactive,4.0,5762,3044726.0,31760.0,595ed8a9-5533-4bd0-8f3c-a4c3e9a021f8
 Jimmy Horn,WR,CAR,23.0,,Active,1.0,12523,,,f15872a6-7bc1-41e4-a2cd-0a2fbc432bf7
 William Fuller,WR,,27.0,,Active,6.0,3157,3052876.0,29255.0,095e0c1a-0bea-4bc6-868f-e4bbe2ce6c30
-Michael Trigg,TE,DAL,23.0,,Active,0.0,13401,,,6bff41b0-4191-11f1-9de2-13456d982f5a
+Michael Trigg,TE,DAL,24.0,,Active,0.0,13401,,,6bff41b0-4191-11f1-9de2-13456d982f5a
 Julius Chestnut,RB,TEN,25.0,,Active,4.0,8254,,,873860f0-cca2-11ec-9e80-cff885fdbae7
 Layne Pryor,TE,HOU,23.0,,Active,1.0,13261,,,ef304ef0-c007-11f0-a6e1-bfddd1dcec26
 Nikola Kalinic,TE,CHI,29.0,,Active,4.0,8107,,,6aed0540-7ec8-11ec-8905-19cf1c3e187f
@@ -1028,7 +1028,7 @@ Kurt Benkert,QB,,27.0,,Active,4.0,5142,3040535.0,31336.0,bd684ac3-89d5-4b6b-84df
 Kenjon Barner,RB,,33.0,,Inactive,9.0,1546,15921.0,26805.0,5ec072b3-2837-4cf1-bb4f-ecd873949626
 Owen Wright,RB,,27.0,,Active,3.0,11384,,,53cbf000-f01f-11ed-97df-a94b89ac5704
 Brandon Frazier,TE,,,,Active,0.0,13972,,,30232bf0-4b34-11f1-aae0-19f8646b7d0c
-Eli Heidenreich,RB,PIT,22.0,,Active,0.0,13423,,,4e49c857-13bf-4156-ab13-706e4088179b
+Eli Heidenreich,RB,PIT,23.0,,Active,0.0,13423,,,4e49c857-13bf-4156-ab13-706e4088179b
 Aaron Lacombe,WR,,26.0,,Inactive,4.0,5772,3056458.0,31768.0,0d484e6b-f3ba-4cc2-84d6-6034dd1ae509
 Anthony Johnson,WR,,26.0,,Active,3.0,5929,4049301.0,32482.0,e0dc9dce-fe33-4092-b6bd-6af3cbcb762e
 Ryan Nall,RB,,26.0,,Inactive,4.0,5163,3127335.0,31662.0,02880089-ccba-44f0-9d6c-fe6f12d15e5b
@@ -1066,7 +1066,7 @@ Mekhi Mews,WR,,,,Active,0.0,13835,,,f8ee2430-42bb-11f1-b7a6-75b2b614ba7c
 Josh Rosen,QB,,25.0,,Active,5.0,4863,3886377.0,30980.0,5c079a21-ae9e-4b38-a69a-47706fa8dd67
 Nay'Quan Wright,RB,,,,Active,1.0,13250,,,2c5d01e0-757d-11f0-8b48-f938fdb9201e
 Keilahn Harris,WR,,23.0,,Inactive,1.0,11190,,,eddb6ce0-e8f7-11ed-898a-05520dba8222
-Eli Pancol,WR,IND,25.0,,Active,1.0,12909,,,2b89f6e0-249e-11f0-8ecb-33c8d222dbba
+Eli Pancol,WR,IND,26.0,,Active,1.0,12909,,,2b89f6e0-249e-11f0-8ecb-33c8d222dbba
 Luke Falk,QB,,27.0,,Active,4.0,5108,3052061.0,31169.0,b88e39e6-3247-4f85-9909-c18d373eaeee
 Cole Payton,QB,PHI,23.0,,Active,0.0,13335,,,f6d960ab-1601-417a-8a35-39e3a75c29a5
 Mik'Quan Deane,TE,,,,Active,3.0,6490,4246674.0,32337.0,0445dc8c-5b8a-4def-a548-0f36c08990ab
@@ -1102,7 +1102,7 @@ Tim Boyle,QB,,30.0,,Active,7.0,5257,3045169.0,31431.0,d897b70f-29d9-477e-a72a-c9
 DeAndre Carter,WR,,32.0,,Active,11.0,2750,2580216.0,28947.0,9ae2584a-40c1-4b30-be34-a9567659eacd
 Puka Nacua,WR,LAR,25.0,,Active,3.0,9493,,,111be44d-7bc2-4cad-934d-c9e946293b2f
 Caden Davis,K,,24.0,,Active,1.0,13149,,,cf2bfe00-263e-11f0-884b-838304cf5cc4
-Dan Villari,TE,LAR,23.0,,Active,0.0,13321,,,8acdbf20-42a6-11f1-b2eb-c9093a222ee6
+Dan Villari,TE,LAR,24.0,,Active,0.0,13321,,,8acdbf20-42a6-11f1-b2eb-c9093a222ee6
 Devin Carter,WR,,22.0,,Active,1.0,12019,,,cedf5a30-0710-11ef-9966-7da8f700d6c7
 Drew Stevens,K,WAS,22.0,,Active,0.0,13968,,,4f268040-4b31-11f1-ab56-ddbbfa067d51
 Andrei Iosivas,WR,CIN,26.0,,Active,3.0,10226,,,30c0df5e-bb77-4eee-8390-8fc13844e1c3
@@ -1148,7 +1148,7 @@ Chimere Dike,WR,TEN,24.0,,Active,1.0,12540,,,1e95c7fc-ecf7-4fcb-82d8-d77e2b6872d
 ,DEF,CLE,,,,,CLE,,,
 Marlin Klein,TE,HOU,23.0,,Active,0.0,13307,,,bc8c44b4-bda4-43e6-9ed4-6da16263e7f2
 Jacob Huesman,QB,,28.0,,Active,5.0,3978,2567767.0,30085.0,00c179ec-833c-4588-8192-a89add825d7c
-A.J. Brown,WR,NE,28.0,,Active,7.0,5859,4047646.0,31883.0,a9e580f2-1fbe-46fb-887c-c84089b507e4
+A.J. Brown,WR,NE,29.0,,Active,7.0,5859,4047646.0,31883.0,a9e580f2-1fbe-46fb-887c-c84089b507e4
 Christian McCaffrey,RB,SF,30.0,,Active,9.0,4034,3117251.0,30121.0,f96db0af-5e25-42d1-a07a-49b4e065b364
 Gunner Olszewski,WR,NYG,29.0,,Inactive,7.0,6699,4424106.0,32612.0,625a1777-dd9a-48c6-b512-c450b0914450
 Colby Pearson,WR,,26.0,,Active,5.0,4738,3053805.0,30886.0,421eb2de-5261-4d06-bb32-6135161bee71
@@ -1166,7 +1166,7 @@ Aaron Fuller,WR,,24.0,,Active,2.0,6967,4039000.0,33267.0,df2caa7b-29f4-4391-8ce0
 Tyrone Swoopes,TE,,27.0,,Active,5.0,4678,3046705.0,30763.0,2aa9cc15-bd17-4e53-bfcd-17a2fb1a2170
 Thomas Greaney,TE,,24.0,,Active,1.0,11351,,,b674e8f0-ec74-11ed-bbfd-0bec0ed0986d
 Tim DeMorat,QB,,23.0,,Active,1.0,11163,,,db7acc50-e8eb-11ed-b137-31f8fbe5b041
-Kyre Duplessis,WR,DET,,,Active,0.0,14056,,,7d1fbfa0-6032-11f1-8878-174e40a66234
+Kyre Duplessis,WR,,,,Active,0.0,14056,,,7d1fbfa0-6032-11f1-8878-174e40a66234
 Matt Breida,RB,,29.0,,Active,7.0,4455,3049916.0,30552.0,6249d2c0-75dc-4586-943b-1c103a9eb419
 Dontrelle Inman,WR,,32.0,,Active,11.0,2291,14269.0,25120.0,61194d09-1caf-4bd6-9ff2-a6b1601a1839
 BJ Baylor,RB,,24.0,,Active,1.0,8240,,,81b98a40-ca69-11ec-a83a-8732d3d5a7e3
@@ -1187,7 +1187,7 @@ Tevin Coleman,RB,,29.0,,Active,8.0,2378,2979477.0,28461.0,5827b78b-5150-4ba9-bc4
 Saquon Barkley,RB,PHI,29.0,,Active,8.0,4866,3929630.0,30972.0,9811b753-347c-467a-b3cb-85937e71e2b9
 Justin Rigg,TE,,25.0,,Active,2.0,8778,,,2d121820-d2ef-11ec-96a0-c3471a31202c
 Jordan Reed,TE,,31.0,,Injured Reserve,9.0,1500,15860.0,26708.0,c3bf8d3e-3b2e-4f9e-ad74-c0a684035f17
-Hunter Dekkers,QB,,24.0,,Active,1.0,13217,,,561d7ac0-3043-11f0-aa21-cfe6c5a5e328
+Hunter Dekkers,QB,NO,25.0,,Active,1.0,13217,,,561d7ac0-3043-11f0-aa21-cfe6c5a5e328
 Taylor Sloat,TE,,,,Active,12.0,2921,,,0be6aa8c-8684-4fb8-8ba8-46019cf23a14
 Kevin Marks,RB,,24.0,,Active,1.0,8424,,,31f5e3a0-ca2d-11ec-85ef-0dc0f14c8af3
 Kennedy Brooks,RB,,24.0,,Active,1.0,8152,,,51b7cde0-ce18-11ec-bebb-4fec1e38b0e5
@@ -1201,7 +1201,7 @@ Darius Victor,RB,,27.0,,Active,5.0,4791,3049987.0,30915.0,5f2136e8-d439-4fd7-b02
 Zach Horton,TE,DET,23.0,,Active,1.0,13110,,,9c616fe0-2617-11f0-99ad-71dad835e87c
 Je'Quan Burton,WR,,24.0,,Active,1.0,12144,,,22a986c0-07c2-11ef-b583-d1d95bbb4efc
 Parker Hesse,TE,,29.0,,Active,5.0,6662,3144991.0,32588.0,5aab93f1-bc81-4d83-b105-d579a14eb349
-Ian Wheeler,RB,,24.0,,Active,1.0,12036,,,4cbe3c80-0718-11ef-ad6b-0f2dd4b44ccd
+Ian Wheeler,RB,BUF,24.0,,Active,2.0,12036,,,4cbe3c80-0718-11ef-ad6b-0f2dd4b44ccd
 Jaelon Acklin,WR,,26.0,,Active,4.0,5140,3121616.0,31247.0,4e9fc39f-042b-406a-9afd-ab16330a85f0
 Marshall Morgan,K,,31.0,,Active,9.0,3579,,,8b8f9f11-fb57-440d-a441-24c7b099ef0a
 Ahmad Fulwood,WR,,,,Active,5.0,4929,,30411.0,d1b2a6dd-837b-4dfa-b7cc-72244668748c
@@ -1332,11 +1332,11 @@ Taylor McNamara,TE,,27.0,,Active,5.0,4563,2976620.0,30547.0,d68d5e23-f5bc-4325-a
 Buddy Howell,RB,,26.0,,Active,4.0,5271,3122716.0,31537.0,7f5c931b-4ebd-4309-a1d2-e04a5cf782e8
 Rashaad Penny,RB,,28.0,,Active,6.0,4985,3139925.0,30997.0,2b119688-83b5-4d19-acbf-fa2087035fae
 Phazahn Odom,TE,,27.0,,Active,5.0,4725,2973301.0,30858.0,e5956f10-69fd-4b5d-a7aa-b9da0d980fe0
-CJ Donaldson,RB,NO,21.0,,Active,0.0,13277,,,17aea600-41af-11f1-93d0-9f964ffea979
+CJ Donaldson,RB,NO,22.0,,Active,0.0,13277,,,17aea600-41af-11f1-93d0-9f964ffea979
 Mecole Hardman,WR,BUF,28.0,,Active,7.0,5917,4035004.0,31888.0,fe6dc768-d576-476c-b150-53b85af2a1d1
 Lee Ward,RB,,33.0,,Active,10.0,2945,,29033.0,cd77f5d4-b12f-4a6b-9db8-4f93e12d5959
 DJ Moore,WR,BUF,29.0,,Active,8.0,4983,3915416.0,30994.0,d8202e6d-d03b-4cd1-a793-ff8fd39d9755
-Antwane Wells,WR,,24.0,,Active,1.0,12460,,,483872b0-2630-11f0-b7f1-df7c830143e7
+Antwane Wells,WR,ATL,25.0,,Active,1.0,12460,,,483872b0-2630-11f0-b7f1-df7c830143e7
 Dallas Goedert,TE,PHI,31.0,,Active,8.0,5022,3121023.0,31019.0,e8029983-87cf-49a2-bc04-04c8233a0630
 Traeshon Holden,WR,DAL,24.0,,Active,1.0,12849,,,50ac1100-23d7-11f0-9908-fbcde49adcd9
 Jimmy Graham,TE,,37.0,,Active,14.0,616,13232.0,24070.0,fd85786d-3900-4dc0-9b30-334ee30413ed
@@ -1553,7 +1553,7 @@ Drake London,WR,ATL,24.0,,Active,4.0,8112,,,5053f9ae-15d9-4730-833d-484886b6f890
 Malik Nabers,WR,NYG,22.0,,Active,2.0,11632,,,55ef2022-50c2-465b-839e-c0f4c9e7c55c
 Mack Hollins,WR,NE,32.0,,Active,9.0,4177,2991662.0,30231.0,93cb5790-1012-4c42-bccb-5748c27ba7d6
 Hal Presley,WR,,24.0,,Active,1.0,12757,,,55ebe650-2304-11f0-a3c1-3b6fe3e0d98e
-Octavian Smith,WR,BAL,,,Active,0.0,13850,,,a2fdf160-431d-11f1-aa5d-bb62871c46fc
+Octavian Smith,WR,BAL,23.0,,Active,0.0,13850,,,a2fdf160-431d-11f1-aa5d-bb62871c46fc
 Malik McClain,WR,NYJ,,,Active,0.0,13825,,,17641ab0-42bb-11f1-9f99-fb99057fe96c
 Vincent Testaverde,QB,,25.0,,Active,3.0,6723,3139487.0,32634.0,c1f2f510-3542-47be-96de-baa784b1f8d8
 Quincy Enunwa,WR,,29.0,,Active,8.0,1854,16899.0,27737.0,0adf5b2c-35bd-41f2-8e73-3dad53454d78
@@ -1561,8 +1561,8 @@ Marquise Brown,WR,PHI,29.0,,Active,7.0,5848,4241372.0,31857.0,feeee40a-dd63-41a7
 Dresser Winn,QB,,26.0,,Active,2.0,11169,,,adefcf10-e8e6-11ed-b5d6-23d85f497f81
 Bryant Koback,RB,,26.0,,Inactive,2.0,8246,,,7b816ca0-c957-11ec-b1d2-d334745b4f4f
 Maddux Trujillo,K,,23.0,,Active,1.0,12824,,,bedb8120-23b3-11f0-8ddb-c1d5ce2f7de3
-Julian Hill,TE,NE,25.0,,Inactive,3.0,11371,,,516da3c0-f016-11ed-a518-572ef5cb73b6
-Tay Martin,WR,,27.0,,Active,3.0,8250,,,8d74f600-ca80-11ec-97ae-e1573849d1a6
+Julian Hill,TE,NE,26.0,,Inactive,3.0,11371,,,516da3c0-f016-11ed-a518-572ef5cb73b6
+Tay Martin,WR,DET,28.0,,Active,4.0,8250,,,8d74f600-ca80-11ec-97ae-e1573849d1a6
 Trenton Irwin,WR,,30.0,,Active,7.0,6598,3931391.0,32438.0,ee79ad2e-353a-40cd-9344-c9d84f7e4b63
 Corey Crooms,WR,,23.0,,Active,1.0,12090,,,b8365a60-072c-11ef-ae3d-d548a254986e
 Will Pauling,WR,SF,23.0,,Active,0.0,13662,,,4a7c0630-41c9-11f1-a9d2-fd1f2e812bdb
@@ -1634,7 +1634,7 @@ De'Chavon Hayes,RB,,29.0,,Active,5.0,4777,,30486.0,d3df41e5-f6ef-49d2-a0a7-59688
 Hunter Bryant,TE,,23.0,,Active,2.0,6846,4243318.0,33186.0,826c6c22-2a3a-48bb-befb-8e552fb391ea
 Jack Bech,WR,LV,23.0,,Active,1.0,12483,,,01079767-a3a3-437d-b935-ea0ecb1fe68b
 Juwann Winfree,WR,,28.0,,Inactive,6.0,6223,3128317.0,32019.0,fa7bdbe5-23b9-4cba-9015-98c5e2d09c9e
-Cortez Braham,WR,BAL,,,Active,0.0,13849,,,36f50a90-431c-11f1-a80e-478794cecc21
+Cortez Braham,WR,BAL,26.0,,Active,0.0,13849,,,36f50a90-431c-11f1-a80e-478794cecc21
 Oscar Cardenas,TE,,24.0,,Active,1.0,12800,,,aba5a5c0-2324-11f0-8afd-7f2126b7b4ba
 Jaden Shirden,RB,,22.0,,Active,1.0,12013,,,585cc280-0710-11ef-ace3-f3357ba6d7e9
 Ryan Finley,QB,,27.0,,Inactive,3.0,5885,3042876.0,31936.0,d935df27-5be4-4aab-b117-8ec8e81c2196
@@ -1652,7 +1652,7 @@ John Diarse,WR,,27.0,,Active,4.0,5425,3042741.0,31376.0,c3810dbe-73d5-4c83-ad0d-
 Chase Roberts,WR,LV,25.0,,Active,0.0,13410,,,0c02af70-429c-11f1-bcde-396d2feaac5b
 Tyler McCloskey,RB,,27.0,,Active,5.0,4463,3040036.0,30562.0,fb794fe5-67d3-40c4-a7a9-de03baf2301b
 Trey Knox,TE,,23.0,,Active,1.0,11601,,,0d422cb0-0583-11ef-827f-6f1a3ad56375
-Terrill Davis,WR,MIN,,,Active,0.0,14040,,,d36a1650-4feb-11f1-90f3-37efc128ac36
+Terrill Davis,WR,MIN,22.0,,Active,0.0,14040,,,d36a1650-4feb-11f1-90f3-37efc128ac36
 ,DEF,GB,,,,,GB,,,
 Jalen White,RB,,23.0,,Active,1.0,12953,,,99979d00-2510-11f0-afbc-3796713e15e7
 Javian Hawkins,RB,,22.0,,Active,1.0,7563,,,5c4763e0-656f-4d97-b72e-7939c2610558
@@ -1710,7 +1710,7 @@ Jake Hausmann,TE,,25.0,,Active,1.0,8061,,,165b19ca-3ced-4c87-9f87-e6f71f1a4dd9
 Cameron Latu,TE,PHI,26.0,,Active,3.0,10210,,,3763a2ec-ee98-4cf4-9aa7-ee626057c56f
 Jameis Winston,QB,NYG,32.0,,Active,11.0,2306,2969939.0,28389.0,fb3b36fc-b985-4807-8199-d038d7e62a93
 Zach Terrell,QB,BAL,24.0,,Active,1.0,4924,,30509.0,
-Marshall Lang,TE,,24.0,,Active,1.0,13032,,,0261e2b0-2556-11f0-a1f5-874a624d4069
+Marshall Lang,TE,MIN,24.0,,Active,1.0,13032,,,0261e2b0-2556-11f0-a1f5-874a624d4069
 Keenan Allen,WR,,33.0,,Active,13.0,1479,15818.0,26699.0,5f424505-f29f-433c-b3f2-1a143a04a010
 Matt Fleming,WR,,25.0,,Active,4.0,5699,4327535.0,31711.0,56e70346-85a3-4a57-9873-da93a2690ce4
 Nick Vannett,TE,,33.0,,Active,10.0,3258,2576399.0,29328.0,c731aa8a-778b-4ccd-a19f-517eb66f47b7
@@ -1738,7 +1738,7 @@ Sony Michel,RB,,28.0,,Active,5.0,4962,3128721.0,31001.0,1376da0d-0448-4a37-bd99-
 Josh Cameron,WR,JAX,23.0,,Active,0.0,13394,,,29f6ab49-33a9-4fc8-838f-fc41e248829d
 Jordan Scarlett,RB,MIA,26.0,,Inactive,3.0,6167,3915115.0,31986.0,38abfa4e-ad62-4392-89a0-ac2a012efd87
 Jared Wiley,TE,KC,25.0,,Active,2.0,11595,,,a952a370-a43f-45ec-8371-0665f0b9551e
-Trevor Etienne,RB,CAR,21.0,,Active,1.0,12531,,,39e2d13c-0fb7-465f-ad8b-0b4bb73e1124
+Trevor Etienne,RB,CAR,22.0,,Active,1.0,12531,,,39e2d13c-0fb7-465f-ad8b-0b4bb73e1124
 Robert Wheelwright,WR,,,,Active,5.0,4790,3045283.0,30742.0,e3eb6db0-646b-4af4-b4ef-d98d9882b726
 Trenton Cannon,RB,,28.0,,Inactive,5.0,5123,4261020.0,31174.0,b89c853a-6bd8-42ec-ae52-a11831923631
 Nathan Peterman,QB,,32.0,,Active,9.0,4183,2972236.0,30284.0,4e4ba1f9-35c6-4e41-85f5-d8f12d32f459
@@ -1755,7 +1755,7 @@ Darreus Rogers,WR,,28.0,,Active,5.0,4676,2971617.0,30761.0,ed94dcd6-b8c9-4de4-9e
 Kenji Bahar,QB,,,,Active,1.0,8057,,,1c186672-d91b-4881-85cc-a8c1980cbdd9
 Deon Cain,WR,,29.0,,Active,7.0,5101,3728254.0,31155.0,3da67e95-bd15-409f-b5de-b2feb54efda7
 Rory Starkey,WR,,,,Active,1.0,12431,,,279f2360-460b-11ef-8686-d1ed90a1cf4c
-Ty Pezza,TE,BAL,,,Active,0.0,13705,,,3bb4c580-426c-11f1-a7fd-f3a03eab10e8
+Ty Pezza,TE,BAL,23.0,,Active,0.0,13705,,,3bb4c580-426c-11f1-a7fd-f3a03eab10e8
 DJ Thomas-Jones,TE,,23.0,,Active,1.0,12973,,,3bed5de0-2518-11f0-9751-4fbb65138ae1
 Demetrius Harris,TE,,30.0,,Active,9.0,1619,16318.0,27174.0,8506c15c-15cc-4d2c-aebf-270c605fe0ec
 Trey Smack,K,GB,23.0,,Active,0.0,13545,,,fc5890c6-b22d-4b5b-8ca5-2722b077bc8b
@@ -1787,7 +1787,7 @@ Brittain Brown,RB,CHI,28.0,,Active,4.0,8423,,,387c8819-5892-4528-ac33-0ec72b24cc
 Travis Dye,RB,,24.0,,Active,1.0,10865,,,46cb9c30-ebaa-11ed-b05b-f11b75745f7c
 Stevo Klotz,TE,,,,Active,1.0,12815,,,ca2eed00-23ae-11f0-a139-771c091b0ec3
 Scott Orndoff,TE,,28.0,,Active,5.0,4309,3045163.0,30388.0,355bf682-53b6-46c1-8052-eaf75c805278
-Charlie Smyth,K,NO,24.0,,Active,2.0,11653,,,f5c4a0e0-eecb-11ee-aa6f-2b08db5c8f4c
+Charlie Smyth,K,NO,25.0,,Active,2.0,11653,,,f5c4a0e0-eecb-11ee-aa6f-2b08db5c8f4c
 Brock Purdy,QB,SF,26.0,,Active,4.0,8183,,,d5aef708-ad61-4ab8-a637-62ff96e92040
 Jonathan Brady,WR,LV,22.0,,Active,0.0,13920,,,c603a2d0-47f6-11f1-8022-3d44fc502d61
 Aidan Robbins,RB,,24.0,,Active,1.0,12080,,,46dfcb60-0729-11ef-bb2e-2bf101c4709d
@@ -1923,7 +1923,7 @@ Jordan Akins,TE,,33.0,,Active,8.0,5032,3128452.0,31068.0,0cb5a32a-a340-4671-ba2a
 Zay Jones,WR,,30.0,,Active,9.0,4080,3059722.0,30150.0,a28f7368-0306-4d20-855f-285a1a09c09c
 Samaje Perine,RB,CIN,30.0,,Active,9.0,4147,3116389.0,30227.0,e601812f-ce24-4e99-bee0-e33c1e9014e4
 Redford Jones,K,,27.0,,Active,3.0,5837,3060823.0,31812.0,b893faf2-b13f-4177-b62e-1d2e1e7ba087
-Malick Meiga,WR,CAR,,,Active,0.0,14058,,,dab522e0-637a-11f1-b3ac-1141f054753e
+Malick Meiga,WR,CAR,25.0,,Active,0.0,14058,,,dab522e0-637a-11f1-b3ac-1141f054753e
 Mark Walton,RB,,24.0,,Active,4.0,4997,3917846.0,31082.0,b120cb2d-04b8-4dd3-809e-92c9b4c29b0c
 Mekale McKay,WR,,28.0,,Active,6.0,3418,2980068.0,29605.0,dfbdb450-3534-4bc1-8e7f-17df7a2dccf4
 Bart Houston,QB,,29.0,,Active,5.0,4728,2977804.0,30872.0,6b97e391-d564-48b4-beeb-e97917200157
@@ -1981,7 +1981,7 @@ Justin Lockhart,WR,,,,Active,0.0,13152,,,c9694a50-2854-11f0-840c-7f11429483a5
 Tru Edwards,WR,LAR,25.0,,Active,1.0,13003,,,4b0a6500-254c-11f0-85e6-ad6d4b9a9b15
 Ben Yurosek,TE,MIN,24.0,,Active,1.0,13121,,,1f3d48b0-2629-11f0-9dca-47cf7c5385b0
 Gabe Davis,WR,,26.0,,Active,6.0,6943,4243537.0,32798.0,dc397432-7157-4ce4-976d-b9662cc6f551
-Wil Lutz,K,DEN,31.0,,Active,10.0,3678,2985659.0,29754.0,c4cf84d0-6022-4ac1-a9ba-85587921c53f
+Wil Lutz,K,DEN,32.0,,Active,10.0,3678,2985659.0,29754.0,c4cf84d0-6022-4ac1-a9ba-85587921c53f
 Allen Hurns,WR,MIA,30.0,,Active,8.0,1984,17177.0,27874.0,10952a8e-9da1-447b-a016-c699db00c5f0
 Jaden Bradley,WR,WAS,,,Active,0.0,13760,,,98050c60-4284-11f1-be19-512d56d5c208
 Jaaron Hayek,WR,,23.0,,Active,1.0,12170,,,eac8f2b0-07ce-11ef-a36b-03c64b53609d
@@ -1996,7 +1996,7 @@ Tejhaun Palmer,WR,ARI,26.0,,Active,2.0,11802,,,99345c7e-a544-477c-8b57-a4a2b8bcc
 Bo Nix,QB,DEN,26.0,,Active,2.0,11563,,,f056c8ed-6ee5-492c-af11-3f7e3d97195c
 Stefon Diggs,WR,,32.0,,Active,11.0,2449,2976212.0,28534.0,a1c40664-b265-4083-aad2-54b4c734f2c5
 Hunter Thedford,TE,,26.0,,Active,3.0,7522,,,a35bac80-e810-4e67-9ae2-348e9b0a79e4
-Kenneth Gainwell,RB,TB,27.0,,Active,5.0,7567,,,e2a5882a-dcc1-4800-889f-3b957b21834f
+Kenny Gainwell,RB,TB,27.0,,Active,5.0,7567,,,e2a5882a-dcc1-4800-889f-3b957b21834f
 DeAndre Thompkins,WR,GB,26.0,,Inactive,3.0,6540,3116182.0,32409.0,8b66001c-c41f-406a-9583-d8b6848ea6d2
 Travis Etienne,RB,NO,27.0,,Active,5.0,7543,,,970693f0-0af4-4627-ac0c-bf519f7433ee
 Shawn Bowman,TE,,25.0,,Active,1.0,12217,,,63fb1c30-07de-11ef-ab84-b199233567e8
@@ -2013,7 +2013,7 @@ Nick Stevens,QB,,24.0,,Inactive,1.0,5745,3042933.0,31741.0,
 Sammy Watkins,WR,,29.0,,Active,9.0,1817,16725.0,27532.0,7d80b51f-1462-442e-aa7f-8c320a62deed
 Kobe McCrary,RB,,27.0,,Active,4.0,5801,4034782.0,31798.0,88c294db-5c85-48dd-9b0a-7c31a9eae32f
 Alex Ellis,TE,,29.0,,Active,6.0,3824,2577731.0,29944.0,81fb7fa0-7ad9-4ef4-bc33-9df9574714e5
-Ben Skowronek,WR,PIT,28.0,,Active,5.0,7757,,,5521ba64-e615-4d50-b9bf-490498571ac7
+Ben Skowronek,WR,PIT,29.0,,Active,5.0,7757,,,5521ba64-e615-4d50-b9bf-490498571ac7
 Stevie Scott,RB,,23.0,,Active,2.0,7904,,,01968dcc-836d-4a44-8953-cfff01e9fbee
 Colton Theaker,K,,,,Active,1.0,12404,,,86d6e7d0-1133-11ef-a55f-bf2694d9fd66
 Stone Smartt,TE,PHI,27.0,,Active,4.0,8583,,,6ee105f0-ca2e-11ec-be96-e90abdfa0fef
@@ -2091,7 +2091,7 @@ Darius Cooper,WR,PHI,24.0,,Active,1.0,13150,,,2aa4ddb0-2775-11f0-9d31-3b5afe6c6d
 Ryan Santoso,K,,27.0,,Active,4.0,5692,3040204.0,31643.0,d58166e2-24ee-4dd2-ae22-36b05634eb6d
 Carlos Washington,RB,MIA,27.0,,Active,3.0,11186,,,43670880-e8f9-11ed-a4c3-31452e24a6c7
 Jonathon Brooks,RB,CAR,22.0,,Active,2.0,11583,,,5c842941-844b-4f6a-bce4-26b377146674
-Gabriel Plascencia,K,CHI,,,Active,0.0,13710,,,510d89b0-4273-11f1-b1d6-2102b7316b30
+Gabriel Plascencia,K,,,,Active,0.0,13710,,,510d89b0-4273-11f1-b1d6-2102b7316b30
 Devin Phelps,WR,,25.0,,Active,2.0,7396,,33084.0,af894be2-d4d3-4a13-b2f4-2982ef815092
 Kyle Allen,QB,BUF,30.0,,Active,8.0,5127,3115293.0,31301.0,d2023f5b-f73b-43ad-a816-f10dadfdfaed
 Kris Leach,TE,,,,Active,1.0,11447,,,fa598ff0-f320-11ed-b0c1-db5ed3f06fcb
@@ -2106,7 +2106,7 @@ Justin Tukes,TE,,33.0,,Active,10.0,2930,,28659.0,8986dbf6-500f-4bd6-bab5-5b00d4f
 Austin Appleby,QB,,28.0,,Active,5.0,4931,,30779.0,bc893c74-874d-4d7e-b105-f52e454f6a40
 Kevin Shaa,WR,,25.0,,Active,1.0,8697,,,7d9b6940-ce08-11ec-9598-03840dd5f387
 Kejon Owens,RB,MIN,,,Active,0.0,13291,,,5dc83ce0-41a1-11f1-b392-d505979a920f
-Dane Key,WR,DEN,22.0,,Active,0.0,13336,,,af4296e0-431f-11f1-aabd-777a3653f8ae
+Dane Key,WR,DEN,23.0,,Active,0.0,13336,,,af4296e0-431f-11f1-aabd-777a3653f8ae
 Caden Prieskorn,TE,,26.0,,Active,1.0,12933,,,2c0dcd70-250d-11f0-9874-071e11b76fd9
 David Moore,WR,CAR,31.0,,Active,9.0,4274,4212909.0,30339.0,aecc1809-4628-4c3a-8b2b-c8f2858d2492
 Ja'seem Reed,WR,CAR,23.0,,Active,1.0,13179,,,c2fa3bf0-2cd9-11f0-a86e-fde592bc08fd
@@ -2250,7 +2250,7 @@ Daijun Edwards,RB,,23.0,,Active,1.0,11857,,,31de9d70-04fb-11ef-a4e4-b500243a26c2
 Emmanuel Sanders,WR,,35.0,,Active,12.0,538,13295.0,24057.0,fd4e8681-f2f4-47c7-b954-a72be9b1ca00
 Isaiah McKenzie,WR,,29.0,,Active,8.0,4197,3128724.0,30285.0,6130be96-edf3-4361-b666-860c4ec46e7d
 Damien Harris,RB,,27.0,,Active,5.0,5890,3925347.0,31919.0,59482736-ce42-4058-b68e-0f9f66eac2d9
-Tarik Black,WR,,27.0,,Active,4.0,8005,,,89de9ce0-3b8e-424a-b9b5-d747692ea5f7
+Tarik Black,WR,DET,28.0,,Active,5.0,8005,,,89de9ce0-3b8e-424a-b9b5-d747692ea5f7
 Kyren Williams,RB,LAR,25.0,,Active,4.0,8150,,,19d44771-8f1d-4127-9b7d-230da137f15d
 ,DEF,PHI,,,,,PHI,,,
 Malcolm Epps,TE,,25.0,,Active,1.0,12187,,,8dbc3e00-07d4-11ef-bfab-678363270711
@@ -2270,12 +2270,12 @@ Qadree Ollison,RB,,27.0,,Active,4.0,6002,3123944.0,31984.0,c44534f8-a567-40e7-b5
 Danny Davis,WR,,24.0,,Active,1.0,8602,,,119b2190-ca70-11ec-a83a-8732d3d5a7e3
 Javon Baker,WR,,23.0,,Active,2.0,11645,,,901992cc-f4b7-45e8-800e-c2dce6ae5199
 Damarr Aultman,WR,,33.0,,Active,10.0,2672,2507242.0,29010.0,8a691f55-8a42-4403-829f-350341ddd3e5
-Theo Wease,WR,MIA,24.0,,Active,1.0,12860,,,277f6ff0-2442-11f0-ac20-e1591f73b631
+Theo Wease,WR,MIA,25.0,,Active,1.0,12860,,,277f6ff0-2442-11f0-ac20-e1591f73b631
 Larry Fitzgerald,WR,,38.0,,Inactive,18.0,223,5528.0,6762.0,b6a61b38-5cfa-46eb-b1c5-b0255d7ebaf5
 Philip Rivers,QB,,44.0,,Active,22.0,331,5529.0,6763.0,e47706c7-e14d-41fb-b13b-83a835a1f3bc
 SaRodorick Thompson,RB,,24.0,,Active,1.0,11104,,,bb6fb930-e773-11ed-b584-ffd9bed092a6
 Jordan Chunn,RB,,27.0,,Inactive,4.0,5168,3053732.0,31280.0,ddd1fbb3-4db8-4d77-b522-9efd938ec8c5
-Cam Miller,QB,MIA,24.0,,Active,1.0,12688,,,065b4e2a-5071-4b33-aef8-0b3eb99dce35
+Cam Miller,QB,MIA,25.0,,Active,1.0,12688,,,065b4e2a-5071-4b33-aef8-0b3eb99dce35
 Garrett Scantling,WR,ATL,,,Active,1.0,4922,,30110.0,
 Dillon Gabriel,QB,CLE,25.0,,Active,1.0,12486,,,299d4fe8-188c-43d1-95d3-8a8f103da5c5
 Bryant Mitchell,WR,,29.0,,Inactive,3.0,5831,3050661.0,31816.0,efc94096-abe3-46eb-803a-ecab1d56e28f
@@ -2307,7 +2307,7 @@ Raleigh Webb,WR,,26.0,,Active,2.0,8732,,,7cb3d1f0-d085-11ec-8cbe-f58fdd592020
 Nick Truesdell,TE,,31.0,,Active,6.0,3921,2309428.0,30048.0,2ff2d430-6c3e-4f1f-8883-3c019052166f
 Kellen Mond,QB,,24.0,,Active,3.0,7581,,,631e6ad5-0a97-4b3a-a45e-6179b0ec6c4e
 Jarrett Stidham,QB,DEN,29.0,,Active,7.0,6136,3892775.0,31965.0,582fe465-135a-4901-beef-60aebce99067
-Mason Shipley,K,NO,,,Active,0.0,13644,,,eb7f7920-41b2-11f1-b59c-ff39b935b688
+Mason Shipley,K,,,,Active,0.0,13644,,,eb7f7920-41b2-11f1-b59c-ff39b935b688
 Cameron Posey,WR,,28.0,,Active,5.0,4749,2977776.0,30900.0,507b7b96-eb51-445d-81c4-b59696f3caa0
 Michael Colubiale,TE,,26.0,,Inactive,3.0,6590,3065510.0,32564.0,ef0395e2-8019-4fdc-afdd-714e62cef5fb
 Jalen McCleskey,WR,,24.0,,Active,2.0,7173,3919609.0,33063.0,b79c04b6-d49f-49ca-a26b-d93769c8a908
@@ -2332,7 +2332,7 @@ Robert Martin,RB,,26.0,,Active,4.0,5700,3127374.0,31704.0,845d6938-ca66-42a3-891
 Ben Ellefson,TE,,26.0,,Active,3.0,7288,3930900.0,33124.0,ca393469-d587-4bf7-905d-838e960de851
 Noah Fant,TE,NO,28.0,,Active,7.0,5857,4036131.0,31852.0,cdc98acc-9eb6-4b44-81bb-61d7b8a3b55f
 Ben Sauls,K,NYG,24.0,,Active,1.0,13066,,,f8a149d0-2570-11f0-944c-8734ea1b6f77
-Luke Lachey,TE,GB,24.0,,Active,1.0,12725,,,eeb9ef87-859a-407b-a17a-c671dd6a863a
+Luke Lachey,TE,GB,25.0,,Active,1.0,12725,,,eeb9ef87-859a-407b-a17a-c671dd6a863a
 Quinn Ewers,QB,MIA,23.0,,Active,1.0,12500,,,d89f0384-21a6-44e4-8aa6-324cb2103bf6
 Jordan Ta'amu,QB,,25.0,,Active,4.0,6730,4242418.0,32642.0,c14f8faa-62db-4fb2-a7b1-d9b5998ce604
 Rashad Medaris,WR,,25.0,,Active,2.0,7395,,33083.0,dc3922d9-bb1d-4e80-be35-7efcf9ef79a4
@@ -2385,7 +2385,7 @@ Xavier Ubosi,WR,,27.0,,Inactive,3.0,6322,4239830.0,32388.0,93f30885-c363-491d-aa
 Devon Allen,WR,,29.0,,Active,2.0,8411,,,e6f45e70-b764-11ec-a4d3-55a371b2b89a
 Mark Weisman,RB,,33.0,,Active,10.0,2943,,28981.0,3321df20-edb0-4628-9333-f1240f160bb1
 Matt Bushman,TE,,28.0,,Active,3.0,7992,,,380b6bd1-1ef3-4cc2-bf3f-c992ba1151e7
-Michael Woods,WR,DEN,26.0,,Active,4.0,8202,,,70c462de-b1b5-4c07-8ba2-eb33f3075893
+Michael Woods,WR,,26.0,,Inactive,4.0,8202,,,70c462de-b1b5-4c07-8ba2-eb33f3075893
 Marvin Jones,WR,,33.0,,Active,11.0,1067,15072.0,25876.0,1a2fbc23-e6db-4d2f-a152-2c774341b7c4
 Chris Conley,WR,,32.0,,Active,10.0,2381,2578533.0,28464.0,bd01d907-cd57-48cb-9136-5692a4764a20
 Ja'Tavion Sanders,TE,CAR,23.0,,Active,2.0,11600,,,ffd2ff3f-4b56-4232-be8e-bf163c29f406
@@ -2433,7 +2433,7 @@ Jordan Johnson,RB,,27.0,,Active,5.0,4537,2972311.0,30595.0,759acb8f-6ff5-4692-8f
 Chad Beebe,WR,,28.0,,Active,4.0,5570,3047968.0,31508.0,50eb4454-71bf-4012-a216-2fc9770ffd86
 Winston Wright,WR,,,,Active,2.0,13238,,,1d7ae9d0-6975-11f0-84e2-a3646029be6f
 Luke Drzewiecki,K,,,,Active,0.0,13731,,,3e10b5e0-4277-11f1-9f7e-d53868f21755
-Riley Nowakowski,TE,PIT,23.0,,Active,0.0,13433,,,d85be8f9-009d-4de5-838d-1cb07e4105cc
+Riley Nowakowski,TE,PIT,24.0,,Active,0.0,13433,,,d85be8f9-009d-4de5-838d-1cb07e4105cc
 Drake Dabney,TE,GB,24.0,,Active,1.0,13210,,,7afbcb90-2f70-11f0-8052-89a0c8fe065f
 Matt Moore,QB,,37.0,,Inactive,15.0,233,11128.0,8544.0,76d7615e-8eb5-4761-b6a6-1e895d01baf3
 Jon Hilliman,RB,,26.0,,Active,3.0,6446,3122799.0,32238.0,6d882a8b-c34f-4de1-89d2-8ee71628e039
@@ -2470,8 +2470,8 @@ Chris Lacy,WR,,27.0,,Active,5.0,5661,3122430.0,31651.0,b2c4ef6b-4caf-4f4e-9cdd-3
 Hale Hentges,TE,,25.0,,Injured Reserve,3.0,6439,3925348.0,32295.0,fe7dea44-fd21-45e4-a8f0-1436e1108da1
 Erik Ezukanma,WR,PHI,26.0,,Active,4.0,8114,,,7934c2db-a5f1-404c-a313-74a8aacd5946
 Geronimo Allison,WR,,28.0,,Active,6.0,3503,3115913.0,29719.0,cadecca8-a102-43a5-9a0c-f7cef0b9a579
-Chris Olave,WR,NO,25.0,,Active,4.0,8144,,,2375d572-a36c-4365-bb3f-87e156526e2f
-Mike Washington,RB,LV,22.0,,Active,0.0,13305,,,b783f45a-16ea-4145-9f3a-fafaa1bb0058
+Chris Olave,WR,NO,26.0,,Active,4.0,8144,,,2375d572-a36c-4365-bb3f-87e156526e2f
+Mike Washington,RB,LV,23.0,,Active,0.0,13305,,,b783f45a-16ea-4145-9f3a-fafaa1bb0058
 Brenden Rice,WR,GB,24.0,,Active,2.0,11621,,,5c33558d-02fb-4c99-88d3-37083472c19f
 Chris Myarick,TE,,30.0,,Active,7.0,6529,3138744.0,32442.0,002adaa8-5dc2-4b4b-95bc-53a38dce3849
 Josh Allen,QB,BUF,30.0,,Active,8.0,4984,3918298.0,30977.0,3069db07-aa43-4503-ab11-2ae5c0002721
@@ -2616,9 +2616,9 @@ Tristan Vizcaino,K,,27.0,,Active,4.0,5823,3127313.0,31808.0,cefd0600-93f2-4e0f-9
 Alstevis Squirewell,RB,,32.0,,Active,9.0,3811,3137094.0,29931.0,7dff5c9b-3376-4877-8ab8-7e46b8ca50ac
 Derrick Dillon,WR,,26.0,,Active,2.0,7100,3843469.0,33038.0,25ed33f9-7abb-421b-91c0-46fb7f581a76
 Kareem Hunt,RB,,30.0,,Active,9.0,4098,3059915.0,30199.0,0ef0d0ca-2d2d-455b-ab63-a20c01303e37
-Skyler Bell,WR,BUF,23.0,,Active,0.0,13402,,,1f9e2e7e-d692-4494-adfb-86437a976450
+Skyler Bell,WR,BUF,24.0,,Active,0.0,13402,,,1f9e2e7e-d692-4494-adfb-86437a976450
 Charlie Kolar,TE,LAC,27.0,,Active,4.0,8127,,,3c048ac9-2c0f-4bf0-9ddc-ce99c9387ac8
-Lawrence Keys,WR,,25.0,,Active,1.0,12001,,,4f4d6620-0708-11ef-a700-ad91eb958fd8
+Lawrence Keys,WR,DET,26.0,,Active,2.0,12001,,,4f4d6620-0708-11ef-a700-ad91eb958fd8
 Joshua Simon,TE,ATL,25.0,,Active,1.0,12883,,,45892890-246c-11f0-9194-77c874aa65db
 James Turner,K,,24.0,,Active,1.0,12156,,,3907d840-07c2-11ef-8778-9f03cac5fc84
 John Lunsford,K,,31.0,,Active,9.0,3574,2968266.0,29769.0,d211d5e4-2e63-493a-b5b7-cd26235934f7
@@ -2648,13 +2648,13 @@ Kevin Austin,WR,NO,26.0,,Active,4.0,8200,,,3173c5c0-cbb6-11ec-88c8-199e5defa0d2
 Taiwan Jones,RB,,35.0,,Active,12.0,886,14167.0,24912.0,adadafa1-dc37-486d-8538-7db1e1b5f71e
 Najee Harris,RB,,27.0,,Active,5.0,7528,,,48ec58c3-ec26-4434-b005-8d34035e6667
 ,DEF,CIN,,,,,CIN,,,
-Dominic Richardson,RB,DAL,,,Active,0.0,13725,,,1da38340-4278-11f1-8ff9-7beda285a5f2
+Dominic Richardson,RB,DAL,25.0,,Active,0.0,13725,,,1da38340-4278-11f1-8ff9-7beda285a5f2
 Lance McCutcheon,WR,TEN,27.0,,Active,4.0,8745,,,fb2a4c20-d207-11ec-ab20-b37737d70cc4
 Tyler Loop,K,BAL,24.0,,Active,1.0,12711,,,a6b8b5d3-a2f2-4532-ade3-dc122b6b240c
 Jeff Cotton,WR,,26.0,,Inactive,3.0,7319,4282647.0,32978.0,2b0e3931-07d2-4b03-9b28-489258465ac2
 Raheem Blackshear,RB,,27.0,,Active,4.0,8255,,,f64a23e0-d457-11ec-9026-65785f74dc2a
 Drew Plitt,QB,,26.0,,Active,2.0,8915,,,8b9015a0-0db9-11ed-b0b0-c73f592df813
-Michael Mayer,TE,LV,24.0,,Active,3.0,9482,,,31f4645a-7ccb-4633-8580-2fca361beb4f
+Michael Mayer,TE,LV,25.0,,Active,3.0,9482,,,31f4645a-7ccb-4633-8580-2fca361beb4f
 Tony Jones,WR,,32.0,,Active,10.0,2639,2511102.0,28860.0,ee5c7c6a-bf9b-46c6-90fe-61ea7f2b7fe2
 Slade Bolden,WR,,24.0,,Active,2.0,8191,,,77745390-c97d-11ec-a1a0-57a82b503f37
 Ben Roethlisberger,QB,PIT,39.0,,Active,18.0,138,5536.0,6770.0,ea357add-1a41-4a8b-8f34-bbfade7f4d98
@@ -2673,7 +2673,7 @@ Nick Ralston,RB,,25.0,,Active,1.0,7941,,,c4e6f302-b6a0-431d-a1f0-25efa2e7a8c7
 Easop Winston,WR,,28.0,,Active,5.0,7337,4245174.0,33299.0,495dfd2f-adc6-4ea0-a830-0513db2c1477
 Trayvon Rudolph,WR,MIN,24.0,,Active,0.0,14038,,,a36a6800-4fc4-11f1-b32b-dbd28c1a355e
 Anthony Firkser,TE,WAS,31.0,,Active,9.0,4435,3049698.0,30571.0,b0719e3d-199b-46e5-a2b4-1091f6fd5c0d
-Max Klare,TE,LAR,22.0,,Active,0.0,13278,,,680fc10a-4de2-4571-b228-2c2fd79d437f
+Max Klare,TE,LAR,23.0,,Active,0.0,13278,,,680fc10a-4de2-4571-b228-2c2fd79d437f
 Luke Grimm,WR,LAC,24.0,,Active,1.0,12803,,,d6933d60-238d-11f0-b20f-f13e07eacbeb
 Rakeem Boyd,RB,,,,Inactive,1.0,7532,,,3d959d65-5c4c-4de4-bc6a-1bbc4f0c0bcf
 Sam Hartman,QB,WAS,26.0,,Active,2.0,11558,,,7e65f950-06ee-11ef-82bc-b549600b8321
@@ -2805,7 +2805,7 @@ Devin Lucien,WR,,28.0,,Active,6.0,3380,2577190.0,29459.0,41511ce3-77f8-48c4-8cf9
 James McCourt,K,,25.0,,Active,1.0,8577,,,5b2f5350-ca2d-11ec-85ef-0dc0f14c8af3
 Johnny Johnson,WR,,26.0,,Inactive,3.0,8185,,,ef986840-c967-11ec-89b7-476565ea032f
 Justin Sumpter,WR,,25.0,,Active,3.0,6384,3911927.0,32179.0,7a5ddf17-b814-4f2c-82de-b73b52ef53be
-Joel Wilson,TE,TEN,25.0,,Active,3.0,11113,,,ddf76000-e775-11ed-94a4-29de8209e516
+Joel Wilson,TE,TEN,26.0,,Active,3.0,11113,,,ddf76000-e775-11ed-94a4-29de8209e516
 Drake Stoops,WR,,26.0,,Active,1.0,12133,,,5b79dec0-07c5-11ef-94fe-2da30a2c16b4
 Greg Dortch,WR,DET,28.0,,Active,7.0,5970,4037235.0,32523.0,4484c7d1-025a-4f26-8e9b-48503afb0c68
 Terrell Sinkfield,WR,,31.0,,Active,9.0,1652,16414.0,27254.0,db2af70c-d9ae-431c-875a-46a5fef39021
@@ -2824,7 +2824,7 @@ Eric Frohnapfel,TE,,32.0,,Active,10.0,2932,,,77baabed-b158-4c63-a42b-e1cc4a32cc5
 Kevin White,WR,,30.0,,Active,8.0,2312,3042435.0,28395.0,5b496c58-83ef-4763-b1e0-5f052af46b3e
 ,DEF,DEN,,,,,DEN,,,
 KJ Hamler,WR,,26.0,,Active,5.0,6805,4240380.0,32716.0,89338a12-65a8-4670-ac99-97281732ff79
-Nate Adkins,TE,DEN,26.0,,Active,3.0,11433,,,bcd0ae60-f31c-11ed-819c-fd03d0cc2698
+Nate Adkins,TE,DEN,27.0,,Active,3.0,11433,,,bcd0ae60-f31c-11ed-819c-fd03d0cc2698
 Josh Pederson,TE,,26.0,,Inactive,3.0,7733,,,bb7a78a0-def1-4e82-b04c-15236810229a
 Jordon Vaughn,RB,,,,Active,0.0,13930,,,71329c70-4a99-11f1-be4e-833c73aebd99
 Tank Dell,WR,HOU,26.0,,Active,3.0,9502,,,25e7b423-f716-4d1a-9623-cee3e7d822ab
@@ -2877,7 +2877,7 @@ Brandon Peters,QB,,25.0,,Active,1.0,8579,,,92d340a0-ca2d-11ec-85ef-0dc0f14c8af3
 Darren Waller,TE,,33.0,,Active,11.0,2505,2576925.0,28592.0,14c97c9f-26e8-4944-9299-f90de6aeada3
 Blake Bell,TE,,32.0,,Active,9.0,2422,2514206.0,28505.0,0cc4e449-185a-4b08-9f07-c907ad0c3e05
 Chris Collier,RB,LV,26.0,,Active,2.0,11963,,,7fcfe130-06fc-11ef-9592-67ed152bdb91
-Desmond Reid,RB,BUF,21.0,,Inactive,0.0,13327,,,e4a112f0-431d-11f1-8606-3f219ba235c8
+Desmond Reid,RB,,21.0,,Inactive,0.0,13327,,,e4a112f0-431d-11f1-8606-3f219ba235c8
 DeAndre Hopkins,WR,,33.0,,Active,13.0,1426,15795.0,26650.0,5c48ade7-4b9a-4757-9643-87a6e3839e2b
 Tommylee Lewis,WR,,29.0,,Active,6.0,3614,2574918.0,29854.0,b103b096-6be9-4f87-9ae4-5d217f560685
 Jalen Jackson,RB,,24.0,,Active,1.0,12218,,,651dfbe0-07df-11ef-a4b4-15e2dda70670
@@ -2921,7 +2921,7 @@ Patrick Laird,RB,,28.0,,Active,5.0,6311,3127211.0,32439.0,5c424ecf-07c8-471e-a40
 Clay Burton,TE,,32.0,,Active,10.0,2947,,,8aed40d9-8e0c-4673-a020-9c4c22fb4851
 Dwayne Washington,RB,,30.0,,Active,8.0,3391,3002265.0,29470.0,30ff46bc-a039-4af7-9050-81af98901a3e
 Alex Tanney,QB,,34.0,,Injured Reserve,10.0,1262,15693.0,26547.0,1c6daf8e-d6dc-4d88-a5fa-c3ebcd93a6e5
-Ted Hurst,WR,TB,21.0,,Active,0.0,13317,,,8e9964c2-b74c-4eb1-967b-2f82cc8f9767
+Ted Hurst,WR,TB,22.0,,Active,0.0,13317,,,8e9964c2-b74c-4eb1-967b-2f82cc8f9767
 Ryan McDaniel,WR,,,,Active,1.0,8891,,,5be9a450-d53e-11ec-b7df-c1229dbec522
 Noah Togiai,TE,,26.0,,Active,4.0,7404,3930298.0,32970.0,86707c8e-fec4-4ebe-9111-4d3ad238ad43
 Neal Johnson,TE,,24.0,,Active,1.0,12135,,,73b4df80-07c5-11ef-aea8-e38ca6138631
@@ -2962,7 +2962,7 @@ Jesse Matthews,WR,,26.0,,Active,2.0,11452,,,bb2247d0-f32c-11ed-b83a-cd9705e84265
 Joe Fagnano,QB,BAL,25.0,,Active,0.0,13350,,,a94983d0-426a-11f1-bdd9-b59171a63abe
 Deuce Vaughn,RB,,24.0,,Active,3.0,9505,,,e444229e-c262-40a7-bb89-61d4b774da55
 Blaine Gabbert,QB,,34.0,,Active,13.0,862,13987.0,24797.0,de816e24-8442-49a4-99cd-dde7e7c05863
-Romello Brinson,WR,DAL,24.0,,Active,0.0,13818,,,d5ce47f0-42ac-11f1-b2da-234c553657ec
+Romello Brinson,WR,,24.0,,Active,0.0,13818,,,d5ce47f0-42ac-11f1-b2da-234c553657ec
 Rodney Smith,RB,,30.0,,Active,7.0,2892,2512197.0,28718.0,37339e36-741c-4c1c-a9ab-bd89ed866fa0
 Elliott Fry,K,,28.0,,Active,4.0,6208,3048898.0,31831.0,67da0db1-ed58-435d-b8bf-f7ffa02d8a24
 Devonta Freeman,RB,,30.0,,Active,8.0,2168,16944.0,27631.0,2e50c78f-fa3b-48cf-8531-6eeddc93d88d
@@ -3008,21 +3008,21 @@ Dalton Schultz,TE,HOU,29.0,,Active,8.0,5001,3117256.0,31107.0,8caec1b4-e0b6-4a84
 Jaylen Wright,RB,MIA,23.0,,Active,2.0,11643,,,ba9e1390-028b-47c9-8710-84cee3fa25de
 Trevon Wesco,TE,,29.0,,Active,5.0,6181,4039253.0,31953.0,f6c34178-e063-444b-96b3-df6b3cf66419
 Corey Davis,WR,,28.0,,Active,6.0,4036,3042778.0,30118.0,e21e9081-44aa-464b-8d3e-83918d48b921
-Tanner Arkin,TE,NE,22.0,,Active,0.0,13827,,,41b6b4d0-42b6-11f1-a54d-ffb403408d6a
+Tanner Arkin,TE,NE,23.0,,Active,0.0,13827,,,41b6b4d0-42b6-11f1-a54d-ffb403408d6a
 Jackson Hawes,TE,BUF,25.0,,Active,1.0,12658,,,87304bcd-83f1-4e59-b9cb-6474f7e0dc01
 John Wolford,QB,,30.0,,Active,8.0,5806,3124092.0,31803.0,2ab1b694-1013-4661-85d4-55415d3b147f
 Demetris Robertson,WR,,25.0,,Active,1.0,8439,,,4116fcd0-cdab-11ec-b94f-57e6927758e6
 John Samuel Shenker,TE,,26.0,,Active,2.0,11467,,,fe763ef0-f332-11ed-9cc8-4bf4102a06b2
 Tyler Davis,TE,,28.0,,Active,5.0,7131,3914240.0,32876.0,e7a9186e-5e19-4f70-b45c-527c888e6fc7
-Jack Strand,QB,ATL,21.0,,Active,0.0,13602,,,42473280-4199-11f1-bc97-b5b387501a1a
+Jack Strand,QB,ATL,22.0,,Active,0.0,13602,,,42473280-4199-11f1-bc97-b5b387501a1a
 William Thompson,QB,,,,Active,1.0,12324,,,dbf87860-0c91-11ef-af0e-3f9e3a9ca993
 Will Sheppard,WR,GB,24.0,,Active,1.0,12788,,,f11d3370-231a-11f0-a1dc-9b31b16c65b0
 Kobe Prentice,WR,CAR,22.0,,Active,0.0,13708,,,bf715f30-426e-11f1-8cc0-9f1129d6471a
 Josh Pitsenburger,RB,,,,Active,0.0,13768,,,deb890f0-4284-11f1-979c-c1340b2844fe
 Troy Mangen,TE,,27.0,,Active,4.0,5245,3052991.0,31346.0,3d4553a8-00bb-4511-9a33-da8664cb5563
 Brandon Polk,WR,,25.0,,Active,2.0,7340,3929652.0,33298.0,50ad1a94-be69-4c99-8bf2-005333ef8e1f
-Luke Wysong,WR,MIN,,,Active,0.0,13617,,,46554a40-41a5-11f1-9eb7-03b5b8687082
-Jalen Cropper,WR,,24.0,,Active,3.0,11506,,,d67c1e40-f66d-11ed-823b-d335e7ef7897
+Luke Wysong,WR,MIN,23.0,,Active,0.0,13617,,,46554a40-41a5-11f1-9eb7-03b5b8687082
+Jalen Moreno-Cropper,WR,NO,25.0,,Active,3.0,11506,,,d67c1e40-f66d-11ed-823b-d335e7ef7897
 Dalvin Cook,RB,,29.0,,Active,8.0,4029,3116593.0,30154.0,8960d61e-433b-41ea-a7ad-4e76be87b582
 Ahmani Marshall,RB,CLE,24.0,,Active,1.0,12797,,,c18cabc0-2321-11f0-80a0-bb24566134d1
 Laith Marjan,K,PIT,,,Active,0.0,13813,,,8a370f50-42a4-11f1-befb-e92b8d1cca96
@@ -3054,7 +3054,7 @@ CJ Marable,RB,,26.0,,Active,2.0,7549,,,a7c0f9fe-fdb4-4fd9-a6c0-a11ef3527a7c
 Kyler Murray,QB,MIN,28.0,,Active,7.0,5849,3917315.0,31833.0,dd5a6b6e-ffae-45a5-b8e6-718a9251f374
 Raylen Sharpe,WR,IND,,,Active,0.0,13783,,,00d75c70-428a-11f1-9920-ebcc0deb14cd
 Tanner Hudson,TE,CIN,31.0,,Active,8.0,5409,3050481.0,31257.0,2fa75e05-cac4-4b40-8924-dbc9ae0c959c
-Wesley Grimes,WR,SF,,,Active,0.0,13663,,,96cc0120-41c9-11f1-b33d-21e37bffa509
+Wesley Grimes,WR,SF,22.0,,Active,0.0,13663,,,96cc0120-41c9-11f1-b33d-21e37bffa509
 Aeneas Dennis,QB,,,,Active,1.0,12361,,,7a889a30-0ca3-11ef-bf97-11103177a965
 Beaux Collins,WR,NYG,23.0,,Active,1.0,12889,,,24597d60-247a-11f0-8324-3170fad3f2ab
 Baylor Cupp,TE,,25.0,,Active,1.0,12256,,,e23e66a0-0a4b-11ef-81ea-4d1e02cb9588
@@ -3074,7 +3074,7 @@ Patrick Murtagh,TE,,25.0,,Active,2.0,11245,,,5f79de60-ea7c-11ed-91f6-779a59a61c1
 Juwan Johnson,TE,NO,29.0,,Active,6.0,7002,3929645.0,33113.0,0226b03b-f91d-4223-9813-9fcd2e9c3acc
 Tez Johnson,WR,TB,24.0,,Active,1.0,12485,,,ad756d40-39a0-4f5c-bbf5-f31f4c3ee0a6
 Tucker Fisk,TE,,27.0,,Active,4.0,8885,,,5d01b190-d51e-11ec-8f44-c7121c9cec59
-Kolbe Katsis,WR,DEN,,,Active,0.0,13981,,,10b67fc0-4b3d-11f1-833d-a753d7c87b23
+Kolbe Katsis,WR,DEN,24.0,,Active,0.0,13981,,,10b67fc0-4b3d-11f1-833d-a753d7c87b23
 Damion Willis,WR,,24.0,,Active,3.0,6549,4241723.0,32471.0,967a20b1-e334-4ebb-a1b5-f46111ab7325
 Marvin Hall,WR,,29.0,,Active,6.0,3895,2578369.0,30023.0,1283923a-9716-4936-920a-a57f019bb2e8
 Jermaine Burton,WR,,24.0,,Active,1.0,11640,,,dc363b05-4551-4cb0-9bfc-ba462cb1cd5b
@@ -3098,7 +3098,7 @@ Jonathon Rumph,WR,,33.0,,Active,10.0,2934,,29140.0,c0fd3cea-edb6-480c-8e0f-f6933
 Laviska Shenault,WR,,26.0,,Active,5.0,6814,4243160.0,32712.0,131d3b1a-5746-499e-98ee-4bbf67cd377e
 Binjimen Victor,WR,,26.0,,Active,3.0,6939,4040628.0,33040.0,630e6b5d-0486-4bc3-a919-1f02687c1291
 Mikey Daniel,RB,,25.0,,Active,2.0,7172,4031003.0,33048.0,c0a0eb54-1070-43d2-bd33-1ae8315b2c0f
-Jameson Geers,TE,ARI,,,Active,0.0,13879,,,72669520-4331-11f1-badb-d10de616beeb
+Jameson Geers,TE,ARI,23.0,,Active,0.0,13879,,,72669520-4331-11f1-badb-d10de616beeb
 Rashod Owens,WR,,24.0,,Active,1.0,12760,,,1a9c04d0-2300-11f0-81e7-7324245576a1
 James Quick,WR,,27.0,,Active,5.0,4320,3040052.0,30503.0,e19d1543-7c1f-488d-a43a-768b424cb910
 Noah Whittington,RB,HOU,24.0,,Active,0.0,13437,,,e656bff0-4322-11f1-a39d-09ec94a91f1f
@@ -3121,7 +3121,7 @@ Khalil Tate,WR,,23.0,,Inactive,2.0,7401,,32971.0,dc3500ba-a2ea-4e90-af11-cd2f168
 Durron Neal,WR,,31.0,,Active,9.0,3630,2976594.0,29626.0,da83ac97-1676-42d1-ac8e-9b4182bd4c36
 Payton Thorne,QB,,24.0,,Active,1.0,12762,,,88ba5e20-2301-11f0-860c-abb69bcf1b51
 Deion Burks,WR,IND,23.0,,Active,0.0,13333,,,d4e8315f-e8e7-4d5b-8494-3306c220cc31
-Damon Bankston,RB,NYG,,,Active,0.0,13949,,,cfa33ec0-4b13-11f1-8161-c93330a9a32d
+Damon Bankston,RB,NYG,23.0,,Active,0.0,13949,,,cfa33ec0-4b13-11f1-8161-c93330a9a32d
 Kenneth Harper,RB,,32.0,,Active,10.0,2730,2574812.0,29044.0,06be99d3-6dae-4a33-ad5b-c541cfd5e237
 Zach D'Orazio,WR,,33.0,,Active,10.0,2962,2574271.0,29137.0,b63144f8-2b0f-458c-91da-f974989c9a51
 Shaq Roland,WR,CHI,,,Active,1.0,5638,2978744.0,31665.0,
@@ -3200,7 +3200,7 @@ Wendell Smallwood,RB,WAS,27.0,,Active,6.0,3309,3042429.0,29387.0,c7d0a740-fcf2-4
 Kenyan Drake,RB,,29.0,,Active,8.0,3242,2979843.0,29307.0,a0b93053-d349-4dd1-a840-24577102699b
 De'Montre Tuggle,RB,,23.0,,Active,1.0,8721,,,b4be3630-cfa9-11ec-a024-8f80a1cdd928
 Zach Olstad,RB,,28.0,,Inactive,4.0,5697,4339829.0,31700.0,50828eca-6954-47f9-8610-3bf7b7ff5e2b
-Kendrick Law,WR,DET,23.0,,Active,0.0,13412,,,b039bf78-853f-4e4f-a6bd-83d7f38748c3
+Kendrick Law,WR,DET,23.0,,Inactive,0.0,13412,,,b039bf78-853f-4e4f-a6bd-83d7f38748c3
 Jordan Westerkamp,WR,,27.0,,Active,5.0,4787,2974334.0,30914.0,e7db6483-9f69-4574-aed9-a36f1329d9e5
 Marcelias Sutton,RB,,,,Active,3.0,6700,4241403.0,32613.0,a5b32b41-5394-41ab-b5ec-a8a0824b5605
 Sam Sloman,K,,25.0,,Active,2.0,7152,4038994.0,32918.0,e44cc736-fe98-4b80-a138-4ebc5f087335

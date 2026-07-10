@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "macro-tracker",
-      "runtimeExecutable": "bash",
-      "runtimeArgs": ["-c", "cd /Users/natearaskog/macro-tracker && npm run dev"],
-      "port": 3000
+      "name": "app",
+      "runtimeExecutable": ".venv/bin/python",
+      "runtimeArgs": ["-m", "streamlit", "run", "app.py", "--server.port", "8502", "--server.headless", "true"],
+      "port": 8502
     }
   ]
 }
