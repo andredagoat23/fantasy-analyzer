@@ -63,3 +63,24 @@
 2026-07-08 (Wed, Deload day 3, block ~60 min):
 - Doing today: SPEC.md FP pivot edits + load_fp_projecti
 
+2026-07-09 (Thu, Deload day 4, MULTI-BLOCK - CAP BREACH ~4 hours 19:14 → 23:11):
+- Cap breach: ran 4x normal Deload budget in one push. Real drift risk. Do not repeat next week.
+- What shipped:
+  1. load_fp_projections.py rebuilt preserving raw stat columns.
+  2. custom_scoring.py — Bucket 1 scoring. CeeDee Lamb 175 → 273. PPR credit landing.
+  3. apply_bonuses.py — Bucket 2 bonuses (300+/400+ passing, 100+/200+ rush/rec, 40+/50+ TDs) using nflreadpy pbp + shrinkage to league average.
+  4. compute_metrics.py — VOLS with 12-team replacement (QB12/RB30/WR36/TE12/K12).
+  5. compute_outcomes.py — Monte Carlo 20k sims for floor/ceiling/boom-bust/P_pos1.
+  6. value_board.py — final draft board with market labels (VALUE/REACH/fair) + risk tiers.
+- v1.0 math side DONE. UI is the only remaining v1.0 gap.
+
+2026-07-10 (Fri, Deload day 5, v1.0 UI shipped):
+- Did: built app.py end-to-end for Streamlit. 195 lines.
+  - Two-zone layout: sidebar (position scarcity + my roster + reset) + main (filters + draft board).
+  - Filters: position multiselect, top-N slider, search, steals/reaches checkboxes.
+  - Draft board: st.data_editor with Mine + Drafted checkboxes, sortable, Styler CSS coloring, market icons, risk badges, P(#1) progress bar.
+  - Session state versioning (bump()) to force fresh renders when state changes.
+  - Undo drawer for drafted players.
+- Also built: run_all.py orchestrator, .streamlit/config.toml theme, CLAUDE.md project context, app_data.csv/json combined artifact for v1.1.
+- v1.0 status: LOCAL COMPLETE. Streamlit Cloud deployment still pending.
+- Next: deploy to Streamlit Cloud, then v1.1 (LLM advisor) starts W6 Mon Jul 13.
