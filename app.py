@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 
 st.set_page_config(
     page_title="Fantasy Analyzer",
@@ -14,26 +15,24 @@ FLEX_OK = {"RB", "WR", "TE"}
 ROSTER_SLOTS = [("QB", "QB"), ("RB", "RB"), ("RB", "RB"), ("WR", "WR"), ("WR", "WR"),
                 ("TE", "TE"), ("FLEX", "FLEX"), ("D/ST", "D/ST"), ("K", "K")]
 
-DISPLAY_COLS = [
-    "overall_rank", "full_name", "pos_label", "vols", "adp_rank", "ecr_rank",
-    "value_gap", "market", "risk_tier", "floor", "ceiling", "P_pos1",
-]
+RANK_OPTIONS = {"Value": "overall_rank", "Value + experts": "rank_ecr", "Everything": "rank_composite"}
+BASE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "ecr_rank",
+             "value_gap", "market", "risk_tier", "floor", "ceiling", "p_startable"]
 
 COLUMN_CONFIG = {
-    "Mine":         st.column_config.CheckboxColumn("Mine", width="small", help="My pick"),
-    "Drafted":      st.column_config.CheckboxColumn("Drafted", width="small", help="Drafted by anyone"),
-    "overall_rank": st.column_config.NumberColumn("Rank", format="%d", width="small"),
-    "full_name":    st.column_config.TextColumn("Player", width="medium"),
-    "pos_label":    st.column_config.TextColumn("Pos", width="small"),
-    "vols":         st.column_config.NumberColumn("VOLS", format="%.1f"),
-    "adp_rank":     st.column_config.NumberColumn("ADP", format="%.0f"),
-    "ecr_rank":     st.column_config.NumberColumn("ECR", format="%.0f"),
-    "value_gap":    st.column_config.NumberColumn("Gap", format="%d"),
-    "market":       st.column_config.TextColumn("Market", width="small"),
-    "risk_tier":    st.column_config.TextColumn("Risk", width="small"),
-    "floor":        st.column_config.NumberColumn("Floor", format="%.0f"),
-    "ceiling":      st.column_config.NumberColumn("Ceiling", format="%.0f"),
-    "P_pos1":       st.column_config.ProgressColumn("P(#1)", format="percent", min_value=0, max_value=1),
+    "Mine":      st.column_config.CheckboxColumn("Mine", width="small", help="My pick"),
+    "Drafted":   st.column_config.CheckboxColumn("Drafted", width="small", help="Drafted by anyone"),
+    "full_name": st.column_config.TextColumn("Player", width="medium"),
+    "pos_label": st.column_config.TextColumn("Pos", width="small"),
+    "vols":      st.column_config.NumberColumn("VOLS", format="%.1f"),
+    "adp_rank":  st.column_config.NumberColumn("ADP", format="%.0f"),
+    "ecr_rank":  st.column_config.NumberColumn("ECR", format="%.0f"),
+    "value_gap": st.column_config.NumberColumn("Gap", format="%d"),
+    "market":    st.column_config.TextColumn("Market", width="small"),
+    "risk_tier": st.column_config.TextColumn("Risk", width="small"),
+    "floor":     st.column_config.NumberColumn("Floor", format="%.0f"),
+    "ceiling":   st.column_config.NumberColumn("Ceiling", format="%.0f"),
+    "p_startable": st.column_config.ProgressColumn("P(start)", format="percent", min_value=0, max_value=1),
 }
 
 RISK_BG = {"Safe": "rgba(46,160,67,.20)", "Boom/Bust": "rgba(210,153,34,.20)",
@@ -41,14 +40,13 @@ RISK_BG = {"Safe": "rgba(46,160,67,.20)", "Boom/Bust": "rgba(210,153,34,.20)",
 
 
 @st.cache_data
-def load_board():
+def load_board(mtime):   # mtime arg busts the cache when the CSV is regenerated
     board = pd.read_csv("value_board.csv", dtype={"player_id": str})
     board["position"] = board["pos_label"].str.replace(r"\d+$", "", regex=True)
     return board
 
 
 def style_board(df):
-    """Return a same-shaped frame of CSS strings — colors only (formatting is in column_config)."""
     css = pd.DataFrame("", index=df.index, columns=df.columns)
     css.loc[df["value_gap"] > 0, "value_gap"] = "background-color: rgba(46,160,67,.22)"
     css.loc[df["value_gap"] < 0, "value_gap"] = "background-color: rgba(229,83,75,.22)"
@@ -59,7 +57,7 @@ def style_board(df):
     return css
 
 
-board = load_board()
+board = load_board(os.path.getmtime("value_board.csv"))
 
 st.session_state.setdefault("drafted", set())
 st.session_state.setdefault("mine", set())
@@ -89,7 +87,6 @@ def cancel_reset():
 
 available = board[~board["full_name"].isin(st.session_state.drafted)]
 
-# --- sidebar ---
 with st.sidebar:
     st.subheader(":material/inventory_2: Position scarcity")
     with st.container(border=True):
@@ -114,8 +111,7 @@ with st.sidebar:
         pools = {k: list(v) for k, v in filled.items()}
         for label, key in ROSTER_SLOTS:
             pool = pools.get(key, [])
-            name = pool.pop(0) if pool else "—"
-            st.markdown(f"**{label}** &nbsp; {name}")
+            st.markdown(f"**{label}** &nbsp; {pool.pop(0) if pool else '—'}")
         for name in pools["BN"]:
             st.markdown(f"**BN** &nbsp; {name}")
         st.metric("Projected points", f"{mine_df['total_points'].sum():.0f}")
@@ -126,7 +122,6 @@ with st.sidebar:
         st.button("Yes, reset", on_click=do_reset, width="stretch")
         st.button("Cancel", on_click=cancel_reset, width="stretch")
 
-# --- main ---
 st.title("🏈 Fantasy Analyzer — Draft Board")
 
 c1, c2, c3, c4 = st.columns([2, 2, 3, 2])
@@ -140,6 +135,9 @@ with c4:
     steals = st.checkbox("🔥 Steals only")
     reaches = st.checkbox("⚠️ Reaches only")
 
+rank_choice = st.segmented_control("Rank by", list(RANK_OPTIONS), default="Value")
+rank_col = RANK_OPTIONS.get(rank_choice, "overall_rank")
+
 view = available
 if picked_pos:
     view = view[view["position"].isin(picked_pos)]
@@ -148,20 +146,22 @@ if search:
 if steals or reaches:
     allowed = (["VALUE"] if steals else []) + (["REACH"] if reaches else [])
     view = view[view["market"].isin(allowed)]
-view = view.sort_values("overall_rank").head(top_n)
+view = view.sort_values(rank_col).head(top_n)
 
 st.caption(f"{len(view)} available · {len(st.session_state.drafted)} drafted "
            f"({len(st.session_state.mine)} mine) · {len(board)} total")
 
-editor_df = view[DISPLAY_COLS].copy()
+display_cols = [rank_col] + BASE_COLS
+editor_df = view[display_cols].copy()
 editor_df["market"] = editor_df["market"].map({"VALUE": "🔥 VALUE", "REACH": "⚠️ REACH"}).fillna("")
 editor_df.insert(0, "Drafted", False)
 editor_df.insert(0, "Mine", False)
 
+cc = {**COLUMN_CONFIG, rank_col: st.column_config.NumberColumn("Rank", format="%d", width="small")}
 edited = st.data_editor(
     editor_df.style.apply(style_board, axis=None),
-    column_config=COLUMN_CONFIG,
-    disabled=DISPLAY_COLS,
+    column_config=cc,
+    disabled=display_cols,
     hide_index=True,
     height=700,
     key=f"board_{st.session_state.version}",
