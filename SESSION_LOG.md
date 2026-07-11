@@ -83,4 +83,30 @@
   - Undo drawer for drafted players.
 - Also built: run_all.py orchestrator, .streamlit/config.toml theme, CLAUDE.md project context, app_data.csv/json combined artifact for v1.1.
 - v1.0 status: LOCAL COMPLETE. Streamlit Cloud deployment still pending.
-- Next: deploy to Streamlit Cloud, then v1.1 (LLM advisor) starts W6 Mon Jul 13.
+
+2026-07-10 (Fri evening, cap breach continued — extended past v1.0 UI to injury upgrades + v1.1 shipment):
+- Did: three more shipments after the v1.0 UI committed.
+  1. Cleanup commit — gitignore drift closed.
+  2. Injury upgrades: injury-aware P(start), catastrophic tail modeling in compute_outcomes.py, two-rankings output. compute_outcomes.py grew to 7.3KB, value_board.py to 5.1KB.
+  3. v1.1 Claude advisor: built advisor.py (~9KB). Anthropic API integration via st.secrets, Claude Opus 4.8 model. app.py updated with mobile / split-screen layout for phone use during actual draft. Flex-aware replacement level math added to value_board.py.
+- v1.1 status: shipped 17 days ahead of the Jul 27-31 (W8) target from the compressed schedule.
+- Real cap breach on the day — cleanup + injuries + v1.1 in one day. Do not repeat as a pattern.
+- Next: Sat — test the advisor with mock draft state, iterate on prompt quality.
+
+2026-07-11 (Sat, Deload day 6 — v1.2 strategy brain shipment):
+- Did:
+  1. Fixed advisor crash on players without ADP (undrafted/deep-league). Now handles missing ADP gracefully with a "UD" flag.
+  2. v1.2 advisor: rewrote system prompt into a real strategy brain. Includes:
+     - League details (12-team custom-scoring PPR + roster).
+     - Full data dictionary (VOLS, ADP, tier, market, risk, floor/ceiling, P_start%, bust%, tgt%/snap%, age, rook_pk).
+     - Draft strategy toolkit — Best-Available, Hero-RB, Zero-RB, Robust-RB, Upside archetypes.
+     - Tier-cliff logic (grab last-in-tier before the drop).
+     - Positional-run pivoting.
+     - Snake-draft survival math: current_pick + 2 * picks_until_turn = next pick; compare to ADP to decide "grab now" vs "wait for next".
+     - Vegas team scoring context (25+ = high upside, <20 = capped).
+     - Scarcity-pivot rule (pivot to deep position unless scarce one is a VALUE).
+     - Conversation-mode vs pick-mode response guidelines.
+  3. ADP added as a default advisor input so it's always available.
+- v1.2 status: shipped. Advisor is now a real fantasy strategist, not a raw projection reader.
+- Ship probability update: v1.1/v1.2 shipped ~3 weeks ahead of the W8 target. Draft-day tool is essentially ready pending Streamlit Cloud deployment + mock draft testing.
+- Next: (a) Deploy to Streamlit Cloud, (b) mock draft dry-run to shake out UX
