@@ -6,6 +6,7 @@ testable and keeps the app free of modeling.
 """
 
 import anthropic
+import pandas as pd
 
 MODEL = "claude-opus-4-8"
 
@@ -46,10 +47,13 @@ def build_context(available, mine_df, scarcity, top_n=35):
             "floor", "ceiling", "p_startable", "p_bust"]
     top = available.sort_values("rank_composite").head(top_n)[cols].copy()
     top["market"] = top["market"].fillna("")
-    for c in ["vols", "adp_rank", "floor", "ceiling"]:
-        top[c] = top[c].round(0).astype(int)
-    top["p_startable"] = (top["p_startable"] * 100).round(0).astype(int)
-    top["p_bust"] = (top["p_bust"] * 100).round(0).astype(int)
+    # NaN-safe formatting: some available players have no ADP / outcome data
+    to_int = lambda s: s.map(lambda x: "" if pd.isna(x) else str(int(round(x))))
+    top["adp_rank"] = top["adp_rank"].map(lambda x: "UD" if pd.isna(x) else str(int(round(x))))
+    for c in ["vols", "floor", "ceiling"]:
+        top[c] = to_int(top[c])
+    top["p_startable"] = to_int(top["p_startable"] * 100)
+    top["p_bust"] = to_int(top["p_bust"] * 100)
     top = top.rename(columns={"full_name": "player", "pos_label": "pos", "adp_rank": "ADP",
                               "risk_tier": "risk", "p_startable": "P_start%", "p_bust": "bust%"})
     board_txt = top.to_string(index=False)
@@ -65,7 +69,8 @@ def build_context(available, mine_df, scarcity, top_n=35):
         "LIVE DRAFT STATE\n"
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"Startable players left by position: {scar}\n\n"
-        f"Top {len(top)} available players (sorted by composite value):\n{board_txt}"
+        f"Top {len(top)} available players (sorted by composite value; "
+        f"ADP 'UD' = undrafted/no ADP, i.e. very likely to still be available later):\n{board_txt}"
     )
 
 
