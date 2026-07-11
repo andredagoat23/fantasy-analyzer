@@ -14,6 +14,7 @@ STEPS = [
     "load_fp_projections.py",   # projections      -> players_with_projections.csv
     "custom_scoring.py",        # Bucket 1 scoring -> players_scored.csv
     "apply_bonuses.py",         # Bucket 2 bonuses -> players_final.csv
+    "blend_vegas.py",           # blend Vegas proj -> players_final.csv (overwrites total_points)
     "compute_metrics.py",       # VOLS             -> players_with_metrics.csv
     "compute_outcomes.py",      # risk + sims      -> players_with_outcomes.csv
     "value_board.py",           # final board      -> value_board.csv + app_data.*
