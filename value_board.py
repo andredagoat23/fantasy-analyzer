@@ -1,9 +1,9 @@
 import pandas as pd
+from utils import startable_counts
 
 DRAFTABLE = 180
 W_MODEL, W_EXPERT = 0.65, 0.35                         # rank_ecr blend
 W_V, W_E, W_UP, W_DN = 0.40, 0.25, 0.20, 0.15          # rank_composite blend (rank-based)
-REPLACEMENT = {"QB": 12, "RB": 30, "WR": 36, "TE": 12, "K": 12}
 
 # 1. load, keep scored players
 df = pd.read_csv("players_with_outcomes.csv", dtype={"player_id": str})
@@ -23,7 +23,7 @@ board["rank_ecr"] = ecr_blend.rank(method="min").astype(int)
 # 4. rank_composite — value + expert + upside + floor-safety, all in cross-position VALUE terms,
 #    combined as ranks (robust to outliers; no shallow-position inflation)
 repl_pts = {}
-for pos, n in REPLACEMENT.items():
+for pos, n in startable_counts(board).items():
     pts = board.loc[board["position"] == pos, "total_points"].dropna()
     repl_pts[pos] = pts.nlargest(n).min() if len(pts) >= n else (pts.min() if len(pts) else 0.0)
 ceil_val = board["ceiling"] - board["position"].map(repl_pts)     # upside over replacement

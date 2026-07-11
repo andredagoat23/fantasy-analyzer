@@ -1,7 +1,7 @@
 import nflreadpy as nfl
 import pandas as pd
 import numpy as np
-from utils import normalize_name
+from utils import normalize_name, startable_counts
 
 np.random.seed(0)
 
@@ -18,7 +18,8 @@ AVAIL_PRIOR = {"RB": 0.86, "WR": 0.92, "TE": 0.91, "QB": 0.94, "K": 0.97}
 AVAIL_K = 2.0
 AGE_CLIFF = {"RB": 26, "WR": 29, "TE": 29, "QB": 35, "K": 34}
 AGE_SLOPE = {"RB": 0.025, "WR": 0.015, "TE": 0.015, "QB": 0.020, "K": 0.010}
-REPLACEMENT = {"QB": 12, "RB": 30, "WR": 36, "TE": 12, "K": 12}   # startable-tier size (for p_startable/p_bust)
+# REPLACEMENT (startable-tier size for p_startable/p_bust) is computed flex-aware from
+# the loaded board below via startable_counts() — RB/WR split floats with projections.
 
 
 def draft_tilt(pick):
@@ -70,6 +71,7 @@ name_pick = dict(zip(dp["nn"], dp["pick"]))
 
 # ---- 4. base board ----
 df = pd.read_csv("players_with_metrics.csv", dtype={"player_id": str})
+REPLACEMENT = startable_counts(df)   # flex-aware startable-tier size per position
 df = df.merge(prof, left_on="gsis_id", right_index=True, how="left")
 df["consistency"] = df["wk_std"] / df["wk_mean"]
 df["_obs"] = df["gsis_id"].map(obs)
