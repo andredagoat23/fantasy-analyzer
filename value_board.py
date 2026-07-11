@@ -3,8 +3,8 @@ from utils import startable_counts
 
 DRAFTABLE = 180
 W_MODEL, W_EXPERT = 0.65, 0.35                         # rank_ecr blend
-# rank_composite ("Everything") blend: value / expert(ECR) / market(ADP) / upside / floor / role
-W_V, W_E, W_A, W_UP, W_DN, W_R = 0.30, 0.22, 0.10, 0.13, 0.08, 0.17
+# rank_composite ("Everything") blend: value / expert(ECR) / market(ADP) / upside(x Vegas) / floor / role
+W_V, W_E, W_A, W_UP, W_DN, W_R = 0.32, 0.24, 0.12, 0.13, 0.09, 0.10
 
 # 1. load, keep scored players
 df = pd.read_csv("players_with_outcomes.csv", dtype={"player_id": str})
@@ -39,21 +39,22 @@ for pos, n in startable_counts(board).items():
 ceil_val = board["ceiling"] - board["position"].map(repl_pts)     # upside over replacement
 floor_val = board["floor"] - board["position"].map(repl_pts)      # downside over replacement
 
-# situation = role x Vegas environment (opportunity). role = within-position usage percentile
-# (target share for WR/TE, snap share for RB/QB); team_env scales it by the offense's Vegas
-# implied total, so a featured player on a high-scoring team ranks above the same role on a weak one.
-role_raw = board["target_share_2025"].where(board["position"].isin(["WR", "TE"]),
-                                            board["snap_share_2025"])
-role_pct = role_raw.groupby(board["position"]).rank(pct=True).fillna(0.5)   # rookies / K neutral
-situation = role_pct * board["team_env"]
+# role = receiving usage (target share) percentile within position, for WR/TE/RB. Target share is
+# the stable PPR-predictive role signal; using it (not snap share) for RBs rewards dual-threat backs
+# and avoids dinging elite backs for carry-sharing or a stale committee snap share (e.g. Gibbs).
+# Vegas team environment scales UPSIDE (ceiling) instead of the role signal, so a mediocre offense
+# can't tank an elite workhorse (e.g. Bijan on ATL) — his VOLS/ADP/ECR/floor still anchor him.
+role_raw = board["target_share_2025"].where(board["position"].isin(["WR", "TE", "RB"]))
+role_pct = role_raw.groupby(board["position"]).rank(pct=True).fillna(0.5)   # QB / K / rookies neutral
+ceil_val_veg = ceil_val * board["team_env"]        # upside, boosted by the Vegas scoring environment
 
 BIG = len(board) + 1
 comp = (W_V  * vols_rank
         + W_E  * board["ecr_rank"].fillna(BIG).rank(method="min")
         + W_A  * board["adp_rank"].fillna(BIG).rank(method="min")
-        + W_UP * ceil_val.rank(ascending=False, method="min")
+        + W_UP * ceil_val_veg.rank(ascending=False, method="min")
         + W_DN * floor_val.rank(ascending=False, method="min")
-        + W_R  * situation.rank(ascending=False, method="min"))
+        + W_R  * role_pct.rank(ascending=False, method="min"))
 board["rank_composite"] = comp.rank(method="min").astype(int)
 
 # 5. value vs market
