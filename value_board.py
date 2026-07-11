@@ -5,6 +5,7 @@ DRAFTABLE = 180
 W_MODEL, W_EXPERT = 0.65, 0.35                         # rank_ecr blend
 # rank_composite ("Everything") blend: value / expert(ECR) / market(ADP) / upside(x Vegas) / floor / role
 W_V, W_E, W_A, W_UP, W_DN, W_R = 0.32, 0.24, 0.12, 0.13, 0.09, 0.10
+ROOKIE_MKT = 0.5      # rookies: blend composite this much toward market consensus (unreliable proj)
 
 # 1. load, keep scored players
 df = pd.read_csv("players_with_outcomes.csv", dtype={"player_id": str})
@@ -44,17 +45,28 @@ floor_val = board["floor"] - board["position"].map(repl_pts)      # downside ove
 # and avoids dinging elite backs for carry-sharing or a stale committee snap share (e.g. Gibbs).
 # Vegas team environment scales UPSIDE (ceiling) instead of the role signal, so a mediocre offense
 # can't tank an elite workhorse (e.g. Bijan on ATL) — his VOLS/ADP/ECR/floor still anchor him.
-role_raw = board["target_share_2025"].where(board["position"].isin(["WR", "TE", "RB"]))
+# best demonstrated role across 2024/2025 (injury-proof: an injury-shortened season won't erase a
+# proven alpha's target share, e.g. Nabers' 30% in 2024 vs 7% in an injured 2025)
+role_best = board[["target_share_2024", "target_share_2025"]].max(axis=1)
+role_raw = role_best.where(board["position"].isin(["WR", "TE", "RB"]))
 role_pct = role_raw.groupby(board["position"]).rank(pct=True).fillna(0.5)   # QB / K / rookies neutral
 ceil_val_veg = ceil_val * board["team_env"]        # upside, boosted by the Vegas scoring environment
 
 BIG = len(board) + 1
+ecr_r = board["ecr_rank"].fillna(BIG).rank(method="min")
+adp_r = board["adp_rank"].fillna(BIG).rank(method="min")
 comp = (W_V  * vols_rank
-        + W_E  * board["ecr_rank"].fillna(BIG).rank(method="min")
-        + W_A  * board["adp_rank"].fillna(BIG).rank(method="min")
+        + W_E  * ecr_r
+        + W_A  * adp_r
         + W_UP * ceil_val_veg.rank(ascending=False, method="min")
         + W_DN * floor_val.rank(ascending=False, method="min")
         + W_R  * role_pct.rank(ascending=False, method="min"))
+
+# rookies have no pro history, so their VOLS/role projection is a guess — anchor them halfway to
+# the market consensus (ADP/ECR), which prices draft capital + landing spot. Keeps some model
+# skepticism (they land a touch below ADP, since rookies are boom/bust). Veterans unaffected.
+is_rook = board["is_rookie"].astype(str).str.lower().isin(["true", "1"])
+comp = comp.mask(is_rook, ROOKIE_MKT * ((adp_r + ecr_r) / 2) + (1 - ROOKIE_MKT) * comp)
 board["rank_composite"] = comp.rank(method="min").astype(int)
 
 # 5. value vs market
