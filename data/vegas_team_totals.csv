@@ -1,0 +1,35 @@
+# 2026 NFL season-long Vegas implied team totals (average points/game).
+# Source: firstdown.studio/implied-totals/season (pulled 2026-07-12). Update the numbers as lines move.
+team,implied_total
+LAR,26.3
+BUF,26.3
+DET,26.1
+CIN,26.0
+BAL,25.9
+DAL,25.6
+SF,25.0
+GB,24.7
+SEA,24.7
+CHI,24.6
+PHI,23.9
+LAC,23.8
+KC,23.8
+JAX,23.6
+NE,23.6
+IND,23.4
+TB,23.3
+WAS,23.3
+HOU,22.8
+MIN,22.6
+NYG,22.1
+DEN,22.0
+PIT,21.7
+NO,21.6
+ATL,21.1
+TEN,21.0
+CAR,20.9
+LV,19.5
+MIA,19.3
+CLE,18.9
+ARI,18.8
+NYJ,18.7

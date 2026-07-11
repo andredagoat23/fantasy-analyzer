@@ -3,11 +3,19 @@ from utils import startable_counts
 
 DRAFTABLE = 180
 W_MODEL, W_EXPERT = 0.65, 0.35                         # rank_ecr blend
-W_V, W_E, W_UP, W_DN = 0.40, 0.25, 0.20, 0.15          # rank_composite blend (rank-based)
+# rank_composite ("Everything") blend: value / expert(ECR) / market(ADP) / upside / floor / role
+W_V, W_E, W_A, W_UP, W_DN, W_R = 0.30, 0.22, 0.10, 0.13, 0.08, 0.17
 
 # 1. load, keep scored players
 df = pd.read_csv("players_with_outcomes.csv", dtype={"player_id": str})
 board = df[df["vols"].notna()].copy()
+
+# 1b. Vegas team environment: season implied team totals (points/game). team_env is the
+#     team's implied total vs league average (>1 = high-scoring offense). This is the sharpest
+#     signal for situational upside — a featured player on a high-total offense sees more scoring.
+vegas = pd.read_csv("data/vegas_team_totals.csv", comment="#")
+board = board.merge(vegas, on="team", how="left").rename(columns={"implied_total": "team_implied_total"})
+board["team_env"] = (board["team_implied_total"] / vegas["implied_total"].mean()).fillna(1.0)
 
 # 2. base value rank (pure VOLS) + positional label
 vols_rank = board["vols"].rank(ascending=False, method="min")
@@ -20,18 +28,32 @@ ecr = board["ecr_rank"].fillna(vols_rank)
 ecr_blend = W_MODEL * vols_rank + W_EXPERT * ecr
 board["rank_ecr"] = ecr_blend.rank(method="min").astype(int)
 
-# 4. rank_composite — value + expert + upside + floor-safety, all in cross-position VALUE terms,
-#    combined as ranks (robust to outliers; no shallow-position inflation)
+# 4. rank_composite ("Everything") — value + expert(ECR) + market(ADP) + upside + floor + role,
+#    all as cross-position ranks (robust; no shallow-position inflation). Weighting the expert /
+#    market / role signals in lifts players the raw projection underrates (e.g. an alpha WR off a
+#    fluky-low-TD year) so the board agrees with the AI advisor's situational read.
 repl_pts = {}
 for pos, n in startable_counts(board).items():
     pts = board.loc[board["position"] == pos, "total_points"].dropna()
     repl_pts[pos] = pts.nlargest(n).min() if len(pts) >= n else (pts.min() if len(pts) else 0.0)
 ceil_val = board["ceiling"] - board["position"].map(repl_pts)     # upside over replacement
 floor_val = board["floor"] - board["position"].map(repl_pts)      # downside over replacement
-comp = (W_V * vols_rank
-        + W_E * ecr_blend.rank(method="min")
+
+# situation = role x Vegas environment (opportunity). role = within-position usage percentile
+# (target share for WR/TE, snap share for RB/QB); team_env scales it by the offense's Vegas
+# implied total, so a featured player on a high-scoring team ranks above the same role on a weak one.
+role_raw = board["target_share_2025"].where(board["position"].isin(["WR", "TE"]),
+                                            board["snap_share_2025"])
+role_pct = role_raw.groupby(board["position"]).rank(pct=True).fillna(0.5)   # rookies / K neutral
+situation = role_pct * board["team_env"]
+
+BIG = len(board) + 1
+comp = (W_V  * vols_rank
+        + W_E  * board["ecr_rank"].fillna(BIG).rank(method="min")
+        + W_A  * board["adp_rank"].fillna(BIG).rank(method="min")
         + W_UP * ceil_val.rank(ascending=False, method="min")
-        + W_DN * floor_val.rank(ascending=False, method="min"))
+        + W_DN * floor_val.rank(ascending=False, method="min")
+        + W_R  * situation.rank(ascending=False, method="min"))
 board["rank_composite"] = comp.rank(method="min").astype(int)
 
 # 5. value vs market
@@ -57,7 +79,10 @@ board = board.sort_values("rank_composite")
 
 cols = ["overall_rank", "rank_ecr", "rank_composite", "full_name", "pos_label", "total_points", "vols",
         "adp_rank", "ecr_rank", "value_gap", "market", "risk_tier", "availability",
-        "floor", "ceiling", "p_elite", "p_startable", "p_bust", "P_pos1"]
+        "floor", "ceiling", "p_elite", "p_startable", "p_bust", "P_pos1",
+        # situational fields the AI advisor reasons over (not shown in the board table)
+        "team", "team_implied_total", "age", "bye_week", "target_share_2025", "snap_share_2025",
+        "ecr_tier", "is_rookie", "draft_pick"]
 board[cols].to_csv("value_board.csv", index=False)
 board.round(3).to_csv("app_data.csv", index=False)
 board.round(3).to_json("app_data.json", orient="records", indent=2)

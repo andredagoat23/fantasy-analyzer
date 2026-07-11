@@ -11,7 +11,8 @@ st.set_page_config(
     initial_sidebar_state="auto",   # collapses itself on phone / split-screen widths
 )
 
-# tighten padding + shrink the title on narrow viewports (phone / split-screen)
+# tighten padding + shrink the title on narrow viewports (phone / split-screen);
+# smaller advisor chat font so more advice fits in the box
 st.markdown("""
 <style>
 @media (max-width: 820px) {
@@ -19,6 +20,11 @@ st.markdown("""
     padding: 0.7rem 0.8rem 3rem !important;
   }
   h1 { font-size: 1.4rem !important; }
+}
+[data-testid="stChatMessageContent"] p,
+[data-testid="stChatMessageContent"] li {
+  font-size: 0.84rem;
+  line-height: 1.4;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -29,7 +35,8 @@ FLEX_OK = {"RB", "WR", "TE"}
 ROSTER_SLOTS = [("QB", "QB"), ("RB", "RB"), ("RB", "RB"), ("WR", "WR"), ("WR", "WR"),
                 ("TE", "TE"), ("FLEX", "FLEX"), ("D/ST", "D/ST"), ("K", "K")]
 
-RANK_OPTIONS = {"Value": "overall_rank", "Value + experts": "rank_ecr", "Everything": "rank_composite"}
+RANK_OPTIONS = {"ADP": "adp_rank", "Everything": "rank_composite",
+                "Value + experts": "rank_ecr", "Value": "overall_rank"}
 BASE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "ecr_rank",
              "value_gap", "market", "risk_tier", "floor", "ceiling", "p_startable"]
 
@@ -216,8 +223,8 @@ with st.container(horizontal=True):   # wraps to multiple rows on narrow screens
     steals = st.checkbox("🔥 Steals only")
     reaches = st.checkbox("⚠️ Reaches only")
 
-rank_choice = st.segmented_control("Rank by", list(RANK_OPTIONS), default="Value")
-rank_col = RANK_OPTIONS.get(rank_choice, "overall_rank")
+rank_choice = st.segmented_control("Rank by", list(RANK_OPTIONS), default="ADP")
+rank_col = RANK_OPTIONS.get(rank_choice, "adp_rank")
 
 view = available
 if picked_pos:
@@ -232,7 +239,9 @@ view = view.sort_values(rank_col).head(top_n)
 st.caption(f"{len(view)} available · {len(st.session_state.drafted)} drafted "
            f"({len(st.session_state.mine)} mine) · {len(board)} total")
 
-display_cols = [rank_col] + (CORE_COLS if st.session_state.compact else BASE_COLS)
+base_cols = CORE_COLS if st.session_state.compact else BASE_COLS
+# dedupe: rank_col may already be in base_cols (e.g. adp_rank) — show it once, first
+display_cols = [rank_col] + [c for c in base_cols if c != rank_col]
 editor_df = view[display_cols].copy()
 editor_df["market"] = editor_df["market"].map({"VALUE": "🔥 VALUE", "REACH": "⚠️ REACH"}).fillna("")
 editor_df.insert(0, "Drafted", False)
