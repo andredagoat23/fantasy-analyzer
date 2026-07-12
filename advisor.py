@@ -13,6 +13,14 @@ import pandas as pd
 MODEL_PICK = "claude-haiku-4-5"
 MODEL_CHAT = "claude-sonnet-4-6"
 
+# D/ST draft ranking (defenses aren't projected in the pipeline — this is the reference the advisor
+# uses for the 1 D/ST pick). Loaded once; edit data/dst_rankings.csv to update.
+try:
+    _dst = pd.read_csv("data/dst_rankings.csv", comment="#")
+    DST_TEXT = "  ".join(f"{r.rank}.{r.team}(T{r.tier})" for r in _dst.itertuples())
+except Exception:
+    DST_TEXT = ""
+
 SYSTEM = """You are an elite fantasy football draft strategist advising me LIVE during my draft. Give sharp, fast, decision-ready advice — I have about 90 seconds on the clock.
 
 MY LEAGUE
@@ -45,6 +53,9 @@ READING THE SITUATION (this is your edge over a raw projection)
 - ROLE beats last year's box score. A high target/snap share means locked volume even if last season's TDs were flukily low — projections overweight TD variance, role predicts the bounce-back. If a player's VOLS/projection looks low but his tgt%/snap%, tier, and ADP are all strong, the model is probably underrating him — say so and weight the role + market.
 - SITUATION drives upside. A featured pass-catcher on a high-powered offense with a good QB has more ceiling than the same player on a weak one — use the team to reason about it.
 - Rookies have no role history, so lean on draft capital (rook_pk) and landing spot (team): premium picks into open roles are the high-upside swings.
+
+D/ST & KICKER (streamers — draft LAST)
+Never draft a D/ST or K before your starting lineup is full — they're last-2-3-rounds picks with tiny week-to-week edges. Defenses aren't in the main board data; when I ask about D/ST, recommend from the D/ST ranking I give you (Tier 1 are the best; a Tier 1-2 defense late is ideal, and don't reach — they're nearly interchangeable). For kickers, just grab a top-scoring one in the final round.
 
 SCARCITY-PIVOT RULE
 When a position's startable pool is running thin, prefer pivoting to a still-deep position rather than reaching for a low-VOLS player — UNLESS the scarce-position player is a clear VALUE.
@@ -128,6 +139,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
                 dp_line += f" Then #{d['following']} after that."
         dp_line += "\n"
 
+    dst_line = f"\n\nD/ST draft ranking (streamer, draft late): {DST_TEXT}" if DST_TEXT else ""
     return (
         "LIVE DRAFT STATE\n"
         + dp_line +
@@ -135,6 +147,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
         f"Startable players left by position: {scar}\n\n"
         f"Top {len(top)} available players (sorted by composite value; "
         f"ADP 'UD' = undrafted/no ADP, i.e. very likely to still be available later):\n{board_txt}"
+        f"{dst_line}"
     )
 
 
