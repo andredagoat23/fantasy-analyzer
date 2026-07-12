@@ -78,26 +78,58 @@ def require_login():
 
 
 def _login_screen():
-    st.markdown("<div style='height:7vh'></div>", unsafe_allow_html=True)
-    _, mid, _ = st.columns([1, 1.3, 1])
-    with mid:
-        with st.container(border=True):
-            st.markdown("## 🏈 Fantasy Analyzer")
-            st.caption("Your AI-powered draft war room — sign in to continue.")
-            st.divider()
-            if _has_auth():
-                st.button("Continue with Google", type="primary",
-                          icon=":material/login:", on_click=st.login, width="stretch")
-                st.caption("Secure sign-in via Google.")
-            else:
-                with st.form("login", border=False):
-                    pw = st.text_input("Password", type="password",
-                                       placeholder="Enter your password")
-                    ok = st.form_submit_button("Sign in", type="primary",
-                                               icon=":material/login:", width="stretch")
-                if ok:
-                    if pw and pw == _password():
-                        st.session_state["_authed"] = True
-                        st.rerun()
-                    else:
-                        st.error("Incorrect password.", icon=":material/lock:")
+    # Full-screen "front door": hide Streamlit chrome + the sidebar, center a narrow column,
+    # and lay a branded hero above the sign-in card.
+    st.markdown("""
+    <style>
+      [data-testid="stHeader"], [data-testid="stToolbar"],
+      [data-testid="stSidebarCollapsedControl"] { display: none !important; }
+      section[data-testid="stSidebar"] { display: none !important; }
+      [data-testid="stMainBlockContainer"], .block-container {
+        max-width: 600px !important; padding-top: 7vh !important;
+      }
+      .fa-hero { text-align: center; margin-bottom: 1.1rem; }
+      .fa-badge { font-size: 3rem; line-height: 1; }
+      .fa-title { font-size: 2.5rem; font-weight: 700; letter-spacing: -.03em; margin: .35rem 0 .1rem;
+                  background: linear-gradient(92deg,#E2725B 0%,#E9967A 55%,#F0B49F 100%);
+                  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+      .fa-tag { color: #9aa4b2; font-size: 1.05rem; margin: .2rem 0 1.15rem; }
+      .fa-chips { display: flex; gap: .45rem; justify-content: center; flex-wrap: wrap; }
+      .fa-chip { background: #191E26; border: 1px solid #2A313C; border-radius: 999px;
+                 padding: .3rem .85rem; font-size: .82rem; color: #c9d1d9; white-space: nowrap; }
+      .fa-foot { text-align: center; color: #6b7280; font-size: .78rem; margin-top: .9rem; }
+    </style>
+    <div class="fa-hero">
+      <div class="fa-badge">🏈</div>
+      <div class="fa-title">Fantasy Analyzer</div>
+      <div class="fa-tag">Your AI-powered draft war room.</div>
+      <div class="fa-chips">
+        <span class="fa-chip">🔥 Live value board</span>
+        <span class="fa-chip">📊 Vegas-blended projections</span>
+        <span class="fa-chip">🤖 AI advisor on the clock</span>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.container(border=True):
+        if _has_auth():
+            st.markdown("#### Welcome back")
+            st.caption("Sign in to open your draft war room.")
+            st.button("Continue with Google", type="primary",
+                      icon=":material/login:", on_click=st.login, width="stretch")
+        else:
+            st.markdown("#### Enter your password")
+            with st.form("login", border=False):
+                pw = st.text_input("Password", type="password",
+                                   placeholder="Password", label_visibility="collapsed")
+                ok = st.form_submit_button("Sign in", type="primary",
+                                           icon=":material/login:", width="stretch")
+            if ok:
+                if pw and pw == _password():
+                    st.session_state["_authed"] = True
+                    st.rerun()
+                else:
+                    st.error("Incorrect password.", icon=":material/lock:")
+
+    st.markdown('<div class="fa-foot">Built for draft day · your board, your advisor, one screen.</div>',
+                unsafe_allow_html=True)
