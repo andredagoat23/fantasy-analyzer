@@ -64,8 +64,8 @@ if "risk_pending" in st.session_state:
 
 # ---- navigation ----
 pages = [
-    st.Page("app_pages/setup.py", title="Setup", icon=":material/tune:"),
-    st.Page("app_pages/draft.py", title="Draft board", icon=":material/sports_football:", default=True),
+    st.Page("app_pages/setup.py", title="Setup", icon=":material/tune:", default=True),
+    st.Page("app_pages/draft.py", title="Draft board", icon=":material/sports_football:"),
 ]
 page = st.navigation(pages, position="top")
 

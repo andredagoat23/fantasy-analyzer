@@ -68,4 +68,6 @@ if saved:
     config_store.save(auth.current_user_key(), cfg)  # persist for next time
     st.toast("Setup saved — you're ready for draft day.", icon=":material/check_circle:")
 
-st.caption("When you're set, head to **Draft board** in the top menu.")
+st.divider()
+st.caption("Everything set? Lock it in and drop into the draft room.")
+st.link_button("🏈 Enter the draft", "/draft?enter=1", type="primary", width="stretch")

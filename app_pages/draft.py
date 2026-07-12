@@ -78,6 +78,16 @@ def style_board(df):
 
 board = load_board(os.path.getmtime("value_board.csv"))
 
+# "Enter the draft" links here as a full page load with ?enter=1 (a full load avoids the
+# switch_page quirk where the slot/teams inputs render their defaults). Play the fanfare once,
+# then clear the flag. Drop your own assets/draft_theme.mp3 to override the built-in jingle.
+if "enter" in st.query_params:
+    del st.query_params["enter"]
+    st.session_state["play_draft_music"] = True
+if st.session_state.pop("play_draft_music", False):
+    _theme = "assets/draft_theme.mp3" if os.path.exists("assets/draft_theme.mp3") else "assets/draft_theme.wav"
+    st.audio(_theme, autoplay=True)
+
 # core columns shown in compact (phone / split-screen) mode — fits a narrow screen
 CORE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "market"]
 
