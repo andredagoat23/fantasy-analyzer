@@ -103,9 +103,18 @@ st.session_state.setdefault("confirm_reset", False)
 st.session_state.setdefault("chat", [])
 st.session_state.setdefault("compact", False)
 st.session_state.setdefault("risk_level", "Balanced")   # AI can set this from chat
+st.session_state.setdefault("slot", 4)                  # my seat in the snake order
+st.session_state.setdefault("teams", 12)
+# apply slot/teams the AI set from chat, before those number_inputs render
+if "slot_pending" in st.session_state:
+    st.session_state["slot"] = max(1, min(16, st.session_state.pop("slot_pending")))
+    st.toast(f"Draft slot set to #{st.session_state['slot']}", icon=":material/sports_football:")
+if "teams_pending" in st.session_state:
+    st.session_state["teams"] = max(2, min(16, st.session_state.pop("teams_pending")))
 # apply a risk level the AI requested last turn, before the slider widget is created
 if "risk_pending" in st.session_state:
     st.session_state["risk_level"] = st.session_state.pop("risk_pending")
+    st.toast(f"Risk appetite set to **{st.session_state['risk_level']}**", icon=":material/tune:")
 
 # core columns shown in compact (phone / split-screen) mode — fits a narrow screen
 CORE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "market"]
@@ -185,6 +194,47 @@ strip = "  ·  ".join(f"**{p}** {scarcity[p]}" + (" :red-badge[thin]" if scarcit
                      for p in POSITIONS)
 st.markdown(f":material/inventory_2: &nbsp; {strip}")
 
+# Draft position — set your seat once; current pick + your next picks are computed from how many
+# players are marked drafted, and handed to the advisor as exact facts (no more guessing).
+with st.container(horizontal=True):
+    st.number_input("My slot", 1, 16, key="slot", width=120)
+    st.number_input("Teams", 2, 16, key="teams", width=120)
+slot, teams = st.session_state.slot, st.session_state.teams
+overall_now = len(st.session_state.drafted) + 1
+my_picks = [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]
+upcoming = [p for p in my_picks if p >= overall_now]
+next_pick = upcoming[0] if upcoming else None
+following = upcoming[1] if len(upcoming) > 1 else None
+my_turn = next_pick == overall_now
+picks_away = (next_pick - overall_now) if next_pick else None
+draft_pos = {"slot": slot, "teams": teams, "overall_now": overall_now, "my_turn": my_turn,
+             "next_pick": next_pick, "following": following, "picks_away": picks_away}
+if my_turn:
+    nxt = f" &nbsp;·&nbsp; next at #{following}" if following else ""
+    st.markdown(f"### :material/sports_football: YOUR PICK — overall #{overall_now}{nxt}")
+elif next_pick:
+    st.markdown(f"**On the clock:** #{overall_now} &nbsp;·&nbsp; **you're up at #{next_pick}** "
+                f"({picks_away} away, then #{following})")
+
+# Fast pick tracking — type a name, they're marked and gone from the board (no hunting for a checkbox)
+with st.container(border=True):
+    dc, mc = st.columns(2)
+    with dc:
+        just_drafted = st.selectbox("Someone drafted", [""] + sorted(available["full_name"]),
+                                    key=f"dbox_{st.session_state.version}",
+                                    help="Type a name and pick it — removes them from the board.")
+    with mc:
+        my_pick = st.selectbox("I drafted (my pick)", [""] + sorted(available["full_name"]),
+                               key=f"mbox_{st.session_state.version}",
+                               help="Type your pick — adds to your roster and removes from the board.")
+    if my_pick:
+        st.session_state.mine.add(my_pick)
+        st.session_state.drafted.add(my_pick)
+        bump()
+    if just_drafted:
+        st.session_state.drafted.add(just_drafted)
+        bump()
+
 REC_PROMPT = ("I'm on the clock. Given my roster, the board, and my strategy, who should I "
               "take right now and why? Note who'll likely still be there at my next pick.")
 
@@ -214,12 +264,13 @@ with st.container(border=True):
                 st.session_state.chat = []
                 st.rerun()
 
-        typed = st.chat_input("Ask the advisor…", submit_mode="disable")
+        typed = st.chat_input("Talk to the advisor…", submit_mode="disable")
         prompt = REC_PROMPT if rec else typed
+        mode = "pick" if rec else "chat"   # button = fast terse pick; typing = conversation
 
         if prompt:
             st.session_state.chat.append({"role": "user", "content": prompt})
-            context = advisor.build_context(available, mine_df, scarcity)
+            context = advisor.build_context(available, mine_df, scarcity, draft_pos)
             api_messages = (st.session_state.chat[:-1]
                             + [{"role": "user", "content": f"{context}\n\n{prompt}"}])
             with history_box:
@@ -227,20 +278,26 @@ with st.container(border=True):
                     st.markdown(prompt)
                 with st.chat_message("assistant"):
                     try:
-                        reply = st.write_stream(advisor.stream_advice(client, api_messages))
+                        reply = st.write_stream(advisor.stream_advice(client, api_messages, mode))
                     except Exception as e:
                         reply = f"⚠️ Advisor error: {e}"
                         st.error(reply)
-            # if the advisor set a risk level, move the slider and strip the tag from the message
-            tag = re.search(r"\[\[risk:\s*([^\]]+)\]\]", reply, re.I)
-            if tag:
-                lvl = next((L for L in RISK_LEVELS if L.lower() == tag.group(1).strip().lower()), None)
+            # the advisor can set the risk dial + my draft slot/teams from chat via [[tags]]
+            rtag = re.search(r"\[\[risk:\s*([^\]]+)\]\]", reply, re.I)
+            if rtag:
+                lvl = next((L for L in RISK_LEVELS if L.lower() == rtag.group(1).strip().lower()), None)
                 if lvl:
                     st.session_state["risk_pending"] = lvl
-                reply = re.sub(r"\s*\[\[risk:[^\]]+\]\]\s*", "", reply, flags=re.I).strip()
+            stag = re.search(r"\[\[slot:\s*(\d+)\]\]", reply, re.I)
+            if stag:
+                st.session_state["slot_pending"] = int(stag.group(1))
+            ttag = re.search(r"\[\[teams:\s*(\d+)\]\]", reply, re.I)
+            if ttag:
+                st.session_state["teams_pending"] = int(ttag.group(1))
+            reply = re.sub(r"\s*\[\[(?:risk|slot|teams):[^\]]+\]\]\s*", "", reply, flags=re.I).strip()
             st.session_state.chat.append({"role": "assistant", "content": reply})
-            if "risk_pending" in st.session_state:
-                st.rerun()   # re-render so the slider + board reflect the AI's risk choice
+            if any(k in st.session_state for k in ("risk_pending", "slot_pending", "teams_pending")):
+                st.rerun()   # re-render so the dial / slot / board reflect the AI's changes
 
 with st.container(horizontal=True):   # wraps to multiple rows on narrow screens
     picked_pos = st.multiselect("Position", POSITIONS, width=200)

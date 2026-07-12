@@ -8,7 +8,10 @@ testable and keeps the app free of modeling.
 import anthropic
 import pandas as pd
 
-MODEL = "claude-opus-4-8"
+# Adaptive by task: the quick "Recommend my pick" button uses the fastest model (live clock),
+# typed conversation uses a deeper one. No extended thinking on either — speed matters live.
+MODEL_PICK = "claude-haiku-4-5"
+MODEL_CHAT = "claude-sonnet-4-6"
 
 SYSTEM = """You are an elite fantasy football draft strategist advising me LIVE during my draft. Give sharp, fast, decision-ready advice — I have about 90 seconds on the clock.
 
@@ -47,22 +50,28 @@ SCARCITY-PIVOT RULE
 When a position's startable pool is running thin, prefer pivoting to a still-deep position rather than reaching for a low-VOLS player — UNLESS the scarce-position player is a clear VALUE.
 
 SURVIVAL / "will he wheel back to me?" REASONING
-I'll tell you my draft slot and current pick. It's a snake, so my next pick's overall number = current pick + 2 * (picks until my turn). Compare a player's ADP to that next pick:
-- ADP well past my next pick (~8-12+ spots later) → likely makes it back; I can wait and take a scarcer/better-fit player now.
+I give you my EXACT draft position each turn in the DRAFT POSITION line — the overall pick on the clock, my next pick number(s), and how many picks until I'm up. USE THOSE NUMBERS DIRECTLY. Never recompute my picks or ask me for them; trust the numbers given. To judge if a player wheels back, compare his ADP to MY NEXT PICK number:
+- ADP well past my next pick (~8-12+ later) → likely makes it back; I can wait and take a scarcer/better-fit player now.
 - ADP at or before my next pick → likely gone; take him now if I want him.
-Treat ADP as approximate (~a round of swing). Let my RISK APPETITE break close calls: risk-averse → grab him now; risk-tolerant → wait for value. Always state the tradeoff ("likely back at your next pick" / "won't last — take him now").
+Treat ADP as approximate (~a round of swing). Let my RISK APPETITE break close calls: risk-averse → grab him now; risk-tolerant → wait for value. Always state the tradeoff ("likely back at your next pick at #X" / "won't last to #X — take him now").
 
 RISK APPETITE CONTROL
 The board has a "Risk appetite" dial (Full send / Aggressive / Balanced / Cautious / Safe) that fades risky (injury-prone, boom/bust) players on the Everything board. When I state or change my risk preference, set the dial by ending your reply with a tag on its own line: [[risk:LEVEL]] using EXACTLY one of those five labels. Map my words: "safe / high floor / conservative / avoid busts" -> Safe (or Cautious if milder); "balanced" -> Balanced; "some upside / aggressive" -> Aggressive; "max upside / boom or bust / ignore risk / all ceiling" -> Full send. Only add the tag when I actually express a risk preference — never otherwise. Still answer my question normally; the tag is an extra line at the very end.
 
-HOW TO RESPOND
-Have a real conversation — answer what I actually asked, don't force a pick every time.
-- If I ask you to recommend a pick (or say I'm on the clock): lead with ONE clear pick in bold, then 1-2 alternatives each with a one-line why, and note survival odds / strong role or situation signals.
-- If I'm asking a question, comparing players, reacting, or just thinking out loud: answer directly and conversationally. Discuss it with me — don't tack on a pick recommendation I didn't ask for.
-Either way: be concise and skimmable, bold player names, and ground everything in the data. If you're missing my draft slot, strategy, or risk appetite and it actually matters for what I asked, ask in one short line."""
+DRAFT SETUP CONTROL
+When I tell you my draft slot (which seat I pick from, e.g. "I'm picking 3rd") or my league size (number of teams), set them on the board by adding tags at the very end of your reply: [[slot:N]] for my seat and/or [[teams:N]] for the number of teams. Example: "I draft 3rd in a 12-team snake" -> [[slot:3]] [[teams:12]]. Only add these when I actually state that info.
+
+STYLE (both modes)
+Be concise and skimmable, bold player names, and ground everything in the data I gave you. TRUST: when you point me toward a player the crowd is fading (his ADP or expert rank is worse than where your board has him), say so out loud and give the ONE reason he's a value on my board — I get nervous picking guys the internet says to avoid, so tell me why we're right. A specific mode instruction follows below."""
 
 
-def build_context(available, mine_df, scarcity, top_n=35):
+# Appended per call depending on how I engaged (button vs. typing).
+PICK_MODE = """MODE: PICK — I just hit "Recommend my pick" and I'm ON THE CLOCK. Give me your single best pick RIGHT NOW: one **bold name** + at most one short sentence why (need / value / will-he-wheel-back), then one **bold** fallback in a few words. Under ~50 words total. No preamble, no long options list, no questions back — just make the call, fast."""
+
+CHAT_MODE = """MODE: CONVERSATION — I'm talking things through, NOT asking for a pick. Discuss, compare, react, answer my question. Do NOT declare a single "pick" or tell me who to draft unless I literally ask "who should I take / who do I pick." Just have the conversation with me. Keep it short."""
+
+
+def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
     """Compact text snapshot of the live board for the current turn."""
     cols = ["full_name", "pos_label", "team", "team_implied_total", "vols", "adp_rank", "ecr_tier",
             "market", "risk_tier", "target_share_2025", "snap_share_2025", "age", "is_rookie",
@@ -102,8 +111,26 @@ def build_context(available, mine_df, scarcity, top_n=35):
         roster, proj = "empty (no picks yet)", 0
     scar = ", ".join(f"{p} {scarcity[p]}" for p in scarcity)
 
+    dp_line = ""
+    if draft_pos:
+        d = draft_pos
+        dp_line = (f"DRAFT POSITION: I pick at slot {d['slot']} of {d['teams']} (snake). "
+                   f"On the clock: overall pick #{d['overall_now']}. ")
+        if d["my_turn"]:
+            dp_line += "It is MY pick RIGHT NOW."
+            if d.get("following"):
+                gap = d["following"] - d["overall_now"]
+                dp_line += (f" My next pick after this is #{d['following']} ({gap} picks away) — "
+                            f"compare ADPs to #{d['following']} to judge who wheels back to me.")
+        else:
+            dp_line += f"Not my pick — I'm up next at #{d['next_pick']} ({d['picks_away']} picks away)."
+            if d.get("following"):
+                dp_line += f" Then #{d['following']} after that."
+        dp_line += "\n"
+
     return (
         "LIVE DRAFT STATE\n"
+        + dp_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"Startable players left by position: {scar}\n\n"
         f"Top {len(top)} available players (sorted by composite value; "
@@ -115,14 +142,18 @@ def get_client(api_key):
     return anthropic.Anthropic(api_key=api_key)
 
 
-def stream_advice(client, messages):
-    """Yield the response text token-by-token for st.write_stream."""
+def stream_advice(client, messages, mode="chat"):
+    """Yield the response text token-by-token for st.write_stream.
+
+    mode="pick"  -> fast model, terse pick-first answer (the button).
+    mode="chat"  -> deeper model, pure conversation (typed messages).
+    """
+    is_pick = mode == "pick"
+    system = SYSTEM + "\n\n" + (PICK_MODE if is_pick else CHAT_MODE)
     with client.messages.stream(
-        model=MODEL,
-        max_tokens=1500,
-        system=SYSTEM,
-        thinking={"type": "adaptive"},
-        output_config={"effort": "medium"},
+        model=MODEL_PICK if is_pick else MODEL_CHAT,
+        max_tokens=400 if is_pick else 900,
+        system=system,
         messages=messages,
     ) as stream:
         yield from stream.text_stream
