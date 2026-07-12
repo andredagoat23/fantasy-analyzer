@@ -5,6 +5,12 @@ import re
 
 import advisor
 
+try:
+    import espn_sync
+    ESPN_OK = True
+except Exception:              # espn-api not installed -> live sync simply unavailable
+    ESPN_OK = False
+
 st.set_page_config(
     page_title="Fantasy Analyzer",
     page_icon="🏈",
@@ -105,6 +111,7 @@ st.session_state.setdefault("compact", False)
 st.session_state.setdefault("risk_level", "Balanced")   # AI can set this from chat
 st.session_state.setdefault("slot", 4)                  # my seat in the snake order
 st.session_state.setdefault("teams", 12)
+st.session_state.setdefault("my_team_id", None)         # my ESPN team (for auto-roster)
 # apply slot/teams the AI set from chat, before those number_inputs render
 if "slot_pending" in st.session_state:
     st.session_state["slot"] = max(1, min(16, st.session_state.pop("slot_pending")))
@@ -123,6 +130,16 @@ CORE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "market"]
 @st.cache_resource
 def get_advisor_client(api_key):   # cached so we reuse one Anthropic client
     return advisor.get_client(api_key)
+
+
+@st.cache_resource(show_spinner=False)
+def connect_league(league_id, year, espn_s2, swid):   # one ESPN connection, reused for polling
+    return espn_sync.connect(league_id, year, espn_s2, swid)
+
+
+@st.cache_data(show_spinner=False)
+def espn_maps(mtime):    # espn_id + name lookups from the board (mtime busts on regen)
+    return espn_sync.build_maps(board)
 
 
 def bump():
@@ -194,6 +211,51 @@ strip = "  ·  ".join(f"**{p}** {scarcity[p]}" + (" :red-badge[thin]" if scarcit
                      for p in POSITIONS)
 st.markdown(f":material/inventory_2: &nbsp; {strip}")
 
+# ---- Live ESPN draft sync (activates only when [espn] secrets are set) ----
+try:
+    espn_cfg = dict(st.secrets.get("espn", {})) if ESPN_OK else {}
+except Exception:
+    espn_cfg = {}
+sync_active = False
+if espn_cfg.get("league_id"):
+    with st.container(border=True):
+        try:
+            league = connect_league(str(espn_cfg["league_id"]), int(espn_cfg.get("year", 2026)),
+                                    espn_cfg.get("espn_s2"), espn_cfg.get("swid"))
+            team_opts = espn_sync.teams(league)                     # [(id, name)]
+            name_to_id = {name: tid for tid, name in team_opts}
+            c1, c2 = st.columns([3, 1])
+            with c1:
+                chosen = st.selectbox("Which team is yours?", ["—"] + [n for _, n in team_opts],
+                                      key="my_team_name")
+                st.session_state.my_team_id = name_to_id.get(chosen)
+            with c2:
+                sync_active = st.toggle("Live", value=True, key="live_on",
+                                        help="Auto-track picks from your ESPN draft every few seconds.")
+            dot = "🟢 live" if sync_active else "⚪ paused"
+            hint = "" if st.session_state.get("my_team_id") else " — pick your team to auto-fill your roster"
+            st.caption(f"{dot} · ESPN league {espn_cfg['league_id']} · {len(team_opts)} teams{hint}")
+        except Exception as e:
+            st.warning(f"Couldn't reach your ESPN draft: {e}", icon=":material/wifi_off:")
+
+    if sync_active:
+        by_espn, by_name = espn_maps(os.path.getmtime("value_board.csv"))
+
+        @st.fragment(run_every=5)
+        def poll_draft():
+            try:
+                picks = espn_sync.fetch_picks(league, by_espn, by_name)
+            except Exception:
+                return   # transient ESPN hiccup — keep last state, retry next tick
+            drafted = {p["name"] for p in picks if p["name"]}
+            mine = {p["name"] for p in picks
+                    if p["name"] and p["team_id"] == st.session_state.get("my_team_id")}
+            if drafted != st.session_state.drafted or mine != st.session_state.mine:
+                st.session_state.drafted, st.session_state.mine = drafted, mine
+                st.session_state.version += 1
+                st.rerun(scope="app")   # refresh the whole board with the new picks
+        poll_draft()
+
 # Draft position — set your seat once; current pick + your next picks are computed from how many
 # players are marked drafted, and handed to the advisor as exact facts (no more guessing).
 with st.container(horizontal=True):
@@ -216,24 +278,25 @@ elif next_pick:
     st.markdown(f"**On the clock:** #{overall_now} &nbsp;·&nbsp; **you're up at #{next_pick}** "
                 f"({picks_away} away, then #{following})")
 
-# Fast pick tracking — type a name, they're marked and gone from the board (no hunting for a checkbox)
-with st.container(border=True):
-    dc, mc = st.columns(2)
-    with dc:
-        just_drafted = st.selectbox("Someone drafted", [""] + sorted(available["full_name"]),
-                                    key=f"dbox_{st.session_state.version}",
-                                    help="Type a name and pick it — removes them from the board.")
-    with mc:
-        my_pick = st.selectbox("I drafted (my pick)", [""] + sorted(available["full_name"]),
-                               key=f"mbox_{st.session_state.version}",
-                               help="Type your pick — adds to your roster and removes from the board.")
-    if my_pick:
-        st.session_state.mine.add(my_pick)
-        st.session_state.drafted.add(my_pick)
-        bump()
-    if just_drafted:
-        st.session_state.drafted.add(just_drafted)
-        bump()
+# Manual pick tracking — only when NOT live-synced (during a live draft the poller owns this)
+if not sync_active:
+    with st.container(border=True):
+        dc, mc = st.columns(2)
+        with dc:
+            just_drafted = st.selectbox("Someone drafted", [""] + sorted(available["full_name"]),
+                                        key=f"dbox_{st.session_state.version}",
+                                        help="Type a name and pick it — removes them from the board.")
+        with mc:
+            my_pick = st.selectbox("I drafted (my pick)", [""] + sorted(available["full_name"]),
+                                   key=f"mbox_{st.session_state.version}",
+                                   help="Type your pick — adds to your roster and removes from the board.")
+        if my_pick:
+            st.session_state.mine.add(my_pick)
+            st.session_state.drafted.add(my_pick)
+            bump()
+        if just_drafted:
+            st.session_state.drafted.add(just_drafted)
+            bump()
 
 REC_PROMPT = ("I'm on the clock. Given my roster, the board, and my strategy, who should I "
               "take right now and why? Note who'll likely still be there at my next pick.")

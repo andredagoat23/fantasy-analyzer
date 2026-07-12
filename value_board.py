@@ -98,7 +98,8 @@ cols = ["overall_rank", "rank_ecr", "rank_composite", "full_name", "pos_label", 
         "floor", "ceiling", "p_elite", "p_startable", "p_bust", "P_pos1",
         # situational fields the AI advisor reasons over (not shown in the board table)
         "team", "team_implied_total", "age", "bye_week", "target_share_2025", "snap_share_2025",
-        "ecr_tier", "is_rookie", "draft_pick"]
+        "ecr_tier", "is_rookie", "draft_pick",
+        "espn_id"]   # for live ESPN draft sync (maps ESPN pick playerId -> our player)
 board[cols].to_csv("value_board.csv", index=False)
 board.round(3).to_csv("app_data.csv", index=False)
 board.round(3).to_json("app_data.json", orient="records", indent=2)
