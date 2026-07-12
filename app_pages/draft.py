@@ -5,6 +5,8 @@ import pandas as pd
 import streamlit as st
 
 import advisor
+import auth
+import config_store
 
 try:
     import espn_sync
@@ -165,8 +167,12 @@ with st.sidebar:
         st.button("Yes, reset", on_click=do_reset, width="stretch")
         st.button("Cancel", on_click=cancel_reset, width="stretch")
 
-st.toggle("Compact view", key="compact",
-          help="Trims the board to core columns and tightens the layout for phone / split-screen.")
+with st.container(horizontal=True):
+    if st.button("Exit draft", icon=":material/arrow_back:"):
+        config_store.save(auth.current_user_key())   # keep disk current for the setup reseed
+        st.switch_page("app_pages/setup.py")
+    st.toggle("Compact view", key="compact",
+              help="Trims the board to core columns and tightens the layout for phone / split-screen.")
 
 # scarcity strip — always visible, so it stays glanceable when the sidebar is collapsed
 strip = "  ·  ".join(f"**{p}** {scarcity[p]}" + (" :red-badge[thin]" if scarcity[p] <= 5 else "")

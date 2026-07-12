@@ -47,29 +47,37 @@ st.session_state.setdefault("risk_level", "Balanced")   # AI / setup can set thi
 st.session_state.setdefault("slot", 4)                  # my seat in the snake order
 st.session_state.setdefault("teams", 12)
 st.session_state.setdefault("my_team_id", None)         # my ESPN team (for auto-roster)
-
-# load this user's saved pre-draft setup once per session (overrides the defaults above)
-if not st.session_state.get("_config_loaded"):
-    config_store.apply(config_store.load(auth.current_user_key()))
-    st.session_state["_config_loaded"] = True
-
-# apply slot/teams the AI set from chat, before those number_inputs render
-if "slot_pending" in st.session_state:
-    st.session_state["slot"] = max(1, min(20, st.session_state.pop("slot_pending")))
-    st.toast(f"Draft slot set to #{st.session_state['slot']}", icon=":material/sports_football:")
-if "teams_pending" in st.session_state:
-    st.session_state["teams"] = max(2, min(20, st.session_state.pop("teams_pending")))
-# apply a risk level the AI requested last turn, before the slider widget is created
-if "risk_pending" in st.session_state:
-    st.session_state["risk_level"] = st.session_state.pop("risk_pending")
-    st.toast(f"Risk appetite set to **{st.session_state['risk_level']}**", icon=":material/tune:")
+# setup-page fields (live widgets keyed to these; loaded from saved config just below)
+st.session_state.setdefault("league_name", "")
+st.session_state.setdefault("site", "ESPN")
+st.session_state.setdefault("league_id", "")
+st.session_state.setdefault("scoring", "PPR")
+st.session_state.setdefault("scoring_custom", "")
+st.session_state.setdefault("strategy", "")
 
 # ---- navigation ----
 pages = [
     st.Page("app_pages/setup.py", title="Setup", icon=":material/tune:", default=True),
     st.Page("app_pages/draft.py", title="Draft board", icon=":material/sports_football:"),
 ]
-page = st.navigation(pages, position="top")
+page = st.navigation(pages, position="hidden")   # move only via Enter draft / Exit draft buttons
+
+# Reseed the saved setup from disk on first load AND on every page switch. Widget-keyed state
+# doesn't survive an st.navigation page change, so we reload the (just-saved) values for the page
+# we're entering. Within a page there's no switch, so live edits are untouched.
+if st.session_state.get("_nav_at") != page.title:
+    st.session_state["_nav_at"] = page.title
+    config_store.apply(config_store.load(auth.current_user_key()))
+
+# apply slot/teams/risk the AI set from chat, before those widgets render (after the reseed above)
+if "slot_pending" in st.session_state:
+    st.session_state["slot"] = max(1, min(20, st.session_state.pop("slot_pending")))
+    st.toast(f"Draft slot set to #{st.session_state['slot']}", icon=":material/sports_football:")
+if "teams_pending" in st.session_state:
+    st.session_state["teams"] = max(2, min(20, st.session_state.pop("teams_pending")))
+if "risk_pending" in st.session_state:
+    st.session_state["risk_level"] = st.session_state.pop("risk_pending")
+    st.toast(f"Risk appetite set to **{st.session_state['risk_level']}**", icon=":material/tune:")
 
 # branded header + account menu, above the page content
 hl, hr = st.columns([4, 1], vertical_alignment="center")

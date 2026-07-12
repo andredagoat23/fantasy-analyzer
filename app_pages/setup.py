@@ -8,6 +8,17 @@ SITES = ["ESPN", "Sleeper", "Yahoo", "Other"]
 SCORING = ["PPR", "Half-PPR", "Standard", "Custom"]
 RISK_LEVELS = ["Full send", "Aggressive", "Balanced", "Cautious", "Safe"]
 
+# --- Top action bar: Save + Enter the draft, immediately visible at the top ---
+a1, a2 = st.columns(2)
+with a1:
+    if st.button("Save changes", icon=":material/save:", width="stretch"):
+        config_store.save(auth.current_user_key())
+        st.toast("Setup saved.", icon=":material/check_circle:")
+with a2:
+    if st.button("Enter the draft", type="primary", icon=":material/sports_football:", width="stretch"):
+        config_store.save(auth.current_user_key())
+        st.switch_page("app_pages/draft.py")
+
 st.markdown("#### :material/tune: Pre-draft setup")
 st.caption("Set everything up here before draft day, so the board is pure speed once the clock starts.")
 
@@ -17,77 +28,50 @@ try:
 except Exception:
     espn_ready = False
 
-with st.form("setup"):
-    with st.container(border=True):
-        st.markdown("**:material/emoji_events: League**")
-        league_name = st.text_input("League name", value=st.session_state.get("league_name", ""),
-                                     placeholder="e.g. The Sunday Scaries")
-        site = st.segmented_control("Drafting site", SITES,
-                                    default=st.session_state.get("site", "ESPN"))
-        c1, c2 = st.columns(2)
-        teams = int(c1.number_input("League size (teams)", 2, 20, st.session_state.get("teams", 12)))
-        slot = c2.number_input("Your draft slot", 1, teams,
-                               min(int(st.session_state.get("slot", 4)), teams),
-                               help="Your seat in the snake order — pick 1 drafts first each odd round. "
-                                    "Caps at your league size.")
+# Fields are live (not batched in a form) so the slot max follows league size immediately, and
+# they're keyed to session_state so values persist across reruns without a submit.
+with st.container(border=True):
+    st.markdown("**:material/emoji_events: League**")
+    st.text_input("League name", key="league_name", placeholder="e.g. The Sunday Scaries")
+    st.segmented_control("Drafting site", SITES, key="site")
+    c1, c2 = st.columns(2)
+    with c1:
+        st.number_input("League size (teams)", 2, 20, key="teams")
+    with c2:
+        _tm = int(st.session_state.get("teams", 12))
+        if int(st.session_state.get("slot", 1)) > _tm:      # keep slot within the league
+            st.session_state["slot"] = _tm
+        st.number_input("Your draft slot", 1, _tm, key="slot",
+                        help="Your seat in the snake order. Caps at your league size.")
 
-    with st.container(border=True):
-        st.markdown("**:material/link: Connection**")
-        league_id = st.text_input("League ID", value=st.session_state.get("league_id", ""),
-                                  help="Found in your league URL. For live ESPN sync, also add it to secrets.")
-        if espn_ready:
-            st.success("ESPN live sync is connected — picks auto-track during your draft.",
-                       icon=":material/wifi:")
-        else:
-            st.info("ESPN live sync isn't configured, so you'll track picks manually on the board. "
-                    "Add an `[espn]` block to secrets to enable auto-tracking.",
-                    icon=":material/wifi_off:")
+with st.container(border=True):
+    st.markdown("**:material/link: Connection**")
+    st.text_input("League ID", key="league_id",
+                  help="Found in your league URL. For live ESPN sync, also add it to secrets.")
+    if espn_ready:
+        st.success("ESPN live sync is connected — picks auto-track during your draft.",
+                   icon=":material/wifi:")
+    else:
+        st.info("ESPN live sync isn't configured, so you'll track picks manually on the board. "
+                "Add an `[espn]` block to secrets to enable auto-tracking.",
+                icon=":material/wifi_off:")
 
-    with st.container(border=True):
-        st.markdown("**:material/strategy: Strategy defaults**")
-        strategy = st.text_area("Your draft strategy", value=st.session_state.get("strategy", ""),
-                                placeholder="e.g. Hero RB — lock one elite RB early, then hammer WR. "
-                                            "Wait on QB until round 8+. Stream D/ST and K late.")
-        risk_level = st.select_slider("Default risk appetite", RISK_LEVELS,
-                                      value=st.session_state.get("risk_level", "Balanced"),
-                                      help="Where the Everything board and advisor start. "
-                                           "You can still change it live in chat.")
-
-    saved = st.form_submit_button("Save setup", type="primary", icon=":material/save:")
-
-if saved:
-    cfg = {"league_name": league_name, "site": site, "league_id": league_id,
-           "teams": int(teams), "slot": int(slot),          # scoring lives in its own block below
-           "strategy": strategy, "risk_level": risk_level}
-    config_store.apply(cfg)                        # push into session_state now
-    config_store.save(auth.current_user_key())     # persist the full setup for next time
-    st.toast("Setup saved — you're ready for draft day.", icon=":material/check_circle:")
-
-# ---- Scoring — its own block (interactive AI decipher can't live inside the save form) ----
 with st.container(border=True):
     st.markdown("**:material/functions: Scoring**")
-    scoring = st.segmented_control("League scoring", SCORING,
-                                   default=st.session_state.get("scoring", "PPR")) or "PPR"
-    st.session_state["scoring"] = scoring
-    if scoring != st.session_state.get("_scoring_last"):     # persist a preset change immediately
-        st.session_state["_scoring_last"] = scoring
-        config_store.save(auth.current_user_key())
-
+    scoring = st.segmented_control("League scoring", SCORING, key="scoring")
     if scoring == "Custom":
         st.caption("Paste your league's exact scoring rules and let AI translate them into a clean "
                    "breakdown the advisor will use. (This informs the advisor — the board's rankings "
                    "stay as computed in the pipeline.)")
-        raw = st.text_area("Your scoring settings", value=st.session_state.get("scoring_custom", ""),
-                           height=150,
+        raw = st.text_area("Your scoring settings", key="scoring_custom", height=150,
                            placeholder="Paste from your league settings, e.g. Passing TD 4, INT -2, "
                                        "Rush/Rec TD 6, Reception 0.5, 100+ rush/rec yds +3 …")
-        st.session_state["scoring_custom"] = raw
         try:
             _api_key = st.secrets.get("ANTHROPIC_API_KEY")
         except Exception:
             _api_key = None
         go = st.button("Decipher with AI", icon=":material/auto_awesome:", type="primary",
-                       disabled=not (_api_key and raw.strip()))
+                       disabled=not (_api_key and (raw or "").strip()))
         if not _api_key:
             st.caption("Add `ANTHROPIC_API_KEY` to secrets to enable AI parsing.")
         if go:
@@ -108,7 +92,10 @@ with st.container(border=True):
         st.caption("Tells the advisor how your league scores. Choose **Custom** to paste and "
                    "AI-parse your exact settings.")
 
-st.divider()
-st.caption("Everything set? Lock it in and drop into the draft room.")
-if st.button("🏈 Enter the draft", type="primary", width="stretch"):
-    st.switch_page("app_pages/draft.py")
+with st.container(border=True):
+    st.markdown("**:material/strategy: Strategy defaults**")
+    st.text_area("Your draft strategy", key="strategy",
+                 placeholder="e.g. Hero RB — lock one elite RB early, then hammer WR. "
+                             "Wait on QB until round 8+. Stream D/ST and K late.")
+    st.select_slider("Default risk appetite", RISK_LEVELS, key="risk_level",
+                     help="Where the Everything board and advisor start. You can still change it live in chat.")
