@@ -98,7 +98,8 @@ df = df.drop(columns=["_obs", "_ns"])
 median_cv = df["consistency"].median()
 
 # ---- 5. Monte Carlo: right-skewed, injury- & capital-aware ----
-NEW = ["floor", "ceiling", "p10", "p90", "P_pos1", "P_pos2", "P_pos3", "p_elite", "p_startable", "p_bust"]
+NEW = ["floor", "ceiling", "p10", "p90", "P_pos1", "P_pos2", "P_pos3", "p_elite", "p_startable", "p_bust",
+       "floor_healthy", "ceiling_healthy"]   # injury-free floor/ceiling (for the injury-neutral composite base)
 for c in NEW:
     df[c] = np.nan
 
@@ -124,11 +125,14 @@ for pos in ["QB", "RB", "WR", "TE", "K"]:
     games = np.where(major, np.random.uniform(0, 8, (n, N_SIMS)), normal_games)
     M = np.random.lognormal((-(season_sigma**2)/2)[:, None], season_sigma[:, None], (n, N_SIMS))
     sims = games * (per_game*tilt)[:, None] * M
+    sims_healthy = (proj*tilt)[:, None] * M      # injury-free: full season, same season variance
 
     finish = (-sims).argsort(0).argsort(0) + 1
     repl = REPLACEMENT.get(pos, 24)
     df.loc[sub.index, "floor"] = np.percentile(sims, 20, axis=1)
     df.loc[sub.index, "ceiling"] = np.percentile(sims, 80, axis=1)
+    df.loc[sub.index, "floor_healthy"] = np.percentile(sims_healthy, 20, axis=1)
+    df.loc[sub.index, "ceiling_healthy"] = np.percentile(sims_healthy, 80, axis=1)
     df.loc[sub.index, "p10"] = np.percentile(sims, 10, axis=1)
     df.loc[sub.index, "p90"] = np.percentile(sims, 90, axis=1)
     df.loc[sub.index, "p_elite"] = (finish <= 3).mean(1)

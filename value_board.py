@@ -37,8 +37,11 @@ repl_pts = {}
 for pos, n in startable_counts(board).items():
     pts = board.loc[board["position"] == pos, "total_points"].dropna()
     repl_pts[pos] = pts.nlargest(n).min() if len(pts) >= n else (pts.min() if len(pts) else 0.0)
-ceil_val = board["ceiling"] - board["position"].map(repl_pts)     # upside over replacement
-floor_val = board["floor"] - board["position"].map(repl_pts)      # downside over replacement
+# injury-FREE floor/ceiling here so the base composite carries no injury discount — injury is applied
+# entirely by the app's "Fade injury risk" slider (0 = no injury effect anywhere). Displayed floor/
+# ceiling columns stay injury-adjusted.
+ceil_val = board["ceiling_healthy"] - board["position"].map(repl_pts)   # injury-free upside over replacement
+floor_val = board["floor_healthy"] - board["position"].map(repl_pts)    # injury-free floor over replacement
 
 # role = receiving usage (target share) percentile within position, for WR/TE/RB. Target share is
 # the stable PPR-predictive role signal; using it (not snap share) for RBs rewards dual-threat backs

@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import re
 
 import advisor
 
@@ -37,6 +38,18 @@ ROSTER_SLOTS = [("QB", "QB"), ("RB", "RB"), ("RB", "RB"), ("WR", "WR"), ("WR", "
 
 RANK_OPTIONS = {"ADP": "adp_rank", "Everything": "rank_composite",
                 "Value + experts": "rank_ecr", "Value": "overall_rank"}
+# Risk-appetite dial (Everything tab): fades risky players by their bust probability (p_bust,
+# which blends injury + boom/bust volatility). aversion 0 = rank purely on talent/value.
+RISK_PEN = 80
+RISK_LEVELS = ["Full send", "Aggressive", "Balanced", "Cautious", "Safe"]
+RISK_AVERSION = {"Full send": 0.0, "Aggressive": 0.25, "Balanced": 0.5, "Cautious": 0.75, "Safe": 1.0}
+RISK_DESC = {
+    "Full send": "Ignore all risk — rank purely on talent and value (no injury or bust penalty).",
+    "Aggressive": "Barely fade risk — lean into upside and boom/bust ceilings.",
+    "Balanced": "Modest fade for injury-prone and boom/bust players.",
+    "Cautious": "Fade risky players noticeably — favor safer floors.",
+    "Safe": "Prioritize durable, high-floor players — fade all injury and boom/bust risk hard.",
+}
 BASE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "ecr_rank",
              "value_gap", "market", "risk_tier", "floor", "ceiling", "p_startable"]
 
@@ -89,6 +102,10 @@ st.session_state.setdefault("version", 0)
 st.session_state.setdefault("confirm_reset", False)
 st.session_state.setdefault("chat", [])
 st.session_state.setdefault("compact", False)
+st.session_state.setdefault("risk_level", "Balanced")   # AI can set this from chat
+# apply a risk level the AI requested last turn, before the slider widget is created
+if "risk_pending" in st.session_state:
+    st.session_state["risk_level"] = st.session_state.pop("risk_pending")
 
 # core columns shown in compact (phone / split-screen) mode — fits a narrow screen
 CORE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "market"]
@@ -214,7 +231,16 @@ with st.container(border=True):
                     except Exception as e:
                         reply = f"⚠️ Advisor error: {e}"
                         st.error(reply)
+            # if the advisor set a risk level, move the slider and strip the tag from the message
+            tag = re.search(r"\[\[risk:\s*([^\]]+)\]\]", reply, re.I)
+            if tag:
+                lvl = next((L for L in RISK_LEVELS if L.lower() == tag.group(1).strip().lower()), None)
+                if lvl:
+                    st.session_state["risk_pending"] = lvl
+                reply = re.sub(r"\s*\[\[risk:[^\]]+\]\]\s*", "", reply, flags=re.I).strip()
             st.session_state.chat.append({"role": "assistant", "content": reply})
+            if "risk_pending" in st.session_state:
+                st.rerun()   # re-render so the slider + board reflect the AI's risk choice
 
 with st.container(horizontal=True):   # wraps to multiple rows on narrow screens
     picked_pos = st.multiselect("Position", POSITIONS, width=200)
@@ -225,6 +251,18 @@ with st.container(horizontal=True):   # wraps to multiple rows on narrow screens
 
 rank_choice = st.segmented_control("Rank by", list(RANK_OPTIONS), default="ADP")
 rank_col = RANK_OPTIONS.get(rank_choice, "adp_rank")
+
+# Everything tab: a risk-appetite dial that fades risky (injury-prone / boom-bust) players.
+# The AI sets this when you tell it your risk in chat.
+if rank_choice == "Everything":
+    risk_level = st.select_slider("Risk appetite", RISK_LEVELS, key="risk_level",
+                                  help="How hard to fade risky players (injury-prone or boom/bust) on the "
+                                       "Everything board. Tell the AI your risk in chat and it moves this for you.")
+    st.caption(f":material/tune: **{risk_level}** — {RISK_DESC[risk_level]}")
+    av = RISK_AVERSION[risk_level]
+    adj = available["rank_composite"] + av * RISK_PEN * available["p_bust"].fillna(0)
+    available = available.assign(everything_adj=adj.rank(method="min").astype(int))
+    rank_col = "everything_adj"
 
 view = available
 if picked_pos:
