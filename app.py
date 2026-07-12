@@ -28,6 +28,8 @@ st.markdown("""
   line-height: 1.4;
 }
 [data-testid="stHeader"] { background: transparent; }
+/* draft-entry fanfare: autoplay only, no visible player */
+[data-testid="stAudio"] { display: none !important; }
 </style>
 """, unsafe_allow_html=True)
 

@@ -70,4 +70,5 @@ if saved:
 
 st.divider()
 st.caption("Everything set? Lock it in and drop into the draft room.")
-st.link_button("🏈 Enter the draft", "/draft?enter=1", type="primary", width="stretch")
+if st.button("🏈 Enter the draft", type="primary", width="stretch"):
+    st.switch_page("app_pages/draft.py")
