@@ -155,6 +155,25 @@ def get_client(api_key):
     return anthropic.Anthropic(api_key=api_key)
 
 
+PARSE_SCORING = """You translate a fantasy football league's scoring settings into a clean, structured breakdown.
+The user pastes their league's scoring rules — often messy, copied from ESPN / Sleeper / Yahoo settings.
+Return a compact markdown bullet list grouped by category (Passing, Rushing, Receiving, Kicking, D/ST, Bonuses, Misc).
+Use points-per-unit (e.g. "Passing yards: 1 pt / 25 yds", "Passing TD: 4", "INT: -2").
+State the PPR type explicitly on its own line first (Standard / Half-PPR / Full-PPR), inferred from points per reception.
+Omit any category that isn't specified. No preamble and no closing remarks — just the breakdown."""
+
+
+def parse_scoring(client, raw_text):
+    """One-shot: turn pasted league scoring settings into a clean structured breakdown."""
+    msg = client.messages.create(
+        model=MODEL_PICK,                       # fast + cheap; this is a simple parse
+        max_tokens=600,
+        system=PARSE_SCORING,
+        messages=[{"role": "user", "content": raw_text}],
+    )
+    return "".join(b.text for b in msg.content if getattr(b, "type", None) == "text").strip()
+
+
 def stream_advice(client, messages, mode="chat"):
     """Yield the response text token-by-token for st.write_stream.
 

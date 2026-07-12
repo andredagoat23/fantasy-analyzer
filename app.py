@@ -55,10 +55,10 @@ if not st.session_state.get("_config_loaded"):
 
 # apply slot/teams the AI set from chat, before those number_inputs render
 if "slot_pending" in st.session_state:
-    st.session_state["slot"] = max(1, min(16, st.session_state.pop("slot_pending")))
+    st.session_state["slot"] = max(1, min(20, st.session_state.pop("slot_pending")))
     st.toast(f"Draft slot set to #{st.session_state['slot']}", icon=":material/sports_football:")
 if "teams_pending" in st.session_state:
-    st.session_state["teams"] = max(2, min(16, st.session_state.pop("teams_pending")))
+    st.session_state["teams"] = max(2, min(20, st.session_state.pop("teams_pending")))
 # apply a risk level the AI requested last turn, before the slider widget is created
 if "risk_pending" in st.session_state:
     st.session_state["risk_level"] = st.session_state.pop("risk_pending")

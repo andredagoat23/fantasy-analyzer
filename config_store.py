@@ -13,7 +13,7 @@ CONFIG_DIR = "configs"
 # the config fields the setup page owns; these are also the session_state keys
 # the draft page reads (slot / teams / risk_level are shared widget keys).
 KEYS = ["league_name", "site", "league_id", "teams", "slot",
-        "scoring", "strategy", "risk_level"]
+        "scoring", "scoring_custom", "scoring_parsed", "strategy", "risk_level"]
 
 
 def _path(user_key):
@@ -29,10 +29,12 @@ def load(user_key):
         return {}
 
 
-def save(user_key, cfg):
+def save(user_key):
+    """Snapshot the current setup (all KEYS) from session_state to disk."""
     os.makedirs(CONFIG_DIR, exist_ok=True)
+    data = {k: st.session_state.get(k) for k in KEYS}
     with open(_path(user_key), "w") as f:
-        json.dump({k: cfg.get(k) for k in KEYS}, f, indent=2)
+        json.dump(data, f, indent=2)
 
 
 def apply(cfg):

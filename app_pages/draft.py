@@ -221,8 +221,11 @@ if espn_cfg.get("league_id"):
 # Draft position — set your seat once; current pick + your next picks are computed from how many
 # players are marked drafted, and handed to the advisor as exact facts (no more guessing).
 with st.container(horizontal=True):
-    st.number_input("My slot", 1, 16, key="slot", width=120)
-    st.number_input("Teams", 2, 16, key="teams", width=120)
+    _tm = int(st.session_state.get("teams", 12))
+    if int(st.session_state.get("slot", 1)) > _tm:      # keep slot within the league before the widget renders
+        st.session_state["slot"] = _tm
+    st.number_input("My slot", 1, _tm, key="slot", width=120)
+    st.number_input("Teams", 2, 20, key="teams", width=120)
 slot, teams = st.session_state.slot, st.session_state.teams
 overall_now = len(st.session_state.drafted) + 1
 my_picks = [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]
@@ -272,7 +275,11 @@ def _setup_note():
     if st.session_state.get("site"):
         bits.append(f"Draft site: {st.session_state['site']}")
     if st.session_state.get("scoring"):
-        bits.append(f"Scoring: {st.session_state['scoring']}")
+        sc = st.session_state["scoring"]
+        if sc == "Custom" and st.session_state.get("scoring_parsed"):
+            bits.append(f"Scoring (custom, my exact league rules):\n{st.session_state['scoring_parsed']}")
+        else:
+            bits.append(f"Scoring: {sc}")
     if st.session_state.get("strategy"):
         bits.append(f"My stated strategy: {st.session_state['strategy']}")
     return "MY LEAGUE SETUP — " + "; ".join(bits) if bits else ""
