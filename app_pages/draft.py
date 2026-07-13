@@ -160,6 +160,8 @@ with st.sidebar:
         for name in pools["BN"]:
             st.markdown(f"**BN** &nbsp; {name}")
         st.metric("Projected points", f"{mine_df['total_points'].sum():.0f}")
+        if mine_df.empty:
+            st.caption("Your picks land here as you draft — check **Mine** on the board.")
 
     st.button("Reset draft", icon=":material/refresh:", on_click=request_reset, width="stretch")
     if st.session_state.confirm_reset:
@@ -167,12 +169,20 @@ with st.sidebar:
         st.button("Yes, reset", on_click=do_reset, width="stretch")
         st.button("Cancel", on_click=cancel_reset, width="stretch")
 
+# Compact top strip — exit + the pre-draft knobs tucked into a popover so they don't compete
+# with the board during a live draft.
 with st.container(horizontal=True):
     if st.button("Exit draft", icon=":material/arrow_back:"):
         config_store.save(auth.current_user_key())   # keep disk current for the setup reseed
         st.switch_page("app_pages/setup.py")
+    with st.popover("Draft settings", icon=":material/settings:"):
+        _tm = int(st.session_state.get("teams", 12))
+        if int(st.session_state.get("slot", 1)) > _tm:   # keep slot within the league
+            st.session_state["slot"] = _tm
+        st.number_input("My draft slot", 1, _tm, key="slot")
+        st.number_input("Teams in league", 2, 20, key="teams")
     st.toggle("Compact view", key="compact",
-              help="Trims the board to core columns and tightens the layout for phone / split-screen.")
+              help="Trims the board to core columns for phone / split-screen.")
 
 # scarcity strip — always visible, so it stays glanceable when the sidebar is collapsed
 strip = "  ·  ".join(f"**{p}** {scarcity[p]}" + (" :red-badge[thin]" if scarcity[p] <= 5 else "")
@@ -224,14 +234,8 @@ if espn_cfg.get("league_id"):
                 st.rerun(scope="app")   # refresh the whole board with the new picks
         poll_draft()
 
-# Draft position — set your seat once; current pick + your next picks are computed from how many
-# players are marked drafted, and handed to the advisor as exact facts (no more guessing).
-with st.container(horizontal=True):
-    _tm = int(st.session_state.get("teams", 12))
-    if int(st.session_state.get("slot", 1)) > _tm:      # keep slot within the league before the widget renders
-        st.session_state["slot"] = _tm
-    st.number_input("My slot", 1, _tm, key="slot", width=120)
-    st.number_input("Teams", 2, 20, key="teams", width=120)
+# Current pick + your next picks, computed from how many players are marked drafted (slot/teams
+# come from the Draft settings popover above) and handed to the advisor as exact facts.
 slot, teams = st.session_state.slot, st.session_state.teams
 overall_now = len(st.session_state.drafted) + 1
 my_picks = [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]

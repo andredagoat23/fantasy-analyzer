@@ -6,9 +6,9 @@ Running to-do list. Checked = done. "Needs you" = things only you can do (I can'
 - [x] Setup page as clickable **cards/sections** with a status each — done (clickable cards open each block)
 - [x] Hide the remaining Streamlit chrome app-wide (Deploy button, top-right menu, footer) — done
 - [x] Account menu: show signed-in email + sign out (avatar still TODO once Google returns a picture)
-- [ ] Draft page: group the controls into cleaner sections so it's not all out in the open — **keep it speed-first** (board + advisor always visible; only tuck away the pre-draft config)
+- [x] Draft page: tucked slot/teams into a "Draft settings" popover + tidy top strip (exit · settings · compact); board/advisor stay always-visible
+- [x] Empty state: friendlier empty My roster hint (advisor first-run already had one)
 - [ ] App header / brand lockup polish (`st.logo`, a consistent brand bar across pages)
-- [ ] Nicer empty states (empty My roster, "no players drafted yet", advisor first-run)
 - [ ] Mobile / responsive pass (compact board, controls wrapping, login on a phone)
 
 ## Before charging a dollar — legal/business gate (do FIRST, with Dad)
