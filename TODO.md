@@ -11,6 +11,16 @@ Running to-do list. Checked = done. "Needs you" = things only you can do (I can'
 - [ ] Mobile / responsive pass (compact board, controls wrapping, login on a phone)
 - [ ] Account menu: show name / avatar once Google sign-in is on
 
+## Before charging a dollar — legal/business gate (do FIRST, with Dad)
+This is the real blocker to a paid product. Free personal use = fine. Paid = these must be solved.
+- [ ] **Get Dad in the loop** — payments (Stripe) need someone 18+ and likely an LLC; a 14-year-old can't take money or sign a data license.
+- [ ] **Licensed data can't ship in a paid product as-is:**
+  - FantasyPros **ECR + ADP** (`load_ecr.py`, `load_fp_adp.py`) — licensed.
+  - Vegas totals from **firstdown.studio** (`data/vegas_*.csv`) — scraped/gray-area.
+  - **espn-api** live sync — unofficial endpoints, against ESPN ToS for commercial use.
+  - Paths: (a) **own your projections/rankings** (hardest, but the real moat — you already have the modeling), (b) pay to license, or (c) bring-your-own-CSV (fastest legal path, but weakens the product).
+- [ ] Per-user API cost: today the advisor spends YOUR Anthropic key for everyone — a paid product needs metering/limits or bring-your-own-key.
+
 ## Product / v2.0 (bigger lifts)
 - [ ] **Per-league re-scoring** — run the pipeline against a user's custom scoring so the BOARD itself matches their league (not just the advisor). Needs a backend; this is the core problem for going public/paid.
 - [ ] Accounts + payments for the planned $10/season public release
