@@ -279,7 +279,10 @@ def _setup_note():
     if st.session_state.get("league_name"):
         bits.append(f"League: {st.session_state['league_name']}")
     if st.session_state.get("site"):
-        bits.append(f"Draft site: {st.session_state['site']}")
+        _site = st.session_state["site"]
+        if _site == "Other" and st.session_state.get("site_other"):
+            _site = st.session_state["site_other"]
+        bits.append(f"Draft site: {_site}")
     if st.session_state.get("scoring"):
         sc = st.session_state["scoring"]
         if sc == "Custom" and st.session_state.get("scoring_parsed"):

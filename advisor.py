@@ -174,6 +174,20 @@ def parse_scoring(client, raw_text):
     return "".join(b.text for b in msg.content if getattr(b, "type", None) == "text").strip()
 
 
+SUGGEST_STRATEGY = """You are a fantasy football draft coach. Given the user's league setup, write a concise, actionable draft strategy tailored to their exact draft slot and scoring — 3-4 sentences, no bullet points, no preamble. Cover: their early-round priority (which position/approach and why, given where they pick), when to target QB and TE, and how aggressive to be on upside vs. safety. Be specific to their slot (early / middle / late / turn) and scoring, not generic. Output only the strategy text."""
+
+
+def suggest_strategy(client, context):
+    """Draft a starter strategy from the user's league setup (teams, slot, scoring)."""
+    msg = client.messages.create(
+        model=MODEL_PICK,
+        max_tokens=280,
+        system=SUGGEST_STRATEGY,
+        messages=[{"role": "user", "content": context}],
+    )
+    return "".join(b.text for b in msg.content if getattr(b, "type", None) == "text").strip()
+
+
 def stream_advice(client, messages, mode="chat"):
     """Yield the response text token-by-token for st.write_stream.
 

@@ -50,10 +50,12 @@ st.session_state.setdefault("my_team_id", None)         # my ESPN team (for auto
 # setup-page fields (live widgets keyed to these; loaded from saved config just below)
 st.session_state.setdefault("league_name", "")
 st.session_state.setdefault("site", "ESPN")
+st.session_state.setdefault("site_other", "")
 st.session_state.setdefault("league_id", "")
 st.session_state.setdefault("scoring", "PPR")
 st.session_state.setdefault("scoring_custom", "")
 st.session_state.setdefault("strategy", "")
+st.session_state.setdefault("active_section", "League")   # which setup card is open
 
 # ---- navigation ----
 pages = [
@@ -78,6 +80,13 @@ if "teams_pending" in st.session_state:
 if "risk_pending" in st.session_state:
     st.session_state["risk_level"] = st.session_state.pop("risk_pending")
     st.toast(f"Risk appetite set to **{st.session_state['risk_level']}**", icon=":material/tune:")
+
+# Keep config widget values alive across conditional (setup-card) rendering: re-assigning a
+# widget key to itself stops Streamlit from clearing it when its widget isn't rendered this run.
+for _k in ("league_name", "site", "site_other", "league_id", "teams", "slot",
+           "scoring", "scoring_custom", "strategy", "risk_level"):
+    if _k in st.session_state:
+        st.session_state[_k] = st.session_state[_k]
 
 # branded header + account menu, above the page content
 hl, hr = st.columns([4, 1], vertical_alignment="center")

@@ -12,7 +12,7 @@ import streamlit as st
 CONFIG_DIR = "configs"
 # the config fields the setup page owns; these are also the session_state keys
 # the draft page reads (slot / teams / risk_level are shared widget keys).
-KEYS = ["league_name", "site", "league_id", "teams", "slot",
+KEYS = ["league_name", "site", "site_other", "league_id", "teams", "slot",
         "scoring", "scoring_custom", "scoring_parsed", "strategy", "risk_level"]
 
 
