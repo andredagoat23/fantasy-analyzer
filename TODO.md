@@ -3,13 +3,13 @@
 Running to-do list. Checked = done. "Needs you" = things only you can do (I can't touch secrets, Google Cloud, or pick the jingle).
 
 ## Genuine app feel (UI polish — my work)
-- [ ] Setup page as clickable **cards/sections** with a status each (✓ set / needs attention), instead of one long scroll — the "different blocks to go do things" ask
-- [ ] Draft page: group the controls into cleaner sections/tabs (draft position · pick tracking · advisor · board) so it's not all out in the open at once
-- [ ] Hide the remaining Streamlit chrome app-wide (footer, top-right menu) for a true product feel — keep only what's useful on draft day
+- [x] Setup page as clickable **cards/sections** with a status each — done (clickable cards open each block)
+- [x] Hide the remaining Streamlit chrome app-wide (Deploy button, top-right menu, footer) — done
+- [x] Account menu: show signed-in email + sign out (avatar still TODO once Google returns a picture)
+- [ ] Draft page: group the controls into cleaner sections so it's not all out in the open — **keep it speed-first** (board + advisor always visible; only tuck away the pre-draft config)
 - [ ] App header / brand lockup polish (`st.logo`, a consistent brand bar across pages)
 - [ ] Nicer empty states (empty My roster, "no players drafted yet", advisor first-run)
 - [ ] Mobile / responsive pass (compact board, controls wrapping, login on a phone)
-- [ ] Account menu: show name / avatar once Google sign-in is on
 
 ## Before charging a dollar — legal/business gate (do FIRST, with Dad)
 This is the real blocker to a paid product. Free personal use = fine. Paid = these must be solved.

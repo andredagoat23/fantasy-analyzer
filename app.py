@@ -28,6 +28,9 @@ st.markdown("""
   line-height: 1.4;
 }
 [data-testid="stHeader"] { background: transparent; }
+/* hide Streamlit's own chrome so it reads as a real app (keep the sidebar toggle) */
+[data-testid="stToolbar"], [data-testid="stStatusWidget"] { display: none !important; }
+footer { display: none !important; }
 /* draft-entry fanfare: autoplay only, no visible player */
 [data-testid="stAudio"] { display: none !important; }
 </style>
@@ -94,8 +97,11 @@ with hl:
     st.markdown("### 🏈 Fantasy Analyzer")
 with hr:
     if auth.is_gated():
-        label = auth.user_label() or "Account"
-        with st.popover(label, icon=":material/account_circle:", width="stretch"):
+        who = auth.user_label()                              # email (Google) / "Signed in" / None
+        short = (who.split("@")[0] if who and "@" in who else who) or "Account"
+        with st.popover(short, icon=":material/account_circle:", width="stretch"):
+            if who and "@" in who:
+                st.caption(f"Signed in as **{who}**")
             st.button("Sign out", icon=":material/logout:", on_click=auth.logout, width="stretch")
 
 page.run()
