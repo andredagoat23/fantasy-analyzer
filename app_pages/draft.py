@@ -35,7 +35,8 @@ RISK_DESC = {
     "Safe": "Prioritize durable, high-floor players — fade all injury and boom/bust risk hard.",
 }
 BASE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "ecr_rank",
-             "value_gap", "market", "risk_tier", "floor", "ceiling", "p_startable"]
+             "value_gap", "market", "risk_tier", "xppg", "regression",
+             "floor", "ceiling", "p_startable"]
 
 COLUMN_CONFIG = {
     "Mine":      st.column_config.CheckboxColumn("Mine", width="small", help="My pick"),
@@ -48,6 +49,11 @@ COLUMN_CONFIG = {
     "value_gap": st.column_config.NumberColumn("Gap", format="%d"),
     "market":    st.column_config.TextColumn("Market", width="small"),
     "risk_tier": st.column_config.TextColumn("Risk", width="small"),
+    "xppg":      st.column_config.NumberColumn("xPPG", format="%.1f",
+                                               help="Expected fantasy PPG from 2024-25 opportunity"),
+    "regression": st.column_config.TextColumn("Trend", width="small",
+                                              help="Actual vs opportunity scoring (position-relative). "
+                                                   "🔴 TD-lucky = regression risk · 🟢 Buy-low = efficient/unlucky"),
     "floor":     st.column_config.NumberColumn("Floor", format="%.0f"),
     "ceiling":   st.column_config.NumberColumn("Ceiling", format="%.0f"),
     "p_startable": st.column_config.ProgressColumn("P(start)", format="percent", min_value=0, max_value=1),
@@ -401,6 +407,9 @@ base_cols = CORE_COLS if st.session_state.compact else BASE_COLS
 display_cols = [rank_col] + [c for c in base_cols if c != rank_col]
 editor_df = view[display_cols].copy()
 editor_df["market"] = editor_df["market"].map({"VALUE": "🔥 VALUE", "REACH": "⚠️ REACH"}).fillna("")
+if "regression" in editor_df:
+    editor_df["regression"] = editor_df["regression"].map(
+        {"TD-lucky": "🔴 TD-lucky", "Buy-low": "🟢 Buy-low"}).fillna("")
 editor_df.insert(0, "Drafted", False)
 editor_df.insert(0, "Mine", False)
 

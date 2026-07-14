@@ -17,6 +17,7 @@ STEPS = [
     "blend_vegas.py",           # blend Vegas proj -> players_final.csv (overwrites total_points)
     "compute_metrics.py",       # VOLS             -> players_with_metrics.csv
     "compute_outcomes.py",      # risk + sims      -> players_with_outcomes.csv
+    "load_ff_opportunity.py",   # xPPG regression  -> players_with_outcomes.csv (+cols)
     "value_board.py",           # final board      -> value_board.csv + app_data.*
 ]
 

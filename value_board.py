@@ -96,6 +96,7 @@ board = board.sort_values("rank_composite")
 cols = ["overall_rank", "rank_ecr", "rank_composite", "full_name", "pos_label", "total_points", "vols",
         "adp_rank", "ecr_rank", "value_gap", "market", "risk_tier", "availability",
         "floor", "ceiling", "p_elite", "p_startable", "p_bust", "P_pos1",
+        "xppg", "xppg_diff", "regression",   # opportunity-based regression lens (load_ff_opportunity)
         # situational fields the AI advisor reasons over (not shown in the board table)
         "team", "team_implied_total", "age", "bye_week", "target_share_2025", "snap_share_2025",
         "ecr_tier", "is_rookie", "draft_pick",

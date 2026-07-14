@@ -35,6 +35,10 @@ THE DATA I GIVE YOU (per available player)
 - risk = Safe / Balanced / Boom/Bust / Injury Risk.
 - floor / ceiling = 20th / 80th percentile projected season points, injury-adjusted.
 - P_start% / bust% = probability he finishes startable / busts at his position, injury-adjusted.
+- xPPG / regr = his EXPECTED fantasy points per game from 2024-25 opportunity (targets/carries valued by league-average outcome — role quality stripped of finishing luck), plus a position-relative regression read of actual vs expected:
+  - "TD-lucky" = scored well above his opportunity (touchdown-dependent) -> regression risk, don't reach for him.
+  - "Buy-low" = scored below his opportunity (efficient role, unlucky TDs) -> bounce-back value, worth a slight bump.
+  - "Sustainable" = scoring matched his role. IMPORTANT: elite players are deliberately NOT flagged TD-lucky even when they outscore their opportunity — they MAKE their touchdowns (repeatable finishing), so never fade a stud on xPPG alone. Blank = rookie / too few games. Use xPPG as a tiebreaker and a sustainability check, not as a projection.
 - team = his NFL team. vegas = his team's Vegas season implied points/game (league avg ~22.7). This is the sharpest read on the scoring environment — a featured player on a high-vegas offense (25+) has real upside; a good role on a low-vegas offense (<20) is capped. Weight it heavily for ceiling/situation, and pair it with role: high tgt%/snap% AND high vegas = league-winning opportunity.
 - tgt% / snap% = his most-recent-season target share / snap share = his ROLE. High = locked featured role; low or blank = committee, unproven, or rookie.
 - age = age this season. rook_pk = for rookies, their NFL draft pick (lower = more pedigree/opportunity); blank for veterans.
@@ -86,7 +90,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
     """Compact text snapshot of the live board for the current turn."""
     cols = ["full_name", "pos_label", "team", "team_implied_total", "vols", "adp_rank", "ecr_tier",
             "market", "risk_tier", "target_share_2025", "snap_share_2025", "age", "is_rookie",
-            "draft_pick", "floor", "ceiling", "p_startable", "p_bust"]
+            "draft_pick", "floor", "ceiling", "p_startable", "p_bust", "xppg", "regression"]
     cols = [c for c in cols if c in available.columns]   # tolerate an older board
     top = available.sort_values("rank_composite").head(top_n)[cols].copy()
     top["market"] = top.get("market", "").fillna("")
@@ -103,16 +107,18 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
     top["snap%"] = to_int(top["snap_share_2025"] * 100)
     if "team_implied_total" in top:
         top["vegas"] = to_1dp(top["team_implied_total"])
+    if "xppg" in top:
+        top["xPPG"] = to_1dp(top["xppg"])
     is_rook = top["is_rookie"].astype(str).str.lower().isin(["true", "1"])
     top["rook_pk"] = [(str(int(pk)) if pd.notna(pk) else "rook") if r else ""
                       for r, pk in zip(is_rook, top["draft_pick"])]
     top = top.drop(columns=[c for c in ["target_share_2025", "snap_share_2025", "is_rookie",
-                                        "draft_pick", "team_implied_total"] if c in top])
+                                        "draft_pick", "team_implied_total", "xppg"] if c in top])
     top = top.rename(columns={"full_name": "player", "pos_label": "pos", "adp_rank": "ADP",
-                              "ecr_tier": "tier", "risk_tier": "risk",
+                              "ecr_tier": "tier", "risk_tier": "risk", "regression": "regr",
                               "p_startable": "P_start%", "p_bust": "bust%"})
     order = ["player", "pos", "team", "vegas", "vols", "ADP", "tier", "tgt%", "snap%", "age",
-             "rook_pk", "market", "risk", "floor", "ceiling", "P_start%", "bust%"]
+             "rook_pk", "market", "risk", "floor", "ceiling", "P_start%", "bust%", "xPPG", "regr"]
     board_txt = top[[c for c in order if c in top.columns]].to_string(index=False)
 
     if len(mine_df):
