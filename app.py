@@ -94,7 +94,7 @@ for _k in ("league_name", "site", "site_other", "league_id", "teams", "slot",
 # branded header + account menu, above the page content
 hl, hr = st.columns([4, 1], vertical_alignment="center")
 with hl:
-    st.markdown("### 🏈 Fantasy Analyzer")
+    st.image("assets/logo.svg", width=210)
 with hr:
     if auth.is_gated():
         who = auth.user_label()                              # email (Google) / "Signed in" / None

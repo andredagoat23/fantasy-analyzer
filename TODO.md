@@ -8,8 +8,8 @@ Running to-do list. Checked = done. "Needs you" = things only you can do (I can'
 - [x] Account menu: show signed-in email + sign out (avatar still TODO once Google returns a picture)
 - [x] Draft page: tucked slot/teams into a "Draft settings" popover + tidy top strip (exit · settings · compact); board/advisor stay always-visible
 - [x] Empty state: friendlier empty My roster hint (advisor first-run already had one)
-- [ ] App header / brand lockup polish (`st.logo`, a consistent brand bar across pages)
-- [ ] Mobile / responsive pass (compact board, controls wrapping, login on a phone)
+- [x] App header / brand lockup — SVG logo (football badge + wordmark) in the header via st.image
+- [x] Mobile / responsive pass — verified: cards/buttons stack, scarcity strip inline, compact view + sidebar toggle work on a phone; nothing broken
 
 ## Before charging a dollar — legal/business gate (do FIRST, with Dad)
 This is the real blocker to a paid product. Free personal use = fine. Paid = these must be solved.
@@ -34,6 +34,8 @@ This is the real blocker to a paid product. Free personal use = fine. Paid = the
 - [ ] Day-before-draft: re-run `run_all.py` + refresh Vegas numbers, then push the regenerated board
 
 ## Recently done
+- [x] xPPG regression lens (Tier 1) — expected PPG from opportunity, position-relative, elite-dampened; board column + Trend badge + advisor
+- [x] xPPG folded into the composite ranking (Tier 2) — role signal uses xPPG; team-changers use their 2026 projection so stale data doesn't over-dock them (A.J. Brown fix)
 - [x] Login landing page (branded front door with hero + sign-in card)
 - [x] Custom scoring block with AI "decipher"
 - [x] League size max 20; draft slot capped at league size
