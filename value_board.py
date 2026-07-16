@@ -43,16 +43,26 @@ for pos, n in startable_counts(board).items():
 ceil_val = board["ceiling_healthy"] - board["position"].map(repl_pts)   # injury-free upside over replacement
 floor_val = board["floor_healthy"] - board["position"].map(repl_pts)    # injury-free floor over replacement
 
-# role = receiving usage (target share) percentile within position, for WR/TE/RB. Target share is
-# the stable PPR-predictive role signal; using it (not snap share) for RBs rewards dual-threat backs
-# and avoids dinging elite backs for carry-sharing or a stale committee snap share (e.g. Gibbs).
-# Vegas team environment scales UPSIDE (ceiling) instead of the role signal, so a mediocre offense
+# role/opportunity = xPPG percentile within position (WR/TE/RB). xPPG (expected fantasy points per
+# game from 2024-25 opportunity, from ff_opportunity) is a MORE COMPLETE role signal than target
+# share alone: it captures RB rushing + goal-line work target share misses, and it's points-
+# denominated. Falls back to best-demonstrated target share where there's no xPPG (rookies / <8
+# games), so proven alphas (Nabers' 2024) and no-history players still get a fair read. QB/K neutral.
+# Vegas team environment still scales UPSIDE (ceiling), not the role signal, so a mediocre offense
 # can't tank an elite workhorse (e.g. Bijan on ATL) — his VOLS/ADP/ECR/floor still anchor him.
-# best demonstrated role across 2024/2025 (injury-proof: an injury-shortened season won't erase a
-# proven alpha's target share, e.g. Nabers' 30% in 2024 vs 7% in an injured 2025)
-role_best = board[["target_share_2024", "target_share_2025"]].max(axis=1)
-role_raw = role_best.where(board["position"].isin(["WR", "TE", "RB"]))
-role_pct = role_raw.groupby(board["position"]).rank(pct=True).fillna(0.5)   # QB / K / rookies neutral
+_rec = board["position"].isin(["WR", "TE", "RB"])
+xppg_pct = board["xppg"].where(_rec).groupby(board["position"]).rank(pct=True)
+ts_best = board[["target_share_2024", "target_share_2025"]].max(axis=1).where(_rec)
+ts_pct = ts_best.groupby(board["position"]).rank(pct=True)
+role_pct = xppg_pct.fillna(ts_pct).fillna(0.5)   # xPPG first, target-share fallback, then neutral
+# team-changers have a STALE opportunity profile (xPPG/target share describe the OLD team). For them,
+# use their 2026 projection (VOLS) percentile as the role signal instead — it already prices the new
+# situation (better or worse), so we neither over-dock a guy who left an elite offense (A.J. Brown ->
+# NE) nor over-hold one who upgraded. Forward-looking and spreads players out (no artificial ties).
+if "switched_team" in board.columns:
+    vols_pct = board["vols"].where(_rec).groupby(board["position"]).rank(pct=True)
+    switched = board["switched_team"].fillna(False).astype(bool) & vols_pct.notna()
+    role_pct = role_pct.mask(switched, vols_pct)
 ceil_val_veg = ceil_val * board["team_env"]        # upside, boosted by the Vegas scoring environment
 
 BIG = len(board) + 1
@@ -96,7 +106,7 @@ board = board.sort_values("rank_composite")
 cols = ["overall_rank", "rank_ecr", "rank_composite", "full_name", "pos_label", "total_points", "vols",
         "adp_rank", "ecr_rank", "value_gap", "market", "risk_tier", "availability",
         "floor", "ceiling", "p_elite", "p_startable", "p_bust", "P_pos1",
-        "xppg", "xppg_diff", "regression",   # opportunity-based regression lens (load_ff_opportunity)
+        "xppg", "xppg_diff", "regression", "switched_team",   # xPPG lens (load_ff_opportunity)
         # situational fields the AI advisor reasons over (not shown in the board table)
         "team", "team_implied_total", "age", "bye_week", "target_share_2025", "snap_share_2025",
         "ecr_tier", "is_rookie", "draft_pick",
