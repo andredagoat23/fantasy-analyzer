@@ -26,28 +26,41 @@ def build_maps(board):
     return by_espn, by_name
 
 
-def _resolve(pick, by_espn, by_name):
-    """ESPN pick -> our full_name (espn_id first, then name), or None if unmatched."""
-    if pick.playerId in by_espn:
-        return by_espn[pick.playerId]
-    return by_name.get(normalize_name(pick.playerName))
+def _resolve_id(pid, player_map, by_espn, by_name):
+    """ESPN playerId -> our full_name: espn_id first, else ESPN's name (from player_map) normalized."""
+    if pid in by_espn:
+        return by_espn[pid]
+    espn_name = player_map.get(pid)
+    if isinstance(espn_name, str):
+        return by_name.get(normalize_name(espn_name))
+    return None
 
 
 def fetch_picks(league, by_espn, by_name):
-    """Refresh the draft and return the picks made so far as a list of dicts.
+    """Return the picks made so far — WORKS DURING A LIVE DRAFT, not only after it finishes.
+
+    espn-api's `league.draft` hides everything until draftDetail.drafted is True (i.e. the draft is
+    fully complete), so a live in-progress draft looks empty. We instead read draftDetail.picks
+    straight from the API each call and resolve each playerId to our board via the league's
+    player_map (name-matched) — our espn_id coverage alone is too thin (~30% of the top).
 
     Each: {name (our full_name or None), espn_name, team_id, team_name, overall}.
-    Empty list = draft hasn't started (or nothing picked yet).
+    Empty list = nothing picked yet.
     """
-    league.refresh_draft()
+    data = league.espn_request.get_league_draft()
+    player_map = getattr(league, "player_map", {}) or {}
     picks = []
-    for i, p in enumerate(league.draft, 1):
+    for p in data.get("draftDetail", {}).get("picks", []):
+        pid = p.get("playerId")
+        if not isinstance(pid, int) or pid in (0, -1):   # empty / unmade slot (D/ST are -16xxx, kept)
+            continue
+        espn_name = player_map.get(pid, "")
         picks.append({
-            "name": _resolve(p, by_espn, by_name),
-            "espn_name": p.playerName,
-            "team_id": p.team.team_id if p.team else None,
-            "team_name": p.team.team_name if p.team else "",
-            "overall": i,
+            "name": _resolve_id(pid, player_map, by_espn, by_name),
+            "espn_name": espn_name if isinstance(espn_name, str) else "",
+            "team_id": p.get("teamId"),
+            "team_name": "",
+            "overall": p.get("overallPickNumber"),
         })
     return picks
 

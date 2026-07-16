@@ -50,6 +50,7 @@ st.session_state.setdefault("risk_level", "Balanced")   # AI / setup can set thi
 st.session_state.setdefault("slot", 4)                  # my seat in the snake order
 st.session_state.setdefault("teams", 12)
 st.session_state.setdefault("my_team_id", None)         # my ESPN team (for auto-roster)
+st.session_state.setdefault("pick_count", 0)            # total picks made (live ESPN sync)
 # setup-page fields (live widgets keyed to these; loaded from saved config just below)
 st.session_state.setdefault("league_name", "")
 st.session_state.setdefault("site", "ESPN")

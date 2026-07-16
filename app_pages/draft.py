@@ -234,8 +234,12 @@ if espn_cfg.get("league_id"):
             drafted = {p["name"] for p in picks if p["name"]}
             mine = {p["name"] for p in picks
                     if p["name"] and p["team_id"] == st.session_state.get("my_team_id")}
-            if drafted != st.session_state.drafted or mine != st.session_state.mine:
+            total = len(picks)   # ALL made picks incl. D/ST (which don't map to our board) — keeps
+            #                      the on-the-clock count exact even when a pick isn't on our board
+            if (drafted != st.session_state.drafted or mine != st.session_state.mine
+                    or total != st.session_state.get("pick_count")):
                 st.session_state.drafted, st.session_state.mine = drafted, mine
+                st.session_state.pick_count = total
                 st.session_state.version += 1
                 st.rerun(scope="app")   # refresh the whole board with the new picks
         poll_draft()
@@ -243,7 +247,9 @@ if espn_cfg.get("league_id"):
 # Current pick + your next picks, computed from how many players are marked drafted (slot/teams
 # come from the Draft settings popover above) and handed to the advisor as exact facts.
 slot, teams = st.session_state.slot, st.session_state.teams
-overall_now = len(st.session_state.drafted) + 1
+# when live-synced, use ESPN's exact total pick count (incl. D/ST etc.); else count board removals
+made = st.session_state.get("pick_count", 0) if sync_active else len(st.session_state.drafted)
+overall_now = made + 1
 my_picks = [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]
 upcoming = [p for p in my_picks if p >= overall_now]
 next_pick = upcoming[0] if upcoming else None
