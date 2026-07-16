@@ -30,6 +30,29 @@ def is_gated():
     return _has_auth() or bool(_password())
 
 
+def _allowed_emails():
+    """Optional allow-list of authorized emails (Google sign-in). Empty = any signed-in user."""
+    try:
+        raw = st.secrets.get("allowed_emails", [])
+    except Exception:
+        raw = []
+    if isinstance(raw, str):
+        raw = [raw]
+    return [str(e).strip().lower() for e in raw if str(e).strip()]
+
+
+def _email_ok():
+    """True if there's no allow-list, or the signed-in email is on it."""
+    allow = _allowed_emails()
+    if not allow:
+        return True
+    try:
+        email = (st.user.email or "").strip().lower()
+    except Exception:
+        email = ""
+    return email in allow
+
+
 def current_user_key():
     """Stable key for per-user config storage."""
     try:
@@ -63,7 +86,10 @@ def require_login():
     if _has_auth():
         try:
             if st.user.is_logged_in:
-                return
+                if _email_ok():
+                    return
+                _denied_screen()      # signed in, but the email isn't on the allow-list
+                st.stop()
         except Exception:
             pass
     else:
@@ -77,9 +103,9 @@ def require_login():
     st.stop()
 
 
-def _login_screen():
+def _hero():
     # Full-screen "front door": hide Streamlit chrome + the sidebar, center a narrow column,
-    # and lay a branded hero above the sign-in card.
+    # and lay a branded hero above the card.
     st.markdown("""
     <style>
       [data-testid="stHeader"], [data-testid="stToolbar"],
@@ -111,6 +137,14 @@ def _login_screen():
     </div>
     """, unsafe_allow_html=True)
 
+
+def _foot():
+    st.markdown('<div class="fa-foot">Built for draft day · your board, your advisor, one screen.</div>',
+                unsafe_allow_html=True)
+
+
+def _login_screen():
+    _hero()
     with st.container(border=True):
         if _has_auth():
             st.markdown("#### Welcome back")
@@ -130,6 +164,20 @@ def _login_screen():
                     st.rerun()
                 else:
                     st.error("Incorrect password.", icon=":material/lock:")
+    _foot()
 
-    st.markdown('<div class="fa-foot">Built for draft day · your board, your advisor, one screen.</div>',
-                unsafe_allow_html=True)
+
+def _denied_screen():
+    # signed in with Google, but the email isn't on the allow-list
+    _hero()
+    try:
+        who = st.user.email or "This account"
+    except Exception:
+        who = "This account"
+    with st.container(border=True):
+        st.markdown("#### You're not on the guest list yet")
+        st.caption(f"**{who}** isn't authorized for this app. Ask the owner to add your email, "
+                   "then sign in again.")
+        st.button("Sign out", type="primary", icon=":material/logout:",
+                  on_click=st.logout, width="stretch")
+    _foot()
