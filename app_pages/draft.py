@@ -36,7 +36,7 @@ RISK_DESC = {
     "Cautious": "Fade risky players noticeably — favor safer floors.",
     "Safe": "Prioritize durable, high-floor players — fade all injury and boom/bust risk hard.",
 }
-BASE_COLS = ["full_name", "pos_label", "vols", "adp_rank", "ecr_rank",
+BASE_COLS = ["full_name", "pos_label", "ecr_tier", "vols", "adp_rank", "ecr_rank",
              "value_gap", "market", "risk_tier", "xppg", "regression",
              "floor", "ceiling", "p_startable"]
 
@@ -45,8 +45,14 @@ COLUMN_CONFIG = {
     "Drafted":   st.column_config.CheckboxColumn("Drafted", width="small", help="Drafted by anyone"),
     "full_name": st.column_config.TextColumn("Player", width="medium"),
     "pos_label": st.column_config.TextColumn("Pos", width="small"),
+    "ecr_tier":  st.column_config.NumberColumn("Tier", format="%d", width="small",
+                                               help="Overall expert tier across all positions (the "
+                                                    "board is sorted by overall value, so this reads "
+                                                    "cleanly top-to-bottom). The Cliff watch above uses "
+                                                    "per-position tiers instead."),
     "vols":      st.column_config.NumberColumn("VOLS", format="%.1f"),
-    "adp_rank":  st.column_config.NumberColumn("ADP", format="%.0f"),
+    "adp_rank":  st.column_config.NumberColumn("ADP", format="%.1f",
+                                               help="ESPN average draft position (live)."),
     "ecr_rank":  st.column_config.NumberColumn("ECR", format="%.0f"),
     "value_gap": st.column_config.NumberColumn("Gap", format="%d"),
     "market":    st.column_config.TextColumn("Market", width="small"),
@@ -69,11 +75,18 @@ RISK_BG = {"Safe": "rgba(46,160,67,.20)", "Boom/Bust": "rgba(210,153,34,.20)",
 def load_board(mtime):   # mtime arg busts the cache when the CSV is regenerated
     board = pd.read_csv("value_board.csv", dtype={"player_id": str})
     board["position"] = board["pos_label"].str.replace(r"\d+$", "", regex=True)
+    # Positional tier: dense-rank the overall expert tier WITHIN each position so the ladder
+    # restarts per position (best RBs = RB Tier 1, best TEs = TE Tier 1, etc.). NaN for players
+    # with no expert tier (deep board).
+    board["pos_tier"] = board.groupby("position")["ecr_tier"].rank(method="dense")
     return board
 
 
 def style_board(df):
     css = pd.DataFrame("", index=df.index, columns=df.columns)
+    if "ecr_tier" in df:   # zebra the Tier cell by tier parity so drop-offs pop as you scan down
+        even = df["ecr_tier"].notna() & (df["ecr_tier"].fillna(0).astype(int) % 2 == 0)
+        css.loc[even, "ecr_tier"] = "background-color: rgba(255,255,255,.05)"
     if "value_gap" in df:
         css.loc[df["value_gap"] > 0, "value_gap"] = "background-color: rgba(46,160,67,.22)"
         css.loc[df["value_gap"] < 0, "value_gap"] = "background-color: rgba(229,83,75,.22)"
@@ -84,6 +97,18 @@ def style_board(df):
         css.loc[df["market"].str.contains("VALUE"), "market"] = "background-color: rgba(226,114,91,.25)"
         css.loc[df["market"].str.contains("REACH"), "market"] = "background-color: rgba(76,143,212,.25)"
     return css
+
+
+def top_tier_left(df, pos):
+    """(best positional tier still available at pos, how many remain in it). (None, 0) if no data.
+
+    A small count here is a CLIFF: the next player at this position is a real talent drop.
+    """
+    sub = df[(df["position"] == pos) & df["pos_tier"].notna()]
+    if sub.empty:
+        return None, 0
+    t = int(sub["pos_tier"].min())
+    return t, int((sub["pos_tier"] == t).sum())
 
 
 board = load_board(os.path.getmtime("value_board.csv"))
@@ -144,6 +169,7 @@ def cancel_reset():
 available = board[~board["full_name"].isin(st.session_state.drafted)]
 scarcity = {pos: int(((available["position"] == pos) & (available["vols"] >= 0)).sum())
             for pos in POSITIONS}
+tier_info = {pos: top_tier_left(available, pos) for pos in POSITIONS}   # (top tier, # left in it)
 mine_df = (board[board["full_name"].isin(st.session_state.mine)]
            .sort_values("total_points", ascending=False))
 
@@ -197,9 +223,10 @@ with st.container(horizontal=True):
     st.toggle("Compact view", key="compact",
               help="Trims the board to core columns for phone / split-screen.")
 
-# scarcity strip — always visible, so it stays glanceable when the sidebar is collapsed
-strip = "  ·  ".join(f"**{p}** {scarcity[p]}" + (" :red-badge[thin]" if scarcity[p] <= 5 else "")
-                     for p in POSITIONS)
+# scarcity readout — always visible on the main page (the sidebar can be hard to reach mid-draft)
+strip = " &nbsp;·&nbsp; ".join(f"**{p}** {scarcity[p]} startable left"
+                               + (" :red-badge[thin]" if scarcity[p] <= 5 else "")
+                               for p in POSITIONS)
 st.markdown(f":material/inventory_2: &nbsp; {strip}")
 
 # ---- Live draft sync ----
@@ -316,6 +343,25 @@ elif next_pick:
     st.markdown(f"**On the clock:** #{overall_now} &nbsp;·&nbsp; **you're up at #{next_pick}** "
                 f"({picks_away} away, then #{following})")
 
+# Cliff watch — positions whose best remaining POSITIONAL tier is nearly empty (≤3 left).
+# "likely gone by #X" is ADP-based: flagged only when EVERY player left in that tier has an
+# average draft position before my next real chance to pick this position (`horizon`). That's why
+# a streamer tier like K (ADP ~150) never false-alarms early, even with only 1 left in the tier.
+horizon = following if my_turn else next_pick   # next pick where I could still grab this position
+cliffs = []
+for pos in POSITIONS:
+    t, n = tier_info[pos]
+    if t is None or n > 3:
+        continue
+    gone = False
+    if horizon:
+        sub = available[(available["position"] == pos) & (available["pos_tier"] == t)]
+        survivors = int(((sub["adp_rank"] >= horizon) | sub["adp_rank"].isna()).sum())
+        gone = survivors == 0   # nobody in the tier is projected to last until my next pick
+    cliffs.append(f"**{pos}** Tier {t}: {n} left" + (f" — likely gone by #{horizon}" if gone else ""))
+if cliffs and (my_turn or next_pick):
+    st.markdown("⚠️ **Cliff watch** &nbsp; " + " &nbsp;·&nbsp; ".join(cliffs))
+
 # Manual pick tracking — only when NOT live-synced (during a live draft the poller owns this)
 if not sync_active:
     with st.container(border=True):
@@ -393,7 +439,7 @@ with st.container(border=True):
 
         if prompt:
             st.session_state.chat.append({"role": "user", "content": prompt})
-            context = advisor.build_context(available, mine_df, scarcity, draft_pos)
+            context = advisor.build_context(available, mine_df, scarcity, draft_pos, tier_info)
             note = _setup_note()
             full_context = f"{note}\n\n{context}" if note else context
             api_messages = (st.session_state.chat[:-1]
@@ -470,7 +516,11 @@ if "regression" in editor_df:
 editor_df.insert(0, "Drafted", False)
 editor_df.insert(0, "Mine", False)
 
-cc = {**COLUMN_CONFIG, rank_col: st.column_config.NumberColumn("Rank", format="%d", width="small")}
+# The sorted column shows as a whole-number "Rank" — EXCEPT ADP, which keeps its decimal
+# "ADP" config so you see ESPN's actual number (e.g. 6.3) when sorting by it.
+cc = dict(COLUMN_CONFIG)
+if rank_col != "adp_rank":
+    cc[rank_col] = st.column_config.NumberColumn("Rank", format="%d", width="small")
 edited = st.data_editor(
     editor_df.style.apply(style_board, axis=None),
     column_config=cc,

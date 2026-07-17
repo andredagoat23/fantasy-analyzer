@@ -30,7 +30,7 @@ MY LEAGUE
 THE DATA I GIVE YOU (per available player)
 - VOLS = value over last starter: projected points above the last startable player at his position. The currency — maximize my roster's total VOLS.
 - ADP = average overall draft position (where the field takes him). Lower = earlier. "UD" = undrafted / no ADP (very likely still available late).
-- tier = expert-consensus tier (FantasyPros). Same-tier players are roughly interchangeable; a drop to the next tier is a real talent cliff.
+- tier = POSITIONAL tier (expert consensus, ranked within his position — so tier 1 = the top group AT HIS POSITION). Same-tier players at a position are roughly interchangeable; a drop to the next tier is a real talent cliff.
 - market = my board vs the field: VALUE = I rank him better than ADP (a steal), REACH = worse, blank = fair.
 - risk = Safe / Balanced / Boom/Bust / Injury Risk.
 - floor / ceiling = 20th / 80th percentile projected season points, injury-adjusted.
@@ -86,9 +86,13 @@ PICK_MODE = """MODE: PICK — I just hit "Recommend my pick" and I'm ON THE CLOC
 CHAT_MODE = """MODE: CONVERSATION — I'm talking things through, NOT asking for a pick. Discuss, compare, react, answer my question. Do NOT declare a single "pick" or tell me who to draft unless I literally ask "who should I take / who do I pick." Just have the conversation with me. Keep it short."""
 
 
-def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
-    """Compact text snapshot of the live board for the current turn."""
-    cols = ["full_name", "pos_label", "team", "team_implied_total", "vols", "adp_rank", "ecr_tier",
+def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, top_n=35):
+    """Compact text snapshot of the live board for the current turn.
+
+    tier_info (optional): {pos: (top_tier_left, count_in_that_tier)} — lets the advisor see where
+    a position is about to fall off a tier cliff, not just how many startable players remain.
+    """
+    cols = ["full_name", "pos_label", "team", "team_implied_total", "vols", "adp_rank", "pos_tier",
             "market", "risk_tier", "target_share_2025", "snap_share_2025", "age", "is_rookie",
             "draft_pick", "floor", "ceiling", "p_startable", "p_bust", "xppg", "regression",
             "switched_team"]
@@ -99,8 +103,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
     # NaN-safe formatting: some available players have no ADP / role / outcome data
     to_int = lambda s: s.map(lambda x: "" if pd.isna(x) else str(int(round(x))))
     to_1dp = lambda s: s.map(lambda x: "" if pd.isna(x) else f"{x:.1f}")
-    top["adp_rank"] = top["adp_rank"].map(lambda x: "UD" if pd.isna(x) else str(int(round(x))))
-    for c in ["vols", "floor", "ceiling", "ecr_tier", "age"]:
+    top["adp_rank"] = top["adp_rank"].map(lambda x: "UD" if pd.isna(x) else f"{x:.1f}")
+    for c in ["vols", "floor", "ceiling", "pos_tier", "age"]:
         top[c] = to_int(top[c])
     top["p_startable"] = to_int(top["p_startable"] * 100)
     top["p_bust"] = to_int(top["p_bust"] * 100)
@@ -116,7 +120,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
     top = top.drop(columns=[c for c in ["target_share_2025", "snap_share_2025", "is_rookie",
                                         "draft_pick", "team_implied_total", "xppg"] if c in top])
     top = top.rename(columns={"full_name": "player", "pos_label": "pos", "adp_rank": "ADP",
-                              "ecr_tier": "tier", "risk_tier": "risk", "regression": "regr",
+                              "pos_tier": "tier", "risk_tier": "risk", "regression": "regr",
                               "p_startable": "P_start%", "p_bust": "bust%"})
     if "switched_team" in top:   # xPPG/regr describe the OLD team for a player who moved
         _sw = top["switched_team"].astype(str).str.lower().isin(["true", "1"])
@@ -131,7 +135,12 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
         proj = mine_df["total_points"].sum()
     else:
         roster, proj = "empty (no picks yet)", 0
-    scar = ", ".join(f"{p} {scarcity[p]}" for p in scarcity)
+    def _scar_cell(p):
+        base = f"{p} {scarcity[p]} startable"
+        if tier_info and tier_info.get(p) and tier_info[p][0] is not None:
+            return f"{base} (best tier left: T{tier_info[p][0]} ×{tier_info[p][1]})"
+        return base
+    scar = ", ".join(_scar_cell(p) for p in scarcity)
 
     dp_line = ""
     if draft_pos:
@@ -155,7 +164,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
         "LIVE DRAFT STATE\n"
         + dp_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
-        f"Startable players left by position: {scar}\n\n"
+        f"Scarcity by position (startable pool, and the best expert tier still on the board with how "
+        f"many remain in it — a small count is a CLIFF: grab the last one before the drop): {scar}\n\n"
         f"Top {len(top)} available players (sorted by composite value; "
         f"ADP 'UD' = undrafted/no ADP, i.e. very likely to still be available later):\n{board_txt}"
         f"{dst_line}"

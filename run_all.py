@@ -9,7 +9,7 @@ STEPS = [
     "players.py",               # Sleeper API      -> players.csv
     "filter_active.py",         # active + rookies -> players_active.csv
     "load_player_stats.py",     # 24/25 stats      -> players_with_stats.csv
-    "load_fp_adp.py",           # FantasyPros ADP  -> players_with_adp.csv
+    "load_espn_adp.py",         # ESPN live ADP    -> players_with_adp.csv
     "load_ecr.py",              # FantasyPros ECR  -> players_with_ecr.csv
     "load_fp_projections.py",   # projections      -> players_with_projections.csv
     "custom_scoring.py",        # Bucket 1 scoring -> players_scored.csv

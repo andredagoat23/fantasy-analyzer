@@ -78,6 +78,10 @@
     // and call push() — a socket feed is more reliable than scraping the DOM.
   }
 
+  // Only scrape inside an actual draft room — otherwise the loose selectors pick up junk
+  // (nav labels like "All") on regular ESPN pages and spam the mailbox.
+  const inDraftRoom = () => /draft/i.test(location.href);
+
   // ---- DOM scraper (works immediately; tuned live) ---------------------------
   function scrape() {
     const out = [];
@@ -86,7 +90,8 @@
       const t = row.querySelector(SEL.team);
       const player = p && p.textContent.trim();
       const team = t && t.textContent.trim();
-      if (player && player.length > 1) {
+      // player names are "First Last" — require a space to skip stray one-word UI text
+      if (player && player.includes(' ')) {
         const pick = { player, team: team || '' };
         if (MY_TEAM && team === MY_TEAM) pick.mine = true;
         out.push(pick);
@@ -97,6 +102,7 @@
 
   // ---- main loop -------------------------------------------------------------
   setInterval(() => {
+    if (!inDraftRoom()) { hud('idle — open your draft room'); return; }
     try {
       const found = scrape();
       if (found.length) { picks = found; push(); }

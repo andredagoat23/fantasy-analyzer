@@ -82,8 +82,8 @@ is_rook = board["is_rookie"].astype(str).str.lower().isin(["true", "1"])
 comp = comp.mask(is_rook, ROOKIE_MKT * ((adp_r + ecr_r) / 2) + (1 - ROOKIE_MKT) * comp)
 board["rank_composite"] = comp.rank(method="min").astype(int)
 
-# 5. value vs market
-board["value_gap"] = board["adp_rank"] - board["overall_rank"]
+# 5. value vs market (round: adp_rank is now ESPN's decimal ADP, so keep the gap a clean integer)
+board["value_gap"] = (board["adp_rank"] - board["overall_rank"]).round().astype("Int64")
 in_pool = (board["adp_rank"] <= DRAFTABLE) & (board["overall_rank"] <= DRAFTABLE)
 board["market"] = ""
 board.loc[in_pool & (board["value_gap"] >= 12), "market"] = "VALUE"
