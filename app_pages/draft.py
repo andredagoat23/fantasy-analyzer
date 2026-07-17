@@ -6,7 +6,9 @@ import streamlit as st
 
 import advisor
 import auth
+import bridge
 import config_store
+from utils import normalize_name
 
 try:
     import espn_sync
@@ -114,6 +116,11 @@ def espn_maps(mtime):    # espn_id + name lookups from the board (mtime busts on
     return espn_sync.build_maps(board)
 
 
+@st.cache_data(show_spinner=False)
+def board_name_map(mtime):   # {normalized_name -> full_name} for the browser bridge (no espn dep)
+    return {normalize_name(n): n for n in board["full_name"]}
+
+
 def bump():
     st.session_state.version += 1
     st.rerun()
@@ -195,13 +202,57 @@ strip = "  ·  ".join(f"**{p}** {scarcity[p]}" + (" :red-badge[thin]" if scarcit
                      for p in POSITIONS)
 st.markdown(f":material/inventory_2: &nbsp; {strip}")
 
-# ---- Live ESPN draft sync (activates only when [espn] secrets are set) ----
+# ---- Live draft sync ----
+# Two possible sources. The browser bridge (a userscript posting picks to a Firebase mailbox)
+# takes precedence because it works LIVE on any draft site; the ESPN API path is the fallback
+# (it only reflects picks after the draft finalizes, so it's for post-draft / testing).
+sync_active = False
+bridge_url = bridge.db_url()
 try:
     espn_cfg = dict(st.secrets.get("espn", {})) if ESPN_OK else {}
 except Exception:
     espn_cfg = {}
-sync_active = False
-if espn_cfg.get("league_id"):
+
+if bridge_url:
+    st.session_state.setdefault("bridge_teams", [])   # team names discovered from incoming picks
+    with st.container(border=True):
+        c1, c2 = st.columns([3, 1])
+        with c1:
+            team_opts = ["—"] + st.session_state.bridge_teams
+            st.selectbox("Which team is yours?", team_opts, key="bridge_my_team",
+                         help="Auto-fills your roster. Fills in once picks start arriving "
+                              "(or your browser script can flag your picks directly).")
+        with c2:
+            sync_active = st.toggle("Live", value=True, key="live_on",
+                                    help="Auto-pull picks from your draft site via the browser bridge.")
+        dot = "🟢 live" if sync_active else "⚪ paused"
+        n = st.session_state.get("pick_count", 0)
+        st.caption(f"{dot} · browser bridge · {n} pick{'s' if n != 1 else ''} received")
+
+    if sync_active:
+        by_name = board_name_map(os.path.getmtime("value_board.csv"))
+
+        @st.fragment(run_every=4)
+        def poll_bridge():
+            try:
+                raw = bridge.fetch_raw(bridge_url)
+            except Exception:
+                return   # transient network hiccup — keep last state, retry next tick
+            my_team = st.session_state.get("bridge_my_team")
+            my_team = None if my_team in (None, "—") else my_team
+            drafted, mine, teams_seen, total = bridge.resolve(raw, by_name, my_team)
+            teams_changed = teams_seen != st.session_state.get("bridge_teams", [])
+            if teams_changed:
+                st.session_state.bridge_teams = teams_seen
+            if (drafted != st.session_state.drafted or mine != st.session_state.mine
+                    or total != st.session_state.get("pick_count") or teams_changed):
+                st.session_state.drafted, st.session_state.mine = drafted, mine
+                st.session_state.pick_count = total
+                st.session_state.version += 1
+                st.rerun(scope="app")   # refresh the whole board with the new picks
+        poll_bridge()
+
+elif espn_cfg.get("league_id"):
     with st.container(border=True):
         try:
             league = connect_league(str(espn_cfg["league_id"]), int(espn_cfg.get("year", 2026)),
