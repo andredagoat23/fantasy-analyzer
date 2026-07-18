@@ -62,33 +62,34 @@ def _pick_no(p):
     return n if isinstance(n, int) and not isinstance(n, bool) and n >= 1 else None
 
 
-def resolve(raw_picks, by_name, my_team=None, my_pick_nums=None):
+def resolve(raw_picks, by_name, my_team=None):
     """Raw browser picks -> (drafted set, mine set, sorted team names seen, total pick count).
 
-    Player is matched to our board by normalized name. A pick lands in `mine` if the userscript
-    flagged it (`mine: true`), OR its team equals the team you selected as yours, OR its pick
-    number is one of yours (`my_pick_nums` — the picks at your draft seat). The pick-number path
-    is the most robust: it needs no name/owner matching and works for any draft order.
+    Player is matched to our board by normalized name. A pick lands in `mine` ONLY if it is
+    definitively yours: the userscript flagged it (`mine: true`), or its fantasy owner equals your
+    team (`my_team` — auto-detected from ESPN, or the team you picked in the dropdown). This is
+    ground truth from the draft site's own data, so it never claims another team's pick.
+
+    (An earlier version also flagged `mine` by seat/pick-number math; that mis-fired whenever the
+    seat was even slightly off and grabbed OTHER teams' picks onto your roster — removed.)
 
     Only REAL picks count: a row must either resolve to a board player OR carry a valid pick
     number (the latter keeps D/ST picks — which aren't on our board — in the on-the-clock count,
     same rule as the ESPN sync). Junk rows (a stale/mis-scrape blob that matches no player and has
     no pick number) are ignored, so they can't inflate the count or mislead the advisor.
     """
-    my_pick_nums = my_pick_nums or set()
     drafted, mine, teams = set(), set(), set()
     counted = 0
     for p in raw_picks:
         name = by_name.get(normalize_name(p.get("player", "")))
-        pno = _pick_no(p)
-        if not name and pno is None:
+        if not name and _pick_no(p) is None:
             continue                      # junk row — not a real pick
         team = p.get("team")
         if team:
             teams.add(team)
         if name:
             drafted.add(name)
-            if p.get("mine") or (my_team and team == my_team) or (pno in my_pick_nums):
+            if p.get("mine") or (my_team and team == my_team):
                 mine.add(name)
         counted += 1
     # "How far along" prefers ESPN's own pick numbering — exact even if a row is briefly missing

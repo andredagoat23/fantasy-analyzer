@@ -54,14 +54,18 @@ picks = [
     {"pick": 20, "player": "Chase Brown", "team": "Someone Else"},
     {"pick": 7, "player": "Christian McCaffrey", "team": "Not Me"},
 ]
-drafted, mine, teams, total = bridge.resolve(picks, BY_NAME, my_pick_nums={5, 20, 29})
-check("mine-by-position flags picks at my seats", mine == {"Puka Nacua", "Chase Brown"})
-check("mine-by-position ignores others' picks", "Christian McCaffrey" not in mine)
+drafted, mine, teams, total = bridge.resolve(picks, BY_NAME)
 check("total tracks the max pick number", total == 20)
 
-# ---- resolve: mine by owner name ----
+# ---- resolve: mine by owner name ONLY (never by seat/pick-number) ----
 drafted, mine, teams, total = bridge.resolve(picks, BY_NAME, my_team="Landon's Optimum Team")
-check("mine-by-owner flags my team's picks", mine == {"Bijan Robinson"})
+check("mine-by-owner flags exactly my team's picks", mine == {"Bijan Robinson"})
+check("no team selected -> empty roster, never guessed",
+      bridge.resolve(picks, BY_NAME, my_team=None)[1] == set())
+# a pick that lands on a 'seat' number but belongs to another owner must NEVER be mine
+seat_bait = [{"pick": 5, "player": "Puka Nacua", "team": "Some Other Team"}]
+check("pick at a seat number but another owner is NOT mine",
+      bridge.resolve(seat_bait, BY_NAME, my_team="Me")[1] == set())
 
 # ---- resolve: mine by explicit flag ----
 flagged = [{"pick": 3, "player": "Jahmyr Gibbs", "team": "X", "mine": True}]

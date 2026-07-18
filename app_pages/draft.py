@@ -313,18 +313,14 @@ if bridge_url:
                 if pend:
                     st.rerun(scope="app")   # let app.py apply teams/slot, then re-poll
 
+            # Your roster = picks whose fantasy owner is YOUR team (auto-detected from ESPN, or the
+            # dropdown). Ground truth from the draft site — never guessed from seat numbers, which is
+            # what used to pull other teams' picks onto your roster.
             my_team = st.session_state.get("bridge_my_team")
             my_team = None if my_team in (None, "—") else my_team
             my_team = my_team or st.session_state.get("bridge_detected_team")
 
-            # Which overall picks are MINE: prefer ESPN's exact list (correct for ANY draft order);
-            # otherwise fall back to the standard-snake seats derived from slot + teams.
-            my_pick_nums = set(st.session_state.bridge_my_picks)
-            if not my_pick_nums:
-                s, t = int(st.session_state.slot), int(st.session_state.teams)
-                my_pick_nums = {((r - 1) * t + s) if r % 2 else (r * t - s + 1) for r in range(1, 21)}
-
-            drafted, mine, teams_seen, total = bridge.resolve(raw, by_name, my_team, my_pick_nums)
+            drafted, mine, teams_seen, total = bridge.resolve(raw, by_name, my_team)
             teams_changed = teams_seen != st.session_state.get("bridge_teams", [])
             if teams_changed:
                 st.session_state.bridge_teams = teams_seen
