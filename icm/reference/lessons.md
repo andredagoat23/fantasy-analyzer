@@ -65,6 +65,27 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 - **Teaches:** trace the pipeline to the real drop point; flag data gaps, don't work around them.
   (Principles 1, 7, 8)
 
+### L7 — Overall-rank/VOLS-first drafting + stale tiers were the wrong engine
+- **Symptom:** advisor drafted by absolute value (rank/VOLS) and leaned on stale, inaccurate ECR
+  "tiers"; it also flipped wheel-back ("take the guy who'll be left, not the one who won't").
+- **Root cause:** absolute value ignores WHEN you pick next and who'll be left; tiers were a crude,
+  static, stale proxy for positional drop-offs.
+- **Fix:** **VONA — Value Over Next Available** (his VOLS minus the best same-position player ADP says
+  could still be there at your next pick). Computed in Python, shared by the advisor + a board column,
+  it's the live ADP-driven drop-off and makes wheel-back STRUCTURAL (gone = high VONA = grab; safe =
+  low VONA = wait). Tiers deleted from advisor + board. See `draft-strategy.md`.
+- **Teaches:** draft by marginal value over the next-available, not absolute rank; kill stale proxies.
+
+### L8 — A roster rule the model keeps ignoring must be enforced IN DATA
+- **Symptom:** after VONA went in, the advisor chased the single highest VONA — a 2nd TE (Kelce, VONA
+  15) — even though the roster-needs line explicitly said "a 2nd TE is NOT draftable." Prose rule
+  ignored.
+- **Root cause:** VONA is position-blind; a strong prose gate lost to a big salient number.
+- **Fix:** enforce the gate in the data — `build_context` nulls the VONA of filled 1-start positions
+  (QB/TE) to `n/a` so a worthless backup can't be the "highest VONA." (RB/WR always keep depth value.)
+- **Teaches:** when the model reliably ignores a rule, don't reword it — remove the temptation from
+  the data (same principle as computing wheel-back/roster-needs in Python). (Principle 3)
+
 ---
 
 ## How to add a lesson

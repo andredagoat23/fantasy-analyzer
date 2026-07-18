@@ -1,64 +1,63 @@
 # Draft Strategy (Layer 3 — source of truth for the advisor)
 
-The advisor's system prompt in `advisor.py` is a DERIVATIVE of this document. When strategy changes,
-change it here first, then update the prompt to match. This is what "the advisor should know" — the
-what, why, and how of a pick.
+The advisor's system prompt in `advisor.py` is a DERIVATIVE of this document. Change strategy here
+first, then update the prompt to match. This is what "the advisor should know" — the what, why, and
+how of a pick.
 
 ## League
 12-team snake, custom-scoring PPR. Starters: 1 QB, 2 RB, 2 WR, 1 TE, 1 FLEX (RB/WR/TE), 1 D/ST, 1 K,
-plus bench. One QB and one TE start — this drives everything below.
+plus bench. One QB and one TE start — this drives the positional logic below.
 
-## The decision, in strict priority order
-A later factor NEVER overrides an earlier one.
+## The core idea: draft by VONA, not overall rank or VOLS
+Drafting by overall rank / VOLS answers "who's the best player left?" (absolute value). What wins is
+"where does waiting cost me the most?" — the drop-off from the best guy at a position to the next guy
+I could realistically still get at my next pick. That is **VONA — Value Over Next Available**.
 
-1. **ROSTER NEED.** Only recommend a position that improves the roster (an open starter/FLEX, or
-   genuine bench upside at RB/WR/elite TE). Never a position already filled, for any reason. Once
-   starters + FLEX are full: bench upside only (young/ascending RB/WR with ceiling); hold D/ST and K
-   for the final 2–3 rounds. Roster needs are COMPUTED in Python (`_roster_needs`) and handed to the
-   model as an explicit line — the model must not infer them.
+**VONA(player) = his VOLS − the best VOLS at his position that ADP says could still be on the board at
+your NEXT pick (adp > horizon, or undrafted), floored at replacement (0).**
 
-2. **PLAYER VALUE, then UPSIDE & RISK for close calls.** VOLS (value over last starter) is the value
-   backbone. Among players of comparable VOLS, use the rest of the profile — ceiling/boom, floor/
-   bust, role (tgt%/snap%), situation (vegas/team), tier, xPPG/regression — to choose the one that
-   fits the RISK APPETITE (upside build → ceiling/boom; safe build → floor/durable). VOLS anchors;
-   the rest modulates. Do NOT abandon VOLS to chase raw ceiling.
+- Computed in Python: `advisor.add_vona(available, horizon)`. `horizon` = your next pick after the one
+  being decided. Shared by the advisor context AND the board's VONA column so they always agree.
+- ADP-driven by construction — it's built on "who could still be left." High VONA = a real cliff
+  behind him (grab now); VONA ≈ 0 = comparable value will still be there (wait).
+- It REPLACES the old ECR tiers (stale, inaccurate — lesson L7) with the live, personalized drop-off,
+  and it makes the wheel-back direction STRUCTURAL: the "gone" cliff has high VONA, the "safe" guy has
+  low VONA, so you take the right one without the model having to reason out the direction (it kept
+  flipping it — lessons L2/L5-adjacent).
 
-3. **MARKET & SCARCITY are tiebreakers only.** `market` (VALUE/REACH) is a PRICING signal (can I
-   wait, or take him a hair early?), never a talent signal. A "steal" you don't need, or who's simply
-   worse than another available player, is worth nothing. A thin tier is only a reason to act if the
-   remaining player is genuinely elite AND you need the position — otherwise scarcity pushes you
-   TOWARD where the league-winning talent still is, not into the scarce spot.
+## The decision
+1. **ROSTER NEED filters what's DRAFTABLE** (it does NOT force-fill):
+   - Draftable: any open starter/FLEX, plus **RB/WR bench depth** (RB and WR always keep bench/FLEX
+     value via injuries/upside).
+   - NOT draftable: a **filled 1-start position** — QB and TE are 1-start, so a 2nd QB or 2nd TE is
+     nearly worthless (you start one, they're streamable), *no matter how high its VONA*. Also no
+     K/D-ST before the lineup is full. This is enforced IN DATA: `build_context` nulls a blocked
+     position's VONA to `n/a` so the model can't chase it (a prose rule alone got ignored — lesson L8).
+   - A still-open starter whose good options will KEEP (wheel "safe", low VONA) can WAIT — grab a
+     bigger VONA cliff at a draftable RB/WR now, fill the safe slot next pick for the same value. But
+     don't let an open starter rot if its options are going (rising VONA / wheel "gone").
+2. **Among draftable, take the HIGHEST VONA.** Within a position, always take the best available
+   (highest VOLS) — never a worse same-position player for wheel-back or a tag.
+3. **UPSIDE & RISK break close VONA calls**, per RISK APPETITE: upside build → ceiling/boom/ascending
+   roles/high vegas+role; safe build → floor/durable/low bust. `market` (VALUE/REACH) is a pricing
+   tiebreaker only (can I wait?), never a talent signal.
 
-## The QB/TE trap (the hard-won correction — see lessons L3)
-The board's VOLS OVER-rates QB and TE for draft timing. An elite rushing QB posts huge raw points, so
-his VOLS can look RB-level (e.g. the QB1 shows VOLS ~80). But you start only ONE QB and ONE TE and
-can get strong production far later. So:
-- Treat QB and TE as WAIT positions **regardless of how high their VOLS looks.**
-- Don't draft a QB before ~round 5–6, or a TE in the first ~4 rounds, on VOLS alone.
-- Take one early ONLY if the RB/WR core is already strong AND a truly elite one has fallen well past
-  his ADP. K is always the final pick.
-- Prioritize RB/WR early: FLEX-eligible, injury-attrition, genuinely scarce over a full roster.
+## Why QB/TE fall on their own now (no hardcoded discount)
+QB and TE are deep, so comparable production usually still lasts to your next pick → their VONA is
+low → you naturally wait, with no "don't draft QB before round 5" rule. If a QB/TE ever shows a
+genuinely top VONA at a position you NEED (a real cliff), that's a real signal — take it. This
+replaced the old hardcoded QB/TE-discount hack (lesson L3), which the user asked to remove in favor of
+trusting VONA. Watch: if the board's VOLS over-rates elite rushing QBs, their VONA can run hot — if
+that resurfaces, it's a board/VOLS calibration issue (frozen pipeline), flag it, don't hack the prompt.
 
-## Wheel-back ("will he last to my next pick?") — COMPUTED, not reasoned
-The math is done in Python (`build_context`) and handed to the model as a `wheel` column per player:
-- **gone** = his ADP is at/before your next pick (take him now if you want him)
-- **risky** = within a round (toss-up)
-- **safe** = a full round of cushion (you can wait and take a better-fit player)
-The model READS the column and never re-derives it from ADP. Draft position (which pick is yours,
-picks-away, next pick) is likewise Python-computed and quoted verbatim.
+## Wheel-back — still Python-computed, still read never re-derived
+The `wheel` column (gone / risky / safe) is the per-player timing read; VONA is the position-level
+decision. Both use the same `horizon`. The model reads them; it never does the ADP arithmetic.
 
-## Data the advisor is given (per available player)
-VOLS, ADP, `wheel`, positional tier, market, risk tier, floor, ceiling, P(start)%, bust%, xPPG,
-regression (TD-lucky / Buy-low / Sustainable / new-tm), team vegas total, tgt%/snap%, age, rookie
-draft pick. All of it is fair game for step 2; none of it overrides step 1.
+## Data the advisor is given
+VONA, VOLS, ADP, `wheel`, market, risk tier, floor/ceiling, P(start)%/bust%, xPPG/regression, team
+vegas total, tgt%/snap%, age, rookie pick. VONA drives; the rest breaks close calls. Tiers are GONE.
 
-## Known data caveat (flagged, not silently fixed)
-`value_board.csv` VOLS runs hot for elite QB/TE in this 1-QB/1-TE format. The advisor corrects for it
-at the prompt layer (the QB/TE trap above). Correcting the board itself is a pipeline/VOLS-calibration
-change — do not do it without the user asking (frozen boundary).
-
-## Modes
-- **Pick button** (`PICK_MODE`): one bold name + one reason + a bold fallback, <~50 words, decisive —
-  no thinking out loud or self-correction.
-- **Chat** (`CHAT_MODE`): discuss/compare; don't declare a single pick unless asked.
-- Both run on Sonnet (`claude-sonnet-4-6`); cheap one-shot setup helpers run on Haiku.
+## Modes / models
+Pick button = terse decisive one-pick answer; chat = discuss. Both on Sonnet (`claude-sonnet-4-6`);
+setup helpers on Haiku.
