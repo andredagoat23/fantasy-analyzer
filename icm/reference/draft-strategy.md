@@ -47,11 +47,24 @@ behind him, weighted by how likely you actually lose him.
    - A still-open starter whose good options will KEEP (wheel "safe", low VONA) can WAIT — grab a
      bigger VONA cliff at a draftable RB/WR now, fill the safe slot next pick for the same value. But
      don't let an open starter rot if its options are going (rising VONA / wheel "gone").
-2. **Among draftable, take the HIGHEST VONA.** Within a position, always take the best available
-   (highest VOLS) — never a worse same-position player for wheel-back or a tag.
-3. **UPSIDE & RISK break close VONA calls**, per RISK APPETITE: upside build → ceiling/boom/ascending
-   roles/high vegas+role; safe build → floor/durable/low bust. `market` (VALUE/REACH) is a pricing
-   tiebreaker only (can I wait?), never a talent signal.
+2. **VONA is the SHORTLIST, not the final answer.** `build_context` computes a ranked "TOP PICKS NOW"
+   list and **stars options within a few VONA of the top** (a genuine tie). Among the starred, pick the
+   BEST PLAYER by age, risk/reward, offense (vegas) and role (tgt%/snap%) — NOT the tiny VONA gap (the
+   softened VONA compresses the numbers — lesson L10). Only when one VONA clearly stands alone does it
+   decide by itself. Within a position, best available (highest VOLS).
+3. **RISK APPETITE steers the tiebreak:** upside build → ceiling/boom/ascending roles/high vegas+role;
+   safe build → floor/durable/low bust. `market` is a pricing tiebreaker only (can I wait?), never a
+   talent signal.
+
+**Roster tracking (all 9 starters).** The advisor tracks QB/RB/RB/WR/WR/TE/FLEX + D/ST + K. K is on
+the board (resolves normally); **D/ST is NOT on the board**, so it's detected from the raw picks
+(`bridge.my_dst`) and threaded in via `build_context(my_dst=)`. `_roster_needs` reports what you HAVE
+and only says "complete" when the full lineup is set — it used to ignore K/D-ST and miscount (L9).
+
+**Timing is already inside VONA.** Because `best_wait` weights the next-tier players by their survival
+probability, a position where a comparable player lasts several rounds yields a LOW VONA (take other
+guys now, grab that position later); a real cliff yields a HIGH VONA. No separate "when does the next
+guy go" rule is needed — VONA is the point-maximizing signal for it.
 
 ## Why QB/TE fall on their own now (no hardcoded discount)
 QB and TE are deep, so comparable production usually still lasts to your next pick → their VONA is

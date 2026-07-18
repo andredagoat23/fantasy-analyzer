@@ -86,6 +86,28 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 - **Teaches:** when the model reliably ignores a rule, don't reword it — remove the temptation from
   the data (same principle as computing wheel-back/roster-needs in Python). (Principle 3)
 
+### L9 — The advisor miscounted the roster (D/ST invisible, K/D-ST slots ignored)
+- **Symptom:** late in a mock the advisor thought the roster was full when it wasn't and thought the
+  user had no D/ST when they did.
+- **Root cause:** `value_board.csv` has NO defenses, so a drafted D/ST never resolves to a board
+  player → never enters `mine` → the advisor can't see it. And `_roster_needs` only tracked
+  QB/RB/WR/TE/FLEX, ignoring the K and D/ST starter slots, so it called a half-empty lineup "complete."
+- **Fix:** `bridge.my_dst()` detects the D/ST from the raw picks (owner + name); draft.py threads it
+  through (`mine_dst` state, roster-panel slot, `build_context(my_dst=)`); `_roster_needs` now covers
+  all 9 starters, reports what you HAVE, and only says "complete" when the full lineup is set.
+- **Teaches:** know the data's blind spots (defenses aren't on the board) and model the WHOLE roster,
+  not just the positions that happen to be in the CSV. (Principles 1, 8)
+
+### L10 — Softened VONA compresses the numbers; weight the profile on ties
+- **Symptom:** with the softened VONA, top options are often within a point or two — and the model
+  over-indexed on the tiny VONA gap.
+- **Fix:** `build_context` stars the options within a few VONA of the top (a genuine tie) in the TOP
+  PICKS list; the prompt says pick the BEST PLAYER among the starred by age/risk/offense(vegas)/role,
+  not the VONA gap. VONA = the shortlist; the profile = the tiebreaker. (Also confirmed VONA already
+  reflects position timing — a comparable player who lasts several rounds yields a low VONA.)
+- **Teaches:** a metric that's mathematically right can still be too precise to decide on — surface
+  the tie explicitly and let the richer profile break it.
+
 ---
 
 ## How to add a lesson
