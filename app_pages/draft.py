@@ -144,6 +144,7 @@ def request_reset():
 def do_reset():
     st.session_state.drafted = set()
     st.session_state.mine = set()
+    st.session_state.mine_dst = None
     st.session_state.confirm_reset = False
     st.session_state.version += 1
 
@@ -169,6 +170,8 @@ def render_roster(mine_df):
         else:
             filled["BN"].append(p["full_name"])
     pools = {k: list(v) for k, v in filled.items()}
+    if st.session_state.get("mine_dst"):          # defenses aren't on the board; tracked separately
+        pools["D/ST"] = [st.session_state.mine_dst]
     for label, key in ROSTER_SLOTS:
         pool = pools.get(key, [])
         st.markdown(f"**{label}** &nbsp; {pool.pop(0) if pool else '—'}")
@@ -303,12 +306,15 @@ if bridge_url:
             my_team = my_team or st.session_state.get("bridge_detected_team")
 
             drafted, mine, teams_seen, total = bridge.resolve(raw, by_name, my_team)
+            my_dst = bridge.my_dst(raw, my_team)   # defenses aren't on the board — track separately
             teams_changed = teams_seen != st.session_state.get("bridge_teams", [])
             if teams_changed:
                 st.session_state.bridge_teams = teams_seen
             if (drafted != st.session_state.drafted or mine != st.session_state.mine
-                    or total != st.session_state.get("pick_count") or teams_changed):
+                    or total != st.session_state.get("pick_count") or teams_changed
+                    or my_dst != st.session_state.get("mine_dst")):
                 st.session_state.drafted, st.session_state.mine = drafted, mine
+                st.session_state.mine_dst = my_dst
                 st.session_state.pick_count = total
                 st.session_state.version += 1
                 st.rerun(scope="app")   # refresh the whole board with the new picks
@@ -463,7 +469,8 @@ with st.container(border=True):
 
         if prompt:
             st.session_state.chat.append({"role": "user", "content": prompt})
-            context = advisor.build_context(available, mine_df, scarcity, draft_pos)
+            context = advisor.build_context(available, mine_df, scarcity, draft_pos,
+                                            my_dst=st.session_state.get("mine_dst"))
             note = _setup_note()
             full_context = f"{note}\n\n{context}" if note else context
             api_messages = (st.session_state.chat[:-1]

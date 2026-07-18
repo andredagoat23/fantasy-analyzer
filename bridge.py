@@ -62,6 +62,18 @@ def _pick_no(p):
     return n if isinstance(n, int) and not isinstance(n, bool) and n >= 1 else None
 
 
+def my_dst(raw_picks, my_team=None):
+    """The D/ST you drafted (its name), if any — detected by owner + a D/ST-looking name. Defenses
+    aren't in value_board.csv, so they never enter `mine` via resolve(); this is the only way the
+    app/advisor learns you have one. Returns None if you haven't drafted a D/ST."""
+    for p in raw_picks:
+        name = str(p.get("player", ""))
+        mine = p.get("mine") or (my_team and p.get("team") == my_team)
+        if mine and ("D/ST" in name.upper() or name.upper().endswith(" DST") or "DEFENSE" in name.upper()):
+            return name
+    return None
+
+
 def resolve(raw_picks, by_name, my_team=None):
     """Raw browser picks -> (drafted set, mine set, sorted team names seen, total pick count).
 

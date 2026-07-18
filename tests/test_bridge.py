@@ -81,6 +81,15 @@ drafted, mine, teams, total = bridge.resolve(dst, BY_NAME)
 check("D/ST not added to board-drafted set", drafted == {"Puka Nacua"})
 check("D/ST still counts toward total via its pick #", total == 6)
 
+# ---- my_dst: defenses aren't on the board, so they're detected by owner + name ----
+dst_picks = [{"pick": 5, "player": "Puka Nacua", "team": "Me"},
+             {"pick": 130, "player": "Broncos D/ST", "team": "Me"},
+             {"pick": 131, "player": "Bills D/ST", "team": "Other"}]
+check("my_dst finds my defense", bridge.my_dst(dst_picks, "Me") == "Broncos D/ST")
+check("my_dst ignores another team's defense", bridge.my_dst(dst_picks, "Nobody") is None)
+check("my_dst None when I have no defense", bridge.my_dst([{"pick": 5, "player": "Puka Nacua", "team": "Me"}], "Me") is None)
+check("my_dst honors the mine flag", bridge.my_dst([{"pick": 9, "player": "49ers D/ST", "mine": True}], None) == "49ers D/ST")
+
 # ---- resolve: empty ----
 drafted, mine, teams, total = bridge.resolve([], BY_NAME)
 check("empty picks -> empty everything", (drafted, mine, teams, total) == (set(), set(), [], 0))
