@@ -13,13 +13,24 @@ Drafting by overall rank / VOLS answers "who's the best player left?" (absolute 
 "where does waiting cost me the most?" — the drop-off from the best guy at a position to the next guy
 I could realistically still get at my next pick. That is **VONA — Value Over Next Available**.
 
-**VONA(player) = his VOLS − the best VOLS at his position that ADP says could still be on the board at
-your NEXT pick (adp > horizon, or undrafted), floored at replacement (0).**
+**VONA(player) = his VOLS − `best_wait[his position]`, where `best_wait` is the EXPECTED VOLS of the
+best player still on the board at your NEXT pick** — each candidate weighted by the probability he's
+the top survivor (he survives AND everyone better at his position is gone). Survival is a softened
+**logistic of ADP vs your next pick** (`_survival_prob`, scale `_ADP_SCALE`≈7), not a hard cutoff —
+a player drafted right at your next pick is ~50/50, a round later ~88%. Floored at replacement (0).
+
+This works out to **VONA ≈ P(he's gone) × (his VOLS − the next-best you'd expect)** — the drop-off
+behind him, weighted by how likely you actually lose him.
 
 - Computed in Python: `advisor.add_vona(available, horizon)`. `horizon` = your next pick after the one
   being decided. Shared by the advisor context AND the board's VONA column so they always agree.
-- ADP-driven by construction — it's built on "who could still be left." High VONA = a real cliff
-  behind him (grab now); VONA ≈ 0 = comparable value will still be there (wait).
+- ADP-driven by construction. High VONA = a real cliff behind him you'll likely lose (grab now);
+  VONA ≈ 0 = comparable value will still be there (wait).
+- **The model gets a Python-ranked "TOP PICKS NOW" list** (draftable players by VONA; K/D-ST + filled
+  1-start QB/TE excluded) and is told to take #1 unless a clear risk/upside reason bumps it to #2-3.
+  This is because softening compressed the numbers and the model reverted to force-filling a safe
+  open starter and even misread the VONA column — the ranked list makes the answer unambiguous
+  (lesson L8: enforce in data what the model gets wrong).
 - It REPLACES the old ECR tiers (stale, inaccurate — lesson L7) with the live, personalized drop-off,
   and it makes the wheel-back direction STRUCTURAL: the "gone" cliff has high VONA, the "safe" guy has
   low VONA, so you take the right one without the model having to reason out the direction (it kept
