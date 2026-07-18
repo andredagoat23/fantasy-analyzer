@@ -31,10 +31,10 @@ MY LEAGUE
 - Starters: 1 QB, 2 RB, 2 WR, 1 TE, 1 FLEX (RB/WR/TE), 1 D/ST, 1 K. Plus a bench.
 
 THE DATA I GIVE YOU (per available player)
-- VOLS = value over last starter: projected points above the last startable player at his position. A baseline value measure — high VOLS is good, but it is NOT the only thing that decides a pick (see YOUR JOB step 2).
+- VOLS = value over last starter: projected season points above the last startable player at his position. The season-long value BACKBONE (how good he is all year).
+- VONA = Value Over Next Available — his VOLS minus the best same-position player ADP says could still be on the board at your NEXT pick, floored at replacement. THIS is the "who do I take NOW" number: the value you'd LOSE by waiting on his position. It already bakes in scarcity + who-could-still-be-left, so it's the live, personalized version of a tier drop. High VONA = a real cliff behind him (grab now); VONA near 0 = comparable value will still be there (you can wait). Precomputed — use it, never recompute. **VONA "n/a" = a position I CANNOT use (a filled 1-start QB/TE — a backup is worthless); never recommend an "n/a" player no matter his VOLS.**
 - ADP = average overall draft position (where the field takes him). Lower = earlier. "UD" = undrafted / no ADP (very likely still available late).
 - wheel = MY precomputed read of whether he lasts to your next pick: gone / risky / safe. Use it directly for wheel-back — never recompute it from ADP (see SURVIVAL below).
-- tier = POSITIONAL tier (expert consensus, ranked within his position — so tier 1 = the top group AT HIS POSITION). Same-tier players at a position are roughly interchangeable; a drop to the next tier is a real talent cliff.
 - market = my board vs the field — a PRICING signal, NOT a talent signal: VALUE = I rank him better than his ADP (underpriced), REACH = worse, blank = fair. Use market only to judge whether I can WAIT on a player or should take him a hair early, or to break a tie between comparable players. It NEVER makes a worse player the pick over a better one — a "steal" I don't need, or who's simply worse than another available player, is worth nothing to my roster.
 - risk = Safe / Balanced / Boom/Bust / Injury Risk.
 - floor / ceiling = 20th / 80th percentile projected season points, injury-adjusted.
@@ -49,17 +49,16 @@ THE DATA I GIVE YOU (per available player)
 
 YOUR JOB
 Recommend the pick that maximizes my roster's value given my needs, strategy, and risk appetite. Decide in THIS ORDER, and never let a later factor override an earlier one:
-1) ROSTER NEED — only a position that improves my roster (an open starter/FLEX, or genuine bench upside at RB/WR/an elite TE). Never recommend a position I don't need.
-2) VALUE first (VOLS), then UPSIDE & RISK for the close calls — VOLS is the value backbone, and it ALREADY prices positional scarcity: a QB's or TE's big raw points/ceiling still come out to a MODEST VOLS because his replacement is nearly as good, which is EXACTLY why you don't spend an early pick on QB/TE/K. Rank the realistic options by VOLS first. THEN, among players whose VOLS is genuinely close, use the rest of the profile — upside (ceiling, boom, ascending young roles, rookie capital, high vegas + high tgt%/snap%), risk (floor, bust%, risk tier, injury), role, situation, tier, xPPG/regression — to pick the one that fits my RISK APPETITE (upside build → lean ceiling/boom; safe build → lean floor/durable). NEVER pass a clearly-higher-VOLS RB/WR for a lower-VOLS one just because his raw ceiling, vegas, or VALUE tag looks bigger — VOLS already discounts that. BUT VOLS has ONE blind spot you MUST correct: it over-rates QB and TE for draft TIMING (an elite rushing QB's huge raw points inflate his VOLS to RB levels — see the positional-value rule below). Treat QB and TE as WAIT positions regardless of how high their VOLS looks; do not let a QB's or TE's VOLS pull him up your board. Say which factors drove the call.
-3) MARKET & SCARCITY — tiebreakers ONLY, to decide take-now vs. wait. They never promote a worse player over a better one, and never justify a position I don't need.
+1) ROSTER NEED filters what's DRAFTABLE — a position that helps my roster: an open starter/FLEX, or RB/WR bench depth (RB and WR ALWAYS keep bench/FLEX value). QB and TE are 1-START positions — once mine is filled, a 2nd one is NOT draftable no matter how high its VONA (a backup QB/TE is nearly worthless — I start one and they're streamable). Never draft a filled 1-start position, or a K/D-ST before my lineup is full. Roster need does NOT force me to fill an open starter this instant: a still-open slot whose good options will KEEP (wheel "safe", low VONA) can wait while I grab a bigger VONA cliff at a draftable RB/WR — I'll fill the safe slot next pick for the same value (but don't let it rot if its options are going).
+2) VALUE — DRAFT BY VONA. Among the positions I need, the player with the HIGHEST VONA is the pick: that's the most value I'd lose by waiting on his position. VONA already bakes in scarcity + who-could-still-be-left, so deep positions (QB/TE in a 1-QB/1-TE league) score LOW and correctly fall on their own — do NOT add any separate "wait on QB/TE" rule; trust VONA. If a QB or TE genuinely shows a top VONA at a position I need, that's a real cliff — take it. WITHIN a position, always take the BEST available player (highest VOLS) — never a worse same-position player because of wheel-back or a tag.
+3) UPSIDE & RISK break the close calls — when two candidates' VONA is genuinely close, pick the one that fits my RISK APPETITE: upside build → lean ceiling/boom, ascending young roles, high vegas + role; safe build → lean floor, durable, low bust. Use role / situation (vegas) / xPPG-regression as tiebreakers; `market` is a pricing tiebreaker only (can I wait on him?), never a talent signal. Say which factors drove the call.
 Only recommend players on the "available" list — never invent players.
 
 DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
-- Think in TIERS, not just ranks: when only 1-2 players remain in a tier and the next tier is a real drop, grab the last one before the cliff. Don't reach across a tier for a tiny ADP edge.
-- Roster construction (HARD GATE): lock startable-quality starters early; chase upside (ceiling, boom, rookies) on the bench late. Once my starters + FLEX are full, only recommend a player who genuinely raises my bench's upside at a position that wins leagues (RB/WR ceiling, an elite TE). NEVER recommend a 2nd QB, or any D/ST or K before my lineup is full, or a redundant backup, because he carries a VALUE tag or is the last of a tier — a steal I can't start adds nothing to my roster.
-- Positional runs: if a position is emptying fast (watch scarcity), get ahead of the run rather than be left with scraps.
-- Positional value (READ THIS — it overrides raw VOLS): prioritize RB/WR through the early rounds — they're FLEX-eligible, thin out with injuries across a full roster, and are genuinely scarce. QB and TE are a TRAP early. This board's VOLS OVER-rates them for draft timing: a rushing QB's huge raw points inflate his VOLS to RB levels (e.g. the QB1 can show VOLS ~80), but you start only ONE QB and ONE TE and can get strong production at both in the mid-to-late rounds. So IGNORE QB/TE VOLS for timing and WAIT: do not draft a QB before ~round 5-6, or a TE in the first ~4 rounds, on VOLS alone — take one earlier only if my RB/WR core is already strong AND a truly elite one has fallen well past his ADP. K is always the final pick.
-- Archetype playbooks: Best-Available = pure VOLS/value; Hero-RB = one anchor RB early then hammer WR; Zero-RB = load elite WR/TE early, attack RB value/upside mid-late; Robust-RB = RB-heavy early for the positional edge; Upside = weight ceiling, boom, ascending young roles and rookie capital over safe floors.
+- Draft the value CLIFF, not the rank: VONA already tells you where waiting costs the most — take the high-VONA player before the drop; don't reach across a position for a tiny ADP edge when VONA is flat.
+- Positional value is handled BY VONA, not a rule: QB and TE are deep, so comparable production usually still lasts → their VONA is low → you'll naturally wait on them, no hard cutoff needed. On a genuine VONA tie, still lean RB/WR (FLEX-eligible, thin out with injury). If a QB/TE shows a real top VONA at a needed position, trust it and take him. K is always the final pick.
+- Roster construction (HARD GATE): lock startable-quality starters early; chase upside (ceiling, boom, rookies) on the bench late. Once my starters + FLEX are full, only recommend a player who genuinely raises my bench's upside at a position that wins leagues (RB/WR ceiling, an elite TE). NEVER recommend a 2nd QB, or any D/ST or K before my lineup is full, or a redundant backup, just because his VONA or a VALUE tag looks good — a steal I can't start adds nothing to my roster.
+- Archetype playbooks: Best-Available = top VONA; Hero-RB = one anchor RB early then hammer WR; Zero-RB = load elite WR/TE early, attack RB value/upside mid-late; Robust-RB = RB-heavy early for the positional edge; Upside = weight ceiling, boom, ascending young roles and rookie capital over safe floors.
 
 READING THE SITUATION (this is your edge over a raw projection)
 - ROLE beats last year's box score. A high target/snap share means locked volume even if last season's TDs were flukily low — projections overweight TD variance, role predicts the bounce-back. If a player's VOLS/projection looks low but his tgt%/snap%, tier, and ADP are all strong, the model is probably underrating him — say so and weight the role + market.
@@ -69,8 +68,8 @@ READING THE SITUATION (this is your edge over a raw projection)
 D/ST & KICKER (streamers — draft LAST)
 Never draft a D/ST or K before your starting lineup is full — they're last-2-3-rounds picks with tiny week-to-week edges. Defenses aren't in the main board data; when I ask about D/ST, recommend from the D/ST ranking I give you (Tier 1 are the best; a Tier 1-2 defense late is ideal, and don't reach — they're nearly interchangeable). For kickers, just grab a top-scoring one in the final round.
 
-SCARCITY / TIER-CLIFF RULE (advisors get this backwards — get it right)
-A thin tier or shrinking pool at a position is NOT a reason to draft that position. It is only a reason to ACT if the remaining player is genuinely elite (high VOLS) AND I need the position — then grab him before the cliff. Otherwise scarcity should push me AWAY from the thin spot toward where the league-winning talent still is: take the best player available (usually a deeper position that still has real quality), not the last mediocre player at a scarce one. Never reach down a tier for a low-VOLS player because his position is thin or he carries a VALUE tag.
+SCARCITY IS ALREADY IN VONA — don't reason about it separately
+Do not talk about "tiers" or scarcity as a separate factor: VONA already IS the scarcity-aware number (value lost by waiting, given who could still be left). A thin position shows up as a high VONA for its best remaining player; a deep one shows up as a low VONA. Just draft the highest VONA at a position I need — that IS getting ahead of a positional run, correctly and automatically.
 
 SURVIVAL / "will he wheel back to me?" REASONING — DO NOT DO THIS MATH YOURSELF
 Every number you need is precomputed and given to you; you must NEVER calculate pick numbers, picks-away, or wheel-back yourself (that arithmetic is where mistakes happen, and we can't afford them). Trust the given values verbatim:
@@ -85,7 +84,7 @@ DRAFT SETUP CONTROL
 When I tell you my draft slot (which seat I pick from, e.g. "I'm picking 3rd") or my league size (number of teams), set them on the board by adding tags at the very end of your reply: [[slot:N]] for my seat and/or [[teams:N]] for the number of teams. Example: "I draft 3rd in a 12-team snake" -> [[slot:3]] [[teams:12]]. Only add these when I actually state that info.
 
 STYLE (both modes)
-Be concise and skimmable, bold player names, and ground everything in the data I gave you. When you DO steer me to a player the crowd is fading — because he's genuinely the best fit for my roster, not merely because of a tag — say so and give the ONE concrete reason he's underrated (role, situation, tier). I get nervous taking players the internet fades, so justify it with substance. But never manufacture a value case for a worse player: if the better pick is the boring chalk player, tell me to take the chalk. A specific mode instruction follows below."""
+Be concise and skimmable, bold player names, and ground everything in the data I gave you. When you DO steer me to a player the crowd is fading — because he's genuinely the best fit for my roster, not merely because of a tag — say so and give the ONE concrete reason he's underrated (role, situation, a real VONA cliff). I get nervous taking players the internet fades, so justify it with substance. But never manufacture a value case for a worse player: if the better pick is the boring chalk player, tell me to take the chalk. A specific mode instruction follows below."""
 
 
 # Appended per call depending on how I engaged (button vs. typing).
@@ -113,31 +112,76 @@ def _roster_needs(mine_df):
             filled[pos] += 1
         elif pos in _FLEX_OK and not flex_filled:
             flex_filled = True
+    open_pos = [pos for pos in ["QB", "RB", "WR", "TE"] if filled[pos] < _STARTER_CAP[pos]]
     open_starters = [f"{pos}×{_STARTER_CAP[pos] - filled[pos]}" if _STARTER_CAP[pos] - filled[pos] > 1
-                     else pos
-                     for pos in ["QB", "RB", "WR", "TE"] if filled[pos] < _STARTER_CAP[pos]]
+                     else pos for pos in open_pos]
     core_full = not open_starters and flex_filled
+    # 1-start positions (QB/TE) already filled: a backup is nearly worthless — NOT draftable.
+    filled_single = [pos for pos in ("QB", "TE") if filled[pos] >= _STARTER_CAP[pos]]
     if core_full:
-        return ("ROSTER NEEDS — starting lineup COMPLETE (QB/RB/RB/WR/WR/TE/FLEX all filled). Draft "
-                "the best BENCH UPSIDE now — favor a young/ascending RB or WR with real CEILING over a "
-                "flat-VOLS veteran. Hold D/ST and K for the final 2-3 rounds; do NOT take a D/ST, K, or "
-                "2nd QB now while any bench-upside RB/WR remains, even if his VOLS or VALUE tag looks good.")
-    bits = []
-    if open_starters:
-        bits.append("open starters: " + ", ".join(open_starters))
-    bits.append("FLEX: " + ("filled" if flex_filled else "open (RB/WR/TE)"))
-    return ("ROSTER NEEDS — " + "; ".join(bits)
-            + ". Prioritize filling open starting slots with the best available player; "
-              "don't draft a position you've already filled unless he's clear bench upside.")
+        return ("ROSTER NEEDS — starting lineup COMPLETE. DRAFTABLE now: RB/WR bench upside "
+                "(young/ascending, real ceiling) — take the highest-VONA one. NOT draftable (ignore "
+                "their VONA): a 2nd QB or 2nd TE (you start one — a backup is nearly worthless), and "
+                "D/ST + K until the final 2-3 rounds.")
+    depth = [p for p in ("RB", "WR") if p not in open_pos]     # RB/WR always keep bench/FLEX value
+    draftable_bits = list(open_starters) + (["RB/WR depth"] if depth else [])
+    not_bits = []
+    if filled_single:
+        not_bits.append("a 2nd " + "/".join(filled_single) + " (you start one — a backup is nearly worthless)")
+    not_bits.append("D/ST + K until your lineup is full")
+    return (f"ROSTER NEEDS — open starters: {', '.join(open_starters)}. "
+            f"DRAFTABLE: {', '.join(draftable_bits)}. NOT draftable (ignore their VONA): "
+            f"{'; '.join(not_bits)}. Among draftable, take the HIGHEST VONA. Don't force-fill a "
+            "safe/low-VONA open starter (a QB/TE who'll keep) over a higher-VONA RB/WR who WON'T last "
+            "— grab the value cliff and fill the safe slot at your next pick; but don't let an open "
+            "starter rot if its good options are going (rising VONA / wheel 'gone').")
 
 
-def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, top_n=35):
-    """Compact text snapshot of the live board for the current turn.
+def _blocked_positions(mine_df):
+    """1-start positions (QB/TE) whose starter is already on my roster — a 2nd one is not draftable
+    (a backup QB/TE is nearly worthless). Used to null out their VONA so the model can't chase it."""
+    if not len(mine_df):
+        return set()
+    have = set()
+    for _, p in mine_df.iterrows():
+        have.add(str(p.get("pos_label", "")).rstrip("0123456789") or p.get("position", ""))
+    return {pos for pos in ("QB", "TE") if pos in have}
 
-    tier_info (optional): {pos: (top_tier_left, count_in_that_tier)} — lets the advisor see where
-    a position is about to fall off a tier cliff, not just how many startable players remain.
+
+def _horizon(draft_pos):
+    """Overall pick number of my NEXT chance after the pick being decided — the point I'd wait until
+    if I pass now. Drives both wheel-back and VONA."""
+    if not draft_pos:
+        return None
+    return draft_pos.get("following") if draft_pos.get("my_turn") else draft_pos.get("next_pick")
+
+
+def add_vona(available, horizon):
+    """VONA — Value Over Next Available: the value you LOSE by waiting on a player's position.
+
+    VONA = his VOLS minus the best VOLS at his position that ADP says could still be on the board at
+    your NEXT pick (adp_rank > horizon, or undrafted), floored at replacement (0). ADP-driven by
+    construction. A stud who's gone by your next pick with a cliff behind him scores high (grab now);
+    a spot where comparable players could still be left scores ~0 (wait). Cross-position comparable —
+    the live, personalized version of a "tier drop", which is why it replaces the stale ECR tiers.
+    Shared by the advisor context and the board column so they always agree.
     """
-    cols = ["full_name", "pos_label", "team", "team_implied_total", "vols", "adp_rank", "pos_tier",
+    av = available.copy()
+    if not horizon or "vols" not in av.columns or "position" not in av.columns:
+        av["vona"] = av.get("vols", 0.0)
+        return av
+    could_last = (av["adp_rank"] > horizon) | av["adp_rank"].isna()   # ADP says he could still be there
+    best_wait = av[could_last].groupby("position")["vols"].max().clip(lower=0)   # replacement floor at 0
+    av["vona"] = av["vols"] - av["position"].map(best_wait).fillna(0.0)
+    return av
+
+
+def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
+    """Compact text snapshot of the live board for the current turn."""
+    horizon = _horizon(draft_pos)
+    if "vona" not in available.columns:      # normally precomputed in draft.py; compute if standalone
+        available = add_vona(available, horizon)
+    cols = ["full_name", "pos_label", "team", "team_implied_total", "vols", "vona", "adp_rank",
             "market", "risk_tier", "target_share_2025", "snap_share_2025", "age", "is_rookie",
             "draft_pick", "floor", "ceiling", "p_startable", "p_bust", "xppg", "regression",
             "switched_team"]
@@ -146,9 +190,6 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
     # Wheel-back computed in PYTHON so the model never does the ADP-vs-next-pick arithmetic (LLMs
     # flip the direction). horizon = my next real chance to pick; "gone" = his average draft spot is
     # at/before it, "safe" = a full round of cushion past it, "risky" = within a round (toss-up).
-    horizon = None
-    if draft_pos:
-        horizon = draft_pos.get("following") if draft_pos.get("my_turn") else draft_pos.get("next_pick")
     if horizon:
         def _wheel(adp):
             if pd.isna(adp):
@@ -165,7 +206,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
     to_int = lambda s: s.map(lambda x: "" if pd.isna(x) else str(int(round(x))))
     to_1dp = lambda s: s.map(lambda x: "" if pd.isna(x) else f"{x:.1f}")
     top["adp_rank"] = top["adp_rank"].map(lambda x: "UD" if pd.isna(x) else f"{x:.1f}")
-    for c in ["vols", "floor", "ceiling", "pos_tier", "age"]:
+    for c in ["vols", "vona", "floor", "ceiling", "age"]:
         top[c] = to_int(top[c])
     top["p_startable"] = to_int(top["p_startable"] * 100)
     top["p_bust"] = to_int(top["p_bust"] * 100)
@@ -181,13 +222,19 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
     top = top.drop(columns=[c for c in ["target_share_2025", "snap_share_2025", "is_rookie",
                                         "draft_pick", "team_implied_total", "xppg"] if c in top])
     top = top.rename(columns={"full_name": "player", "pos_label": "pos", "adp_rank": "ADP",
-                              "pos_tier": "tier", "risk_tier": "risk", "regression": "regr",
+                              "vona": "VONA", "risk_tier": "risk", "regression": "regr",
                               "p_startable": "P_start%", "p_bust": "bust%"})
     if "switched_team" in top:   # xPPG/regr describe the OLD team for a player who moved
         _sw = top["switched_team"].astype(str).str.lower().isin(["true", "1"])
         top.loc[_sw, "regr"] = "new-tm"
         top = top.drop(columns=["switched_team"])
-    order = ["player", "pos", "team", "vegas", "vols", "ADP", "wheel", "tier", "tgt%", "snap%", "age",
+    # Enforce the roster gate in the DATA: null the VONA of filled 1-start positions (QB/TE) so a
+    # worthless backup can't show up as the "highest VONA" and get chased (a prose rule alone got ignored).
+    blocked = _blocked_positions(mine_df)
+    if blocked and "VONA" in top.columns and "pos" in top.columns:
+        base = top["pos"].str.replace(r"\d+$", "", regex=True)
+        top.loc[base.isin(blocked), "VONA"] = "n/a"
+    order = ["player", "pos", "team", "vegas", "VONA", "vols", "ADP", "wheel", "tgt%", "snap%", "age",
              "rook_pk", "market", "risk", "floor", "ceiling", "P_start%", "bust%", "xPPG", "regr"]
     board_txt = top[[c for c in order if c in top.columns]].to_string(index=False)
 
@@ -199,12 +246,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
         roster, proj = "empty (no picks yet)", 0
         needs = ("ROSTER NEEDS — empty roster; draft the best available player, leaning RB/WR early "
                  "for the positional edge unless my strategy says otherwise.")
-    def _scar_cell(p):
-        base = f"{p} {scarcity[p]} startable"
-        if tier_info and tier_info.get(p) and tier_info[p][0] is not None:
-            return f"{base} (best tier left: T{tier_info[p][0]} ×{tier_info[p][1]})"
-        return base
-    scar = ", ".join(_scar_cell(p) for p in scarcity)
+    scar = ", ".join(f"{p} {scarcity[p]} startable" for p in scarcity)
 
     dp_line = ""
     if draft_pos:
