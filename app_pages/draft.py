@@ -166,6 +166,47 @@ def cancel_reset():
     st.session_state.confirm_reset = False
 
 
+def render_roster(mine_df):
+    """Draw the slot-filled roster + projected-points metric into the current container.
+
+    Greedy fill: starters first (up to STARTER_CAP per position), then one FLEX from the
+    RB/WR/TE overflow, then everything else to the bench. Shared by the sidebar panel and
+    the main-page popover so both read identically.
+    """
+    filled = {k: [] for k in ["QB", "RB", "WR", "TE", "K", "FLEX", "BN"]}
+    for _, p in mine_df.iterrows():
+        pos = p["position"]
+        if pos in STARTER_CAP and len(filled[pos]) < STARTER_CAP[pos]:
+            filled[pos].append(p["full_name"])
+        elif pos in FLEX_OK and not filled["FLEX"]:
+            filled["FLEX"].append(p["full_name"])
+        else:
+            filled["BN"].append(p["full_name"])
+    pools = {k: list(v) for k, v in filled.items()}
+    for label, key in ROSTER_SLOTS:
+        pool = pools.get(key, [])
+        st.markdown(f"**{label}** &nbsp; {pool.pop(0) if pool else '—'}")
+    for name in pools["BN"]:
+        st.markdown(f"**BN** &nbsp; {name}")
+    st.metric("Projected points", f"{mine_df['total_points'].sum():.0f}")
+    if mine_df.empty:
+        st.caption("Your picks land here as you draft — check **Mine** on the board.")
+
+
+def render_reset(key_prefix):
+    """Reset button + two-step confirm. key_prefix keeps the button IDs unique so the same
+    control can render in both the sidebar and the main-page popover (Streamlit forbids
+    duplicate widget IDs). The confirm_reset flag + callbacks are shared, so confirming in
+    either place clears the draft.
+    """
+    st.button("Reset draft", icon=":material/refresh:", on_click=request_reset,
+              width="stretch", key=f"reset_{key_prefix}")
+    if st.session_state.confirm_reset:
+        st.warning("Clear all drafted players?", icon=":material/warning:")
+        st.button("Yes, reset", on_click=do_reset, width="stretch", key=f"reset_yes_{key_prefix}")
+        st.button("Cancel", on_click=cancel_reset, width="stretch", key=f"reset_no_{key_prefix}")
+
+
 available = board[~board["full_name"].isin(st.session_state.drafted)]
 scarcity = {pos: int(((available["position"] == pos) & (available["vols"] >= 0)).sum())
             for pos in POSITIONS}
@@ -183,30 +224,9 @@ with st.sidebar:
 
     st.subheader(":material/groups: My roster")
     with st.container(border=True):
-        filled = {k: [] for k in ["QB", "RB", "WR", "TE", "K", "FLEX", "BN"]}
-        for _, p in mine_df.iterrows():
-            pos = p["position"]
-            if pos in STARTER_CAP and len(filled[pos]) < STARTER_CAP[pos]:
-                filled[pos].append(p["full_name"])
-            elif pos in FLEX_OK and not filled["FLEX"]:
-                filled["FLEX"].append(p["full_name"])
-            else:
-                filled["BN"].append(p["full_name"])
-        pools = {k: list(v) for k, v in filled.items()}
-        for label, key in ROSTER_SLOTS:
-            pool = pools.get(key, [])
-            st.markdown(f"**{label}** &nbsp; {pool.pop(0) if pool else '—'}")
-        for name in pools["BN"]:
-            st.markdown(f"**BN** &nbsp; {name}")
-        st.metric("Projected points", f"{mine_df['total_points'].sum():.0f}")
-        if mine_df.empty:
-            st.caption("Your picks land here as you draft — check **Mine** on the board.")
+        render_roster(mine_df)
 
-    st.button("Reset draft", icon=":material/refresh:", on_click=request_reset, width="stretch")
-    if st.session_state.confirm_reset:
-        st.warning("Clear all drafted players?", icon=":material/warning:")
-        st.button("Yes, reset", on_click=do_reset, width="stretch")
-        st.button("Cancel", on_click=cancel_reset, width="stretch")
+    render_reset("sidebar")
 
 # Compact top strip — exit + the pre-draft knobs tucked into a popover so they don't compete
 # with the board during a live draft.
@@ -220,6 +240,11 @@ with st.container(horizontal=True):
             st.session_state["slot"] = _tm
         st.number_input("My draft slot", 1, _tm, key="slot")
         st.number_input("Teams in league", 2, 20, key="teams")
+    # Roster + Reset on the main page too — the sidebar auto-collapses on a phone, so this keeps
+    # both one tap away during a live draft. The "· N" is a glanceable pick count.
+    with st.popover(f"My roster · {len(st.session_state.mine)}", icon=":material/groups:"):
+        render_roster(mine_df)
+        render_reset("main")
     st.toggle("Compact view", key="compact",
               help="Trims the board to core columns for phone / split-screen.")
 
@@ -242,6 +267,8 @@ except Exception:
 
 if bridge_url:
     st.session_state.setdefault("bridge_teams", [])   # team names discovered from incoming picks
+    st.session_state.setdefault("bridge_my_picks", [])        # my exact pick numbers (from ESPN meta)
+    st.session_state.setdefault("bridge_meta_applied", False) # league shape auto-applied once
     with st.container(border=True):
         c1, c2 = st.columns([3, 1])
         with c1:
@@ -254,7 +281,9 @@ if bridge_url:
                                     help="Auto-pull picks from your draft site via the browser bridge.")
         dot = "🟢 live" if sync_active else "⚪ paused"
         n = st.session_state.get("pick_count", 0)
-        st.caption(f"{dot} · browser bridge · {n} pick{'s' if n != 1 else ''} received")
+        shape = (f" · seat {st.session_state.get('slot')} of {st.session_state.get('teams')} (auto)"
+                 if st.session_state.get("bridge_meta_applied") else "")
+        st.caption(f"{dot} · browser bridge · {n} pick{'s' if n != 1 else ''} received{shape}")
 
     if sync_active:
         by_name = board_name_map(os.path.getmtime("value_board.csv"))
@@ -262,12 +291,40 @@ if bridge_url:
         @st.fragment(run_every=4)
         def poll_bridge():
             try:
-                raw = bridge.fetch_raw(bridge_url)
+                payload = bridge.fetch(bridge_url)
             except Exception:
                 return   # transient network hiccup — keep last state, retry next tick
+            raw, meta = payload["picks"], payload["meta"]
+
+            # Apply the league shape ESPN gave us — ONCE, so manual tweaks afterward stick. teams/slot
+            # go through the same *_pending path the AI advisor uses (app.py applies them before the
+            # widgets render); myPicks + the team name are stored for mine-detection below.
+            if meta and not st.session_state.bridge_meta_applied:
+                pend = False
+                if meta.get("teams"):
+                    st.session_state["teams_pending"] = int(meta["teams"]); pend = True
+                if meta.get("slot"):
+                    st.session_state["slot_pending"] = int(meta["slot"]); pend = True
+                if meta.get("myPicks"):
+                    st.session_state.bridge_my_picks = [int(x) for x in meta["myPicks"]]
+                if meta.get("myTeam"):
+                    st.session_state.bridge_detected_team = meta["myTeam"]
+                st.session_state.bridge_meta_applied = True
+                if pend:
+                    st.rerun(scope="app")   # let app.py apply teams/slot, then re-poll
+
             my_team = st.session_state.get("bridge_my_team")
             my_team = None if my_team in (None, "—") else my_team
-            drafted, mine, teams_seen, total = bridge.resolve(raw, by_name, my_team)
+            my_team = my_team or st.session_state.get("bridge_detected_team")
+
+            # Which overall picks are MINE: prefer ESPN's exact list (correct for ANY draft order);
+            # otherwise fall back to the standard-snake seats derived from slot + teams.
+            my_pick_nums = set(st.session_state.bridge_my_picks)
+            if not my_pick_nums:
+                s, t = int(st.session_state.slot), int(st.session_state.teams)
+                my_pick_nums = {((r - 1) * t + s) if r % 2 else (r * t - s + 1) for r in range(1, 21)}
+
+            drafted, mine, teams_seen, total = bridge.resolve(raw, by_name, my_team, my_pick_nums)
             teams_changed = teams_seen != st.session_state.get("bridge_teams", [])
             if teams_changed:
                 st.session_state.bridge_teams = teams_seen
@@ -328,7 +385,10 @@ slot, teams = st.session_state.slot, st.session_state.teams
 # when live-synced, use ESPN's exact total pick count (incl. D/ST etc.); else count board removals
 made = st.session_state.get("pick_count", 0) if sync_active else len(st.session_state.drafted)
 overall_now = made + 1
-my_picks = [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]
+# My pick numbers: prefer ESPN's exact list (correct for any draft order — matches the poller's
+# mine-by-position) and fall back to the standard-snake seats from slot + teams.
+my_picks = sorted(st.session_state.get("bridge_my_picks") or []) or \
+    [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]
 upcoming = [p for p in my_picks if p >= overall_now]
 next_pick = upcoming[0] if upcoming else None
 following = upcoming[1] if len(upcoming) > 1 else None
