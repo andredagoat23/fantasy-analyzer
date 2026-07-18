@@ -267,7 +267,6 @@ except Exception:
 
 if bridge_url:
     st.session_state.setdefault("bridge_teams", [])   # team names discovered from incoming picks
-    st.session_state.setdefault("bridge_my_picks", [])        # my exact pick numbers (from ESPN meta)
     st.session_state.setdefault("bridge_meta_applied", False) # league shape auto-applied once
     with st.container(border=True):
         c1, c2 = st.columns([3, 1])
@@ -305,8 +304,6 @@ if bridge_url:
                     st.session_state["teams_pending"] = int(meta["teams"]); pend = True
                 if meta.get("slot"):
                     st.session_state["slot_pending"] = int(meta["slot"]); pend = True
-                if meta.get("myPicks"):
-                    st.session_state.bridge_my_picks = [int(x) for x in meta["myPicks"]]
                 if meta.get("myTeam"):
                     st.session_state.bridge_detected_team = meta["myTeam"]
                 st.session_state.bridge_meta_applied = True
@@ -377,14 +374,14 @@ elif espn_cfg.get("league_id"):
 
 # Current pick + your next picks, computed from how many players are marked drafted (slot/teams
 # come from the Draft settings popover above) and handed to the advisor as exact facts.
-slot, teams = st.session_state.slot, st.session_state.teams
+slot, teams = int(st.session_state.slot), int(st.session_state.teams)
 # when live-synced, use ESPN's exact total pick count (incl. D/ST etc.); else count board removals
 made = st.session_state.get("pick_count", 0) if sync_active else len(st.session_state.drafted)
 overall_now = made + 1
-# My pick numbers: prefer ESPN's exact list (correct for any draft order — matches the poller's
-# mine-by-position) and fall back to the standard-snake seats from slot + teams.
-my_picks = sorted(st.session_state.get("bridge_my_picks") or []) or \
-    [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]
+# My pick numbers = my seat in a standard snake. Computed live from slot + teams (ESPN auto-sets
+# the slot, and the Draft settings popover lets me change it), so it always tracks the current
+# seat — no sticky hidden state. Enough rounds to cover a full draft.
+my_picks = [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]
 upcoming = [p for p in my_picks if p >= overall_now]
 next_pick = upcoming[0] if upcoming else None
 following = upcoming[1] if len(upcoming) > 1 else None
