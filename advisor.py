@@ -6,6 +6,7 @@ testable and keeps the app free of modeling.
 """
 
 import anthropic
+import numpy as np
 import pandas as pd
 
 # The advisor runs on Sonnet for BOTH the "Recommend my pick" button and typed chat — sound roster
@@ -50,7 +51,7 @@ THE DATA I GIVE YOU (per available player)
 YOUR JOB
 Recommend the pick that maximizes my roster's value given my needs, strategy, and risk appetite. Decide in THIS ORDER, and never let a later factor override an earlier one:
 1) ROSTER NEED filters what's DRAFTABLE — a position that helps my roster: an open starter/FLEX, or RB/WR bench depth (RB and WR ALWAYS keep bench/FLEX value). QB and TE are 1-START positions — once mine is filled, a 2nd one is NOT draftable no matter how high its VONA (a backup QB/TE is nearly worthless — I start one and they're streamable). Never draft a filled 1-start position, or a K/D-ST before my lineup is full. Roster need does NOT force me to fill an open starter this instant: a still-open slot whose good options will KEEP (wheel "safe", low VONA) can wait while I grab a bigger VONA cliff at a draftable RB/WR — I'll fill the safe slot next pick for the same value (but don't let it rot if its options are going).
-2) VALUE — DRAFT BY VONA. Among the positions I need, the player with the HIGHEST VONA is the pick: that's the most value I'd lose by waiting on his position. VONA already bakes in scarcity + who-could-still-be-left, so deep positions (QB/TE in a 1-QB/1-TE league) score LOW and correctly fall on their own — do NOT add any separate "wait on QB/TE" rule; trust VONA. If a QB or TE genuinely shows a top VONA at a position I need, that's a real cliff — take it. WITHIN a position, always take the BEST available player (highest VOLS) — never a worse same-position player because of wheel-back or a tag.
+2) VALUE — DRAFT BY VONA, and the work is already done for you: the **TOP PICKS NOW** line ranks your draftable options by VONA. Recommend **#1** unless a clear risk/upside reason (per my risk appetite) bumps you to #2 or #3 — and if so, say why. NEVER bump a lower-VONA player to the top just because it fills an open starter: a safe open slot WAITS (you fill it next pick for the same value); the value cliff that won't last is the pick now. VONA already bakes in scarcity + who-could-be-left, so QB/TE fall on their own and a filled 1-start QB/TE is already excluded (VONA "n/a"). WITHIN a position, take the best available (highest VOLS).
 3) UPSIDE & RISK break the close calls — when two candidates' VONA is genuinely close, pick the one that fits my RISK APPETITE: upside build → lean ceiling/boom, ascending young roles, high vegas + role; safe build → lean floor, durable, low bust. Use role / situation (vegas) / xPPG-regression as tiebreakers; `market` is a pricing tiebreaker only (can I wait on him?), never a talent signal. Say which factors drove the call.
 Only recommend players on the "available" list — never invent players.
 
@@ -156,24 +157,58 @@ def _horizon(draft_pos):
     return draft_pos.get("following") if draft_pos.get("my_turn") else draft_pos.get("next_pick")
 
 
+# Logistic scale for "is he still on the board at my next pick?" — ADP is ~a round noisy, so a player
+# `_ADP_SCALE` picks past my next pick is ~73% likely to still be there, ~a round past ~88%. Tunable.
+_ADP_SCALE = 7.0
+
+
+def _survival_prob(adp_rank, horizon):
+    """P(player still available at your next pick), softened from ADP with a logistic curve. A player
+    drafted right at your next pick is ~50/50; later = more likely there; earlier = less. UD -> 1.0."""
+    p = 1.0 / (1.0 + np.exp(-(adp_rank - horizon) / _ADP_SCALE))
+    return p.where(adp_rank.notna(), 1.0)
+
+
 def add_vona(available, horizon):
     """VONA — Value Over Next Available: the value you LOSE by waiting on a player's position.
 
-    VONA = his VOLS minus the best VOLS at his position that ADP says could still be on the board at
-    your NEXT pick (adp_rank > horizon, or undrafted), floored at replacement (0). ADP-driven by
-    construction. A stud who's gone by your next pick with a cliff behind him scores high (grab now);
-    a spot where comparable players could still be left scores ~0 (wait). Cross-position comparable —
-    the live, personalized version of a "tier drop", which is why it replaces the stale ECR tiers.
+    VONA = his VOLS minus `best_wait` for his position, where best_wait is the EXPECTED VOLS of the
+    best player still on the board at your NEXT pick — each candidate weighted by the probability he's
+    the top survivor (he survives AND everyone better at his position is gone). Survival is a softened
+    logistic of ADP vs your next pick (see _survival_prob), so there's no hard cutoff. This works out
+    to roughly VONA ≈ P(he's gone) × (his VOLS − the next-best you'd expect): the drop-off behind him,
+    weighted by how likely you actually lose him. Floored at replacement (0), cross-position
+    comparable — the live, personalized version of a "tier drop" that replaced the stale ECR tiers.
     Shared by the advisor context and the board column so they always agree.
     """
     av = available.copy()
     if not horizon or "vols" not in av.columns or "position" not in av.columns:
         av["vona"] = av.get("vols", 0.0)
         return av
-    could_last = (av["adp_rank"] > horizon) | av["adp_rank"].isna()   # ADP says he could still be there
-    best_wait = av[could_last].groupby("position")["vols"].max().clip(lower=0)   # replacement floor at 0
+    av["_p"] = _survival_prob(av["adp_rank"], horizon)
+    best_wait = {}
+    for pos, g in av.groupby("position"):
+        g = g.sort_values("vols", ascending=False)     # NaN VOLS sort last -> treated as replacement
+        gone_above, exp_best = 1.0, 0.0                 # gone_above = P(everyone better is gone)
+        for v, pi in zip(g["vols"], g["_p"]):
+            vv = 0.0 if pd.isna(v) else max(float(v), 0.0)   # below-replacement / no-VOLS -> 0
+            pi = float(pi)
+            exp_best += vv * pi * gone_above            # v_i · P(i survives) · P(all better gone)
+            gone_above *= (1.0 - pi)
+        best_wait[pos] = exp_best
     av["vona"] = av["vols"] - av["position"].map(best_wait).fillna(0.0)
-    return av
+    return av.drop(columns="_p")
+
+
+def _wheel_label(adp, horizon):
+    """gone / risky / safe — will he last to your next pick? (per-player read; VONA is the decision)."""
+    if pd.isna(adp):
+        return "safe"                     # UD / no ADP -> very likely still there later
+    if adp <= horizon:
+        return "gone"                     # typically drafted before your next pick
+    if adp >= horizon + 12:
+        return "safe"                     # ~a full round of cushion
+    return "risky"                        # within a round — could go either way
 
 
 def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
@@ -191,15 +226,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
     # flip the direction). horizon = my next real chance to pick; "gone" = his average draft spot is
     # at/before it, "safe" = a full round of cushion past it, "risky" = within a round (toss-up).
     if horizon:
-        def _wheel(adp):
-            if pd.isna(adp):
-                return "safe"                 # UD / no ADP -> very likely still there later
-            if adp <= horizon:
-                return "gone"                 # typically drafted before your next pick
-            if adp >= horizon + 12:
-                return "safe"                 # ~a full round of cushion
-            return "risky"                    # within a round — could go either way
-        top["wheel"] = top["adp_rank"].map(_wheel)
+        top["wheel"] = top["adp_rank"].map(lambda a: _wheel_label(a, horizon))
     top["market"] = top.get("market", "").fillna("")
     top["team"] = top.get("team", "FA").fillna("FA")
     # NaN-safe formatting: some available players have no ADP / role / outcome data
@@ -234,6 +261,22 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
     if blocked and "VONA" in top.columns and "pos" in top.columns:
         base = top["pos"].str.replace(r"\d+$", "", regex=True)
         top.loc[base.isin(blocked), "VONA"] = "n/a"
+    # THE ANSWER, computed in Python: the draftable players (blocked 1-start positions removed) ranked
+    # by VONA, so the model can't misread the table or bump a "need" over the real value. Take #1
+    # unless a clear risk/upside reason moves you to #2-3.
+    picks_line = ""
+    if "vona" in available.columns:
+        skip = set(blocked) | {"K", "DEF", "DST", "D/ST"}   # streamers (K/D-ST) are a final-round call
+        ok = available[~available["position"].isin(skip)].sort_values("vona", ascending=False).head(6)
+        if len(ok):
+            def _pk(r):
+                w = f", {_wheel_label(r.adp_rank, horizon)}" if horizon else ""
+                return f"{r.full_name} ({r.pos_label}, VONA {r.vona:.0f}{w})"
+            picks_line = ("TOP PICKS NOW — your best DRAFTABLE options ranked by VONA (a filled 1-start "
+                          "QB/TE is already excluded). THIS IS THE ANSWER: recommend #1 unless a clear "
+                          "risk/upside reason bumps you to #2 or #3; do NOT bump a lower one up just "
+                          "because it fills an open starter. "
+                          + " | ".join(f"{i+1}. {_pk(r)}" for i, r in enumerate(ok.itertuples())) + "\n")
     order = ["player", "pos", "team", "vegas", "VONA", "vols", "ADP", "wheel", "tgt%", "snap%", "age",
              "rook_pk", "market", "risk", "floor", "ceiling", "P_start%", "bust%", "xPPG", "regr"]
     board_txt = top[[c for c in order if c in top.columns]].to_string(index=False)
@@ -271,10 +314,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35):
         + dp_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"{needs}\n"
-        f"Scarcity by position (startable pool, and the best expert tier still on the board with how "
-        f"many remain in it — a small count means that position's top-tier talent is nearly gone; only "
-        f"act on it if a remaining player is genuinely elite AND fills a need, otherwise take the best "
-        f"player regardless of position): {scar}\n\n"
+        f"{picks_line}"
+        f"Startable pool left by position (context only — VONA already prices scarcity): {scar}\n\n"
         f"Top {len(top)} available players (sorted by composite value; "
         f"ADP 'UD' = undrafted/no ADP, i.e. very likely to still be available later):\n{board_txt}"
         f"{dst_line}"
