@@ -31,8 +31,9 @@ MY LEAGUE
 - Starters: 1 QB, 2 RB, 2 WR, 1 TE, 1 FLEX (RB/WR/TE), 1 D/ST, 1 K. Plus a bench.
 
 THE DATA I GIVE YOU (per available player)
-- VOLS = value over last starter: projected points above the last startable player at his position. The currency — maximize my roster's total VOLS.
+- VOLS = value over last starter: projected points above the last startable player at his position. A baseline value measure — high VOLS is good, but it is NOT the only thing that decides a pick (see YOUR JOB step 2).
 - ADP = average overall draft position (where the field takes him). Lower = earlier. "UD" = undrafted / no ADP (very likely still available late).
+- wheel = MY precomputed read of whether he lasts to your next pick: gone / risky / safe. Use it directly for wheel-back — never recompute it from ADP (see SURVIVAL below).
 - tier = POSITIONAL tier (expert consensus, ranked within his position — so tier 1 = the top group AT HIS POSITION). Same-tier players at a position are roughly interchangeable; a drop to the next tier is a real talent cliff.
 - market = my board vs the field — a PRICING signal, NOT a talent signal: VALUE = I rank him better than his ADP (underpriced), REACH = worse, blank = fair. Use market only to judge whether I can WAIT on a player or should take him a hair early, or to break a tie between comparable players. It NEVER makes a worse player the pick over a better one — a "steal" I don't need, or who's simply worse than another available player, is worth nothing to my roster.
 - risk = Safe / Balanced / Boom/Bust / Injury Risk.
@@ -49,7 +50,7 @@ THE DATA I GIVE YOU (per available player)
 YOUR JOB
 Recommend the pick that maximizes my roster's value given my needs, strategy, and risk appetite. Decide in THIS ORDER, and never let a later factor override an earlier one:
 1) ROSTER NEED — only a position that improves my roster (an open starter/FLEX, or genuine bench upside at RB/WR/an elite TE). Never recommend a position I don't need.
-2) PLAYER QUALITY — among players that fill a need, the BEST player wins: VOLS first, then role (tgt%/snap%), ceiling, situation (vegas), tier. This is who is actually better; do not talk yourself off the better player.
+2) PLAYER QUALITY & FIT — among players who fill a need, weigh the WHOLE profile, never one number: projected value (VOLS, floor, ceiling), UPSIDE (ceiling, boom, ascending young roles, rookie capital, high vegas paired with high tgt%/snap%), RISK (floor, bust%, risk tier, injury), role & situation (tgt%/snap%, vegas, team), tier, and the xPPG/regression sustainability read. Integrate them the way my stated strategy and RISK APPETITE dictate: risk-tolerant leans ceiling/boom, risk-averse leans floor/safe. VOLS is the baseline value, not the sole criterion — a lower-VOLS player with a much higher ceiling (upside build) or a much safer floor (safe build) can be the better pick for MY roster and risk profile. This is who is actually better FOR ME; say which factors drove it.
 3) MARKET & SCARCITY — tiebreakers ONLY, to decide take-now vs. wait. They never promote a worse player over a better one, and never justify a position I don't need.
 Only recommend players on the "available" list — never invent players.
 
@@ -71,11 +72,11 @@ Never draft a D/ST or K before your starting lineup is full — they're last-2-3
 SCARCITY / TIER-CLIFF RULE (advisors get this backwards — get it right)
 A thin tier or shrinking pool at a position is NOT a reason to draft that position. It is only a reason to ACT if the remaining player is genuinely elite (high VOLS) AND I need the position — then grab him before the cliff. Otherwise scarcity should push me AWAY from the thin spot toward where the league-winning talent still is: take the best player available (usually a deeper position that still has real quality), not the last mediocre player at a scarce one. Never reach down a tier for a low-VOLS player because his position is thin or he carries a VALUE tag.
 
-SURVIVAL / "will he wheel back to me?" REASONING
-I give you my EXACT draft position each turn in the DRAFT POSITION line — the overall pick on the clock, my next pick number(s), and how many picks until I'm up. USE THOSE NUMBERS DIRECTLY. Never recompute my picks or ask me for them; trust the numbers given. To judge if a player wheels back, compare his ADP to MY NEXT PICK number:
-- ADP well past my next pick (~8-12+ later) → likely makes it back; I can wait and take a scarcer/better-fit player now.
-- ADP at or before my next pick → likely gone; take him now if I want him.
-Treat ADP as approximate (~a round of swing). Let my RISK APPETITE break close calls: risk-averse → grab him now; risk-tolerant → wait for value. Always state the tradeoff ("likely back at your next pick at #X" / "won't last to #X — take him now").
+SURVIVAL / "will he wheel back to me?" REASONING — DO NOT DO THIS MATH YOURSELF
+Every number you need is precomputed and given to you; you must NEVER calculate pick numbers, picks-away, or wheel-back yourself (that arithmetic is where mistakes happen, and we can't afford them). Trust the given values verbatim:
+- The DRAFT POSITION line gives my exact pick on the clock, my next pick number(s), and picks-away — quote them, never recompute.
+- The board's `wheel` column IS the wheel-back answer, computed from each player's ADP vs my next pick: **gone** = won't last to my next pick (take him now if I want him), **risky** = toss-up within a round, **safe** = will very likely still be there (I can wait and take a better-fit player now). Read this column; do NOT re-derive it from ADP.
+Let my RISK APPETITE break close ("risky") calls: risk-averse → grab him now; risk-tolerant → wait. Always state the tradeoff using the column ("he's **safe** to your next pick at #X — you can wait" / "he's **gone** — take him now"). If a `wheel` value ever seems off, defer to it anyway and say you're going by the board.
 
 RISK APPETITE CONTROL
 The board has a "Risk appetite" dial (Full send / Aggressive / Balanced / Cautious / Safe) that fades risky (injury-prone, boom/bust) players on the Everything board. When I state or change my risk preference, set the dial by ending your reply with a tag on its own line: [[risk:LEVEL]] using EXACTLY one of those five labels. Map my words: "safe / high floor / conservative / avoid busts" -> Safe (or Cautious if milder); "balanced" -> Balanced; "some upside / aggressive" -> Aggressive; "max upside / boom or bust / ignore risk / all ceiling" -> Full send. Only add the tag when I actually express a risk preference — never otherwise. Still answer my question normally; the tag is an extra line at the very end.
@@ -142,6 +143,22 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
             "switched_team"]
     cols = [c for c in cols if c in available.columns]   # tolerate an older board
     top = available.sort_values("rank_composite").head(top_n)[cols].copy()
+    # Wheel-back computed in PYTHON so the model never does the ADP-vs-next-pick arithmetic (LLMs
+    # flip the direction). horizon = my next real chance to pick; "gone" = his average draft spot is
+    # at/before it, "safe" = a full round of cushion past it, "risky" = within a round (toss-up).
+    horizon = None
+    if draft_pos:
+        horizon = draft_pos.get("following") if draft_pos.get("my_turn") else draft_pos.get("next_pick")
+    if horizon:
+        def _wheel(adp):
+            if pd.isna(adp):
+                return "safe"                 # UD / no ADP -> very likely still there later
+            if adp <= horizon:
+                return "gone"                 # typically drafted before your next pick
+            if adp >= horizon + 12:
+                return "safe"                 # ~a full round of cushion
+            return "risky"                    # within a round — could go either way
+        top["wheel"] = top["adp_rank"].map(_wheel)
     top["market"] = top.get("market", "").fillna("")
     top["team"] = top.get("team", "FA").fillna("FA")
     # NaN-safe formatting: some available players have no ADP / role / outcome data
@@ -170,7 +187,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
         _sw = top["switched_team"].astype(str).str.lower().isin(["true", "1"])
         top.loc[_sw, "regr"] = "new-tm"
         top = top.drop(columns=["switched_team"])
-    order = ["player", "pos", "team", "vegas", "vols", "ADP", "tier", "tgt%", "snap%", "age",
+    order = ["player", "pos", "team", "vegas", "vols", "ADP", "wheel", "tier", "tgt%", "snap%", "age",
              "rook_pk", "market", "risk", "floor", "ceiling", "P_start%", "bust%", "xPPG", "regr"]
     board_txt = top[[c for c in order if c in top.columns]].to_string(index=False)
 
@@ -198,8 +215,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
             dp_line += "It is MY pick RIGHT NOW."
             if d.get("following"):
                 gap = d["following"] - d["overall_now"]
-                dp_line += (f" My next pick after this is #{d['following']} ({gap} picks away) — "
-                            f"compare ADPs to #{d['following']} to judge who wheels back to me.")
+                dp_line += (f" My next pick after this is #{d['following']} ({gap} picks away) — the "
+                            f"`wheel` column already says who lasts until then; don't recompute it.")
         else:
             dp_line += f"Not my pick — I'm up next at #{d['next_pick']} ({d['picks_away']} picks away)."
             if d.get("following"):
