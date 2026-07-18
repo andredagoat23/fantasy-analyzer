@@ -26,15 +26,22 @@ Before acting on a request, route it through the stages. Each stage is a contrac
 | Bug ("X is broken / wrong") | 01 → 02 → 03 → 04 → 05 | `lessons.md`, plus the subsystem doc (`bridge.md` / `architecture.md`) |
 | Advisor / recommendation quality | 01 → 02 → 03 → 04 → 05 | `draft-strategy.md` (source of truth), `architecture.md` |
 | New feature | 01 → 02 → 03 → 04 → 05 | `architecture.md`, relevant subsystem doc |
-| Data / board question | 01 → 04 | `architecture.md` (pipeline section); never touch frozen pipeline files |
+| Data / board / pipeline question | 01 → 04 | `pipeline.md` (deep internals); never touch frozen pipeline files |
 | Deploy | 05 | `architecture.md` (deploy section) — user triggers the push |
 | Quick factual answer | — | answer directly; still never fabricate |
 
+**Every request also carries `collaboration.md`** — who the user is (a 14yo who knows CS fundamentals,
+newer to Python/APIs) and how to explain + the walk-through-then-"go" contract. Read it once per
+session.
+
 ## Reference material (Layer 3 — durable, read as needed)
 - `reference/engineering-principles.md` — the non-negotiable guardrails (read once per session).
+- `reference/collaboration.md` — who the user is + how to explain + the collaboration contract.
 - `reference/lessons.md` — every mistake we've hit + its fix. **Check before diagnosing.**
 - `reference/draft-strategy.md` — the codified draft methodology the advisor is built from.
-- `reference/architecture.md` — system map: files, data flow, pipeline, deploy.
+- `reference/architecture.md` — system map: files, data flow, pipeline overview, deploy.
+- `reference/pipeline.md` — deep FROZEN-pipeline internals (gsis bridge, rookies, layer sources,
+  scoring buckets, VOLS/Monte-Carlo/xPPG knobs, value board). Read before touching or debugging data.
 - `reference/bridge.md` — live-draft sync (userscript ↔ Firebase ↔ app).
 
 ## Working artifacts (Layer 4)
