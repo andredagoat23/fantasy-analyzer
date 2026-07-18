@@ -8,10 +8,13 @@ testable and keeps the app free of modeling.
 import anthropic
 import pandas as pd
 
-# Adaptive by task: the quick "Recommend my pick" button uses the fastest model (live clock),
-# typed conversation uses a deeper one. No extended thinking on either — speed matters live.
-MODEL_PICK = "claude-haiku-4-5"
-MODEL_CHAT = "claude-sonnet-4-6"
+# The advisor runs on Sonnet for BOTH the "Recommend my pick" button and typed chat — sound roster
+# and player-quality judgment matters more on the clock than shaving a second, and a smaller model
+# was latching onto the VALUE tag and misreading roster needs. Thinking is off by default on 4.6, so
+# the terse PICK prompt + low max_tokens keep the button snappy. The cheap one-shot setup helpers
+# (scoring parse, strategy suggestion) stay on Haiku.
+MODEL_ADVISOR = "claude-sonnet-4-6"
+MODEL_FAST = "claude-haiku-4-5"
 
 # D/ST draft ranking (defenses aren't projected in the pipeline — this is the reference the advisor
 # uses for the 1 D/ST pick). Loaded once; edit data/dst_rankings.csv to update.
@@ -31,7 +34,7 @@ THE DATA I GIVE YOU (per available player)
 - VOLS = value over last starter: projected points above the last startable player at his position. The currency — maximize my roster's total VOLS.
 - ADP = average overall draft position (where the field takes him). Lower = earlier. "UD" = undrafted / no ADP (very likely still available late).
 - tier = POSITIONAL tier (expert consensus, ranked within his position — so tier 1 = the top group AT HIS POSITION). Same-tier players at a position are roughly interchangeable; a drop to the next tier is a real talent cliff.
-- market = my board vs the field: VALUE = I rank him better than ADP (a steal), REACH = worse, blank = fair.
+- market = my board vs the field — a PRICING signal, NOT a talent signal: VALUE = I rank him better than his ADP (underpriced), REACH = worse, blank = fair. Use market only to judge whether I can WAIT on a player or should take him a hair early, or to break a tie between comparable players. It NEVER makes a worse player the pick over a better one — a "steal" I don't need, or who's simply worse than another available player, is worth nothing to my roster.
 - risk = Safe / Balanced / Boom/Bust / Injury Risk.
 - floor / ceiling = 20th / 80th percentile projected season points, injury-adjusted.
 - P_start% / bust% = probability he finishes startable / busts at his position, injury-adjusted.
@@ -44,11 +47,15 @@ THE DATA I GIVE YOU (per available player)
 - age = age this season. rook_pk = for rookies, their NFL draft pick (lower = more pedigree/opportunity); blank for veterans.
 
 YOUR JOB
-Recommend the pick that maximizes my roster VOLS given my current roster needs and my stated strategy + risk appetite. Only recommend players on the "available" list — never invent players.
+Recommend the pick that maximizes my roster's value given my needs, strategy, and risk appetite. Decide in THIS ORDER, and never let a later factor override an earlier one:
+1) ROSTER NEED — only a position that improves my roster (an open starter/FLEX, or genuine bench upside at RB/WR/an elite TE). Never recommend a position I don't need.
+2) PLAYER QUALITY — among players that fill a need, the BEST player wins: VOLS first, then role (tgt%/snap%), ceiling, situation (vegas), tier. This is who is actually better; do not talk yourself off the better player.
+3) MARKET & SCARCITY — tiebreakers ONLY, to decide take-now vs. wait. They never promote a worse player over a better one, and never justify a position I don't need.
+Only recommend players on the "available" list — never invent players.
 
 DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
 - Think in TIERS, not just ranks: when only 1-2 players remain in a tier and the next tier is a real drop, grab the last one before the cliff. Don't reach across a tier for a tiny ADP edge.
-- Roster construction: lock startable-quality starters early; chase upside (ceiling, boom, rookies) on the bench late. Don't draft a backup at a position before your starters elsewhere are filled.
+- Roster construction (HARD GATE): lock startable-quality starters early; chase upside (ceiling, boom, rookies) on the bench late. Once my starters + FLEX are full, only recommend a player who genuinely raises my bench's upside at a position that wins leagues (RB/WR ceiling, an elite TE). NEVER recommend a 2nd QB, or any D/ST or K before my lineup is full, or a redundant backup, because he carries a VALUE tag or is the last of a tier — a steal I can't start adds nothing to my roster.
 - Positional runs: if a position is emptying fast (watch scarcity), get ahead of the run rather than be left with scraps.
 - Don't pay up early for streamable positions (QB/K/D-ST in this format) unless a truly elite one is a clear value — the replacement-level gap there is small.
 - Archetype playbooks: Best-Available = pure VOLS/value; Hero-RB = one anchor RB early then hammer WR; Zero-RB = load elite WR/TE early, attack RB value/upside mid-late; Robust-RB = RB-heavy early for the positional edge; Upside = weight ceiling, boom, ascending young roles and rookie capital over safe floors.
@@ -61,8 +68,8 @@ READING THE SITUATION (this is your edge over a raw projection)
 D/ST & KICKER (streamers — draft LAST)
 Never draft a D/ST or K before your starting lineup is full — they're last-2-3-rounds picks with tiny week-to-week edges. Defenses aren't in the main board data; when I ask about D/ST, recommend from the D/ST ranking I give you (Tier 1 are the best; a Tier 1-2 defense late is ideal, and don't reach — they're nearly interchangeable). For kickers, just grab a top-scoring one in the final round.
 
-SCARCITY-PIVOT RULE
-When a position's startable pool is running thin, prefer pivoting to a still-deep position rather than reaching for a low-VOLS player — UNLESS the scarce-position player is a clear VALUE.
+SCARCITY / TIER-CLIFF RULE (advisors get this backwards — get it right)
+A thin tier or shrinking pool at a position is NOT a reason to draft that position. It is only a reason to ACT if the remaining player is genuinely elite (high VOLS) AND I need the position — then grab him before the cliff. Otherwise scarcity should push me AWAY from the thin spot toward where the league-winning talent still is: take the best player available (usually a deeper position that still has real quality), not the last mediocre player at a scarce one. Never reach down a tier for a low-VOLS player because his position is thin or he carries a VALUE tag.
 
 SURVIVAL / "will he wheel back to me?" REASONING
 I give you my EXACT draft position each turn in the DRAFT POSITION line — the overall pick on the clock, my next pick number(s), and how many picks until I'm up. USE THOSE NUMBERS DIRECTLY. Never recompute my picks or ask me for them; trust the numbers given. To judge if a player wheels back, compare his ADP to MY NEXT PICK number:
@@ -77,13 +84,50 @@ DRAFT SETUP CONTROL
 When I tell you my draft slot (which seat I pick from, e.g. "I'm picking 3rd") or my league size (number of teams), set them on the board by adding tags at the very end of your reply: [[slot:N]] for my seat and/or [[teams:N]] for the number of teams. Example: "I draft 3rd in a 12-team snake" -> [[slot:3]] [[teams:12]]. Only add these when I actually state that info.
 
 STYLE (both modes)
-Be concise and skimmable, bold player names, and ground everything in the data I gave you. TRUST: when you point me toward a player the crowd is fading (his ADP or expert rank is worse than where your board has him), say so out loud and give the ONE reason he's a value on my board — I get nervous picking guys the internet says to avoid, so tell me why we're right. A specific mode instruction follows below."""
+Be concise and skimmable, bold player names, and ground everything in the data I gave you. When you DO steer me to a player the crowd is fading — because he's genuinely the best fit for my roster, not merely because of a tag — say so and give the ONE concrete reason he's underrated (role, situation, tier). I get nervous taking players the internet fades, so justify it with substance. But never manufacture a value case for a worse player: if the better pick is the boring chalk player, tell me to take the chalk. A specific mode instruction follows below."""
 
 
 # Appended per call depending on how I engaged (button vs. typing).
 PICK_MODE = """MODE: PICK — I just hit "Recommend my pick" and I'm ON THE CLOCK. Give me your single best pick RIGHT NOW: one **bold name** + at most one short sentence why (need / value / will-he-wheel-back), then one **bold** fallback in a few words. Under ~50 words total. No preamble, no long options list, no questions back — just make the call, fast."""
 
 CHAT_MODE = """MODE: CONVERSATION — I'm talking things through, NOT asking for a pick. Discuss, compare, react, answer my question. Do NOT declare a single "pick" or tell me who to draft unless I literally ask "who should I take / who do I pick." Just have the conversation with me. Keep it short."""
+
+
+_STARTER_CAP = {"QB": 1, "RB": 2, "WR": 2, "TE": 1, "K": 1}
+_FLEX_OK = {"RB", "WR", "TE"}
+
+
+def _roster_needs(mine_df):
+    """Plain-English roster-slot status so the advisor doesn't have to infer needs from a name list.
+
+    Returns a line like 'ROSTER NEEDS — open starters: WR, TE; FLEX: open. ...' or, when the lineup is
+    full, an explicit 'starting lineup COMPLETE — bench upside only' so the model won't add a
+    redundant QB/TE/K just because it's tagged VALUE.
+    """
+    filled = {k: 0 for k in _STARTER_CAP}
+    flex_filled = False
+    for _, p in mine_df.iterrows():
+        pos = str(p.get("pos_label", "")).rstrip("0123456789") or p.get("position", "")
+        if pos in _STARTER_CAP and filled[pos] < _STARTER_CAP[pos]:
+            filled[pos] += 1
+        elif pos in _FLEX_OK and not flex_filled:
+            flex_filled = True
+    open_starters = [f"{pos}×{_STARTER_CAP[pos] - filled[pos]}" if _STARTER_CAP[pos] - filled[pos] > 1
+                     else pos
+                     for pos in ["QB", "RB", "WR", "TE"] if filled[pos] < _STARTER_CAP[pos]]
+    core_full = not open_starters and flex_filled
+    if core_full:
+        return ("ROSTER NEEDS — starting lineup COMPLETE (QB/RB/RB/WR/WR/TE/FLEX all filled). Draft "
+                "the best BENCH UPSIDE now — favor a young/ascending RB or WR with real CEILING over a "
+                "flat-VOLS veteran. Hold D/ST and K for the final 2-3 rounds; do NOT take a D/ST, K, or "
+                "2nd QB now while any bench-upside RB/WR remains, even if his VOLS or VALUE tag looks good.")
+    bits = []
+    if open_starters:
+        bits.append("open starters: " + ", ".join(open_starters))
+    bits.append("FLEX: " + ("filled" if flex_filled else "open (RB/WR/TE)"))
+    return ("ROSTER NEEDS — " + "; ".join(bits)
+            + ". Prioritize filling open starting slots with the best available player; "
+              "don't draft a position you've already filled unless he's clear bench upside.")
 
 
 def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, top_n=35):
@@ -133,8 +177,11 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
     if len(mine_df):
         roster = ", ".join(f"{r.pos_label} {r.full_name}" for r in mine_df.itertuples())
         proj = mine_df["total_points"].sum()
+        needs = _roster_needs(mine_df)
     else:
         roster, proj = "empty (no picks yet)", 0
+        needs = ("ROSTER NEEDS — empty roster; draft the best available player, leaning RB/WR early "
+                 "for the positional edge unless my strategy says otherwise.")
     def _scar_cell(p):
         base = f"{p} {scarcity[p]} startable"
         if tier_info and tier_info.get(p) and tier_info[p][0] is not None:
@@ -164,8 +211,11 @@ def build_context(available, mine_df, scarcity, draft_pos=None, tier_info=None, 
         "LIVE DRAFT STATE\n"
         + dp_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
+        f"{needs}\n"
         f"Scarcity by position (startable pool, and the best expert tier still on the board with how "
-        f"many remain in it — a small count is a CLIFF: grab the last one before the drop): {scar}\n\n"
+        f"many remain in it — a small count means that position's top-tier talent is nearly gone; only "
+        f"act on it if a remaining player is genuinely elite AND fills a need, otherwise take the best "
+        f"player regardless of position): {scar}\n\n"
         f"Top {len(top)} available players (sorted by composite value; "
         f"ADP 'UD' = undrafted/no ADP, i.e. very likely to still be available later):\n{board_txt}"
         f"{dst_line}"
@@ -187,7 +237,7 @@ Omit any category that isn't specified. No preamble and no closing remarks — j
 def parse_scoring(client, raw_text):
     """One-shot: turn pasted league scoring settings into a clean structured breakdown."""
     msg = client.messages.create(
-        model=MODEL_PICK,                       # fast + cheap; this is a simple parse
+        model=MODEL_FAST,                       # fast + cheap; this is a simple parse
         max_tokens=600,
         system=PARSE_SCORING,
         messages=[{"role": "user", "content": raw_text}],
@@ -201,7 +251,7 @@ SUGGEST_STRATEGY = """You are a fantasy football draft coach. Given the user's l
 def suggest_strategy(client, context):
     """Draft a starter strategy from the user's league setup (teams, slot, scoring)."""
     msg = client.messages.create(
-        model=MODEL_PICK,
+        model=MODEL_FAST,
         max_tokens=280,
         system=SUGGEST_STRATEGY,
         messages=[{"role": "user", "content": context}],
@@ -218,7 +268,7 @@ def stream_advice(client, messages, mode="chat"):
     is_pick = mode == "pick"
     system = SYSTEM + "\n\n" + (PICK_MODE if is_pick else CHAT_MODE)
     with client.messages.stream(
-        model=MODEL_PICK if is_pick else MODEL_CHAT,
+        model=MODEL_ADVISOR,                    # Sonnet for both; the terse PICK prompt keeps it fast
         max_tokens=400 if is_pick else 900,
         system=system,
         messages=messages,
