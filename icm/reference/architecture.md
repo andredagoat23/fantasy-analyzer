@@ -26,6 +26,7 @@ risk_tier, floor, ceiling, p_startable, p_bust, xppg, regression, team_implied_t
 Loaded once via `@st.cache_data` keyed on file mtime.
 
 ## The data pipeline (FROZEN — do not edit without an explicit ask)
+This is the map-level summary; the **authoritative per-file internals live in `pipeline.md`**.
 `run_all.py` runs the chain. Sleeper roster → active filter → nflreadpy stats → **live ESPN ADP**
 (`load_espn_adp.py`, public endpoint) → ECR → FP projections → custom scoring → bonuses → metrics
 (VOLS) → Monte-Carlo outcomes → `value_board.py` → `value_board.csv`. `value_board.py` DROPS players

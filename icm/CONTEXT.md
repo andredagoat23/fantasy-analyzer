@@ -25,7 +25,7 @@ Before acting on a request, route it through the stages. Each stage is a contrac
 |---|---|---|
 | Bug ("X is broken / wrong") | 01 → 02 → 03 → 04 → 05 | `lessons.md`, plus the subsystem doc (`bridge.md` / `architecture.md`) |
 | Advisor / recommendation quality | 01 → 02 → 03 → 04 → 05 | `draft-strategy.md` (source of truth), `architecture.md` |
-| New feature | 01 → 02 → 03 → 04 → 05 | `architecture.md`, relevant subsystem doc |
+| New feature | 01 → 02 → 03 → 04 → 05 | `spec.md` (scope check), `architecture.md`, relevant subsystem doc |
 | Data / board / pipeline question | 01 → 04 | `pipeline.md` (deep internals); never touch frozen pipeline files |
 | Deploy | 05 | `architecture.md` (deploy section) — user triggers the push |
 | Quick factual answer | — | answer directly; still never fabricate |
@@ -35,6 +35,7 @@ newer to Python/APIs) and how to explain + the walk-through-then-"go" contract. 
 session.
 
 ## Reference material (Layer 3 — durable, read as needed)
+- `reference/spec.md` — the product SPEC: v1.0 scope, layout, constraints, tech decisions, build log.
 - `reference/engineering-principles.md` — the non-negotiable guardrails (read once per session).
 - `reference/collaboration.md` — who the user is + how to explain + the collaboration contract.
 - `reference/lessons.md` — every mistake we've hit + its fix. **Check before diagnosing.**
