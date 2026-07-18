@@ -55,6 +55,18 @@ deploy push (your call — pushing auto-deploys to Streamlit Cloud).
    Add `[bridge] url` (the Firebase RTDB URL) to Streamlit Cloud secrets so live sync works on the
    deployed app; confirm the `[espn]` block too if you still want the API fallback.
 
+## Data-quality flag (rule #5 — flagged, NOT worked around)
+- **Tyreek Hill is missing from `value_board.csv`.** Traced it: he has `proj_points = nan` in
+  `players_with_projections.csv` (FantasyPros has no 2026 projection for him — his 2025 was 21 rec /
+  265 yds), so he scores NaN and `value_board.py` drops NaN-points players. ESPN ADP 168.1 means
+  he IS being drafted (~round 14). Impact is low (late flier, off a terrible year) and it does NOT
+  break live sync — he's simply absent, not a name mismatch, so nothing fails to leave the board.
+  Your call whether to source a projection for him before July 31. I did **not** touch the pipeline.
+- New tool: **`tools/name_audit.py`** (read-only) checks ESPN's live top-200 by ADP against the
+  board via the exact `normalize_name` the bridge uses. Result today: **182/200 resolve**; the only
+  below-floor miss is Tyreek Hill (the 17 DEF misses are expected — no D/ST on the board). Re-run it
+  after you regenerate the board the morning of the draft: `.venv/bin/python tools/name_audit.py`.
+
 ## Notes / possible follow-ups
 - Mine-by-position is only as right as `slot`. With v0.3.0 meta feeding the real slot it's exact;
   in manual mode a wrong slot mis-flags picks (same as before). Reset (`do_reset`) intentionally
