@@ -1,5 +1,15 @@
 # PROJECT CONTEXT — Fantasy Football Draft Assistant
 
+## ⭐ START HERE — ICM workspace (Layer 0)
+This project uses **ICM (Interpretable Context Methodology)**: `icm/` is a filesystem-as-methodology
+workspace that governs *how work gets done here* so every change is reproduced, designed, verified,
+and shipped — not ad-hoc (ad-hoc caused this project's worst bugs). **Before acting on any request,
+read `icm/CONTEXT.md`** (the router) and route through the stages. Prime directive: do whatever the
+user asks **efficiently and to a T** — reproduce before fixing, verify with REAL data before claiming
+done, never fabricate. Durable knowledge lives in `icm/reference/` (engineering principles, lessons
+from every past mistake, the draft-strategy source of truth, architecture, and the bridge). The rest
+of this file is the product SPEC (Layer 0 domain identity).
+
 ## What we're building
 A single-page Streamlit web app that runs my personal draft board during a live snake draft on ESPN. My draft is July 31, 2026. This is v1.0 (math-based recommender). v1.1 will add a Claude API advisor on top.
 
