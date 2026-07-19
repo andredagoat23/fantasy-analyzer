@@ -254,9 +254,15 @@ _ADP_SCALE = 7.0
 
 def _survival_prob(adp_rank, horizon):
     """P(player still available at your next pick), softened from ADP with a logistic curve. A player
-    drafted right at your next pick is ~50/50; later = more likely there; earlier = less. UD -> 1.0."""
-    p = 1.0 / (1.0 + np.exp(-(adp_rank - horizon) / _ADP_SCALE))
-    return p.where(adp_rank.notna(), 1.0)
+    drafted right at your next pick is ~50/50; later = more likely there; earlier = less. UD -> 1.0.
+
+    Built via an explicit ndarray -> Series round-trip: on some numpy/pandas combos (e.g. Streamlit
+    Cloud's Python 3.14) `np.exp(a_Series)` returns a bare ndarray, and ndarray has no `.where` — which
+    crashed the whole board. Computing on numpy then re-wrapping in a Series keeps it version-proof."""
+    adp = adp_rank if isinstance(adp_rank, pd.Series) else pd.Series(adp_rank)
+    z = (adp.astype("float64") - horizon) / _ADP_SCALE
+    p = pd.Series(1.0 / (1.0 + np.exp(-z.to_numpy())), index=adp.index)
+    return p.where(adp.notna(), 1.0)
 
 
 def add_vona(available, horizon):
