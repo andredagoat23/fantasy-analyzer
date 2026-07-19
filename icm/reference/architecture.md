@@ -23,9 +23,12 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
 THE file the app reads. Columns include: overall_rank, full_name, pos_label ("RB1"), total_points,
 vols, adp_rank (live ESPN ADP, a float), ecr_rank/ecr_tier, value_gap, market (VALUE/REACH/fair),
 risk_tier, floor, ceiling, p_startable, p_bust, xppg, regression, team_implied_total, etc.
-Loaded once via `@st.cache_data` keyed on file mtime. `load_board` (draft.py, app layer) ALSO derives
-two columns the pipeline doesn't: `team_role` (depth-chart slot within the player's team by projection,
-e.g. BUF WR1 — L14) and `no_team` (unsigned FA flag — L15); the advisor uses both.
+Loaded once via `@st.cache_data` keyed on file mtime. `value_board.py` now produces `team_role`
+(depth-chart slot, BUF WR1) + `role_lead` (projection gap to the next player in his position room, for
+the advisor's role bump — L14/L16), DROPS no-team FAs, suppresses a below-replacement VALUE tag
+(L16), and blends a projection OUTLIER's composite toward ECR when our proj ranks him ≫ expert
+consensus (`CONSENSUS_GAP`/`CONSENSUS_ECR`, L17 — e.g. Metchie). `load_board` (draft.py) derives
+`team_role`/`no_team` only as a fallback for an older board CSV.
 
 ## The data pipeline (FROZEN — do not edit without an explicit ask)
 This is the map-level summary; the **authoritative per-file internals live in `pipeline.md`**.

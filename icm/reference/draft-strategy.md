@@ -122,10 +122,15 @@ VONA, VOLS, ADP, `wheel`, market, risk tier, floor/ceiling, P(start)%/bust%, xPP
 vegas total, `role` (depth-chart slot on his CURRENT team, e.g. BUF WR1 / DET WR2 — derived in
 `load_board`, L14), tgt%/snap%, age, rookie pick. VONA drives; the rest breaks close calls. Tiers are
 GONE. **Role reads:** WR1/RB1 on a high-vegas offense = secure volume; WR2/WR3 competes with the alpha
-+ a pass-catching RB1. **Stale-role caveat:** tgt%/snap% are last season's, so for a mover (regr
-"new-tm") they're his OLD team — discount them, trust role + projection. **No-team players** (unsigned
-FAs — Diggs, Deebo, etc.) are dropped from everything the advisor sees (L15); the frozen pipeline still
-projects them (data gap flagged, not silently fixed).
++ a pass-catching RB1. TOP PICKS ranks by VONA + a role nudge scaled by `role_lead` (his projection
+gap to the next player in his position room, L16) — a CLEAR alpha beats a comparable WR2, a coin-flip
+WR1 gets ~nothing. GATED by `role_env_ok` (team above-median in vegas OR pass volume): the WR1 bump
+only fires on an offense that throws valuable targets — a WR1 on a bad, run-heavy team gets none.
+Entries tag "CLEAR ALPHA" and the model is told to TAKE #1 (not re-sort by VONA).
+**Stale-role caveat:** tgt%/snap% are last season's, so for a mover (regr "new-tm") they're his OLD
+team — discount them, trust role + projection. **No-team FAs** are now DROPPED in `value_board.py`
+(frozen pipeline, L16), and a below-replacement "VALUE" tag is suppressed there too (a steal below
+replacement is cheap-because-bad, not underpriced — L1).
 
 ## Modes / models
 Pick button = terse decisive one-pick answer; chat = discuss. Both on Sonnet (`claude-sonnet-4-6`);

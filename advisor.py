@@ -54,7 +54,7 @@ Recommend the pick that maximizes my roster's value given my needs, strategy, an
 1) ROSTER NEED filters what's DRAFTABLE — a position that helps my roster: an open starter/FLEX, or RB/WR bench depth (RB and WR ALWAYS keep bench/FLEX value). QB and TE are 1-START positions — once mine is filled, a 2nd one is NOT draftable no matter how high its VONA (a backup QB/TE is nearly worthless — I start one and they're streamable). Never draft a filled 1-start position, or a K/D-ST before my lineup is full. Roster need does NOT force me to fill an open starter this instant: a still-open slot whose good options will KEEP (wheel "safe", low VONA) can wait while I grab a bigger VONA cliff at a draftable RB/WR — I'll fill the safe slot next pick for the same value (but don't let it rot if its options are going).
 2) VALUE — the **TOP PICKS NOW** line ranks your draftable options by VONA. VONA gives you the SHORTLIST, not the final answer: the ***starred** picks are within a few VONA of each other = a genuine TIE, so among them pick the BEST PLAYER by age, risk/reward, offense (vegas), and role (tgt%/snap%) — NOT the tiny VONA gap. Only when one option's VONA clearly stands alone above the rest (nothing else starred) does VONA alone decide. NEVER bump a lower one up just to fill an open starter: a safe open slot WAITS (you fill it next pick for the same value); a filled 1-start QB/TE is already excluded (VONA "n/a"). WITHIN a position, take the best available (highest VOLS).
 3) UPSIDE & RISK break the close calls — when two candidates' VONA is genuinely close, pick the one that fits my RISK APPETITE: upside build → lean ceiling/boom, ascending young roles, high vegas + role; safe build → lean floor, durable, low bust. Use role / situation (vegas) / xPPG-regression as tiebreakers; `market` is a pricing tiebreaker only (can I wait on him?), never a talent signal. Say which factors drove the call.
-Only recommend players on the "available" list — never invent players. Unsigned free agents (no NFL team) are NOT draftable and have been removed from your list; if I ask about one by name, tell me he's a free agent with no team/role yet, don't recommend him.
+Only recommend players on the "available" list — never invent players. **NEVER state a player's NFL team, role, or stats from your own memory — rosters change every year and your training is stale, so you WILL get teams wrong (e.g. saying a player is on his old team). Use ONLY the `team`/`role`/numbers in the data I give you, verbatim.** If a player is NOT in my data, say you don't have him, do NOT guess his team, and do NOT recommend him — he's either an unsigned free agent or a player my board has faded (over-projected vs expert consensus); tell me that and move on.
 
 DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
 - Draft the value CLIFF, not the rank: VONA already tells you where waiting costs the most — take the high-VONA player before the drop; don't reach across a position for a tiny ADP edge when VONA is flat.
@@ -66,7 +66,7 @@ DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
 - Archetype playbooks: Best-Available = top VONA; Hero-RB = one anchor RB early then hammer WR; Zero-RB = load elite WR/TE early, attack RB value/upside mid-late; Robust-RB = RB-heavy early for the positional edge; Upside = weight ceiling, boom, ascending young roles and rookie capital over safe floors.
 
 READING THE SITUATION (this is your edge over a raw projection)
-- ROLE beats last year's box score. Read `role` (depth-chart slot) WITH vegas: a team's WR1/RB1 on a high-vegas offense has secure, repeatable volume; a WR2/WR3 competes with the alpha AND a pass-catching RB1 for the same targets, so his ceiling is capped even if the offense is good. On two close players, prefer the better ROLE + situation. But `tgt%/snap%` are last year's — for a mover (regr "new-tm") they describe the OLD team, so a player who upgraded roles (e.g. a former WR2 who's now his new team's WR1) is UNDERRATED by those stale stats: lean on `role` + the projection, and say so.
+- ROLE beats last year's box score. Read `role` (depth-chart slot) WITH vegas: a team's WR1/RB1 on a high-vegas offense has secure, repeatable volume; a WR2/WR3 competes with the alpha AND a pass-catching RB1 for the same targets, so his ceiling is capped even if the offense is good. On two close players, prefer the better ROLE + situation — the TOP PICKS ranking ALREADY bumps a team's WR1/RB1 above a comparable WR2/WR3, but ONLY when the offense actually throws (decent vegas OR pass volume); a clear WR1 on a bad, run-heavy team gets NO bump (few valuable targets to lock up), so his ranking rests on his value alone. Trust that order (a lower-role player sits on top only when his value edge is big enough to overcome it). But `tgt%/snap%` are last year's — for a mover (regr "new-tm") they describe the OLD team, so a player who upgraded roles (e.g. a former WR2 who's now his new team's WR1) is UNDERRATED by those stale stats: lean on `role` + the projection, and say so.
 - SITUATION drives upside. A featured pass-catcher on a high-powered offense with a good QB has more ceiling than the same player on a weak one — use the team to reason about it.
 - Rookies have no role history, so lean on draft capital (rook_pk) and landing spot (team): premium picks into open roles are the high-upside swings.
 
@@ -167,6 +167,51 @@ def _blocked_positions(mine_df):
 # starters first — only jump to a FLEX piece when it's WAY better (a real value cliff). Tunable.
 _FLEX_MARGIN = 15.0
 
+# ROLE PREFERENCE: a team's clear WR1/RB1 has locked targets; a WR2/WR3 competes with the alpha + a
+# pass-catching RB1, so his volume is capped. In TOP PICKS a player's rank is nudged by his `role_lead`
+# (how much his projection leads/trails the next player in his position room) × _ROLE_LEAD_K, capped at
+# ±_ROLE_CAP. So a CLEAR alpha (DJ Moore leads his WR2 by 25) beats a comparable WR2, a coin-flip WR1
+# (Burden +2 over Odunze) gets ~nothing, and a much-higher-VONA WR2 still wins (the Metchie guard).
+_ROLE_LEAD_K = 0.5    # VONA per point of role_lead
+_ROLE_CAP = 10.0      # max ± nudge, so a clear alpha flips a moderate VONA gap but never a big one
+
+
+def _role_bonus_series(df):
+    """Per-player VONA nudge for the TOP PICKS ranking from role CLARITY (role_lead), RB/WR/TE only;
+    QB/K neutral. Bounded + gap-scaled, so it reorders comparable players by real role security without
+    amplifying a projection-tie WR1 label or resurfacing a low-value one. GATED by `role_env_ok`: a
+    WR1's locked role only matters on an offense that actually throws valuable targets (above-median
+    vegas OR pass volume) — on a bad, run-heavy team the role nudge is neutral."""
+    if "role_lead" not in df.columns:
+        return pd.Series(0.0, index=df.index)
+    skill = df["position"].isin(("RB", "WR", "TE"))
+    env = df["role_env_ok"].fillna(True).astype(bool) if "role_env_ok" in df.columns else True
+    nudge = (df["role_lead"].astype("float") * _ROLE_LEAD_K).clip(-_ROLE_CAP, _ROLE_CAP)
+    return nudge.where(skill & env, 0.0).fillna(0.0)
+
+
+_BENCH_BALANCE_GAP = 2   # keep RB and WR depth within this many of each other when stacking the bench
+
+
+def _bench_overstacked(mine_df):
+    """Keep RB/WR depth roughly even: a position you already have this many MORE of than the other is
+    over-stacked, so it's demoted below the thinner one when adding depth (had 4 RB / 2 WR → don't add
+    a 5th RB, take a WR). Returns the over-stacked position(s). Bounded — a much-higher-value player at
+    the stacked position can still be taken (it only sorts within the demoted tier)."""
+    if not len(mine_df):
+        return set()
+    cnt = {"RB": 0, "WR": 0}
+    for _, p in mine_df.iterrows():
+        pos = str(p.get("pos_label", "")).rstrip("0123456789") or p.get("position", "")
+        if pos in cnt:
+            cnt[pos] += 1
+    over = set()
+    if cnt["RB"] - cnt["WR"] >= _BENCH_BALANCE_GAP:
+        over.add("RB")
+    if cnt["WR"] - cnt["RB"] >= _BENCH_BALANCE_GAP:
+        over.add("WR")
+    return over
+
 
 def _lineup_gaps(mine_df):
     """Categorize positions by how my NEXT pick there would fit the STARTING lineup (1QB/2RB/2WR/1TE +
@@ -187,7 +232,10 @@ def _lineup_gaps(mine_df):
     flex_filled = sum(max(0, cnt[p] - ded[p]) for p in ("RB", "WR", "TE")) >= 1
     dedicated_open = {p for p in ded if ded_open[p] > 0}
     flex_only = {p for p in ("RB", "WR", "TE") if ded_open[p] == 0 and not flex_filled}
-    bench_sat = {p for p in ("RB", "WR", "TE") if ded_open[p] == 0 and flex_filled}
+    # bench_sat only means something while a FLEX-eligible starter is still open ELSEWHERE; once the
+    # whole RB/WR/TE + FLEX lineup is set it's just bench depth (balance handled by _bench_overstacked).
+    flex_elig_open = (not flex_filled) or any(ded_open[p] > 0 for p in ("RB", "WR", "TE"))
+    bench_sat = {p for p in ("RB", "WR", "TE") if ded_open[p] == 0 and flex_filled} if flex_elig_open else set()
     return dedicated_open, flex_only, bench_sat
 
 
@@ -324,13 +372,16 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     horizon = _horizon(draft_pos)
     if "vona" not in available.columns:      # normally precomputed in draft.py; compute if standalone
         available = add_vona(available, horizon)
-    # NO-TEAM players (unsigned / FA — Diggs, Deebo, etc.) have no offense, no vegas total, and an
-    # unreliable role, so they are NOT draftable. Drop them from everything the advisor sees.
+    # Drop from EVERYTHING the advisor sees: (1) NO-TEAM players (unsigned FAs — no offense/role) and
+    # (2) PROJECTION OUTLIERS our board over-rates but the market + experts have written off (John
+    # Metchie: our proj 148 vs ECR 361 vs ESPN 589) — recommending them is the whole problem (L15/L17).
     if "no_team" in available.columns:
-        fa = available["no_team"].fillna(False).astype(bool)
+        drop = available["no_team"].fillna(False).astype(bool)
     else:
-        fa = available["team"].isna() | available["team"].astype(str).str.upper().isin({"FA", "NAN", ""})
-    available = available[~fa]
+        drop = available["team"].isna() | available["team"].astype(str).str.upper().isin({"FA", "NAN", ""})
+    if "proj_outlier" in available.columns:
+        drop = drop | available["proj_outlier"].fillna(False).astype(bool)
+    available = available[~drop]
     cols = ["full_name", "pos_label", "team", "team_role", "team_implied_total", "vols", "vona",
             "adp_rank", "market", "risk_tier", "target_share_2025", "snap_share_2025", "age",
             "is_rookie", "draft_pick", "floor", "ceiling", "p_startable", "p_bust", "xppg",
@@ -374,6 +425,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     # worthless backup can't show up as the "highest VONA" and get chased (a prose rule alone got ignored).
     blocked = _blocked_positions(mine_df)
     dedicated_open, flex_only, bench_sat = _lineup_gaps(mine_df)   # how a next pick fits my lineup slots
+    bench_over = _bench_overstacked(mine_df)                       # RB/WR I already have too many of
     if blocked and "VONA" in top.columns and "pos" in top.columns:
         base = top["pos"].str.replace(r"\d+$", "", regex=True)
         top.loc[base.isin(blocked), "VONA"] = "n/a"
@@ -408,7 +460,10 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     picks_line = ""
     if "vona" in available.columns:
         skip = set(blocked) | {"K", "DEF", "DST", "D/ST"}   # streamers (K/D-ST) are a final-round call
-        ok = available[~available["position"].isin(skip)].sort_values("vona", ascending=False).head(25)
+        pool = available[~available["position"].isin(skip)].copy()
+        # rank by VONA + a bounded depth-chart ROLE nudge (WR1 beats a comparable WR2); real VONA still shown
+        pool["_rk"] = pool["vona"] + _role_bonus_series(pool)
+        ok = pool.sort_values("_rk", ascending=False).head(25)
         # Best VONA available at a position that fills an OPEN DEDICATED slot (not a punt-able QB) — the
         # bar a FLEX-only option must clear by _FLEX_MARGIN to be worth taking over a dedicated need.
         ded_pool = ok[ok["position"].isin(dedicated_open - punt_pos)]
@@ -419,11 +474,12 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         # Hard-demote below the dedicated-need fillers (stable = keep VONA order within a tier):
         # BENCH-ONLY lowest, then punt-able 1-start QB/TE, then FLEX-only pieces (fill dedicated first).
         def _sink_rank(pos, vona):
+            if pos in bench_over: return 4   # over-stacked (4 RB / 2 WR) — fill the thinner position
             if pos in bench_sat: return 3
             if pos in punt_pos:  return 2
             if _flex_demoted(pos, vona): return 1
             return 0
-        if bench_sat or punt_pos or (flex_only and best_ded_vona is not None):
+        if bench_over or bench_sat or punt_pos or (flex_only and best_ded_vona is not None):
             ok = ok.assign(_sink=[_sink_rank(p, v) for p, v in zip(ok["position"], ok["vona"])]
                            ).sort_values("_sink", kind="stable").drop(columns="_sink")
         ok = ok.head(6)
@@ -433,20 +489,29 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
             def _pk(r):
                 w = f", {_wheel_label(r.adp_rank, horizon)}" if horizon else ""
                 star = "*" if (top_v - float(r.vona)) <= close else ""
-                tag = (", BENCH-ONLY (starter open elsewhere)" if r.position in bench_sat
+                rl = getattr(r, "role_lead", 0.0)
+                rl = float(rl) if rl is not None and pd.notna(rl) else 0.0
+                env_ok = getattr(r, "role_env_ok", True)
+                env_ok = bool(env_ok) if pd.notna(env_ok) else True
+                role = (", CLEAR ALPHA (locked targets)" if rl >= 15 and r.position in _FLEX_OK and env_ok
+                        else ", behind the alpha (capped targets)" if rl <= -15 and r.position in _FLEX_OK and env_ok else "")
+                tag = (", OVER-STACKED (you have plenty — fill a thinner position)" if r.position in bench_over
+                       else ", BENCH-ONLY (starter open elsewhere)" if r.position in bench_sat
                        else ", PUNT-ABLE fill late" if r.position in punt_pos
                        else ", FLEX-only (fill a dedicated starter first)" if _flex_demoted(r.position, r.vona)
                        else "")
-                return f"{star}{r.full_name} ({r.pos_label}, VONA {r.vona:.0f}{w}{tag})"
-            picks_line = ("TOP PICKS NOW — draftable options VONA-ranked, then hard-demoted below the "
-                          "DEDICATED-need fillers: BENCH-ONLY positions (a 4th RB while a starter is open) "
-                          "lowest, punt-able 1-start QB/TE next, then FLEX-only pieces (a 3rd RB/WR that "
-                          "only upgrades the week-to-week FLEX — fill your fixed QB/RB/WR/TE starters "
-                          "first). A FLEX-only piece is kept up top ONLY when it's WAY better in VONA than "
-                          "the best dedicated filler. Take #1. The *starred ones are within a few VONA = a "
-                          "TIE: among them pick the BEST PLAYER by age, risk/reward, offense (vegas), role "
-                          "(tgt%/snap%), NOT the tiny VONA gap. Tags: 'BENCH-ONLY' = fill an open starter; "
-                          "'PUNT-ABLE' = fill that 1-start slot late; 'FLEX-only' = a dedicated need beats it. "
+                return f"{star}{r.full_name} ({r.pos_label}, VONA {r.vona:.0f}{w}{role}{tag})"
+            picks_line = ("TOP PICKS NOW — this is the FINAL ranking: TAKE #1. The order already blends "
+                          "VONA with roster gates AND role security, so DON'T re-sort it by the raw VONA "
+                          "column — a lower-VONA player placed higher is INTENTIONAL (a team's clear WR1/"
+                          "RB1 with locked targets beats a higher-VONA WR2/WR3 whose targets are capped "
+                          "behind the alpha + a pass-catching RB). Demotions, lowest first: OVER-STACKED "
+                          "(you already have plenty of that position — keep RB/WR depth even, don't add a "
+                          "5th RB with 2 WR), BENCH-ONLY (a 4th RB while a starter is open), punt-able "
+                          "1-start QB/TE, FLEX-only pieces (fill fixed QB/RB/WR/TE starters before the "
+                          "week-to-week FLEX). The *starred ones are "
+                          "within a few VONA = a TIE — among them pick the BEST PLAYER by CLEAR-ALPHA role, "
+                          "age, risk/reward, offense (vegas). Only override #1 for a real risk/upside reason. "
                           + " | ".join(f"{i+1}. {_pk(r)}" for i, r in enumerate(ok.itertuples())) + "\n")
     order = ["player", "pos", "team", "role", "vegas", "VONA", "vols", "ADP", "wheel", "tgt%", "snap%",
              "age", "rook_pk", "market", "risk", "floor", "ceiling", "P_start%", "bust%", "xPPG", "regr"]

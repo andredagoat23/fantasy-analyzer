@@ -189,6 +189,65 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 - **Teaches:** a player with no team has an unreliable projection — filter it in the layer you own and
   flag the data-quality gap. (Principles 7, 8)
 
+### L16 — Role (WR1>WR2), false VALUE tags, and FAs — fixed at the source (frozen pipeline opened)
+- **Symptoms:** (a) the advisor preferred a WR2 (Jameson) over a WR1 (DJ Moore) — role too weak; (b) it
+  recommended below-replacement players like John Metchie (WR47, VOLS −28) tagged `market=VALUE`;
+  (c) it still surfaced unsigned FAs. The user authorized touching the frozen pipeline.
+- **Root causes:** (a) role was informational only, not in the ranking; (b) `value_board.py` tagged any
+  big ADP-vs-rank gap as VALUE even below replacement — a "steal" that's cheap because he's BAD (L1);
+  (c) FAs (no team) were kept in the board.
+- **Fixes:**
+  - **Pipeline (`value_board.py`):** drop no-team players; only tag VALUE when `vols ≥ 0`; add canonical
+    `team_role` (depth-chart slot) + `role_lead` (projection gap to the next player in his position room).
+    Regenerated `value_board.csv` from the existing intermediates (no live re-fetch).
+  - **Advisor:** TOP PICKS rank = VONA + a role nudge SCALED BY `role_lead` (× _ROLE_LEAD_K, ±_ROLE_CAP)
+    — a CLEAR alpha (DJ Moore leads his WR2 by 25) beats a comparable WR2, but a coin-flip WR1 (Burden
+    +2 over Odunze) gets ~nothing, so it never amplifies a projection tie or resurfaces a low-value WR1.
+    GATED by `role_env_ok` (team above-median vegas OR pass volume): a clear WR1 on a bad, run-heavy
+    offense (NYJ/MIA/CLE…) gets NO bump — his targets aren't valuable — while a low-vegas but pass-heavy
+    team (ARI, 515 targets) still qualifies via the OR. The user's rule: WR1 only if the team throws.
+  - **L8 follow-through:** reordering alone wasn't enough — the model re-sorted by the raw VONA column.
+    Annotating entries "CLEAR ALPHA (locked targets)" / "behind the alpha" + "TAKE #1, don't re-sort by
+    VONA" made it follow the order. Verified live: it now takes the clear-WR1 over the higher-VONA WR2.
+- **Teaches:** scale a role signal by how REAL it is (gap-based, not ordinal) so you don't amplify
+  projection noise; and enforcing a ranking needs the REASON visible to the model, not just the order.
+  (Principles 3, 8; L1)
+
+### L17 — Projection outliers (John Metchie): trust expert consensus over a lone inflated projection
+- **Symptom:** John Metchie looked draftable on our board (WR46, our proj rank 148) but ESPN ranks him
+  589th and has "no potential" per the user.
+- **Root cause:** our FantasyPros projection (182 pts) rated him far above expert consensus (ECR 361)
+  and his 2025 actuals (274 yds, 9% target share). A LONE projection outlier. Investigation showed the
+  board is NOT systemically over-rating — mean `proj_vs_ecr` is −13 (we're generally more conservative
+  than ECR); Metchie was a near-unique extreme, plus a cluster of deep backup TEs (TE replacement is
+  low, so mediocre TEs project positive and out-rank their ECR).
+- **Fix (`value_board.py`, consensus sanity):** a NON-rookie whose projection ranks him > CONSENSUS_GAP
+  (100) spots better than ECR gets his composite blended CONSENSUS_ECR (60%) toward ECR. Demoted 29
+  players (Metchie + deep TEs), ALL of them undrafted (ADP maxed) AND expert-faded — zero false
+  positives (none had a real ADP). Metchie 191 → 236; the elite tier is untouched.
+- **Teaches:** a single model's projection can be an outlier — sanity-check it against expert consensus
+  (ECR) and demote lone over-projections, but verify you're not catching players the market actually
+  drafts (check ADP). (Principles 1, 8)
+- **Follow-up (L18 batch):** demoting the composite wasn't enough — the advisor ranks by VONA and still
+  surfaced Metchie, so `build_context` now also DROPS `proj_outlier` players from everything it sees
+  (like FAs). Column written to the board.
+
+### L18 — Bench balance + team hallucination
+- **Symptoms:** (a) with 4 RB / 2 WR the advisor recommended a 5th RB (no balance once starters are
+  full); (b) it recommended John Metchie and said he's on "HOU" — he's on CAR in our data; the model
+  invented the team from stale training memory.
+- **Fixes (advisor):**
+  - **Bench balance:** `_bench_overstacked` — once RB/WR depth is 2+ lopsided, the heavier position is
+    hard-demoted below the thinner one in TOP PICKS (lowest sink tier), so bench depth stays ~even
+    (4 RB / 2 WR → take a WR). Also gated `bench_sat` to fire only while a FLEX-eligible starter is
+    actually open (so a full lineup isn't mislabeled "starter open elsewhere").
+  - **Anti-hallucination:** the prompt now forbids stating ANY team/role/stat from memory — use only the
+    data given; if a player isn't in the data, say so and don't guess his team or recommend him. Plus
+    the `proj_outlier`/FA exclusion means faded players aren't in the context at all. Verified live: it
+    now says "I don't have Metchie… I won't guess," no "HOU."
+- **Teaches:** roster construction includes balance even on the bench; and NEVER let the model emit a
+  fact (team/role) from its training when live data is authoritative — rosters change yearly. (Principles 2, 3, 8)
+
 ---
 
 ## How to add a lesson
