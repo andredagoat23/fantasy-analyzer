@@ -160,12 +160,16 @@ overall_rank` (+VALUE/−REACH — only tagged within the DRAFTABLE pool, both r
 tail manufactures fake +154 "values"), `risk_tier` (availability<0.85 → "Injury Risk", else CV bands
 Safe<0.45<Balanced<0.60<Boom/Bust). Carries THREE rankings (points stay pure): `overall_rank` (VOLS),
 `rank_ecr` (0.65·VOLS_rank+0.35·ECR_rank — experts fade Aubrey, lift McConkey), `rank_composite`
-(RANK-based cross-position value: `0.40·rank(VOLS)+0.25·rank(ecr_blend)+0.20·rank(ceiling−repl)+
-0.15·rank(floor−repl)`; the ROLE term inside uses xPPG percentile w/ VOLS-pct fallback for switchers).
-⚠️ the composite was REBUILT once — the original used position-RELATIVE p_elite/p_bust which inflated
-shallow QB/TE/K; rank-based cross-position fixed it. Also writes `app_data.csv`/`app_data.json`
-(`orient=records`, NaN→null) — the full 535×~71-col dataset. DROPS NaN-projection players (why Tyreek
-is absent — lesson L6). Sorted by `rank_composite`.
+(RANK-based cross-position value, current weights: **0.32·rank(VOLS) + 0.24·rank(ECR) + 0.12·rank(ADP)
++ 0.13·rank(ceiling−repl, ×vegas team_env) + 0.09·rank(floor−repl) + 0.10·rank(role)**; the ROLE term
+uses xPPG percentile w/ VOLS-pct fallback for switchers). Two blends adjust it: **rookies** anchor
+halfway to market (ADP/ECR); a **consensus outlier** (non-rookie whose proj ranks >100 spots better
+than ECR) blends 60% toward ECR + is flagged `proj_outlier` (L17). ⚠️ the composite was REBUILT once —
+the original used position-RELATIVE p_elite/p_bust which inflated shallow QB/TE/K; rank-based
+cross-position fixed it. value_board.py ALSO now emits `team_role`/`role_lead`/`role_env_ok` (depth-
+chart role for the advisor, L16), DROPS no-team FAs, and gates the VALUE tag on `p_startable≥0.40`
+(no below-startable "steals", L16). Writes `app_data.csv`/`app_data.json` (`orient=records`, NaN→null).
+DROPS NaN-projection players (why Tyreek is absent — L6). Sorted by `rank_composite`.
 
 ## Still-pending pipeline items
 - **DST scoring** — no defense projection source yet (out of scope until one exists).
