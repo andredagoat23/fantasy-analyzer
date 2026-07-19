@@ -1,5 +1,9 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
+> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** It has the current project state (what shipped, what's
+> pushed vs not, what's pending) and the active NEXT TASK — a **Monte Carlo deep-dive** — with the exact
+> questions to ask the user before building. Start there after this router.
+
 This workspace applies **ICM (Interpretable Context Methodology)** to *how work gets done on this
 project*, so every change is explicit, staged, and verified instead of ad-hoc. Ad-hoc is what caused
 this project's worst bugs (see `reference/lessons.md`). The filesystem is the methodology.
