@@ -8,6 +8,7 @@ import advisor
 import auth
 import bridge
 import config_store
+import sleeper_sync
 from utils import normalize_name
 
 try:
@@ -263,7 +264,58 @@ try:
 except Exception:
     espn_cfg = {}
 
-if bridge_url:
+sleeper_draft = st.session_state.get("sleeper_draft_id")
+if sleeper_draft:
+    # Sleeper live sync — poll Sleeper's PUBLIC API directly (no userscript, no Firebase), normalize
+    # to the mailbox shape, and reuse bridge.resolve. `mine` is stamped per-pick from the API's own
+    # draft_slot (ground truth), so my_team=None here.
+    st.session_state.setdefault("sleeper_meta_applied", False)
+    with st.container(border=True):
+        c1, c2 = st.columns([3, 1])
+        with c1:
+            st.markdown("**Sleeper live sync** — polling your draft directly (no extension needed).")
+        with c2:
+            sync_active = st.toggle("Live", value=True, key="live_on",
+                                    help="Auto-pull picks from Sleeper's public API every few seconds.")
+        dot = "🟢 live" if sync_active else "⚪ paused"
+        n = st.session_state.get("pick_count", 0)
+        shape = (f" · seat {st.session_state.get('slot')} of {st.session_state.get('teams')} (auto)"
+                 if st.session_state.get("sleeper_meta_applied") else "")
+        st.caption(f"{dot} · Sleeper draft {sleeper_draft} · {n} pick{'s' if n != 1 else ''}{shape}")
+
+    if sync_active:
+        by_name = board_name_map(os.path.getmtime("value_board.csv"))
+        my_uid = st.session_state.get("sleeper_user_id")
+
+        @st.fragment(run_every=4)
+        def poll_sleeper():
+            try:
+                payload = sleeper_sync.fetch(sleeper_draft, my_uid)
+            except Exception:
+                return   # transient Sleeper hiccup — keep last state, retry next tick
+            raw, meta = payload["picks"], payload["meta"]
+            if meta and not st.session_state.sleeper_meta_applied:
+                pend = False
+                if meta.get("teams"):
+                    st.session_state["teams_pending"] = int(meta["teams"]); pend = True
+                if meta.get("slot"):
+                    st.session_state["slot_pending"] = int(meta["slot"]); pend = True
+                st.session_state.sleeper_meta_applied = True
+                if pend:
+                    st.rerun(scope="app")   # let app.py apply teams/slot, then re-poll
+            drafted, mine, _teams, total = bridge.resolve(raw, by_name, my_team=None)
+            my_dst = bridge.my_dst(raw)   # defenses aren't on the board — tracked via the mine flag
+            if (drafted != st.session_state.drafted or mine != st.session_state.mine
+                    or total != st.session_state.get("pick_count")
+                    or my_dst != st.session_state.get("mine_dst")):
+                st.session_state.drafted, st.session_state.mine = drafted, mine
+                st.session_state.mine_dst = my_dst
+                st.session_state.pick_count = total
+                st.session_state.version += 1
+                st.rerun(scope="app")   # refresh the whole board with the new picks
+        poll_sleeper()
+
+elif bridge_url:
     st.session_state.setdefault("bridge_teams", [])   # team names discovered from incoming picks
     st.session_state.setdefault("bridge_meta_applied", False) # league shape auto-applied once
     with st.container(border=True):

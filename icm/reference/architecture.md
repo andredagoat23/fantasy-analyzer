@@ -18,6 +18,8 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
 - `bridge.py` — reads the live-draft Firebase mailbox and resolves picks to board players. See
   `bridge.md`.
 - `auth.py`, `config_store.py`, `utils.py` (`normalize_name`), `espn_sync.py` (ESPN-API fallback).
+- `sleeper_sync.py` — Sleeper live sync via Sleeper's PUBLIC API (no userscript/Firebase); normalizes to
+  the bridge's `{meta,picks}` shape so `bridge.resolve` is reused. See `bridge.md`.
 
 ## The board — `value_board.csv`
 THE file the app reads. Columns include: overall_rank, full_name, pos_label ("RB1"), total_points,

@@ -3,6 +3,7 @@ import streamlit as st
 import advisor
 import auth
 import config_store
+import sleeper_sync
 
 SITES = ["ESPN", "Sleeper", "Yahoo", "Other"]
 SCORING = ["PPR", "Half-PPR", "Standard", "Custom"]
@@ -109,6 +110,40 @@ with st.container(border=True):
             st.info("ESPN live sync isn't configured, so you'll track picks manually on the board. "
                     "Add an `[espn]` block to secrets to enable auto-tracking.",
                     icon=":material/wifi_off:")
+
+        # --- Sleeper live sync: public API, no browser extension, works for real leagues AND mocks ---
+        st.divider()
+        st.markdown("**Sleeper live sync** — no extension needed (Sleeper has a public API).")
+        su = st.text_input("Sleeper username", key="sleeper_username", placeholder="your Sleeper handle")
+        if st.button("Find my drafts", icon=":material/search:", disabled=not (su or "").strip()):
+            uid = sleeper_sync.user_id(su.strip())
+            if not uid:
+                st.session_state["_sleeper_msg"] = ("err", f"No Sleeper user “{su.strip()}”.")
+                st.session_state["_sleeper_drafts"] = []
+            else:
+                drafts = sleeper_sync.list_drafts(uid, sleeper_sync.season())
+                st.session_state["sleeper_user_id"] = uid
+                st.session_state["_sleeper_drafts"] = drafts
+                st.session_state["_sleeper_msg"] = (("ok", f"Found {len(drafts)} draft(s).") if drafts
+                                                    else ("err", "No drafts for you this season yet."))
+        _drafts = st.session_state.get("_sleeper_drafts") or []
+        if _drafts:
+            labels = {f"{d['name']} · {d.get('teams') or '?'}-team {d.get('type') or 'draft'} · "
+                      f"{d.get('status')}": d["draft_id"] for d in _drafts}
+            pick = st.selectbox("Pick your draft", list(labels), key="_sleeper_pick")
+            if st.button("Connect this draft", icon=":material/link:"):
+                st.session_state["sleeper_draft_id"] = labels[pick]
+                st.session_state["_sleeper_msg"] = ("ok", "Connected — picks auto-track on the board.")
+        if st.session_state.get("sleeper_draft_id"):
+            st.success(f"Sleeper draft connected — live sync on the board (draft "
+                       f"{st.session_state['sleeper_draft_id']}).", icon=":material/wifi:")
+            if st.button("Disconnect Sleeper", icon=":material/link_off:"):
+                for k in ("sleeper_draft_id", "sleeper_user_id", "_sleeper_drafts"):
+                    st.session_state.pop(k, None)
+                st.rerun()
+        _sm = st.session_state.pop("_sleeper_msg", None)
+        if _sm:
+            (st.success if _sm[0] == "ok" else st.error)(_sm[1])
 
     elif active == "Scoring":
         scoring = st.segmented_control("League scoring", SCORING, key="scoring")

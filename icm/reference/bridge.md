@@ -50,3 +50,15 @@ sticky state (lesson L5). `made = pick_count` when live-synced, else `len(drafte
 ## Config
 `bridge.db_url()`: `FA_BRIDGE_URL` env (dev) first, else `[bridge] url` in Streamlit secrets. The
 deployed app needs the `[bridge]` block in Streamlit Cloud secrets for live sync.
+
+## Sleeper sync (`sleeper_sync.py`) — the second source, no userscript/Firebase
+Sleeper has a PUBLIC read-only API, so the app polls it DIRECTLY (no browser bridge). `sleeper_sync`
+normalizes Sleeper's `/draft/{id}` + `/picks` into the SAME `{meta, picks}` shape, so `bridge.resolve`
++ `bridge.my_dst` are REUSED unchanged. `_normalize()` is a pure function (unit-tested against the real
+schema in `tests/test_sleeper.py`); `fetch()` wraps the two GETs; `user_id`/`list_drafts`/`season` back
+the setup connect flow. `mine` is stamped per-pick from the API's own `draft_slot` (ground truth — not
+the seat math L4 removed). Defenses come back as position `DEF` → formatted `"<Team> D/ST"` so `my_dst`
+detects them (L9). Wiring: setup.py "Connect Sleeper" (username → pick draft → `sleeper_draft_id`);
+draft.py `poll_sleeper` fragment (highest-priority branch when `sleeper_draft_id` is set). Works for
+Sleeper MOCKS too (their API exposes mock picks; ESPN's doesn't). Rate limit 1000/min — we poll ~1/4s.
+**Final verify pending:** a live Sleeper mock draft end-to-end (needs a real Sleeper account/draft_id).
