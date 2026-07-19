@@ -132,6 +132,19 @@ team — discount them, trust role + projection. **No-team FAs** are now DROPPED
 (frozen pipeline, L16), and a below-replacement "VALUE" tag is suppressed there too (a steal below
 replacement is cheap-because-bad, not underpriced — L1).
 
+## How the advisor treats MY stated strategy (L20)
+Strategy text from setup flows to the advisor via `_setup_note()`. VONA/value stays the backbone, but
+strategy shapes how it's used, per the user's spec:
+1. **Risk-flavored strategy re-weights value** (not just ties): high-risk/high-reward/upside → VONA
+   matters LESS, lean ceiling/boom/ascending roles; safe/floor → the opposite.
+2. **A positional-rule conflict** (strategy says "no RB" but the top VONA is an RB; "punt TE" but an
+   elite TE is the cliff) → the advisor gives BOTH, labeled: leads with **Best value: X** (with the
+   VONA cost of following the strategy) then **Sticking to your [strategy]: Y** (best strategy-compliant
+   pick), and lets the user choose. It neither silently overrides nor blindly obeys. Testing showed the
+   old behavior was value-first with a soft override (it took the RB and buried the strategy option);
+   this makes the strategy choice explicit. PICK mode swaps its fallback for the two labeled options
+   when there's a conflict.
+
 ## Modes / models
 Pick button = terse decisive one-pick answer; chat = discuss. Both on Sonnet (`claude-sonnet-4-6`);
 setup helpers on Haiku.

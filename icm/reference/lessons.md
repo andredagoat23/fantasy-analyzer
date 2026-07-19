@@ -263,6 +263,23 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 - **Teaches:** "works on my machine" is not verification for a deploy — the runtime environment is part
   of the system; pin it, and exercise the actual boot path. (Principles 1, 9)
 
+### L20 — Stated strategy: value-first, but surface the strategy-compliant pick on a conflict
+- **Symptom (from a test battery):** the advisor was purely value-first — it silently overrode a stated
+  strategy (took the RB despite "strict Zero-RB", buried the compliant option as a generic "fallback"),
+  so a committed Zero-RB/punt-TE drafter couldn't actually execute their plan.
+- **Fix (prompt, per the user's spec):** VONA stays the backbone, but (1) a RISK-flavored strategy
+  (high-risk/high-reward, upside) RE-WEIGHTS value — down-weight VONA toward ceiling/boom; (2) on a
+  POSITIONAL-rule conflict, give BOTH labeled: "**Best value: X** (costs ~N VONA to follow your plan)"
+  + "**Sticking to your [strategy]: Y**", and let the user choose. PICK mode swaps its fallback for the
+  two options on conflict.
+- **Verified live:** Zero-RB conflict now returns "Best value: Chase Brown | Sticking to Zero-RB: Chris
+  Olave." Note: the risk re-weight rarely FLIPS a clear-value pick because on this board value (VONA)
+  and ceiling are tightly correlated — a lower-value/higher-ceiling player basically doesn't exist — so
+  the value pick is usually also the upside pick (correct). It bites mainly on genuine ties.
+- **Teaches:** don't make the model silently override the user's explicit intent OR blindly obey it —
+  surface both and let them decide; and test a behavior against data that can actually discriminate it.
+  (Principles 6, 9)
+
 ---
 
 ## How to add a lesson
