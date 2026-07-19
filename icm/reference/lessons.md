@@ -108,6 +108,87 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 - **Teaches:** a metric that's mathematically right can still be too precise to decide on — surface
   the tie explicitly and let the richer profile break it.
 
+### L11 — VONA's one-pick horizon reaches for a punt-able QB at a turn; add the PUNT READ
+- **Symptom:** in a July-2026 mock the advisor took an elite QB (Josh Allen) in round 2 over a scarce
+  elite RB (Chase Brown) — the L3 pattern resurfacing on a real draft.
+- **Root cause (NOT a VOLS bug):** Allen's VOLS 80 is a correct VORP over QB12; "fixing"
+  `compute_metrics.py` by deepening the QB baseline BACKFIRES (it raises elite-QB VOLS). The real miss
+  is a horizon artifact: VONA measures value lost by waiting ONE pick, so at a snake TURN (back-to-back
+  picks) waiting looks free for everyone, under-crediting a scarce RB/WR (who "survives one pick") and
+  over-crediting the QB's within-position cliff.
+- **Fix (advisor layer, computed in Python — Principle 3 / L8):** the PUNT READ. Final form is fully
+  stats-based (the user asked for no "feeling"): for EVERY position compute the same
+  `punt_loss = elite VOLS − (best survivor at the fill window) × (1 − bust%)` — the risk-adjusted value
+  lost by deferring it, with the `× (1−bust%)` VARIANCE factor so a boom/bust streamer counts less.
+  A 1-start slot is punt-able iff its punt_loss < the best RB/WR's punt_loss (pure comparison — no
+  keep_frac, no 0.75). Punt-able slots are HARD-DEMOTED below RB/WR in TOP PICKS; it self-corrects
+  (grabs the QB once it's the scarcest value / depth is gone). NOTE: this is raw-value-optimal, so it
+  can grab an elite QB over an elite TE at a turn (unlike the interim keep_frac version) — the variance
+  factor keeps TE stickier but won't override a real QB VONA edge. Verified live: pick 24 takes Chase
+  Brown (scarce RB) and passes the round-2 QB. Knob: `_PUNT_LATE_ROUNDS`. (Design history: flat-margin →
+  depth-count → keep_frac → symmetric risk-adjusted punt_loss; earlier forms overfit or were "feel".)
+- **Teaches:** a metric can be right yet myopic (one-pick horizon); fix the DECISION layer, not the
+  frozen metric — and beware the "obvious" pipeline fix that backfires. Reproduce first; verify live.
+  (Principles 1, 3, 5, 8)
+
+### L12 — Advisor recommended a 4th RB with 3 RB and 0 WR (bench depth over an open starter)
+- **Symptom:** with 3 RB and 0 WR rostered, the advisor put RB depth at the top of TOP PICKS (a 4th RB
+  out-VONA'd the remaining WRs after a WR run) and recommended it — over the two EMPTY WR starter slots.
+  Reported live, and "not the first time."
+- **Root cause:** VONA is position-blind and `_roster_needs` marked RB as "RB/WR depth = draftable"
+  even though 3 RB already fill RB1+RB2+FLEX — so a 4th RB is bench-only (can't crack the lineup), yet
+  it ranked above a WR who fills an open starter.
+- **Fix (enforce in data — L8):** `_bench_saturated_positions` flags a FLEX position as bench-saturated
+  when its dedicated slots + the FLEX are already filled (3 RB / 3 WR / 2 TE) AND a FLEX-eligible
+  starter is still open; those are hard-demoted below the lineup-fillers in TOP PICKS and tagged
+  BENCH-ONLY, and dropped from `_roster_needs` "depth". Gated: once the FLEX-eligible slots are all set
+  it stops (normal late bench depth). Verified live: 3-RB-0-WR now recommends the top WR, not a 4th RB.
+- **Teaches:** "RB/WR always keep depth value" is true UNTIL you can't start another one — model the
+  actual lineup slots, and enforce roster construction in the data, not the prose. (Principles 3, 8)
+
+### L13 — Fill DEDICATED starters before the FLEX (FLEX is week-to-week)
+- **Symptom:** with dedicated slots still open (e.g. 2 RB, 1 WR — WR2 + TE + FLEX open), the advisor
+  would spend the pick on a 3rd RB (higher VONA) that only upgrades the FLEX, leaving the WR/TE
+  starter holes unfilled. User's read: the FLEX is a week-to-week / matchup slot you can stream, so a
+  piece that ONLY improves it is worth less than filling a fixed positional need — unless it's way
+  better.
+- **Fix (extends L12's `_lineup_gaps`, enforced in data):** a position whose dedicated slots are full
+  but that only fills the open FLEX is tagged FLEX-only and HARD-DEMOTED below the dedicated-need
+  fillers in TOP PICKS — UNLESS its VONA beats the best dedicated filler by `_FLEX_MARGIN` (default 15),
+  so a genuine RB/WR value cliff still gets taken. Verified live: 2RB/1WR with a modest 3rd-RB (VONA 81)
+  vs an elite TE need (McBride 82) now recommends McBride; a stud RB (Taylor 110) is still kept #1.
+- **Teaches:** model the lineup slots, not just position VONA — dedicated starters outrank a
+  week-to-week FLEX upgrade, with a margin so studs aren't blocked. (Principles 3, 8)
+
+### L14 — Advisor under-read player ROLE; needed depth-chart slot + stale-role flag
+- **Symptom:** the model preferred Jameson Williams over DJ Moore, missing that Moore is his team's WR1
+  with an elite QB (Allen) while Williams is a WR2 behind an alpha (Amon-Ra) with a target-eating RB1
+  (Gibbs). The board gave the model tgt%/snap% but no depth-chart context.
+- **Root cause:** (a) no explicit depth-chart role on the board — the model couldn't see WR1-vs-WR2; and
+  (b) `tgt%/snap%` are LAST-season stats, so for a player who CHANGED TEAMS they describe the OLD team
+  (DJ Moore's 16% is his Chicago role, not his new Buffalo WR1 role) — but the model was told they were
+  current, so it under-rated the mover.
+- **Fix (app layer, `load_board`):** derive `team_role` = each player's rank at his position WITHIN his
+  team by 2026 projection (BUF WR1, DET WR2, DET RB1 …) from the FULL board, and surface it. Prompt now
+  reads `role` WITH vegas (WR1 on a high-vegas offense = secure volume; WR2/WR3 competes with the alpha
+  + a pass-catching RB1) and DISCOUNTS tgt%/snap% for movers (regr "new-tm" already flags them), trusting
+  role + projection. Verified live: the advisor now leads DJ Moore's case with "WR1 for Josh Allen, stale
+  stats — trust role." (Honest limit: true QB quality beyond the vegas total isn't in the data.)
+- **Teaches:** give the model the situational fact (depth-chart role) computed from data, and know which
+  columns are stale (last-season role for a mover). (Principles 3, 8)
+
+### L15 — Advisor recommended unsigned free agents (Stefon Diggs, no NFL team)
+- **Symptom:** the advisor repeatedly recommended Stefon Diggs, who has no 2026 team on the board.
+- **Root cause:** the frozen pipeline projects 4 players with `team` = blank/NaN (Diggs, Deebo Samuel,
+  Keenan Allen, Nick Vannett) — no team = no offense, no vegas total, no real role — yet they were in the
+  draftable pool.
+- **Fix (app layer):** `load_board` flags `no_team`; `build_context` drops no-team players from
+  everything the advisor sees (and the prompt says: if asked about one, call him an unsigned FA, don't
+  recommend him). Flagged the data gap to the user; did NOT touch the frozen pipeline (their call whether
+  `value_board.py` should also drop no-team players).
+- **Teaches:** a player with no team has an unreliable projection — filter it in the layer you own and
+  flag the data-quality gap. (Principles 7, 8)
+
 ---
 
 ## How to add a lesson

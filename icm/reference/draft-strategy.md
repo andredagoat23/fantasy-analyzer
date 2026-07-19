@@ -47,6 +47,17 @@ behind him, weighted by how likely you actually lose him.
    - A still-open starter whose good options will KEEP (wheel "safe", low VONA) can WAIT — grab a
      bigger VONA cliff at a draftable RB/WR now, fill the safe slot next pick for the same value. But
      don't let an open starter rot if its options are going (rising VONA / wheel "gone").
+   - **LINEUP-SLOT gates (`_lineup_gaps`, lessons L12/L13).** VONA is position-blind, so a next pick is
+     categorized by how it fits the starting lineup, and TOP PICKS is hard-demoted accordingly (enforced
+     in data — prose alone got ignored):
+     - *dedicated-open* — fills an empty dedicated slot (QB / RB<2 / WR<2 / TE<1): top priority.
+     - *FLEX-only* (L13) — dedicated slots full, only the single FLEX open (a 3rd RB / 3rd WR). FLEX is
+       week-to-week / streamable, so **fill dedicated starters first** — demoted below the dedicated
+       fillers UNLESS its VONA beats the best dedicated filler by `_FLEX_MARGIN` (a real value cliff, so
+       a stud still gets taken).
+     - *bench-saturated* (L12) — dedicated full AND the FLEX already claimed (3 RB, 3 WR, 2 TE): a
+       further one is BENCH-ONLY, demoted lowest while any FLEX-eligible starter is open (the 3-RB-0-WR
+       trap). Once the lineup's FLEX-eligible slots are set, both gates stop (normal bench depth).
 2. **VONA is the SHORTLIST, not the final answer.** `build_context` computes a ranked "TOP PICKS NOW"
    list and **stars options within a few VONA of the top** (a genuine tie). Among the starred, pick the
    BEST PLAYER by age, risk/reward, offense (vegas) and role (tgt%/snap%) — NOT the tiny VONA gap (the
@@ -66,13 +77,41 @@ probability, a position where a comparable player lasts several rounds yields a 
 guys now, grab that position later); a real cliff yields a HIGH VONA. No separate "when does the next
 guy go" rule is needed — VONA is the point-maximizing signal for it.
 
-## Why QB/TE fall on their own now (no hardcoded discount)
+## Why QB/TE fall on their own — VONA, augmented by the PUNT READ at turns
 QB and TE are deep, so comparable production usually still lasts to your next pick → their VONA is
 low → you naturally wait, with no "don't draft QB before round 5" rule. If a QB/TE ever shows a
 genuinely top VONA at a position you NEED (a real cliff), that's a real signal — take it. This
 replaced the old hardcoded QB/TE-discount hack (lesson L3), which the user asked to remove in favor of
-trusting VONA. Watch: if the board's VOLS over-rates elite rushing QBs, their VONA can run hot — if
-that resurfaces, it's a board/VOLS calibration issue (frozen pipeline), flag it, don't hack the prompt.
+trusting VONA.
+
+**The gap VONA alone leaves (lesson L11).** VONA measures value lost by waiting ONE pick (your next
+pick). At a snake TURN (back-to-back picks) that lookahead is ~free for everyone, so a scarce RB/WR
+who "survives one pick" gets under-credited while an elite QB's within-position cliff wins — which is
+how a July-2026 mock took an elite QB (VOLS 80, a legit VORP over QB12) in round 2 over a scarce RB
+(VOLS 101), even though a startable QB lasts to ~R11. The board's VOLS is NOT wrong (deepening the QB
+baseline BACKFIRES — it raises elite-QB VOLS); the miss is a horizon artifact in the cross-position
+decision.
+
+**The punt read (the fix, computed in Python — L8). Fully stats-based, no tuned thresholds.** For every
+position compute the same number — the risk-adjusted value you'd LOSE by deferring it to your fill
+window:
+
+    punt_loss[pos] = elite VOLS now − (best VOLS still ~50%+ available ~5 rounds out) × (1 − bust%)
+
+The `× (1 − bust%)` is the VARIANCE factor: a boom/bust late streamer (an old TE dart) is worth less
+than its projection, so deferring that position costs MORE. An unfilled 1-start slot (QB/TE) is
+**punt-able iff its punt_loss < the best RB/WR's punt_loss** — i.e. deferring the 1-start slot loses
+LESS than deferring the scarce skill value. Pure comparison: no keep_frac, no 0.75, no magic numbers.
+Punt-able slots are HARD-DEMOTED below the RB/WR in TOP PICKS (enforced in data) and tagged; the PUNT
+READ line shows each position's punt_loss + streamer + bust%. It self-corrects: once the elite QB is
+the scarcest value or depth dries up, its punt_loss exceeds the RB/WR bar → it's a CLIFF → grabbed
+(an open QB/TE never rots). Knob: `_PUNT_LATE_ROUNDS` (5).
+
+**Consequence to know:** because this is raw-value-optimal, at a turn it grabs the highest-punt_loss
+player first (often the scarce RB, then the elite QB by VONA) — so it will sometimes take an elite QB
+over an elite TE, unlike the earlier `keep_frac` version that always grabbed TE. The variance factor
+keeps TE stickier than QB (its streamers bust more) but does not override a genuine QB VONA edge.
+Verified: mock pick 24 takes Chase Brown (scarce RB) and passes the round-2 QB; the L11 reach is gone.
 
 ## Wheel-back — still Python-computed, still read never re-derived
 The `wheel` column (gone / risky / safe) is the per-player timing read; VONA is the position-level
@@ -80,7 +119,13 @@ decision. Both use the same `horizon`. The model reads them; it never does the A
 
 ## Data the advisor is given
 VONA, VOLS, ADP, `wheel`, market, risk tier, floor/ceiling, P(start)%/bust%, xPPG/regression, team
-vegas total, tgt%/snap%, age, rookie pick. VONA drives; the rest breaks close calls. Tiers are GONE.
+vegas total, `role` (depth-chart slot on his CURRENT team, e.g. BUF WR1 / DET WR2 — derived in
+`load_board`, L14), tgt%/snap%, age, rookie pick. VONA drives; the rest breaks close calls. Tiers are
+GONE. **Role reads:** WR1/RB1 on a high-vegas offense = secure volume; WR2/WR3 competes with the alpha
++ a pass-catching RB1. **Stale-role caveat:** tgt%/snap% are last season's, so for a mover (regr
+"new-tm") they're his OLD team — discount them, trust role + projection. **No-team players** (unsigned
+FAs — Diggs, Deebo, etc.) are dropped from everything the advisor sees (L15); the frozen pipeline still
+projects them (data gap flagged, not silently fixed).
 
 ## Modes / models
 Pick button = terse decisive one-pick answer; chat = discuss. Both on Sonnet (`claude-sonnet-4-6`);

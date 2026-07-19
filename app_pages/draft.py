@@ -76,6 +76,17 @@ RISK_BG = {"Safe": "rgba(46,160,67,.20)", "Boom/Bust": "rgba(210,153,34,.20)",
 def load_board(mtime):   # mtime arg busts the cache when the CSV is regenerated
     board = pd.read_csv("value_board.csv", dtype={"player_id": str})
     board["position"] = board["pos_label"].str.replace(r"\d+$", "", regex=True)
+    # DEPTH-CHART ROLE (derived, app-layer): each player's rank at his position WITHIN his own team by
+    # projected points — so the advisor sees "BUF WR1" vs "DET WR2 (behind the alpha)". Computed on the
+    # FULL board (incl. drafted teammates) so the role is the real one, not "best remaining". Reflects
+    # the player's CURRENT team (projections are 2026), unlike tgt%/snap% which are last year's.
+    board["team_role"] = ""
+    has_team = board["team"].notna() & ~board["team"].astype(str).str.upper().isin(["FA", "NAN", ""])
+    for (_, pos), grp in board[has_team].groupby(["team", "position"], sort=False):
+        rank = grp["total_points"].rank(ascending=False, method="first").astype(int)
+        board.loc[grp.index, "team_role"] = pos + rank.astype(str)
+    # NO-TEAM (unsigned / FA): no team => no offense, no vegas total, unreliable role -> not draftable.
+    board["no_team"] = ~has_team
     return board
 
 
