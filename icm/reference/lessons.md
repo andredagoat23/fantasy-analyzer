@@ -248,6 +248,21 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 - **Teaches:** roster construction includes balance even on the bench; and NEVER let the model emit a
   fact (team/role) from its training when live data is authoritative — rosters change yearly. (Principles 2, 3, 8)
 
+### L19 — Deploy env ≠ local: an unpinned dep + a cloud Python bump crashed the live board
+- **Symptom:** the app worked perfectly locally but crashed on Streamlit Cloud on boot —
+  `AttributeError` at `advisor.add_vona` → `_survival_prob`, taking down the whole board.
+- **Root cause:** Streamlit Cloud had moved to **Python 3.14** with an **unpinned numpy**, where
+  `np.exp(a_pandas_Series)` returns a bare ndarray (older numpy returned a Series); ndarray has no
+  `.where`, so the logistic blew up. Pure environment drift — the code was unchanged there.
+- **Fix:** (1) make `_survival_prob` version-proof — compute on numpy explicitly, re-wrap in a Series
+  with the original index (byte-identical VONA). (2) PIN `numpy==2.4.6` in requirements.txt (verified it
+  ships a cp314 manylinux wheel so the cloud build stays binary, no source build).
+- **Process miss:** I verified only at the code/data level and pushed without booting the full app —
+  exactly the crash a UI smoke-test catches. For any deploy, boot the real runtime (or at least run the
+  entry path end-to-end), and PIN runtime deps so a silent cloud upgrade can't change behavior.
+- **Teaches:** "works on my machine" is not verification for a deploy — the runtime environment is part
+  of the system; pin it, and exercise the actual boot path. (Principles 1, 9)
+
 ---
 
 ## How to add a lesson
