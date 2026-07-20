@@ -6,30 +6,55 @@ from utils import normalize_name, startable_counts
 np.random.seed(0)
 
 # ---- tunable knobs ----
+# Wave-1 recalibration (Jul 2026): every constant below was fit to 2019-2025 real outcomes
+# vs preseason market expectation and BACKTESTED to 60.3% 20/80-band coverage (target 60%)
+# and 15.0% predicted vs 15.3% realized boom rate. Evidence + scripts: icm/work/mc_research/.
 N_SIMS = 20000
-ROLE_RISK = 0.20          # season role/usage uncertainty (veterans)
-ROOKIE_ROLE_RISK = 0.35   # wider for players with no NFL history (honest uncertainty)
 INJURY_K = 1.0
 GAMES = 17
 BOOM = {"QB": 25, "RB": 20, "WR": 20, "TE": 15, "K": 13}
 BUST = {"QB": 12, "RB": 6,  "WR": 6,  "TE": 4,  "K": 4}
-# position-specific durability baseline (RBs get hurt more as a class)
-AVAIL_PRIOR = {"RB": 0.86, "WR": 0.92, "TE": 0.91, "QB": 0.94, "K": 0.97}
-AVAIL_K = 2.0
-AGE_CLIFF = {"RB": 26, "WR": 29, "TE": 29, "QB": 35, "K": 34}
-AGE_SLOPE = {"RB": 0.025, "WR": 0.015, "TE": 0.015, "QB": 0.020, "K": 0.010}
+# per-game lognormal sigma by preseason positional rank: variance GROWS with rank depth
+# (real 20/80 bands: ~1.6x wide for elites, 2.5-3.5x for rank 25+). Interpolated per player.
+SIGMA_ANCHORS = {
+    "QB": [(3, 0.235), (9, 0.238), (18, 0.238), (32, 0.294), (50, 0.45)],  # deep-QB clipped (backups)
+    "RB": [(3, 0.334), (9, 0.334), (18, 0.334), (32, 0.398), (50, 0.491)],
+    "WR": [(3, 0.240), (9, 0.240), (18, 0.246), (32, 0.287), (50, 0.351)],
+    "TE": [(3, 0.305), (9, 0.346), (18, 0.364), (32, 0.497), (50, 0.504)],
+    "K":  [(3, 0.350), (50, 0.350)],   # not researched - flat mid value
+}
+ROOKIE_SIGMA_MULT = {"QB": 1.5, "RB": 1.4, "WR": 1.0, "TE": 1.1, "K": 1.0}  # WR rookies: NOT wider
+# durability: real starters play ~.82-.85 at EVERY position (old QB .94 was fiction)
+AVAIL_PRIOR = {"RB": 0.817, "WR": 0.841, "TE": 0.828, "QB": 0.845, "K": 0.97}
+AVAIL_K = 4.0             # shrink history harder: "injury-prone" barely recurs among starters
+# season-tanking injury odds by position (empirical P(miss 9+)); mild bump for low availability
+P_MAJOR_POS = {"QB": 0.103, "RB": 0.108, "WR": 0.089, "TE": 0.071, "K": 0.05}
+# age cliffs: RB holds until ~29 then falls fast; QB shows NO age availability penalty
+AGE_CLIFF = {"RB": 29, "WR": 29, "TE": 29, "QB": 99, "K": 34}
+AGE_SLOPE = {"RB": 0.035, "WR": 0.025, "TE": 0.030, "QB": 0.0, "K": 0.010}
+# injuries hurt twice: players who miss time are also worse per game when active
+# (miss 4-8 -> ~10% worse, 9+ -> ~20%; corr(games, per-game) = +0.29)
+COUPLE = 0.41
+COUPLE_FLOOR = 0.55
+
+
+def sigma_for(pos, rank):
+    """Per-game sim sigma from the position's anchor table, by projection positional rank."""
+    xs, ys = zip(*SIGMA_ANCHORS[pos])
+    return float(np.interp(rank, xs, ys))
 # REPLACEMENT (startable-tier size for p_startable/p_bust) is computed flex-aware from
 # the loaded board below via startable_counts() — RB/WR split floats with projections.
 
 
 def draft_tilt(pick):
-    """Rookie mean adjustment by draft capital — premium picks beat conservative rookie projections."""
+    """Rookie mean adjustment by draft capital — refit to 2019-2025 (median mult vs market:
+    top-32 picks 1.10-1.20, 2nd rd ~1.0, 3rd rd is the dead zone at 0.78, 4th+ ~0.97)."""
     if pd.isna(pick):  return 1.00
-    if pick <= 15:     return 1.08
-    if pick <= 32:     return 1.04
+    if pick <= 15:     return 1.10
+    if pick <= 32:     return 1.08
     if pick <= 64:     return 1.00
-    if pick <= 105:    return 0.97
-    return 0.93
+    if pick <= 105:    return 0.92
+    return 0.95
 
 
 # ---- 1. weekly points (2024-25) -> volatility + boom/bust ----
@@ -85,17 +110,16 @@ df["draft_pick"] = df["draft_pick"].fillna(nn.map(name_pick))
 def durability(row):
     if pd.isna(row["_obs"]):
         return np.nan
-    prior = AVAIL_PRIOR.get(row["position"], 0.90)
+    prior = AVAIL_PRIOR.get(row["position"], 0.84)
     shrunk = (row["_obs"]*row["_ns"] + prior*AVAIL_K) / (row["_ns"] + AVAIL_K)
     pen = 0.0
     if pd.notna(row["age"]):
         pen = max(0.0, row["age"] - AGE_CLIFF.get(row["position"], 30)) * AGE_SLOPE.get(row["position"], 0.015)
-    return float(np.clip(shrunk - pen, 0.4, 1.0))
+    return float(np.clip(shrunk - pen, 0.5, 1.0))
 
 
 df["availability"] = df.apply(durability, axis=1)
 df = df.drop(columns=["_obs", "_ns"])
-median_cv = df["consistency"].median()
 
 # ---- 5. Monte Carlo: right-skewed, injury- & capital-aware ----
 NEW = ["floor", "ceiling", "p10", "p90", "P_pos1", "P_pos2", "P_pos3", "p_elite", "p_startable", "p_bust",
@@ -109,22 +133,25 @@ for pos in ["QB", "RB", "WR", "TE", "K"]:
         continue
     n = len(sub)
     proj = sub["total_points"].values
-    av = sub["availability"].fillna(AVAIL_PRIOR.get(pos, 0.90)).clip(0.4, 1.0).values
-    cv = sub["consistency"].fillna(median_cv).values
+    av = sub["availability"].fillna(AVAIL_PRIOR.get(pos, 0.84)).clip(0.5, 1.0).values
     rookie = sub["is_rookie"].values
-    role_eff = np.where(rookie, ROOKIE_ROLE_RISK, ROLE_RISK)
-    season_sigma = np.clip(np.sqrt(role_eff**2 + (cv / np.sqrt(GAMES))**2), 0.05, 0.60)
+    # sigma by projection positional rank (variance grows with depth), rookies wider (not WRs)
+    pos_rank = (-proj).argsort().argsort() + 1
+    season_sigma = np.array([sigma_for(pos, r) for r in pos_rank])
+    season_sigma = np.where(rookie, season_sigma * ROOKIE_SIGMA_MULT[pos], season_sigma)
     tilt = np.where(rookie, np.array([draft_tilt(p) for p in sub["draft_pick"].values]), 1.0)
-    # baseline season-ending injury risk -- even iron-men aren't bulletproof (~6%, more if injury-prone)
-    p_major = np.clip(0.06 + (1 - av) * 0.15, 0.06, 0.30)
-    e_games = (1 - p_major) * (GAMES * av) + p_major * 4.0     # expected games incl. the major-injury tail
-    per_game = proj / e_games                                 # rescale so E[season] stays = projection
+    # season-tanking injury: position base rate + mild bump for low-availability players
+    p_major = np.clip(P_MAJOR_POS[pos] + 0.5 * (0.84 - av), 0.05, 0.18)
 
     normal_games = np.clip(np.random.normal((GAMES*av)[:, None], (INJURY_K*(1-av)*GAMES)[:, None], (n, N_SIMS)), 0, GAMES)
     major = np.random.random((n, N_SIMS)) < p_major[:, None]  # a season-tanking injury this sim?
-    games = np.where(major, np.random.uniform(0, 8, (n, N_SIMS)), normal_games)
+    games = np.where(major, np.random.uniform(1, 8, (n, N_SIMS)), normal_games)
+    # coupling: missing time also degrades per-game output (empirical slope -0.41, floored)
+    couple = np.clip(1 - COUPLE * (1 - games / GAMES), COUPLE_FLOOR, 1.0)
     M = np.random.lognormal((-(season_sigma**2)/2)[:, None], season_sigma[:, None], (n, N_SIMS))
-    sims = games * (per_game*tilt)[:, None] * M
+    raw = games * couple * M
+    # exact re-centering: E[sims] = projection x tilt (replaces the old e_games approximation)
+    sims = raw * (proj / raw.mean(1))[:, None] * tilt[:, None]
     sims_healthy = (proj*tilt)[:, None] * M      # injury-free: full season, same season variance
 
     finish = (-sims).argsort(0).argsort(0) + 1

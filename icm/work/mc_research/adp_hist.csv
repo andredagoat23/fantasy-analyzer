@@ -1,0 +1,1034 @@
+season,name,position,team,adp,adp_stdev,nn,adp_pos_rank
+2019,Saquon Barkley,RB,NYG,1.4,0.6,saquon barkley,1.0
+2019,Alvin Kamara,RB,NO,2.5,0.9,alvin kamara,2.0
+2019,Christian McCaffrey,RB,CAR,3.2,1.2,christian mccaffrey,3.0
+2019,Ezekiel Elliott,RB,DAL,3.9,1.2,ezekiel elliott,4.0
+2019,Davante Adams,WR,GB,6.4,1.5,davante adams,1.0
+2019,DeAndre Hopkins,WR,HOU,7.0,2.8,deandre hopkins,2.0
+2019,James Conner,RB,PIT,7.1,1.9,james conner,5.0
+2019,David Johnson,RB,ARI,7.1,2.0,david johnson,6.0
+2019,LeVeon Bell,RB,NYJ,8.8,2.2,leveon bell,7.0
+2019,Julio Jones,WR,ATL,10.2,2.2,julio jones,3.0
+2019,Michael Thomas,WR,NO,10.4,2.0,michael thomas,4.0
+2019,Nick Chubb,RB,CLE,11.7,2.4,nick chubb,8.0
+2019,JuJu Smith-Schuster,WR,PIT,12.9,2.3,juju smith schuster,5.0
+2019,Tyreek Hill,WR,KC,13.9,2.6,tyreek hill,6.0
+2019,Dalvin Cook,RB,MIN,14.6,2.8,dalvin cook,9.0
+2019,Odell Beckham Jr.,WR,CLE,15.1,2.5,odell beckham,7.0
+2019,Todd Gurley,RB,LAR,16.0,3.1,todd gurley,10.0
+2019,Travis Kelce,TE,KC,17.1,3.3,travis kelce,1.0
+2019,Joe Mixon,RB,CIN,18.4,3.3,joe mixon,11.0
+2019,Patrick Mahomes,QB,KC,19.3,5.7,patrick mahomes,1.0
+2019,Mike Evans,WR,TB,20.2,2.3,mike evans,8.0
+2019,Antonio Brown,WR,NE,21.4,2.5,antonio brown,9.0
+2019,Adam Thielen,WR,MIN,22.9,2.5,adam thielen,10.0
+2019,Leonard Fournette,RB,JAX,23.2,3.5,leonard fournette,12.0
+2019,Keenan Allen,WR,LAC,25.0,2.7,keenan allen,11.0
+2019,Damien Williams,RB,KC,25.5,4.2,damien williams,13.0
+2019,Chris Carson,RB,SEA,26.5,3.7,chris carson,14.0
+2019,George Kittle,TE,SF,28.3,4.0,george kittle,2.0
+2019,Kerryon Johnson,RB,DET,28.5,3.5,kerryon johnson,15.0
+2019,Aaron Jones Sr.,RB,GB,29.2,3.4,aaron jones,16.0
+2019,Devonta Freeman,RB,ATL,30.4,3.5,devonta freeman,17.0
+2019,Stefon Diggs,WR,MIN,30.8,3.8,stefon diggs,12.0
+2019,David Montgomery,RB,CHI,31.3,3.9,david montgomery,18.0
+2019,Josh Jacobs,RB,LV,33.1,3.6,josh jacobs,19.0
+2019,Amari Cooper,WR,DAL,33.1,4.3,amari cooper,13.0
+2019,Zach Ertz,TE,PHI,33.5,4.6,zach ertz,3.0
+2019,Julian Edelman,WR,NE,36.1,4.2,julian edelman,14.0
+2019,Sony Michel,RB,NE,37.4,3.9,sony michel,20.0
+2019,Brandin Cooks,WR,LAR,39.1,3.8,brandin cooks,15.0
+2019,Mark Ingram II,RB,BAL,39.7,3.9,mark ingram,21.0
+2019,Chris Godwin Jr.,WR,TB,39.9,3.9,chris godwin,16.0
+2019,Melvin Gordon III,RB,LAC,42.0,5.2,melvin gordon,22.0
+2019,Robert Woods,WR,LAR,42.2,3.9,robert woods,17.0
+2019,Tyler Lockett,WR,SEA,42.9,3.7,tyler lockett,18.0
+2019,Derrick Henry,RB,TEN,43.8,5.1,derrick henry,23.0
+2019,Cooper Kupp,WR,LAR,45.2,3.7,cooper kupp,19.0
+2019,Marlon Mack,RB,IND,46.5,5.7,marlon mack,24.0
+2019,Kenny Golladay,WR,DET,47.1,3.8,kenny golladay,20.0
+2019,Deshaun Watson,QB,HOU,47.1,7.1,deshaun watson,2.0
+2019,James White,RB,NE,48.1,6.2,james white,25.0
+2019,T.Y. Hilton,WR,IND,49.0,4.5,t y hilton,21.0
+2019,Tyler Boyd,WR,CIN,51.5,4.2,tyler boyd,22.0
+2019,Duke Johnson,RB,HOU,51.7,5.8,duke johnson,26.0
+2019,Josh Gordon,WR,SEA,52.1,4.8,josh gordon,23.0
+2019,Calvin Ridley,WR,ATL,53.5,5.2,calvin ridley,24.0
+2019,O.J. Howard,TE,TB,54.1,5.5,o j howard,4.0
+2019,Phillip Lindsay,RB,DEN,55.6,6.2,phillip lindsay,27.0
+2019,Aaron Rodgers,QB,GB,55.7,7.6,aaron rodgers,3.0
+2019,Evan Engram,TE,NYG,57.3,5.8,evan engram,5.0
+2019,Tevin Coleman,RB,SF,57.7,5.8,tevin coleman,28.0
+2019,Miles Sanders,RB,PHI,59.0,5.0,miles sanders,29.0
+2019,Mike Williams,WR,LAC,60.3,5.9,mike williams,25.0
+2019,Austin Ekeler,RB,LAC,61.7,6.7,austin ekeler,30.0
+2019,Dede Westbrook,WR,JAX,62.7,6.1,dede westbrook,26.0
+2019,Baker Mayfield,QB,CLE,63.2,9.3,baker mayfield,4.0
+2019,Hunter Henry,TE,LAC,63.3,5.6,hunter henry,6.0
+2019,A.J. Green,WR,CIN,63.8,6.4,a j green,27.0
+2019,Jarvis Landry,WR,CLE,64.8,6.9,jarvis landry,28.0
+2019,DJ Moore,WR,CAR,67.2,6.6,dj moore,29.0
+2019,Matt Ryan,QB,ATL,69.2,6.9,matt ryan,5.0
+2019,Derrius Guice,RB,WAS,69.8,7.4,derrius guice,31.0
+2019,Jared Cook,TE,NO,70.6,6.2,jared cook,7.0
+2019,Tarik Cohen,RB,CHI,71.0,7.6,tarik cohen,32.0
+2019,Alshon Jeffery,WR,PHI,71.9,6.9,alshon jeffery,30.0
+2019,Drew Brees,QB,NO,73.9,8.0,drew brees,6.0
+2019,Carson Wentz,QB,PHI,74.6,6.4,carson wentz,7.0
+2019,Vance McDonald,TE,PIT,75.1,6.9,vance mcdonald,8.0
+2019,Robbie Chosen,WR,NYJ,75.9,6.3,robbie chosen,31.0
+2019,Latavius Murray,RB,NO,76.4,7.9,latavius murray,33.0
+2019,Allen Robinson II,WR,CHI,76.6,7.5,allen robinson,32.0
+2019,Emmanuel Sanders,WR,SF,80.6,7.6,emmanuel sanders,33.0
+2019,Jared Goff,QB,LAR,81.5,6.7,jared goff,8.0
+2019,Will Fuller,WR,HOU,81.6,7.0,will fuller,34.0
+2019,Kenyan Drake,RB,ARI,82.9,8.0,kenyan drake,34.0
+2019,Tony Pollard,RB,DAL,83.3,8.3,tony pollard,35.0
+2019,David Njoku,TE,CLE,83.5,8.1,david njoku,9.0
+2019,Devin Singletary,RB,BUF,83.9,8.6,devin singletary,36.0
+2019,Matt Breida,RB,SF,84.8,8.1,matt breida,37.0
+2019,Darwin Thompson,RB,KC,86.0,9.3,darwin thompson,38.0
+2019,Curtis Samuel,WR,CAR,88.0,7.0,curtis samuel,35.0
+2019,Russell Wilson,QB,SEA,88.4,11.0,russell wilson,9.0
+2019,Christian Kirk,WR,ARI,89.9,7.9,christian kirk,36.0
+2019,LeSean McCoy,RB,KC,90.8,8.9,lesean mccoy,39.0
+2019,Sterling Shepard,WR,NYG,92.2,7.8,sterling shepard,37.0
+2019,Darrell Henderson Jr.,RB,LAR,93.0,9.2,darrell henderson,40.0
+2019,Cam Newton,QB,CAR,94.4,9.9,cam newton,10.0
+2019,Rashaad Penny,RB,SEA,95.3,7.8,rashaad penny,41.0
+2019,Austin Hooper,TE,ATL,95.4,13.3,austin hooper,10.0
+2019,Sammy Watkins,WR,KC,96.1,8.0,sammy watkins,38.0
+2019,Lamar Jackson,QB,BAL,97.6,10.3,lamar jackson,11.0
+2019,Geronimo Allison,WR,GB,98.7,8.2,geronimo allison,39.0
+2019,Marquez Valdes-Scantling,WR,GB,100.6,8.6,marquez valdes scantling,40.0
+2019,Kareem Hunt,RB,CLE,100.8,11.9,kareem hunt,42.0
+2019,James Washington,WR,PIT,101.3,8.3,james washington,41.0
+2019,Jordan Howard,RB,PHI,103.7,9.0,jordan howard,43.0
+2019,Jameis Winston,QB,TB,105.1,8.4,jameis winston,12.0
+2019,Marvin Jones Jr.,WR,DET,105.3,7.6,marvin jones,42.0
+2019,Larry Fitzgerald,WR,ARI,106.5,9.5,larry fitzgerald,43.0
+2019,Ben Roethlisberger,QB,PIT,106.8,9.1,ben roethlisberger,13.0
+2019,Royce Freeman,RB,DEN,108.1,8.3,royce freeman,44.0
+2019,Dante Pettis,WR,SF,109.8,9.5,dante pettis,44.0
+2019,Corey Davis,WR,TEN,110.8,8.2,corey davis,45.0
+2019,Kyler Murray,QB,ARI,110.9,8.1,kyler murray,14.0
+2019,Kalen Ballage,RB,MIA,113.5,10.7,kalen ballage,45.0
+2019,Michael Gallup,WR,DAL,113.8,8.4,michael gallup,46.0
+2019,Tom Brady,QB,NE,114.6,13.0,tom brady,15.0
+2019,Delanie Walker,TE,TEN,115.4,16.0,delanie walker,11.0
+2019,Philip Rivers,QB,LAC,116.1,9.1,philip rivers,16.0
+2019,Eric Ebron,TE,IND,117.5,18.8,eric ebron,12.0
+2019,Jaylen Samuels,RB,PIT,119.0,10.4,jaylen samuels,46.0
+2019,DeSean Jackson,WR,PHI,119.4,9.5,desean jackson,47.0
+2019,Donte Moncrief,WR,CAR,119.8,10.2,donte moncrief,48.0
+2019,Justin Jackson,RB,LAC,119.9,10.3,justin jackson,47.0
+2019,Justice Hill,RB,BAL,120.7,9.2,justice hill,48.0
+2019,Golden Tate,WR,NYG,123.3,10.1,golden tate,49.0
+2019,T.J. Hockenson,TE,DET,126.1,15.2,t j hockenson,13.0
+2019,Courtland Sutton,WR,DEN,126.2,11.8,courtland sutton,50.0
+2019,Dak Prescott,QB,DAL,127.2,10.2,dak prescott,17.0
+2019,Alexander Mattison,RB,MIN,127.3,12.1,alexander mattison,49.0
+2019,Jamison Crowder,WR,NYJ,128.8,10.0,jamison crowder,51.0
+2019,Kirk Cousins,QB,MIN,130.7,10.0,kirk cousins,18.0
+2019,Peyton Barber,RB,TB,131.3,13.8,peyton barber,50.0
+2019,Tyrell Williams,WR,LV,131.4,9.0,tyrell williams,52.0
+2019,DK Metcalf,WR,SEA,131.8,14.1,dk metcalf,53.0
+2019,Adrian Peterson,RB,WAS,133.1,12.1,adrian peterson,51.0
+2019,Anthony Miller,WR,CHI,134.4,7.5,anthony miller,54.0
+2019,John Brown,WR,BUF,136.2,8.6,john brown,55.0
+2019,Mecole Hardman Jr.,WR,KC,137.7,13.5,mecole hardman,56.0
+2019,Mitchell Trubisky,QB,CHI,139.2,11.2,mitchell trubisky,19.0
+2019,Mark Andrews,TE,BAL,142.1,19.1,mark andrews,14.0
+2019,Dion Lewis,RB,TEN,142.9,14.9,dion lewis,52.0
+2019,Josh Allen,QB,BUF,145.8,12.3,josh allen,20.0
+2019,Keke Coutee,WR,HOU,146.2,13.3,keke coutee,57.0
+2019,Jimmy Garoppolo,QB,SF,147.5,17.1,jimmy garoppolo,21.0
+2019,Greg Olsen,TE,CAR,148.9,19.4,greg olsen,15.0
+2019,Damien Harris,RB,NE,151.4,13.7,damien harris,53.0
+2019,Deebo Samuel Sr.,WR,SF,151.8,11.2,deebo samuel,58.0
+2019,Carlos Hyde,RB,HOU,151.9,17.8,carlos hyde,54.0
+2019,Frank Gore,RB,BUF,152.3,27.6,frank gore,55.0
+2019,Trey Burton,TE,CHI,152.4,24.4,trey burton,16.0
+2019,N'Keal Harry,WR,NE,152.8,13.8,n keal harry,59.0
+2019,Ito Smith,RB,ATL,154.2,17.5,ito smith,56.0
+2019,Kyle Rudolph,TE,MIN,154.9,24.7,kyle rudolph,17.0
+2019,Darren Waller,TE,LV,155.8,15.0,darren waller,18.0
+2019,Ty Montgomery II,RB,NYJ,157.1,19.1,ty montgomery,57.0
+2019,Derek Carr,QB,LV,157.4,14.5,derek carr,22.0
+2019,Malcolm Brown,RB,LAR,157.6,16.7,malcolm brown,58.0
+2019,Dare Ogunbowale,RB,TB,157.9,17.9,dare ogunbowale,59.0
+2019,Jordan Reed,TE,WAS,158.0,18.0,jordan reed,19.0
+2019,Ronald Jones,RB,TB,158.1,17.1,ronald jones,60.0
+2019,Nyheim Hines,RB,IND,159.2,18.7,nyheim hines,61.0
+2019,Cole Beasley,WR,BUF,159.6,14.8,cole beasley,60.0
+2019,Mohamed Sanu,WR,NE,160.7,13.9,mohamed sanu,61.0
+2019,Matthew Stafford,QB,DET,160.8,17.9,matthew stafford,23.0
+2019,Demaryius Thomas,WR,NYJ,161.4,15.9,demaryius thomas,62.0
+2019,Kenny Stills,WR,HOU,161.5,17.7,kenny stills,63.0
+2019,Tre'Quan Smith,WR,NO,161.6,16.2,tre quan smith,64.0
+2019,Marquise Goodwin,WR,SF,163.0,13.8,marquise goodwin,65.0
+2019,Sam Darnold,QB,NYJ,164.2,12.8,sam darnold,24.0
+2019,Adam Humphries,WR,TEN,166.9,10.3,adam humphries,66.0
+2020,Christian McCaffrey,RB,CAR,1.2,0.5,christian mccaffrey,1.0
+2020,Saquon Barkley,RB,NYG,2.5,0.7,saquon barkley,2.0
+2020,Ezekiel Elliott,RB,DAL,3.4,1.6,ezekiel elliott,3.0
+2020,Alvin Kamara,RB,NO,4.9,1.3,alvin kamara,4.0
+2020,Michael Thomas,WR,NO,5.6,1.6,michael thomas,1.0
+2020,Clyde Edwards-Helaire,RB,KC,6.2,1.7,clyde edwards helaire,5.0
+2020,Dalvin Cook,RB,MIN,6.2,1.5,dalvin cook,6.0
+2020,Derrick Henry,RB,TEN,7.4,1.7,derrick henry,7.0
+2020,Josh Jacobs,RB,LV,9.1,1.7,josh jacobs,8.0
+2020,Davante Adams,WR,GB,10.4,1.9,davante adams,2.0
+2020,Austin Ekeler,RB,LAC,11.5,2.1,austin ekeler,9.0
+2020,Miles Sanders,RB,PHI,12.0,2.3,miles sanders,10.0
+2020,Joe Mixon,RB,CIN,13.1,2.5,joe mixon,11.0
+2020,Julio Jones,WR,ATL,14.4,2.8,julio jones,3.0
+2020,Kenyan Drake,RB,ARI,14.8,2.7,kenyan drake,12.0
+2020,Tyreek Hill,WR,KC,15.8,3.1,tyreek hill,4.0
+2020,Nick Chubb,RB,CLE,16.3,3.1,nick chubb,13.0
+2020,Aaron Jones Sr.,RB,GB,17.5,2.9,aaron jones,14.0
+2020,DeAndre Hopkins,WR,ARI,18.5,3.4,deandre hopkins,5.0
+2020,Patrick Mahomes,QB,KC,18.7,5.4,patrick mahomes,1.0
+2020,Travis Kelce,TE,KC,19.9,3.9,travis kelce,1.0
+2020,Chris Godwin Jr.,WR,TB,21.5,3.0,chris godwin,6.0
+2020,James Conner,RB,PIT,22.4,3.4,james conner,15.0
+2020,Lamar Jackson,QB,BAL,22.7,5.6,lamar jackson,2.0
+2020,George Kittle,TE,SF,24.4,3.9,george kittle,2.0
+2020,Kenny Golladay,WR,DET,25.8,3.1,kenny golladay,7.0
+2020,Chris Carson,RB,SEA,26.4,4.0,chris carson,16.0
+2020,Mike Evans,WR,TB,27.9,3.2,mike evans,8.0
+2020,David Johnson,RB,HOU,28.5,3.9,david johnson,17.0
+2020,Todd Gurley,RB,ATL,29.1,5.0,todd gurley,18.0
+2020,Adam Thielen,WR,MIN,30.3,3.6,adam thielen,9.0
+2020,Allen Robinson II,WR,CHI,31.8,3.7,allen robinson,10.0
+2020,Jonathan Taylor,RB,IND,32.6,4.6,jonathan taylor,19.0
+2020,DJ Moore,WR,CAR,32.6,3.8,dj moore,11.0
+2020,LeVeon Bell,RB,KC,34.5,5.0,leveon bell,20.0
+2020,Leonard Fournette,RB,TB,35.4,4.9,leonard fournette,21.0
+2020,Odell Beckham Jr.,WR,CLE,35.7,4.6,odell beckham,12.0
+2020,JuJu Smith-Schuster,WR,PIT,36.9,4.0,juju smith schuster,13.0
+2020,Amari Cooper,WR,DAL,38.1,4.4,amari cooper,14.0
+2020,Melvin Gordon III,RB,DEN,39.4,4.9,melvin gordon,22.0
+2020,Cooper Kupp,WR,LAR,40.3,4.3,cooper kupp,15.0
+2020,Calvin Ridley,WR,ATL,40.9,4.2,calvin ridley,16.0
+2020,Mark Andrews,TE,BAL,42.4,6.3,mark andrews,3.0
+2020,Robert Woods,WR,LAR,42.4,3.6,robert woods,17.0
+2020,Mark Ingram II,RB,BAL,42.5,5.1,mark ingram,23.0
+2020,A.J. Brown,WR,TEN,44.4,4.0,a j brown,18.0
+2020,DK Metcalf,WR,SEA,45.3,4.4,dk metcalf,19.0
+2020,Devin Singletary,RB,BUF,46.4,6.4,devin singletary,24.0
+2020,DJ Chark,WR,JAX,47.5,4.7,dj chark,20.0
+2020,Raheem Mostert,RB,SF,49.4,6.1,raheem mostert,25.0
+2020,Tyler Lockett,WR,SEA,49.9,4.3,tyler lockett,21.0
+2020,Zach Ertz,TE,PHI,50.6,6.9,zach ertz,4.0
+2020,Terry McLaurin,WR,WAS,50.8,3.9,terry mclaurin,22.0
+2020,Cam Akers,RB,LAR,52.8,5.7,cam akers,26.0
+2020,Kareem Hunt,RB,CLE,53.1,6.0,kareem hunt,27.0
+2020,Keenan Allen,WR,LAC,53.5,4.7,keenan allen,23.0
+2020,Dak Prescott,QB,DAL,54.7,7.6,dak prescott,3.0
+2020,Ronald Jones,RB,TB,56.5,5.5,ronald jones,28.0
+2020,T.Y. Hilton,WR,IND,57.5,5.0,t y hilton,24.0
+2020,Courtland Sutton,WR,DEN,58.1,5.5,courtland sutton,25.0
+2020,David Montgomery,RB,CHI,59.7,6.4,david montgomery,29.0
+2020,Hollywood Brown,WR,BAL,60.0,5.5,marquise brown,26.0
+2020,D'Andre Swift,RB,DET,61.4,5.5,d andre swift,30.0
+2020,Darren Waller,TE,LV,61.6,6.4,darren waller,5.0
+2020,Russell Wilson,QB,SEA,62.0,8.1,russell wilson,4.0
+2020,Kyler Murray,QB,ARI,62.6,8.1,kyler murray,5.0
+2020,Stefon Diggs,WR,BUF,65.0,5.8,stefon diggs,27.0
+2020,DeVante Parker,WR,MIA,66.7,5.8,devante parker,28.0
+2020,J.K. Dobbins,RB,BAL,67.0,5.2,j k dobbins,31.0
+2020,Deshaun Watson,QB,HOU,69.3,6.4,deshaun watson,6.0
+2020,A.J. Green,WR,CIN,69.8,6.4,a j green,29.0
+2020,Rob Gronkowski,TE,TB,70.4,9.3,rob gronkowski,6.0
+2020,Will Fuller,WR,HOU,70.5,6.1,will fuller,30.0
+2020,Michael Gallup,WR,DAL,72.2,6.7,michael gallup,31.0
+2020,James White,RB,NE,72.7,6.8,james white,32.0
+2020,Marlon Mack,RB,IND,74.6,8.3,marlon mack,33.0
+2020,Evan Engram,TE,NYG,74.8,6.8,evan engram,7.0
+2020,Julian Edelman,WR,NE,77.2,6.7,julian edelman,32.0
+2020,Tyler Boyd,WR,CIN,78.5,7.0,tyler boyd,33.0
+2020,Antonio Gibson,RB,WAS,79.0,6.5,antonio gibson,34.0
+2020,Hayden Hurst,TE,ATL,79.4,6.9,hayden hurst,8.0
+2020,Jordan Howard,RB,PHI,80.0,7.2,jordan howard,35.0
+2020,Drew Brees,QB,NO,80.1,9.2,drew brees,7.0
+2020,Brandin Cooks,WR,HOU,81.5,7.1,brandin cooks,34.0
+2020,Zack Moss,RB,BUF,83.7,7.4,zack moss,36.0
+2020,Phillip Lindsay,RB,DEN,83.8,7.6,phillip lindsay,37.0
+2020,Tarik Cohen,RB,CHI,84.6,6.8,tarik cohen,38.0
+2020,Matt Ryan,QB,ATL,84.8,8.7,matt ryan,8.0
+2020,Jarvis Landry,WR,CLE,85.5,7.6,jarvis landry,35.0
+2020,Tom Brady,QB,TB,88.0,9.5,tom brady,9.0
+2020,Deebo Samuel Sr.,WR,SF,89.1,8.3,deebo samuel,36.0
+2020,Diontae Johnson,WR,PIT,89.4,7.2,diontae johnson,37.0
+2020,Tyler Higbee,TE,LAR,89.7,9.7,tyler higbee,9.0
+2020,Matt Breida,RB,MIA,90.5,7.5,matt breida,39.0
+2020,CeeDee Lamb,WR,DAL,93.2,8.0,ceedee lamb,38.0
+2020,Aaron Rodgers,QB,GB,94.3,9.1,aaron rodgers,10.0
+2020,Latavius Murray,RB,NO,94.9,7.2,latavius murray,40.0
+2020,Marvin Jones Jr.,WR,DET,95.1,7.7,marvin jones,39.0
+2020,Tevin Coleman,RB,SF,96.4,7.2,tevin coleman,41.0
+2020,Alexander Mattison,RB,MIN,96.7,7.4,alexander mattison,42.0
+2020,Kerryon Johnson,RB,DET,97.2,7.7,kerryon johnson,43.0
+2020,Hunter Henry,TE,LAC,98.0,10.9,hunter henry,10.0
+2020,Emmanuel Sanders,WR,NO,100.0,7.8,emmanuel sanders,40.0
+2020,Chase Edmonds,RB,ARI,101.1,7.4,chase edmonds,44.0
+2020,Damien Harris,RB,NE,101.1,6.7,damien harris,45.0
+2020,Josh Allen,QB,BUF,101.5,10.0,josh allen,11.0
+2020,Jamison Crowder,WR,NYJ,102.6,7.2,jamison crowder,41.0
+2020,Henry Ruggs III,WR,LV,104.5,7.6,henry ruggs,42.0
+2020,Mecole Hardman Jr.,WR,KC,106.1,9.1,mecole hardman,43.0
+2020,Sony Michel,RB,NE,107.4,9.4,sony michel,46.0
+2020,Carson Wentz,QB,PHI,107.9,9.4,carson wentz,12.0
+2020,Jalen Reagor,WR,PHI,109.5,6.4,jalen reagor,44.0
+2020,Matthew Stafford,QB,DET,111.3,8.1,matthew stafford,13.0
+2020,AJ Dillon,RB,GB,111.9,8.0,aj dillon,47.0
+2020,Jerry Jeudy,WR,DEN,112.3,7.7,jerry jeudy,45.0
+2020,Darius Slayton,WR,NYG,113.2,7.5,darius slayton,46.0
+2020,Darrell Henderson Jr.,RB,LAR,114.1,7.3,darrell henderson,48.0
+2020,Jared Cook,TE,NO,115.2,15.3,jared cook,11.0
+2020,Christian Kirk,WR,ARI,116.9,7.6,christian kirk,47.0
+2020,Adrian Peterson,RB,DET,118.4,8.7,adrian peterson,49.0
+2020,Sterling Shepard,WR,NYG,118.9,9.2,sterling shepard,48.0
+2020,Tony Pollard,RB,DAL,119.4,8.7,tony pollard,50.0
+2020,Noah Fant,TE,DEN,119.6,13.7,noah fant,12.0
+2020,Boston Scott,RB,PHI,120.1,9.1,boston scott,51.0
+2020,Cam Newton,QB,NE,120.7,8.9,cam newton,14.0
+2020,Justin Jefferson,WR,MIN,121.5,10.3,justin jefferson,49.0
+2020,Daniel Jones,QB,NYG,125.4,9.3,daniel jones,15.0
+2020,Bryce Love,RB,WAS,126.8,8.9,bryce love,52.0
+2020,Anthony Miller,WR,CHI,126.9,8.4,anthony miller,50.0
+2020,DeSean Jackson,WR,PHI,127.1,9.3,desean jackson,51.0
+2020,Ben Roethlisberger,QB,PIT,129.5,10.6,ben roethlisberger,16.0
+2020,Preston Williams,WR,MIA,130.9,9.1,preston williams,52.0
+2020,Duke Johnson,RB,HOU,131.0,11.0,duke johnson,53.0
+2020,Allen Lazard,WR,GB,131.0,8.7,allen lazard,53.0
+2020,Ke'Shawn Vaughn,RB,TB,134.4,10.6,ke shawn vaughn,54.0
+2020,Ryquell Armstead,RB,JAX,135.3,26.8,ryquell armstead,55.0
+2020,Joe Burrow,QB,CIN,135.7,9.2,joe burrow,17.0
+2020,Brandon Aiyuk,WR,SF,135.9,9.4,brandon aiyuk,54.0
+2020,Austin Hooper,TE,CLE,136.7,18.8,austin hooper,13.0
+2020,Justin Jackson,RB,LAC,137.6,12.9,justin jackson,56.0
+2020,Nyheim Hines,RB,IND,139.9,14.6,nyheim hines,57.0
+2020,Sammy Watkins,WR,KC,140.5,11.6,sammy watkins,55.0
+2020,T.J. Hockenson,TE,DET,143.1,17.4,t j hockenson,14.0
+2020,Baker Mayfield,QB,CLE,144.7,11.6,baker mayfield,18.0
+2020,Golden Tate,WR,NYG,145.3,14.2,golden tate,56.0
+2020,Mike Gesicki,TE,MIA,146.5,19.5,mike gesicki,15.0
+2020,Jared Goff,QB,LAR,147.2,14.1,jared goff,19.0
+2020,John Brown,WR,BUF,149.1,14.0,john brown,57.0
+2020,Chris Thompson,RB,JAX,149.6,21.4,chris thompson,58.0
+2020,Michael Pittman Jr.,WR,IND,151.7,12.7,michael pittman,58.0
+2020,Darrel Williams,RB,KC,152.3,19.6,darrel williams,59.0
+2020,Jerick McKinnon,RB,SF,152.3,15.4,jerick mckinnon,60.0
+2020,Benny Snell Jr.,RB,PIT,152.9,19.0,benny snell,61.0
+2020,Breshad Perriman,WR,NYJ,153.0,13.9,breshad perriman,59.0
+2020,Jonnu Smith,TE,TEN,153.6,16.5,jonnu smith,16.0
+2020,Jack Doyle,TE,IND,153.7,19.2,jack doyle,17.0
+2020,Chris Herndon,TE,NYJ,153.9,17.6,chris herndon,18.0
+2020,Blake Jarwin,TE,DAL,154.4,19.5,blake jarwin,19.0
+2020,Joshua Kelley,RB,LAC,154.5,16.1,joshua kelley,62.0
+2020,LeSean McCoy,RB,TB,156.0,18.3,lesean mccoy,63.0
+2020,Ryan Tannehill,QB,TEN,156.4,13.9,ryan tannehill,20.0
+2020,Carlos Hyde,RB,SEA,156.5,16.2,carlos hyde,64.0
+2020,Jimmy Garoppolo,QB,SF,157.2,17.0,jimmy garoppolo,21.0
+2020,Parris Campbell,WR,IND,158.4,15.6,parris campbell,60.0
+2020,N'Keal Harry,WR,NE,159.0,14.1,n keal harry,61.0
+2020,Gardner Minshew II,QB,JAX,159.2,15.0,gardner minshew,22.0
+2020,Philip Rivers,QB,IND,159.6,16.0,philip rivers,23.0
+2020,DeAndre Washington,RB,MIA,161.4,16.1,deandre washington,65.0
+2020,Mike Williams,WR,LAC,161.9,14.9,mike williams,62.0
+2020,Drew Lock,QB,DEN,162.4,15.4,drew lock,24.0
+2020,Larry Fitzgerald,WR,ARI,162.8,15.1,larry fitzgerald,63.0
+2020,Curtis Samuel,WR,CAR,163.9,11.5,curtis samuel,64.0
+2020,Robbie Chosen,WR,CAR,163.9,17.8,robbie chosen,65.0
+2020,Bryan Edwards,WR,LV,164.2,14.0,bryan edwards,66.0
+2021,Christian McCaffrey,RB,CAR,1.2,0.5,christian mccaffrey,1.0
+2021,Dalvin Cook,RB,MIN,2.5,0.7,dalvin cook,2.0
+2021,Alvin Kamara,RB,NO,3.8,1.0,alvin kamara,3.0
+2021,Derrick Henry,RB,TEN,4.0,1.3,derrick henry,4.0
+2021,Ezekiel Elliott,RB,DAL,5.3,1.1,ezekiel elliott,5.0
+2021,Davante Adams,WR,GB,6.4,1.6,davante adams,1.0
+2021,Aaron Jones Sr.,RB,GB,7.5,1.7,aaron jones,6.0
+2021,Travis Kelce,TE,KC,8.2,2.1,travis kelce,1.0
+2021,Austin Ekeler,RB,LAC,8.5,2.0,austin ekeler,7.0
+2021,Nick Chubb,RB,CLE,9.9,2.2,nick chubb,8.0
+2021,Tyreek Hill,WR,KC,10.6,2.2,tyreek hill,2.0
+2021,Saquon Barkley,RB,NYG,12.0,2.8,saquon barkley,9.0
+2021,Najee Harris,RB,PIT,12.9,2.5,najee harris,10.0
+2021,Stefon Diggs,WR,BUF,13.5,2.4,stefon diggs,3.0
+2021,Jonathan Taylor,RB,IND,13.8,2.6,jonathan taylor,11.0
+2021,Antonio Gibson,RB,WAS,15.6,2.3,antonio gibson,12.0
+2021,DeAndre Hopkins,WR,ARI,17.0,2.3,deandre hopkins,4.0
+2021,Calvin Ridley,WR,ATL,18.0,2.1,calvin ridley,5.0
+2021,Joe Mixon,RB,CIN,19.2,2.6,joe mixon,13.0
+2021,DK Metcalf,WR,SEA,19.7,2.3,dk metcalf,6.0
+2021,Clyde Edwards-Helaire,RB,KC,20.4,2.3,clyde edwards helaire,14.0
+2021,Darren Waller,TE,LV,21.5,3.3,darren waller,2.0
+2021,Justin Jefferson,WR,MIN,22.4,1.9,justin jefferson,7.0
+2021,Patrick Mahomes,QB,KC,22.9,6.2,patrick mahomes,1.0
+2021,A.J. Brown,WR,TEN,24.8,2.4,a j brown,8.0
+2021,David Montgomery,RB,CHI,25.9,3.4,david montgomery,15.0
+2021,Keenan Allen,WR,LAC,25.9,2.6,keenan allen,9.0
+2021,Chris Carson,RB,SEA,28.0,3.2,chris carson,16.0
+2021,George Kittle,TE,SF,28.5,3.6,george kittle,3.0
+2021,James Robinson,RB,JAX,29.1,3.3,james robinson,17.0
+2021,CeeDee Lamb,WR,DAL,29.6,2.8,ceedee lamb,10.0
+2021,Terry McLaurin,WR,WAS,30.3,2.8,terry mclaurin,11.0
+2021,Allen Robinson II,WR,CHI,32.7,3.1,allen robinson,12.0
+2021,D'Andre Swift,RB,DET,34.0,4.1,d andre swift,18.0
+2021,Josh Allen,QB,BUF,34.4,4.6,josh allen,2.0
+2021,Robert Woods,WR,LAR,35.1,3.1,robert woods,13.0
+2021,Josh Jacobs,RB,LV,35.4,4.1,josh jacobs,19.0
+2021,Mike Evans,WR,TB,37.8,3.3,mike evans,14.0
+2021,Miles Sanders,RB,PHI,38.7,4.4,miles sanders,20.0
+2021,Amari Cooper,WR,DAL,40.0,3.5,amari cooper,15.0
+2021,Kyle Pitts Sr.,TE,ATL,40.3,5.3,kyle pitts,4.0
+2021,Kyler Murray,QB,ARI,41.3,4.3,kyler murray,3.0
+2021,Cooper Kupp,WR,LAR,41.3,3.4,cooper kupp,16.0
+2021,Mike Davis,RB,ATL,43.1,5.2,mike davis,21.0
+2021,Darrell Henderson Jr.,RB,LAR,43.8,4.9,darrell henderson,22.0
+2021,Diontae Johnson,WR,PIT,44.9,4.3,diontae johnson,17.0
+2021,Myles Gaskin,RB,MIA,45.7,4.8,myles gaskin,23.0
+2021,Julio Jones,WR,TEN,46.0,4.6,julio jones,18.0
+2021,Chris Godwin Jr.,WR,TB,47.2,5.0,chris godwin,19.0
+2021,Tyler Lockett,WR,SEA,48.4,5.4,tyler lockett,20.0
+2021,Lamar Jackson,QB,BAL,50.9,6.7,lamar jackson,4.0
+2021,Adam Thielen,WR,MIN,52.3,4.9,adam thielen,21.0
+2021,Javonte Williams,RB,DEN,52.7,6.5,javonte williams,24.0
+2021,Mark Andrews,TE,BAL,52.8,5.9,mark andrews,5.0
+2021,Kareem Hunt,RB,CLE,53.2,5.8,kareem hunt,25.0
+2021,Brandon Aiyuk,WR,SF,53.9,4.5,brandon aiyuk,22.0
+2021,T.J. Hockenson,TE,DET,55.4,4.8,t j hockenson,6.0
+2021,Damien Harris,RB,NE,55.5,6.1,damien harris,26.0
+2021,Gus Edwards,RB,BAL,56.6,8.7,gus edwards,27.0
+2021,DJ Moore,WR,CAR,57.0,4.7,dj moore,23.0
+2021,Aaron Rodgers,QB,GB,59.0,6.6,aaron rodgers,5.0
+2021,Chase Edmonds,RB,ARI,60.4,6.2,chase edmonds,28.0
+2021,Chase Claypool,WR,PIT,61.1,4.8,chase claypool,24.0
+2021,Tee Higgins,WR,CIN,61.3,6.6,tee higgins,25.0
+2021,Raheem Mostert,RB,SF,63.0,7.9,raheem mostert,29.0
+2021,Jerry Jeudy,WR,DEN,64.1,5.2,jerry jeudy,26.0
+2021,Dak Prescott,QB,DAL,66.7,8.6,dak prescott,6.0
+2021,Trey Sermon,RB,SF,67.7,5.9,trey sermon,30.0
+2021,Odell Beckham Jr.,WR,LAR,69.0,5.6,odell beckham,27.0
+2021,Justin Herbert,QB,LAC,69.3,7.4,justin herbert,7.0
+2021,Russell Wilson,QB,SEA,69.4,7.0,russell wilson,8.0
+2021,Michael Thomas,WR,NO,69.5,5.9,michael thomas,28.0
+2021,Logan Thomas,TE,WAS,72.2,6.8,logan thomas,7.0
+2021,Antonio Brown,WR,TB,72.7,6.3,antonio brown,29.0
+2021,Robbie Chosen,WR,CAR,75.0,5.8,robbie chosen,30.0
+2021,Melvin Gordon III,RB,DEN,75.2,6.6,melvin gordon,31.0
+2021,Michael Carter,RB,NYJ,76.1,5.0,michael carter,32.0
+2021,Ja'Marr Chase,WR,CIN,77.4,5.8,ja marr chase,31.0
+2021,DeVonta Smith,WR,PHI,77.6,6.2,devonta smith,32.0
+2021,Tom Brady,QB,TB,77.8,7.9,tom brady,9.0
+2021,AJ Dillon,RB,GB,79.1,5.7,aj dillon,33.0
+2021,Noah Fant,TE,DEN,79.2,7.8,noah fant,8.0
+2021,Ronald Jones,RB,TB,79.8,5.8,ronald jones,34.0
+2021,JuJu Smith-Schuster,WR,PIT,82.5,6.8,juju smith schuster,33.0
+2021,Kenny Golladay,WR,NYG,82.8,6.8,kenny golladay,34.0
+2021,Zack Moss,RB,BUF,83.8,7.1,zack moss,35.0
+2021,Matthew Stafford,QB,LAR,85.0,10.7,matthew stafford,10.0
+2021,Courtland Sutton,WR,DEN,85.7,7.1,courtland sutton,35.0
+2021,Laviska Shenault Jr.,WR,JAX,85.9,6.2,laviska shenault,36.0
+2021,Robert Tonyan,TE,GB,87.2,11.5,robert tonyan,9.0
+2021,Corey Davis,WR,NYJ,89.6,7.1,corey davis,37.0
+2021,Deebo Samuel Sr.,WR,SF,89.8,6.9,deebo samuel,38.0
+2021,Leonard Fournette,RB,TB,90.1,7.3,leonard fournette,36.0
+2021,Marquez Callaway,WR,NO,90.5,8.9,marquez callaway,39.0
+2021,Devin Singletary,RB,BUF,91.2,9.2,devin singletary,37.0
+2021,Jamaal Williams,RB,DET,92.0,7.5,jamaal williams,38.0
+2021,Sony Michel,RB,LAR,93.4,9.9,sony michel,39.0
+2021,Dallas Goedert,TE,PHI,93.9,10.1,dallas goedert,10.0
+2021,Tyler Higbee,TE,LAR,95.8,9.7,tyler higbee,11.0
+2021,Ryan Tannehill,QB,TEN,96.1,9.6,ryan tannehill,11.0
+2021,James Conner,RB,ARI,96.2,8.2,james conner,40.0
+2021,Tyler Boyd,WR,CIN,97.3,8.6,tyler boyd,40.0
+2021,Jaylen Waddle,WR,MIA,99.2,7.8,jaylen waddle,41.0
+2021,Mecole Hardman Jr.,WR,KC,100.0,7.0,mecole hardman,42.0
+2021,Jalen Hurts,QB,PHI,100.2,10.2,jalen hurts,12.0
+2021,Tony Pollard,RB,DAL,102.7,7.4,tony pollard,41.0
+2021,Brandin Cooks,WR,HOU,102.9,9.9,brandin cooks,43.0
+2021,Kenyan Drake,RB,LV,102.9,8.2,kenyan drake,42.0
+2021,Michael Pittman Jr.,WR,IND,104.4,8.1,michael pittman,44.0
+2021,Alexander Mattison,RB,MIN,106.5,9.5,alexander mattison,43.0
+2021,Phillip Lindsay,RB,MIA,107.5,7.1,phillip lindsay,44.0
+2021,Darnell Mooney,WR,CHI,109.0,7.0,darnell mooney,45.0
+2021,Joe Burrow,QB,CIN,112.4,8.7,joe burrow,13.0
+2021,DJ Chark,WR,JAX,112.8,7.9,dj chark,46.0
+2021,Mike Gesicki,TE,MIA,114.3,16.4,mike gesicki,12.0
+2021,David Johnson,RB,HOU,115.0,9.6,david johnson,45.0
+2021,Jakobi Meyers,WR,NE,116.2,9.9,jakobi meyers,47.0
+2021,Mike Williams,WR,LAC,116.2,7.7,mike williams,48.0
+2021,J.D. McKissic,RB,WAS,116.8,10.4,j d mckissic,46.0
+2021,Jarvis Landry,WR,CLE,118.2,9.0,jarvis landry,49.0
+2021,Trey Lance,QB,SF,118.2,9.8,trey lance,14.0
+2021,Irv Smith Jr.,TE,MIN,120.3,16.2,irv smith,13.0
+2021,Nyheim Hines,RB,IND,120.6,11.9,nyheim hines,47.0
+2021,Giovani Bernard,RB,TB,120.9,10.3,giovani bernard,48.0
+2021,Rhamondre Stevenson,RB,NE,121.3,12.2,rhamondre stevenson,49.0
+2021,Henry Ruggs III,WR,LV,123.9,11.0,henry ruggs,50.0
+2021,Justin Fields,QB,CHI,125.6,12.0,justin fields,15.0
+2021,Marvin Jones Jr.,WR,JAX,126.0,11.6,marvin jones,51.0
+2021,Chuba Hubbard,RB,CAR,127.6,10.5,chuba hubbard,50.0
+2021,James White,RB,NE,128.8,18.9,james white,51.0
+2021,Will Fuller,WR,MIA,129.2,11.0,will fuller,52.0
+2021,Matt Ryan,QB,ATL,129.8,14.2,matt ryan,16.0
+2021,Latavius Murray,RB,BAL,130.6,14.0,latavius murray,52.0
+2021,Jonnu Smith,TE,NE,130.7,15.6,jonnu smith,14.0
+2021,Elijah Moore,WR,NYJ,132.6,10.0,elijah moore,53.0
+2021,Russell Gage Jr.,WR,ATL,133.8,10.4,russell gage,54.0
+2021,Baker Mayfield,QB,CLE,134.3,13.7,baker mayfield,17.0
+2021,Michael Gallup,WR,DAL,135.4,11.0,michael gallup,55.0
+2021,Jameis Winston,QB,NO,137.3,11.8,jameis winston,18.0
+2021,Rashaad Penny,RB,SEA,137.9,12.0,rashaad penny,53.0
+2021,Tevin Coleman,RB,NYJ,139.0,17.2,tevin coleman,54.0
+2021,Curtis Samuel,WR,WAS,140.2,12.9,curtis samuel,56.0
+2021,Hollywood Brown,WR,BAL,140.9,14.9,marquise brown,57.0
+2021,Rob Gronkowski,TE,TB,142.8,22.8,rob gronkowski,15.0
+2021,Ben Roethlisberger,QB,PIT,143.2,15.3,ben roethlisberger,19.0
+2021,Gabe Davis,WR,BUF,144.3,24.2,gabe davis,58.0
+2021,Trevor Lawrence,QB,JAX,144.7,14.7,trevor lawrence,20.0
+2021,Damien Williams,RB,CHI,146.0,23.8,damien williams,55.0
+2021,Rondale Moore,WR,ARI,146.4,16.1,rondale moore,59.0
+2021,Bryan Edwards,WR,LV,148.2,20.3,bryan edwards,60.0
+2021,Terrace Marshall Jr.,WR,CAR,149.0,16.4,terrace marshall,61.0
+2021,Zach Wilson,QB,NYJ,149.1,24.8,zach wilson,21.0
+2021,Hunter Henry,TE,NE,149.7,22.3,hunter henry,16.0
+2021,Darrel Williams,RB,KC,150.3,15.6,darrel williams,56.0
+2021,Evan Engram,TE,NYG,150.9,24.2,evan engram,17.0
+2021,Cole Beasley,WR,BUF,150.9,16.4,cole beasley,62.0
+2021,Adam Trautman,TE,NO,151.9,20.2,adam trautman,18.0
+2021,Mark Ingram II,RB,NO,154.2,17.2,mark ingram,57.0
+2021,Justin Jackson,RB,LAC,154.6,26.7,justin jackson,58.0
+2021,Kenny Gainwell,RB,PHI,154.8,14.0,kenneth gainwell,59.0
+2021,Jared Cook,TE,LAC,155.0,19.2,jared cook,19.0
+2021,Devontae Booker,RB,NYG,155.5,16.0,devontae booker,60.0
+2021,A.J. Green,WR,ARI,156.6,20.9,a j green,63.0
+2021,Gerald Everett,TE,SEA,156.6,18.5,gerald everett,20.0
+2021,Zach Ertz,TE,ARI,157.1,28.8,zach ertz,21.0
+2021,Pat Freiermuth,TE,PIT,157.3,23.8,pat freiermuth,22.0
+2021,Mac Jones,QB,NE,157.4,24.5,mac jones,22.0
+2021,Amon-Ra St. Brown,WR,DET,158.5,14.7,amon ra st brown,64.0
+2021,Tony Jones,RB,NO,158.8,17.6,tony jones,61.0
+2021,Marlon Mack,RB,IND,158.8,16.4,marlon mack,62.0
+2021,Randall Cobb,WR,GB,159.7,18.2,randall cobb,65.0
+2021,Jerick McKinnon,RB,KC,159.7,21.7,jerick mckinnon,63.0
+2021,Tyrell Williams,WR,DET,160.0,21.3,tyrell williams,66.0
+2021,Tua Tagovailoa,QB,MIA,160.6,20.0,tua tagovailoa,23.0
+2021,Kirk Cousins,QB,MIN,160.9,17.8,kirk cousins,24.0
+2021,Malcolm Brown,RB,MIA,161.7,16.1,malcolm brown,64.0
+2021,DeVante Parker,WR,MIA,162.3,14.0,devante parker,67.0
+2021,Ryan Fitzpatrick,QB,WAS,163.3,19.0,ryan fitzpatrick,25.0
+2021,Deshaun Watson,QB,HOU,163.6,15.9,deshaun watson,26.0
+2021,Carson Wentz,QB,IND,167.1,11.8,carson wentz,27.0
+2021,Nelson Agholor,WR,NE,170.7,25.1,nelson agholor,68.0
+2021,Marquez Valdes-Scantling,WR,GB,170.9,23.5,marquez valdes scantling,69.0
+2021,Carlos Hyde,RB,JAX,172.7,14.7,carlos hyde,65.0
+2022,Jonathan Taylor,RB,IND,1.3,0.6,jonathan taylor,1.0
+2022,Christian McCaffrey,RB,SF,2.4,0.9,christian mccaffrey,2.0
+2022,Austin Ekeler,RB,LAC,2.7,0.9,austin ekeler,3.0
+2022,Derrick Henry,RB,TEN,4.3,1.4,derrick henry,4.0
+2022,Justin Jefferson,WR,MIN,4.6,1.4,justin jefferson,1.0
+2022,Cooper Kupp,WR,LAR,5.7,1.8,cooper kupp,2.0
+2022,Najee Harris,RB,PIT,7.1,2.1,najee harris,5.0
+2022,Dalvin Cook,RB,MIN,7.5,1.7,dalvin cook,6.0
+2022,Ja'Marr Chase,WR,CIN,8.7,1.8,ja marr chase,3.0
+2022,Joe Mixon,RB,CIN,10.1,1.8,joe mixon,7.0
+2022,Alvin Kamara,RB,NO,10.9,2.0,alvin kamara,8.0
+2022,Davante Adams,WR,LV,12.0,2.5,davante adams,4.0
+2022,D'Andre Swift,RB,DET,12.8,2.4,d andre swift,9.0
+2022,Stefon Diggs,WR,BUF,13.6,2.0,stefon diggs,5.0
+2022,Aaron Jones Sr.,RB,GB,14.9,2.4,aaron jones,10.0
+2022,Saquon Barkley,RB,NYG,15.5,2.3,saquon barkley,11.0
+2022,Travis Kelce,TE,KC,16.5,3.2,travis kelce,1.0
+2022,CeeDee Lamb,WR,DAL,17.5,2.6,ceedee lamb,6.0
+2022,Nick Chubb,RB,CLE,18.8,2.9,nick chubb,12.0
+2022,Deebo Samuel Sr.,WR,SF,19.6,2.9,deebo samuel,7.0
+2022,Javonte Williams,RB,DEN,20.2,3.3,javonte williams,13.0
+2022,Josh Allen,QB,BUF,20.4,5.3,josh allen,1.0
+2022,Leonard Fournette,RB,TB,21.9,3.0,leonard fournette,14.0
+2022,Tyreek Hill,WR,MIA,22.7,3.4,tyreek hill,8.0
+2022,Michael Pittman Jr.,WR,IND,24.9,3.2,michael pittman,9.0
+2022,Mark Andrews,TE,BAL,25.5,3.8,mark andrews,2.0
+2022,Mike Evans,WR,TB,26.5,3.2,mike evans,10.0
+2022,Ezekiel Elliott,RB,DAL,27.7,3.7,ezekiel elliott,15.0
+2022,James Conner,RB,ARI,28.4,3.3,james conner,16.0
+2022,Keenan Allen,WR,LAC,29.5,3.3,keenan allen,11.0
+2022,A.J. Brown,WR,PHI,30.4,3.6,a j brown,12.0
+2022,Kyle Pitts Sr.,TE,ATL,31.2,4.1,kyle pitts,3.0
+2022,Tee Higgins,WR,CIN,32.5,3.5,tee higgins,13.0
+2022,Cam Akers,RB,LAR,33.1,4.6,cam akers,17.0
+2022,Justin Herbert,QB,LAC,33.2,4.3,justin herbert,2.0
+2022,Travis Etienne Jr.,RB,JAX,33.6,4.1,travis etienne,18.0
+2022,DJ Moore,WR,CAR,35.9,3.1,dj moore,14.0
+2022,Terry McLaurin,WR,WAS,38.0,3.6,terry mclaurin,15.0
+2022,Patrick Mahomes,QB,KC,38.3,7.7,patrick mahomes,3.0
+2022,J.K. Dobbins,RB,BAL,38.8,3.9,j k dobbins,19.0
+2022,David Montgomery,RB,CHI,39.3,4.7,david montgomery,20.0
+2022,Mike Williams,WR,LAC,39.6,4.0,mike williams,16.0
+2022,Elijah Mitchell,RB,SF,42.4,5.2,elijah mitchell,21.0
+2022,Diontae Johnson,WR,PIT,43.4,4.3,diontae johnson,17.0
+2022,George Kittle,TE,SF,44.2,5.4,george kittle,4.0
+2022,Breece Hall,RB,NYJ,44.4,4.7,breece hall,22.0
+2022,Courtland Sutton,WR,DEN,45.3,5.3,courtland sutton,18.0
+2022,Joe Burrow,QB,CIN,46.1,6.3,joe burrow,4.0
+2022,Josh Jacobs,RB,LV,46.8,5.9,josh jacobs,23.0
+2022,Jaylen Waddle,WR,MIA,47.7,5.5,jaylen waddle,19.0
+2022,AJ Dillon,RB,GB,48.7,5.6,aj dillon,24.0
+2022,Darren Waller,TE,LV,50.4,6.4,darren waller,5.0
+2022,Lamar Jackson,QB,BAL,51.3,6.3,lamar jackson,5.0
+2022,DK Metcalf,WR,SEA,51.4,5.4,dk metcalf,20.0
+2022,Michael Thomas,WR,NO,52.3,5.3,michael thomas,21.0
+2022,Allen Robinson II,WR,LAR,53.5,5.9,allen robinson,22.0
+2022,Clyde Edwards-Helaire,RB,KC,54.3,4.8,clyde edwards helaire,25.0
+2022,Jalen Hurts,QB,PHI,56.3,6.3,jalen hurts,6.0
+2022,Chris Godwin Jr.,WR,TB,56.5,5.5,chris godwin,23.0
+2022,Brandin Cooks,WR,HOU,56.7,5.6,brandin cooks,24.0
+2022,Damien Harris,RB,NE,59.8,6.3,damien harris,26.0
+2022,Kyler Murray,QB,ARI,61.6,5.9,kyler murray,7.0
+2022,Jerry Jeudy,WR,DEN,61.7,6.0,jerry jeudy,25.0
+2022,Miles Sanders,RB,PHI,61.7,5.6,miles sanders,27.0
+2022,Dalton Schultz,TE,DAL,62.6,7.4,dalton schultz,6.0
+2022,Gabe Davis,WR,BUF,62.9,7.0,gabe davis,26.0
+2022,Rashaad Penny,RB,SEA,63.3,6.4,rashaad penny,28.0
+2022,Adam Thielen,WR,MIN,63.8,5.3,adam thielen,27.0
+2022,Darnell Mooney,WR,CHI,68.1,5.4,darnell mooney,28.0
+2022,Hollywood Brown,WR,ARI,68.7,6.7,marquise brown,29.0
+2022,Kareem Hunt,RB,CLE,68.9,7.0,kareem hunt,29.0
+2022,Chase Edmonds,RB,DEN,69.6,7.9,chase edmonds,30.0
+2022,Dameon Pierce,RB,HOU,70.5,10.7,dameon pierce,31.0
+2022,Tony Pollard,RB,DAL,70.8,6.7,tony pollard,32.0
+2022,Hunter Renfrow,WR,LV,71.2,7.4,hunter renfrow,30.0
+2022,Russell Wilson,QB,DEN,72.5,8.0,russell wilson,8.0
+2022,Amon-Ra St. Brown,WR,DET,73.4,7.7,amon ra st brown,31.0
+2022,Devin Singletary,RB,BUF,74.4,7.2,devin singletary,33.0
+2022,Dallas Goedert,TE,PHI,75.2,8.0,dallas goedert,7.0
+2022,JuJu Smith-Schuster,WR,KC,75.9,7.3,juju smith schuster,32.0
+2022,Rhamondre Stevenson,RB,NE,76.0,7.9,rhamondre stevenson,34.0
+2022,Aaron Rodgers,QB,GB,80.2,9.6,aaron rodgers,9.0
+2022,Rashod Bateman,WR,BAL,81.0,7.1,rashod bateman,33.0
+2022,Dak Prescott,QB,DAL,83.6,7.6,dak prescott,10.0
+2022,Amari Cooper,WR,CLE,84.2,7.1,amari cooper,34.0
+2022,Melvin Gordon III,RB,KC,85.4,6.2,melvin gordon,35.0
+2022,DeVonta Smith,WR,PHI,86.6,6.2,devonta smith,35.0
+2022,Tom Brady,QB,TB,86.8,8.6,tom brady,11.0
+2022,Elijah Moore,WR,NYJ,87.9,6.4,elijah moore,36.0
+2022,Zach Ertz,TE,ARI,89.0,9.9,zach ertz,8.0
+2022,Allen Lazard,WR,GB,89.5,8.1,allen lazard,37.0
+2022,DeAndre Hopkins,WR,ARI,90.0,8.1,deandre hopkins,38.0
+2022,Brandon Aiyuk,WR,SF,90.0,6.1,brandon aiyuk,39.0
+2022,Matthew Stafford,QB,LAR,90.3,7.8,matthew stafford,12.0
+2022,Cordarrelle Patterson,RB,ATL,91.4,7.2,cordarrelle patterson,36.0
+2022,James Cook III,RB,BUF,92.0,7.8,james cook,37.0
+2022,Kenneth Walker III,RB,SEA,92.9,8.3,kenneth walker,38.0
+2022,Nyheim Hines,RB,BUF,93.9,8.3,nyheim hines,39.0
+2022,Christian Kirk,WR,JAX,96.2,7.1,christian kirk,40.0
+2022,Trey Lance,QB,SF,97.7,10.3,trey lance,13.0
+2022,Pat Freiermuth,TE,PIT,100.0,10.6,pat freiermuth,9.0
+2022,James Robinson,RB,NYJ,101.5,9.3,james robinson,40.0
+2022,Raheem Mostert,RB,MIA,101.9,8.6,raheem mostert,41.0
+2022,Drake London,WR,ATL,102.2,9.4,drake london,41.0
+2022,Robert Woods,WR,TEN,102.5,8.4,robert woods,42.0
+2022,Kadarius Toney,WR,KC,102.7,8.1,kadarius toney,43.0
+2022,Derek Carr,QB,LV,103.1,8.6,derek carr,14.0
+2022,Cole Kmet,TE,CHI,103.6,11.4,cole kmet,10.0
+2022,Kenny Gainwell,RB,PHI,105.8,8.2,kenneth gainwell,42.0
+2022,Tyler Allgeier,RB,ATL,107.6,8.0,tyler allgeier,43.0
+2022,Kirk Cousins,QB,MIN,108.6,10.1,kirk cousins,15.0
+2022,J.D. McKissic,RB,WAS,110.2,7.9,j d mckissic,44.0
+2022,Chris Olave,WR,NO,110.4,7.3,chris olave,44.0
+2022,Dawson Knox,TE,BUF,111.5,15.2,dawson knox,11.0
+2022,Darrell Henderson Jr.,RB,JAX,111.9,8.8,darrell henderson,45.0
+2022,Tyler Lockett,WR,SEA,112.5,7.7,tyler lockett,45.0
+2022,Brian Robinson Jr.,RB,WAS,112.7,7.9,brian robinson,46.0
+2022,Michael Carter,RB,NYJ,113.3,7.9,michael carter,47.0
+2022,Antonio Gibson,RB,WAS,114.7,14.3,antonio gibson,48.0
+2022,Isiah Pacheco,RB,KC,118.0,9.0,isiah pacheco,49.0
+2022,Skyy Moore,WR,KC,118.1,9.4,skyy moore,46.0
+2022,Michael Gallup,WR,DAL,118.2,9.7,michael gallup,47.0
+2022,T.J. Hockenson,TE,MIN,120.2,17.2,t j hockenson,12.0
+2022,Julio Jones,WR,TB,120.9,11.5,julio jones,48.0
+2022,Tua Tagovailoa,QB,MIA,121.2,10.6,tua tagovailoa,16.0
+2022,Jamaal Williams,RB,DET,121.7,10.1,jamaal williams,50.0
+2022,Tyler Boyd,WR,CIN,123.0,10.8,tyler boyd,49.0
+2022,Rachaad White,RB,TB,123.3,9.6,rachaad white,51.0
+2022,George Pickens,WR,PIT,123.6,12.7,george pickens,50.0
+2022,Alexander Mattison,RB,MIN,128.9,11.3,alexander mattison,52.0
+2022,Marquez Valdes-Scantling,WR,KC,129.0,10.9,marquez valdes scantling,51.0
+2022,Treylon Burks,WR,TEN,129.3,10.4,treylon burks,52.0
+2022,Zamir White,RB,LV,130.5,7.5,zamir white,53.0
+2022,Matt Ryan,QB,IND,132.9,12.0,matt ryan,17.0
+2022,Chase Claypool,WR,CHI,133.7,10.6,chase claypool,53.0
+2022,Romeo Doubs,WR,GB,134.1,11.4,romeo doubs,54.0
+2022,Hunter Henry,TE,NE,134.1,16.7,hunter henry,13.0
+2022,DeVante Parker,WR,NE,134.9,10.1,devante parker,55.0
+2022,Justin Fields,QB,CHI,138.0,15.7,justin fields,18.0
+2022,Rondale Moore,WR,ARI,142.5,8.1,rondale moore,56.0
+2022,Trevor Lawrence,QB,JAX,142.9,13.4,trevor lawrence,19.0
+2022,Irv Smith Jr.,TE,MIN,146.0,18.1,irv smith,14.0
+2022,Robert Tonyan,TE,GB,147.9,17.9,robert tonyan,15.0
+2022,Jameis Winston,QB,NO,150.1,17.4,jameis winston,20.0
+2022,Isaiah McKenzie,WR,BUF,152.6,16.4,isaiah mckenzie,57.0
+2022,Nico Collins,WR,HOU,153.8,14.2,nico collins,58.0
+2023,Justin Jefferson,WR,MIN,1.4,0.6,justin jefferson,1.0
+2023,Christian McCaffrey,RB,SF,2.4,1.0,christian mccaffrey,1.0
+2023,Ja'Marr Chase,WR,CIN,2.4,0.8,ja marr chase,2.0
+2023,Tyreek Hill,WR,MIA,4.4,1.2,tyreek hill,3.0
+2023,Austin Ekeler,RB,LAC,5.0,1.5,austin ekeler,2.0
+2023,Travis Kelce,TE,KC,5.9,1.9,travis kelce,1.0
+2023,Cooper Kupp,WR,LAR,7.0,2.0,cooper kupp,4.0
+2023,Stefon Diggs,WR,BUF,8.5,1.7,stefon diggs,5.0
+2023,Bijan Robinson,RB,ATL,8.8,2.7,bijan robinson,3.0
+2023,Saquon Barkley,RB,NYG,9.0,2.1,saquon barkley,4.0
+2023,CeeDee Lamb,WR,DAL,11.0,2.1,ceedee lamb,6.0
+2023,A.J. Brown,WR,PHI,12.5,2.4,a j brown,7.0
+2023,Nick Chubb,RB,CLE,12.5,2.9,nick chubb,5.0
+2023,Amon-Ra St. Brown,WR,DET,13.2,2.6,amon ra st brown,8.0
+2023,Tony Pollard,RB,DAL,15.2,2.7,tony pollard,6.0
+2023,Garrett Wilson,WR,NYJ,15.6,2.8,garrett wilson,9.0
+2023,Davante Adams,WR,LV,15.6,2.6,davante adams,10.0
+2023,Derrick Henry,RB,TEN,17.9,2.8,derrick henry,7.0
+2023,Patrick Mahomes,QB,KC,19.6,5.2,patrick mahomes,1.0
+2023,Jaylen Waddle,WR,MIA,19.9,2.3,jaylen waddle,11.0
+2023,Chris Olave,WR,NO,20.4,2.4,chris olave,12.0
+2023,Josh Jacobs,RB,LV,21.9,3.3,josh jacobs,8.0
+2023,DeVonta Smith,WR,PHI,23.3,2.9,devonta smith,13.0
+2023,Rhamondre Stevenson,RB,NE,23.4,3.3,rhamondre stevenson,9.0
+2023,Jonathan Taylor,RB,IND,25.9,4.3,jonathan taylor,10.0
+2023,Josh Allen,QB,BUF,26.6,4.3,josh allen,2.0
+2023,Tee Higgins,WR,CIN,26.6,3.2,tee higgins,14.0
+2023,Jalen Hurts,QB,PHI,26.9,4.1,jalen hurts,3.0
+2023,Mark Andrews,TE,BAL,28.9,4.2,mark andrews,2.0
+2023,Calvin Ridley,WR,JAX,29.2,4.4,calvin ridley,15.0
+2023,Keenan Allen,WR,LAC,29.2,3.6,keenan allen,16.0
+2023,Najee Harris,RB,PIT,30.4,4.7,najee harris,11.0
+2023,DK Metcalf,WR,SEA,30.8,4.0,dk metcalf,17.0
+2023,Joe Mixon,RB,CIN,31.4,4.4,joe mixon,12.0
+2023,Travis Etienne Jr.,RB,JAX,34.7,5.4,travis etienne,13.0
+2023,Amari Cooper,WR,CLE,35.4,4.0,amari cooper,18.0
+2023,Breece Hall,RB,NYJ,36.6,4.5,breece hall,14.0
+2023,Jahmyr Gibbs,RB,DET,36.7,5.5,jahmyr gibbs,15.0
+2023,Lamar Jackson,QB,BAL,36.9,4.7,lamar jackson,4.0
+2023,Deebo Samuel Sr.,WR,SF,37.2,4.4,deebo samuel,19.0
+2023,Aaron Jones Sr.,RB,GB,38.9,4.3,aaron jones,16.0
+2023,DeAndre Hopkins,WR,TEN,41.4,4.9,deandre hopkins,20.0
+2023,Joe Burrow,QB,CIN,43.2,6.1,joe burrow,5.0
+2023,Drake London,WR,ATL,44.1,4.8,drake london,21.0
+2023,T.J. Hockenson,TE,MIN,44.2,5.4,t j hockenson,3.0
+2023,DJ Moore,WR,CHI,44.7,4.5,dj moore,22.0
+2023,Jerry Jeudy,WR,DEN,44.8,4.7,jerry jeudy,23.0
+2023,Kenneth Walker III,RB,SEA,47.9,5.8,kenneth walker,17.0
+2023,Christian Watson,WR,GB,48.6,5.2,christian watson,24.0
+2023,Justin Fields,QB,CHI,48.8,6.3,justin fields,6.0
+2023,Chris Godwin Jr.,WR,TB,49.3,4.8,chris godwin,25.0
+2023,Terry McLaurin,WR,WAS,49.7,5.2,terry mclaurin,26.0
+2023,Justin Herbert,QB,LAC,50.3,5.9,justin herbert,7.0
+2023,Miles Sanders,RB,CAR,52.9,5.8,miles sanders,18.0
+2023,Diontae Johnson,WR,PIT,53.4,5.2,diontae johnson,27.0
+2023,J.K. Dobbins,RB,BAL,55.1,7.0,j k dobbins,19.0
+2023,George Kittle,TE,SF,55.7,6.5,george kittle,4.0
+2023,Tyler Lockett,WR,SEA,55.7,5.2,tyler lockett,28.0
+2023,Alexander Mattison,RB,MIN,56.9,7.4,alexander mattison,20.0
+2023,Dameon Pierce,RB,HOU,57.0,8.3,dameon pierce,21.0
+2023,Brandon Aiyuk,WR,SF,57.0,5.7,brandon aiyuk,29.0
+2023,Trevor Lawrence,QB,JAX,58.4,5.8,trevor lawrence,8.0
+2023,Christian Kirk,WR,JAX,60.3,5.8,christian kirk,30.0
+2023,Darren Waller,TE,NYG,60.3,8.5,darren waller,5.0
+2023,Cam Akers,RB,MIN,63.1,7.3,cam akers,22.0
+2023,Mike Williams,WR,LAC,63.3,6.4,mike williams,31.0
+2023,Michael Pittman Jr.,WR,IND,63.8,6.0,michael pittman,32.0
+2023,James Conner,RB,ARI,66.2,6.0,james conner,23.0
+2023,Mike Evans,WR,TB,67.6,6.0,mike evans,33.0
+2023,Rachaad White,RB,TB,68.1,6.3,rachaad white,24.0
+2023,Alvin Kamara,RB,NO,69.2,7.5,alvin kamara,25.0
+2023,Dallas Goedert,TE,PHI,69.7,6.8,dallas goedert,6.0
+2023,George Pickens,WR,PIT,70.0,7.6,george pickens,34.0
+2023,Hollywood Brown,WR,ARI,72.5,5.7,marquise brown,35.0
+2023,Javonte Williams,RB,DEN,72.8,7.2,javonte williams,26.0
+2023,Jahan Dotson,WR,WAS,73.1,6.8,jahan dotson,36.0
+2023,Kyle Pitts Sr.,TE,ATL,74.6,7.7,kyle pitts,7.0
+2023,D'Andre Swift,RB,PHI,75.9,6.8,d andre swift,27.0
+2023,Deshaun Watson,QB,CLE,76.2,8.0,deshaun watson,9.0
+2023,David Montgomery,RB,DET,76.8,6.0,david montgomery,28.0
+2023,James Cook III,RB,BUF,77.6,7.2,james cook,29.0
+2023,Jordan Addison,WR,MIN,78.4,6.4,jordan addison,37.0
+2023,Isiah Pacheco,RB,KC,79.2,6.9,isiah pacheco,30.0
+2023,Dak Prescott,QB,DAL,82.2,9.1,dak prescott,10.0
+2023,Jaxon Smith-Njigba,WR,SEA,83.0,6.8,jaxon smith njigba,38.0
+2023,Tua Tagovailoa,QB,MIA,84.9,10.5,tua tagovailoa,11.0
+2023,Brandin Cooks,WR,DAL,85.1,6.7,brandin cooks,39.0
+2023,Courtland Sutton,WR,DEN,87.0,6.5,courtland sutton,40.0
+2023,Evan Engram,TE,JAX,87.9,8.8,evan engram,8.0
+2023,Treylon Burks,WR,TEN,88.7,7.2,treylon burks,41.0
+2023,Antonio Gibson,RB,WAS,88.9,5.3,antonio gibson,31.0
+2023,Gabe Davis,WR,BUF,89.5,6.7,gabe davis,42.0
+2023,Michael Thomas,WR,NO,91.0,7.7,michael thomas,43.0
+2023,AJ Dillon,RB,GB,91.7,7.3,aj dillon,32.0
+2023,JuJu Smith-Schuster,WR,NE,93.3,7.5,juju smith schuster,44.0
+2023,Brian Robinson Jr.,RB,WAS,94.2,8.0,brian robinson,33.0
+2023,Khalil Herbert,RB,CHI,94.4,7.6,khalil herbert,34.0
+2023,Quentin Johnston,WR,LAC,96.1,7.5,quentin johnston,45.0
+2023,Pat Freiermuth,TE,PIT,96.1,9.3,pat freiermuth,9.0
+2023,Elijah Moore,WR,CLE,97.2,7.0,elijah moore,46.0
+2023,Rashaad Penny,RB,PHI,97.3,6.5,rashaad penny,35.0
+2023,Samaje Perine,RB,DEN,99.3,7.1,samaje perine,36.0
+2023,Kirk Cousins,QB,MIN,99.4,12.7,kirk cousins,12.0
+2023,Kadarius Toney,WR,KC,100.0,9.9,kadarius toney,47.0
+2023,Zay Flowers,WR,BAL,100.0,9.4,zay flowers,48.0
+2023,Rashod Bateman,WR,BAL,102.0,8.1,rashod bateman,49.0
+2023,Aaron Rodgers,QB,NYJ,103.6,14.2,aaron rodgers,13.0
+2023,David Njoku,TE,CLE,103.8,10.5,david njoku,10.0
+2023,Daniel Jones,QB,NYG,103.9,12.3,daniel jones,14.0
+2023,Jamaal Williams,RB,NO,104.2,8.8,jamaal williams,37.0
+2023,Zach Charbonnet,RB,SEA,107.2,7.3,zach charbonnet,38.0
+2023,Skyy Moore,WR,KC,109.1,9.1,skyy moore,50.0
+2023,Jakobi Meyers,WR,LV,109.4,7.3,jakobi meyers,51.0
+2023,Geno Smith,QB,SEA,109.9,13.4,geno smith,15.0
+2023,Damien Harris,RB,BUF,110.6,8.5,damien harris,39.0
+2023,Jerick McKinnon,RB,KC,111.3,8.3,jerick mckinnon,40.0
+2023,Nico Collins,WR,HOU,113.1,8.2,nico collins,52.0
+2023,Elijah Mitchell,RB,SF,115.1,8.7,elijah mitchell,41.0
+2023,Allen Lazard,WR,NYJ,115.3,10.3,allen lazard,53.0
+2023,Dalton Schultz,TE,HOU,117.4,12.3,dalton schultz,11.0
+2023,De'Von Achane,RB,MIA,117.8,8.5,de von achane,42.0
+2023,Jaylen Warren,RB,PIT,119.8,11.0,jaylen warren,43.0
+2023,Odell Beckham Jr.,WR,BAL,120.1,13.0,odell beckham,54.0
+2023,Jameson Williams,WR,DET,120.3,10.3,jameson williams,55.0
+2023,Jared Goff,QB,DET,122.6,11.6,jared goff,16.0
+2023,Raheem Mostert,RB,MIA,122.8,11.9,raheem mostert,44.0
+2023,Rondale Moore,WR,ARI,123.2,11.4,rondale moore,56.0
+2023,Tyler Allgeier,RB,ATL,125.0,9.9,tyler allgeier,45.0
+2023,Anthony Richardson Sr.,QB,IND,125.5,12.9,anthony richardson,17.0
+2023,Adam Thielen,WR,CAR,126.3,10.9,adam thielen,57.0
+2023,Romeo Doubs,WR,GB,127.7,10.5,romeo doubs,58.0
+2023,Darnell Mooney,WR,CHI,127.8,11.2,darnell mooney,59.0
+2023,Russell Wilson,QB,DEN,129.9,20.7,russell wilson,18.0
+2023,Tyler Boyd,WR,CIN,130.4,10.8,tyler boyd,60.0
+2023,Devin Singletary,RB,HOU,130.7,11.7,devin singletary,46.0
+2023,Kenny Gainwell,RB,PHI,131.1,10.4,kenneth gainwell,47.0
+2023,Zay Jones,WR,JAX,131.1,11.7,zay jones,61.0
+2023,Greg Dulcich,TE,DEN,131.4,14.3,greg dulcich,12.0
+2023,Tyler Higbee,TE,LAR,131.6,15.2,tyler higbee,13.0
+2023,Cordarrelle Patterson,RB,ATL,132.4,13.3,cordarrelle patterson,48.0
+2023,Jeff Wilson Jr.,RB,MIA,133.2,10.2,jeff wilson,49.0
+2023,D'Onta Foreman,RB,CHI,137.1,16.2,d onta foreman,50.0
+2023,Tank Bigsby,RB,JAX,137.7,12.9,tank bigsby,51.0
+2023,Chig Okonkwo,TE,TEN,140.4,17.3,chig okonkwo,14.0
+2023,DJ Chark,WR,CAR,143.2,13.4,dj chark,62.0
+2023,Michael Gallup,WR,DAL,144.6,12.3,michael gallup,63.0
+2023,Derek Carr,QB,NO,145.3,17.2,derek carr,19.0
+2023,Cole Kmet,TE,CHI,146.0,16.7,cole kmet,15.0
+2023,Dalton Kincaid,TE,BUF,146.9,21.2,dalton kincaid,16.0
+2023,Tyjae Spears,RB,TEN,150.9,15.2,tyjae spears,52.0
+2023,Matthew Stafford,QB,LAR,151.0,18.1,matthew stafford,20.0
+2023,Jonathan Mingo,WR,CAR,152.1,20.6,jonathan mingo,64.0
+2023,Kenny Pickett,QB,PIT,152.3,25.1,kenny pickett,21.0
+2023,Brock Purdy,QB,SF,152.5,33.6,brock purdy,22.0
+2023,Dawson Knox,TE,BUF,152.7,23.8,dawson knox,17.0
+2023,Sam LaPorta,TE,DET,152.9,20.3,sam laporta,18.0
+2023,Zamir White,RB,LV,153.7,14.1,zamir white,53.0
+2023,Marvin Mims Jr.,WR,DEN,154.2,22.4,marvin mims,65.0
+2023,Gerald Everett,TE,LAC,154.9,17.4,gerald everett,19.0
+2023,Jordan Love,QB,GB,155.5,23.1,jordan love,23.0
+2023,Donovan Peoples-Jones,WR,DET,156.0,13.9,donovan peoples jones,66.0
+2023,Wan'Dale Robinson,WR,NYG,157.2,12.5,wan dale robinson,67.0
+2023,Kyler Murray,QB,ARI,157.3,16.4,kyler murray,24.0
+2023,Jerome Ford,RB,CLE,157.4,16.1,jerome ford,54.0
+2023,Roschon Johnson,RB,CHI,157.7,23.2,roschon johnson,55.0
+2023,Clyde Edwards-Helaire,RB,KC,157.9,14.9,clyde edwards helaire,56.0
+2023,Hunter Renfrow,WR,LV,159.3,13.9,hunter renfrow,68.0
+2023,Marquez Valdes-Scantling,WR,KC,159.6,17.0,marquez valdes scantling,69.0
+2023,K.J. Osborn,WR,MIN,160.2,16.4,k j osborn,70.0
+2023,Gus Edwards,RB,BAL,160.6,12.8,gus edwards,57.0
+2023,Chuba Hubbard,RB,CAR,160.7,13.9,chuba hubbard,58.0
+2023,Jake Ferguson,TE,DAL,161.9,17.1,jake ferguson,20.0
+2023,Alec Pierce,WR,IND,162.0,12.9,alec pierce,71.0
+2023,Zack Moss,RB,IND,163.0,20.6,zack moss,59.0
+2023,Jalin Hyatt,WR,NYG,163.1,24.3,jalin hyatt,72.0
+2023,Justyn Ross,WR,KC,164.2,21.1,justyn ross,73.0
+2023,Chase Claypool,WR,MIA,169.1,10.0,chase claypool,74.0
+2024,Christian McCaffrey,RB,SF,1.4,0.7,christian mccaffrey,1.0
+2024,Breece Hall,RB,NYJ,2.2,0.9,breece hall,2.0
+2024,Tyreek Hill,WR,MIA,2.6,0.9,tyreek hill,1.0
+2024,CeeDee Lamb,WR,DAL,3.7,1.3,ceedee lamb,2.0
+2024,Bijan Robinson,RB,ATL,4.9,1.3,bijan robinson,3.0
+2024,Amon-Ra St. Brown,WR,DET,6.2,1.2,amon ra st brown,3.0
+2024,Ja'Marr Chase,WR,CIN,7.2,1.8,ja marr chase,4.0
+2024,Justin Jefferson,WR,MIN,8.0,1.6,justin jefferson,5.0
+2024,Jahmyr Gibbs,RB,DET,9.4,2.2,jahmyr gibbs,4.0
+2024,Jonathan Taylor,RB,IND,9.8,2.0,jonathan taylor,5.0
+2024,A.J. Brown,WR,PHI,10.9,1.8,a j brown,6.0
+2024,Saquon Barkley,RB,PHI,11.3,2.3,saquon barkley,6.0
+2024,Garrett Wilson,WR,NYJ,12.1,1.9,garrett wilson,7.0
+2024,Marvin Harrison Jr.,WR,ARI,14.5,2.3,marvin harrison,8.0
+2024,Puka Nacua,WR,LAR,15.2,2.2,puka nacua,9.0
+2024,Kyren Williams,RB,LAR,15.9,2.9,kyren williams,7.0
+2024,Derrick Henry,RB,BAL,15.9,2.8,derrick henry,8.0
+2024,Travis Etienne Jr.,RB,JAX,17.6,2.5,travis etienne,9.0
+2024,Cooper Kupp,WR,LAR,18.9,2.7,cooper kupp,10.0
+2024,Isiah Pacheco,RB,KC,19.8,2.9,isiah pacheco,10.0
+2024,Davante Adams,WR,NYJ,20.0,2.8,davante adams,11.0
+2024,De'Von Achane,RB,MIA,21.4,4.5,de von achane,11.0
+2024,Drake London,WR,ATL,21.5,3.1,drake london,12.0
+2024,Deebo Samuel Sr.,WR,SF,23.0,3.2,deebo samuel,13.0
+2024,Josh Jacobs,RB,GB,23.6,3.6,josh jacobs,12.0
+2024,Travis Kelce,TE,KC,24.4,4.6,travis kelce,1.0
+2024,Josh Allen,QB,BUF,25.1,5.2,josh allen,1.0
+2024,Chris Olave,WR,NO,26.2,3.3,chris olave,14.0
+2024,Rachaad White,RB,TB,29.0,3.3,rachaad white,13.0
+2024,Jaylen Waddle,WR,MIA,29.1,3.7,jaylen waddle,15.0
+2024,Sam LaPorta,TE,DET,29.4,4.0,sam laporta,2.0
+2024,James Cook III,RB,BUF,30.3,4.1,james cook,14.0
+2024,Patrick Mahomes,QB,KC,30.8,6.2,patrick mahomes,2.0
+2024,Nico Collins,WR,HOU,32.1,4.0,nico collins,16.0
+2024,Alvin Kamara,RB,NO,32.3,3.8,alvin kamara,15.0
+2024,Mike Evans,WR,TB,33.5,4.5,mike evans,17.0
+2024,Joe Mixon,RB,HOU,35.0,4.3,joe mixon,16.0
+2024,Kenneth Walker III,RB,SEA,35.6,4.1,kenneth walker,17.0
+2024,Jalen Hurts,QB,PHI,37.3,5.4,jalen hurts,3.0
+2024,DeVonta Smith,WR,PHI,38.3,4.1,devonta smith,18.0
+2024,Malik Nabers,WR,NYG,38.3,4.6,malik nabers,19.0
+2024,DK Metcalf,WR,SEA,40.7,5.7,dk metcalf,20.0
+2024,Mark Andrews,TE,BAL,41.2,4.9,mark andrews,3.0
+2024,Stefon Diggs,WR,HOU,41.8,4.8,stefon diggs,21.0
+2024,DJ Moore,WR,CHI,43.7,4.6,dj moore,22.0
+2024,Lamar Jackson,QB,BAL,44.2,4.9,lamar jackson,4.0
+2024,Michael Pittman Jr.,WR,IND,45.2,5.4,michael pittman,23.0
+2024,Aaron Jones Sr.,RB,MIN,46.0,5.7,aaron jones,18.0
+2024,James Conner,RB,ARI,47.6,5.0,james conner,19.0
+2024,Brandon Aiyuk,WR,SF,48.1,5.3,brandon aiyuk,24.0
+2024,Amari Cooper,WR,BUF,49.2,3.7,amari cooper,25.0
+2024,C.J. Stroud,QB,HOU,49.9,6.6,c j stroud,5.0
+2024,Trey McBride,TE,ARI,50.4,5.5,trey mcbride,4.0
+2024,Tee Higgins,WR,CIN,51.8,4.5,tee higgins,26.0
+2024,David Montgomery,RB,DET,54.6,5.7,david montgomery,20.0
+2024,Anthony Richardson Sr.,QB,IND,55.2,4.3,anthony richardson,6.0
+2024,Christian Kirk,WR,JAX,55.6,4.3,christian kirk,27.0
+2024,D'Andre Swift,RB,CHI,56.5,6.5,d andre swift,21.0
+2024,Zay Flowers,WR,BAL,56.8,4.2,zay flowers,28.0
+2024,Tank Dell,WR,HOU,57.5,4.4,tank dell,29.0
+2024,Dalton Kincaid,TE,BUF,59.1,6.0,dalton kincaid,5.0
+2024,Joe Burrow,QB,CIN,59.7,7.5,joe burrow,7.0
+2024,George Pickens,WR,PIT,59.8,5.8,george pickens,30.0
+2024,Rhamondre Stevenson,RB,NE,62.0,5.8,rhamondre stevenson,22.0
+2024,Keenan Allen,WR,CHI,63.5,5.7,keenan allen,31.0
+2024,Raheem Mostert,RB,MIA,64.1,6.2,raheem mostert,23.0
+2024,Rashee Rice,WR,KC,64.2,9.6,rashee rice,32.0
+2024,Nick Chubb,RB,CLE,65.0,7.1,nick chubb,24.0
+2024,Jayden Reed,WR,GB,65.1,5.9,jayden reed,33.0
+2024,George Kittle,TE,SF,66.7,8.1,george kittle,6.0
+2024,Najee Harris,RB,PIT,67.1,5.7,najee harris,25.0
+2024,Zamir White,RB,LV,67.8,6.1,zamir white,26.0
+2024,Chris Godwin Jr.,WR,TB,68.4,6.3,chris godwin,34.0
+2024,Dak Prescott,QB,DAL,69.8,7.2,dak prescott,8.0
+2024,Terry McLaurin,WR,WAS,70.2,7.4,terry mclaurin,35.0
+2024,Kyle Pitts Sr.,TE,ATL,72.8,7.8,kyle pitts,7.0
+2024,Jordan Love,QB,GB,73.2,8.3,jordan love,9.0
+2024,Zack Moss,RB,CIN,74.4,8.0,zack moss,27.0
+2024,Calvin Ridley,WR,TEN,74.7,5.8,calvin ridley,36.0
+2024,Kyler Murray,QB,ARI,76.1,8.2,kyler murray,10.0
+2024,Javonte Williams,RB,DEN,77.5,6.3,javonte williams,28.0
+2024,Evan Engram,TE,JAX,79.5,9.1,evan engram,8.0
+2024,Jaylen Warren,RB,PIT,79.6,5.7,jaylen warren,29.0
+2024,Tony Pollard,RB,TEN,81.7,7.4,tony pollard,30.0
+2024,Xavier Worthy,WR,KC,81.9,7.1,xavier worthy,37.0
+2024,Hollywood Brown,WR,KC,82.2,4.8,marquise brown,38.0
+2024,Christian Watson,WR,GB,84.2,7.7,christian watson,39.0
+2024,Jonathon Brooks,RB,CAR,85.4,5.8,jonathon brooks,31.0
+2024,Devin Singletary,RB,NYG,87.9,6.1,devin singletary,32.0
+2024,Austin Ekeler,RB,WAS,88.0,6.7,austin ekeler,33.0
+2024,Keon Coleman,WR,BUF,88.1,6.7,keon coleman,40.0
+2024,Tua Tagovailoa,QB,MIA,88.6,8.9,tua tagovailoa,11.0
+2024,Jake Ferguson,TE,DAL,89.2,9.1,jake ferguson,9.0
+2024,Jaxon Smith-Njigba,WR,SEA,90.5,10.8,jaxon smith njigba,41.0
+2024,Tyjae Spears,RB,TEN,91.4,5.6,tyjae spears,34.0
+2024,Chase Brown,RB,CIN,91.9,7.4,chase brown,35.0
+2024,Diontae Johnson,WR,BAL,92.1,7.7,diontae johnson,42.0
+2024,Jared Goff,QB,DET,94.3,13.1,jared goff,12.0
+2024,Ezekiel Elliott,RB,LAC,96.2,8.3,ezekiel elliott,36.0
+2024,Rome Odunze,WR,CHI,97.7,7.0,rome odunze,43.0
+2024,Brian Robinson Jr.,RB,WAS,97.9,7.9,brian robinson,37.0
+2024,Ladd McConkey,WR,LAC,98.4,6.0,ladd mcconkey,44.0
+2024,Jerome Ford,RB,CLE,98.5,8.9,jerome ford,38.0
+2024,Jayden Daniels,QB,WAS,99.2,12.1,jayden daniels,13.0
+2024,Gus Edwards,RB,LAC,100.6,6.5,gus edwards,39.0
+2024,David Njoku,TE,CLE,101.1,9.4,david njoku,10.0
+2024,Romeo Doubs,WR,GB,103.0,7.1,romeo doubs,45.0
+2024,DeAndre Hopkins,WR,KC,104.5,5.9,deandre hopkins,46.0
+2024,Dallas Goedert,TE,PHI,105.5,11.5,dallas goedert,11.0
+2024,Brock Purdy,QB,SF,105.7,10.4,brock purdy,14.0
+2024,Tyler Lockett,WR,SEA,106.6,7.3,tyler lockett,47.0
+2024,Jameson Williams,WR,DET,107.8,8.1,jameson williams,48.0
+2024,Trey Benson,RB,ARI,108.5,5.7,trey benson,40.0
+2024,Chuba Hubbard,RB,CAR,108.8,6.6,chuba hubbard,41.0
+2024,Blake Corum,RB,LAR,110.3,7.2,blake corum,42.0
+2024,Courtland Sutton,WR,DEN,110.8,8.2,courtland sutton,49.0
+2024,Brian Thomas Jr.,WR,JAX,114.2,8.5,brian thomas,50.0
+2024,Justin Herbert,QB,LAC,114.6,12.7,justin herbert,15.0
+2024,Mike Williams,WR,PIT,116.1,8.1,mike williams,51.0
+2024,J.K. Dobbins,RB,LAC,116.2,7.6,j k dobbins,43.0
+2024,Caleb Williams,QB,CHI,116.7,13.3,caleb williams,16.0
+2024,Khalil Shakir,WR,BUF,117.4,9.7,khalil shakir,52.0
+2024,Dalton Schultz,TE,HOU,117.9,16.1,dalton schultz,12.0
+2024,T.J. Hockenson,TE,MIN,118.7,9.9,t j hockenson,13.0
+2024,Rico Dowdle,RB,DAL,118.9,9.5,rico dowdle,44.0
+2024,Brock Bowers,TE,LV,121.7,10.0,brock bowers,14.0
+2024,Curtis Samuel,WR,BUF,122.6,8.6,curtis samuel,53.0
+2024,Matthew Stafford,QB,LAR,123.1,11.3,matthew stafford,17.0
+2024,Tyler Allgeier,RB,ATL,125.1,10.4,tyler allgeier,45.0
+2024,Jaleel McLaughlin,RB,DEN,126.6,8.6,jaleel mclaughlin,46.0
+2024,Trevor Lawrence,QB,JAX,126.7,11.0,trevor lawrence,18.0
+2024,Elijah Mitchell,RB,SF,129.8,14.5,elijah mitchell,47.0
+2024,Kirk Cousins,QB,ATL,130.1,10.8,kirk cousins,19.0
+2024,Ty Chandler,RB,MIN,130.3,7.1,ty chandler,48.0
+2024,Aaron Rodgers,QB,NYJ,130.4,13.6,aaron rodgers,20.0
+2024,Joshua Palmer,WR,LAC,130.5,8.1,joshua palmer,54.0
+2024,Zach Charbonnet,RB,SEA,130.7,6.7,zach charbonnet,49.0
+2024,Jakobi Meyers,WR,LV,131.7,13.8,jakobi meyers,55.0
+2024,Jerry Jeudy,WR,CLE,132.9,8.2,jerry jeudy,56.0
+2024,Jordan Addison,WR,MIN,134.1,9.7,jordan addison,57.0
+2024,Justin Fields,QB,PIT,134.7,55.4,justin fields,21.0
+2024,Brandin Cooks,WR,DAL,135.1,9.4,brandin cooks,58.0
+2024,Pat Freiermuth,TE,PIT,135.5,11.6,pat freiermuth,15.0
+2024,Khalil Herbert,RB,CIN,136.4,9.8,khalil herbert,50.0
+2024,Cole Kmet,TE,CHI,137.1,13.8,cole kmet,16.0
+2024,Rashid Shaheed,WR,NO,139.8,7.7,rashid shaheed,59.0
+2024,Xavier Legette,WR,CAR,141.3,11.9,xavier legette,60.0
+2024,Kimani Vidal,RB,LAC,143.9,14.2,kimani vidal,51.0
+2024,Ray Davis,RB,BUF,147.7,13.2,ray davis,52.0
+2024,Jordan Mason,RB,SF,149.1,18.1,jordan mason,53.0
+2024,Deshaun Watson,QB,CLE,149.3,13.2,deshaun watson,22.0
+2024,Dameon Pierce,RB,HOU,151.4,16.3,dameon pierce,54.0
+2024,Luke Musgrave,TE,GB,151.7,19.6,luke musgrave,17.0
+2024,Isaiah Likely,TE,BAL,152.0,22.8,isaiah likely,18.0
+2024,Jahan Dotson,WR,PHI,152.0,12.7,jahan dotson,61.0
+2024,Quentin Johnston,WR,LAC,152.2,19.5,quentin johnston,62.0
+2024,Bucky Irving,RB,TB,152.9,13.2,bucky irving,55.0
+2024,Josh Downs,WR,IND,155.9,13.6,josh downs,63.0
+2024,Taysom Hill,TE,NO,155.9,15.0,taysom hill,19.0
+2024,Baker Mayfield,QB,TB,156.0,14.3,baker mayfield,23.0
+2024,Jaylen Wright,RB,MIA,156.6,14.3,jaylen wright,56.0
+2024,Antonio Gibson,RB,NE,158.6,12.6,antonio gibson,57.0
+2024,Adam Thielen,WR,CAR,159.0,13.9,adam thielen,64.0
+2024,MarShawn Lloyd,RB,GB,159.1,14.1,marshawn lloyd,58.0
+2024,Geno Smith,QB,SEA,159.8,13.4,geno smith,24.0
+2024,Dontayvion Wicks,WR,GB,160.0,17.6,dontayvion wicks,65.0
+2024,Will Levis,QB,TEN,160.0,10.7,will levis,25.0
+2024,Alexander Mattison,RB,LV,160.7,11.1,alexander mattison,59.0
+2024,Adonai Mitchell,WR,IND,160.9,14.9,adonai mitchell,66.0
+2024,Darnell Mooney,WR,ATL,161.8,14.4,darnell mooney,67.0
+2024,Ricky Pearsall,WR,SF,162.7,15.7,ricky pearsall,68.0
+2024,Ja'Lynn Polk,WR,NE,163.4,15.0,ja lynn polk,69.0
+2024,Dawson Knox,TE,BUF,165.9,19.5,dawson knox,20.0
+2024,Rashod Bateman,WR,BAL,169.6,9.7,rashod bateman,70.0
+2024,Gabe Davis,WR,JAX,169.6,9.4,gabe davis,71.0
+2024,Michael Wilson,WR,ARI,170.2,22.3,michael wilson,72.0
+2024,Tyrone Tracy Jr.,RB,NYG,174.0,15.7,tyrone tracy,60.0
+2024,Bo Nix,QB,DEN,177.5,21.3,bo nix,26.0
+2025,Ja'Marr Chase,WR,CIN,1.0,,ja marr chase,1.0
+2025,Bijan Robinson,RB,ATL,2.2,,bijan robinson,1.0
+2025,Saquon Barkley,RB,PHI,3.7,,saquon barkley,2.0
+2025,Jahmyr Gibbs,RB,DET,4.2,,jahmyr gibbs,3.0
+2025,CeeDee Lamb,WR,DAL,5.0,,ceedee lamb,2.0

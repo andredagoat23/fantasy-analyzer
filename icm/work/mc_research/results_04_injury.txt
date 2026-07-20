@@ -1,0 +1,120 @@
+pool: 1454 fantasy-relevant player-seasons
+
+=== availability base rates by position (fantasy-relevant) ===
+            n  games_mean  played_frac  miss4  miss9  ended_early  missed_med
+position                                                                     
+QB        305      11.128        0.663  0.534  0.328        0.233         4.0
+RB        411      13.314        0.796  0.367  0.122        0.178         2.0
+TE        323      12.709        0.753  0.458  0.152        0.155         3.0
+WR        415      13.790        0.825  0.313  0.092        0.145         1.0
+MC AVAIL_PRIOR says: RB .86  WR .92  TE .91  QB .94 (frac of 17)
+MC p_major floor 6%, cap 30%; empirical analog = miss9 / ended_early above
+
+=== severity: games missed distribution | missed >=1 ===
+  QB: n=230 q25=3 med=7 q75=12 q90=15 share>=9wks=43.5%
+  RB: n=298 q25=2 med=4 q75=7 q90=10 share>=9wks=16.8%
+  TE: n=269 q25=2 med=4 q75=7 q90=10 share>=9wks=18.2%
+  WR: n=284 q25=1 med=3 q75=6 q90=10 share>=9wks=13.4%
+
+=== age curve of availability ===
+                  n  games_mean  miss4  miss9
+position age_b                               
+QB       <=23    26      11.192  0.538  0.308
+         24-25   66      11.985  0.485  0.212
+         26-27   57      10.842  0.596  0.316
+         28-29   48      11.292  0.542  0.375
+         30-31   29       9.310  0.621  0.517
+         32+     70      10.671  0.514  0.386
+RB       <=23    68      12.706  0.397  0.147
+         24-25  130      13.554  0.338  0.123
+         26-27  112      13.938  0.312  0.080
+         28-29   61      13.033  0.393  0.148
+         30-31   28      11.607  0.571  0.214
+         32+     12      13.750  0.417  0.000
+TE       <=23    35      12.800  0.514  0.114
+         24-25   77      11.948  0.532  0.208
+         26-27   71      13.423  0.310  0.085
+         28-29   60      13.300  0.433  0.133
+         30-31   46      12.370  0.500  0.174
+         32+     34      12.265  0.529  0.206
+WR       <=23    63      14.381  0.254  0.063
+         24-25  103      14.146  0.243  0.068
+         26-27   97      13.845  0.330  0.093
+         28-29   73      13.808  0.301  0.110
+         30-31   46      12.891  0.457  0.065
+         32+     33      12.606  0.424  0.212 
+
+=== recurrence: this-year availability by LAST year's games missed ===
+                   n  games_mean  miss4  miss9
+position prev_b                               
+QB       0        62      13.790  0.290  0.161
+         1-2      45      13.711  0.333  0.089
+         3-5      35      11.343  0.600  0.257
+         6+      101       8.317  0.752  0.564
+RB       0        85      13.188  0.376  0.129
+         1-2      89      14.202  0.303  0.067
+         3-5      69      13.203  0.420  0.130
+         6+       50      12.520  0.440  0.200
+TE       0        49      14.204  0.306  0.041
+         1-2      95      13.389  0.389  0.116
+         3-5      61      13.016  0.459  0.115
+         6+       61      10.820  0.639  0.295
+WR       0       108      13.972  0.306  0.111
+         1-2     106      14.236  0.292  0.075
+         3-5      58      12.776  0.414  0.172
+         6+       46      12.957  0.435  0.087 
+
+                     n  miss4
+position prev_inj            
+QB       False     107  0.308
+         True      136  0.713
+RB       False     174  0.339
+         True      119  0.429
+TE       False     144  0.361
+         True      122  0.549
+WR       False     215  0.298
+         True      104  0.423 
+
+=== RB prior-season total touches -> next season ===
+           n  games_mean  miss4  mult_pg_med  mult_med
+load_b                                                
+<150      96      12.802  0.438        0.967     0.959
+150-250  109      13.596  0.376        0.979     0.982
+250-320   64      13.984  0.281        0.995     1.061
+320+      24      13.167  0.375        0.904     0.949 
+
+=== games missed by primary injury type (season level, n>=20) ===
+              n  missed_mean  miss4
+inj_primary                        
+Knee         27          5.0   0.63 
+
+=== prior-year soft-tissue injury -> this year ===
+Empty DataFrame
+Columns: [n, miss4, games_mean]
+Index: [] 
+
+=== weeks on injury report vs per-game outcome (context) ===
+             n  mult_pg_med
+listed_b                   
+0         1303        0.986
+1-2         90        0.990
+3-5         44        0.949
+6+          17        0.835 
+
+=== devastation: outcomes for players who missed 4+ games ===
+  QB: n=163 season mult med=0.69 per-game mult med=0.90 (games gone AND 10% worse per game when active)
+  RB: n=151 season mult med=0.60 per-game mult med=0.84 (games gone AND 16% worse per game when active)
+  TE: n=148 season mult med=0.64 per-game mult med=0.81 (games gone AND 19% worse per game when active)
+  WR: n=130 season mult med=0.65 per-game mult med=0.92 (games gone AND 8% worse per game when active)
+
+=== catastrophic (9+ missed): games actually played distribution ===
+count    237.0
+mean       4.9
+std        2.3
+min        1.0
+25%        3.0
+50%        5.0
+75%        7.0
+max        8.0
+
+MC assumes major-injury sims play U(0,8) games -> mean 4. Empirical mean above.

@@ -1,0 +1,6 @@
+raw/
+weekly.parquet
+seasons.parquet
+seasons_exp.parquet
+board_before_wave1.csv
+.nflcache/

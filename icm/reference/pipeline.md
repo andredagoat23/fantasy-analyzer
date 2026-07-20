@@ -124,23 +124,33 @@ low despite high raw points. This is WHY the advisor drafts by VONA off VOLS and
 to FLAG, not hack around (lesson L3).
 
 ## `compute_outcomes.py` — Monte Carlo risk (tunable knobs at top)
+**Wave-1 recalibrated (Jul 2026):** every constant fit to 2019–2025 real outcomes vs preseason market
+expectation and BACKTESTED (60.3% 20/80-band coverage vs 60% target; predicted boom 15.0% vs realized
+15.3%; old constants scored 41.5%/7.0%). Evidence + rerunnable scripts: `icm/work/mc_research/`,
+findings: `icm/work/mc-research-findings.md`.
 Scores each player-week under league rules from 2024-25 weekly → `consistency`(CV), `boom_rate`/
-`bust_rate`. Then Monte Carlo (20k sims/pos): **right-skewed log-normal** season multiplier (real
-upside), season ~ that × `total_points`; rank within position each sim → `p_elite`/`p_startable`/
-`p_bust` (top-12/24/36 finish odds) + `floor`/`ceiling`/`p10`/`p90` (percentiles). Layers that make it
-realistic:
-- **Injury/availability:** `availability` uses **shrinkage + age penalty** (raw 3-yr games-rate got
-  RELATIVE risk backwards — flagged fragile-CMC-looks-safer-than-Nabers). `shrunk = (obs·n + PRIOR·K)/
-  (n+K)` (PRIOR=0.90, K=2) so one injury year can't dominate a small sample; minus age penalty
-  (RB cliff 26 / slope .025 steepest, WR/TE 29/.015, QB 35/.02). Per-position baselines
-  {RB.86 WR.92 TE.91 QB.94 K.97}. Only computed for proven starters (`max_season>=14`); rest fall back
-  to position median (games-with-stats conflates "hurt" with "was a backup").
-- **Catastrophic-injury tail:** each player has `p_major = clip(0.06+(1-avail)·0.15, .06, .30)` of a
-  season-tanking injury — so nobody is a lock (Bijan P(start) 99.95%→~94%). A USER catch.
-- **Rookie variance + draft-capital tilt:** no-history players get higher ROLE_RISK; premium 2026 draft
-  picks get a small upside mean-tilt (from `load_draft_picks`). rng seeded.
-- ⚠️ CAVEATS: percentages are directional (ride on the ROLE_RISK/injury assumptions); small-sample
-  backups get noisy CV; symmetric assumptions understate pure-handcuff contingent upside.
+`bust_rate`. Then Monte Carlo (20k sims/pos): **right-skewed log-normal** season multiplier,
+season ~ games × coupling × M, re-centered so E[season] = `total_points` × tilt exactly; rank within
+position each sim → `p_elite`/`p_startable`/`p_bust` + `floor`/`ceiling`/`p10`/`p90`. Layers:
+- **Depth-dependent sigma (`SIGMA_ANCHORS`):** per-game lognormal sigma interpolated by projection
+  positional rank — variance GROWS with rank depth (elite bands ~1.6–1.9×, rank-25+ bands 2.2–3.5×).
+  Replaced the flat ROLE_RISK=0.20 that made booms 4× rarer than reality. Rookies get a sigma
+  multiplier {QB 1.5, RB 1.4, TE 1.1, WR 1.0 — rookie WRs are NOT wider}.
+- **Injury/availability:** shrinkage + age penalty, recalibrated: PRIOR {QB .845, RB .817, WR .841,
+  TE .828, K .97} (real starters play ~.82–.85 at EVERY position), K=4 (injury-proneness barely
+  recurs among starters: +3.5pp), age cliffs at 29 for RB/WR/TE (slopes .035/.025/.030), QB none.
+  Clip floor .5. Only for proven starters (`max_season>=14`); rest fall back to position prior.
+- **Catastrophic tail:** `p_major = clip(P_MAJOR_POS + 0.5·(0.84−avail), .05, .18)` with position
+  bases {QB .103, RB .108, WR .089, TE .071} (= empirical P(miss 9+)); lost seasons play U(1,8) games.
+- **Games↔per-game coupling (`COUPLE=0.41`):** missing time also degrades per-game output
+  (miss 4-8 → ~10% worse, 9+ → ~20%; corr .29) — this is what fattens the left tail correctly.
+- **Draft-capital tilt (refit):** top-15 1.10, 16-32 1.08, 2nd rd 1.00, 3rd rd 0.92 (the dead zone),
+  4th+ 0.95. rng seeded.
+- ⚠️ CAVEATS: sigma anchors estimated vs MARKET expectation (≈ our projections in accuracy, not
+  identical); deep-QB sigma clipped (backup contamination); per-player CV no longer feeds sigma
+  (unvalidated — candidate for Wave 2 re-validation); handcuff contingent upside still understated.
+  Acceptance test after ANY re-tune: rerun `icm/work/mc_research/05_distribution.py` +
+  `06_finish_odds.py` — new board bands/odds must land on the empirical tables.
 
 ## `load_ff_opportunity.py` — xPPG regression lens
 Source: `nfl.load_ff_opportunity()` (OPEN-licensed) — per-week `total_fantasy_points_exp` (expected FP

@@ -282,6 +282,34 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L21 — Cross-year schema drift silently zeroes a data layer (MC research, Jul 2026)
+- **Symptom:** injury-report aggregates looked plausible but were ~0 for 2019–2024 and populated only
+  for 2025; downstream "injury type recurrence" tables came out near-empty.
+- **Root cause:** nflverse `injuries_*.parquet` files pre-2025 have NO `season_type` column (only
+  `game_type`); after `pd.concat`, filtering on `season_type=="REG"` NaN-dropped six seasons without
+  any error. A second trap in the same layer: FFC's ADP API 403s the default Python user-agent, and
+  FantasyPros' historical ADP pages only server-render 5 rows (the rest is JS/paywall).
+- **Fix:** filter on the column that exists in EVERY year (`game_type`); after any multi-year concat,
+  ASSERT per-year row counts / group-by-season means before trusting aggregates. Fallback sources:
+  DynastyProcess ECR archive via `load_ff_rankings("all")` (deep, consistent, 2021+).
+- **Teaches:** when pooling files across years, schema drift fails SILENTLY through filters — verify
+  the pooled data has all years represented before analyzing. (Principles 1, 8, 9)
+
+## L22 — Calibrate the simulator to reality, then keep the acceptance test (Jul 2026)
+- **Symptom:** MC looked reasonable but had never been checked against real season outcomes. Research
+  vs 2019–2025 (actual ÷ market-expected points = "season multiplier") showed: spreads ~2× too narrow
+  (booms ≥1.5× real 12–18% vs 4% simmed), elite RBs 4× riskier than claimed, availability ≈.82–.85 at
+  ALL positions (QB .94 was fiction), and games missed COUPLES with per-game decline (corr .29) which
+  independent sims can't produce.
+- **Fix (Wave 1, user-authorized frozen edit):** depth-dependent `SIGMA_ANCHORS`, recalibrated
+  availability/p_major/age cliffs, games↔per-game coupling, refit draft tilt — all constants
+  BACKTESTED before the edit (60.3% band coverage vs 60% target; old: 41.5%).
+- **Teaches:** a simulator's constants are CLAIMS about the world — back-test them against history
+  before trusting them, and encode the check as a rerunnable acceptance test
+  (`icm/work/mc_research/05_distribution.py` + `06_finish_odds.py`). (Principles 1, 5, 9)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

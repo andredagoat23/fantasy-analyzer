@@ -49,6 +49,15 @@ p_bust) → `icm/reference/lessons.md` (L11–L20).
 
 # NEXT TASK — Monte Carlo deep-dive (the user's priority)
 
+> **STATUS UPDATE (Jul 19, 2026): RESEARCH DONE + WAVE 1 SHIPPED (user-authorized frozen edit).**
+> 7 seasons mined (findings: `icm/work/mc-research-findings.md`, scripts: `icm/work/mc_research/`);
+> constants backtested (60.3% band coverage vs 60% target; old 41.5%), `compute_outcomes.py`
+> recalibrated (depth-dependent SIGMA_ANCHORS, honest availability/p_major/age, games↔per-game
+> coupling, draft_tilt refit), pipeline re-run, acceptance tests pass, 13 unit tests pass, app boots.
+> Lessons L21–L22 logged. **Wave 2 candidates (not built):** team-change bust risk (QB/RB/TE),
+> WR age-30 boom fade, CV-personalized sigma (re-validate first), late-usage-surge tilt — these fit
+> the ADVISOR/value_board layer (not frozen) or need their own backtest before another frozen edit.
+
 The user believes the **Monte Carlo model (`compute_outcomes.py`) could be the best predictor** and
 wants to "utilize it to its very highest possibility." **`compute_outcomes.py` is a FROZEN pipeline
 file — the user must explicitly authorize edits** (they are inclined to; confirm scope first). Editing

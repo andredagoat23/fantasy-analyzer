@@ -1,0 +1,72 @@
+=== PER-GAME sigma targets for M (this is what replaces ROLE_RISK) ===
+pos tier      n   sd(ln)  robust(20/80)
+QB  1-6      42   0.164   0.182
+QB  7-12     42   0.300   0.190
+QB  13-24    83   0.415   0.190
+QB  25-40    70   0.687   0.313
+QB  41-60    62   1.460   1.182
+RB  1-6      42   0.283   0.297
+RB  7-12     41   0.208   0.128
+RB  13-24    83   0.277   0.256
+RB  25-40   112   0.512   0.417
+RB  41-60   133   0.615   0.550
+TE  1-6      42   0.249   0.149
+TE  7-12     42   0.272   0.249
+TE  13-24    72   0.428   0.323
+TE  25-40    78   0.507   0.560
+TE  41-60    86   0.508   0.566
+WR  1-6      43   0.211   0.196
+WR  7-12     41   0.215   0.156
+WR  13-24    84   0.226   0.229
+WR  25-40   109   0.316   0.296
+WR  41-60   138   0.421   0.385
+
+=== era-split stability: robust per-game sigma ===
+pos tier      early   late
+QB  1-6     0.129   0.185
+QB  7-12    0.170   0.155
+QB  13-24   0.206   0.173
+QB  25-40   (thin)
+QB  41-60   (thin)
+RB  1-6     0.312   0.278
+RB  7-12    0.136   0.151
+RB  13-24   0.213   0.261
+RB  25-40   0.377   0.441
+RB  41-60   0.429   0.641
+TE  1-6     0.170   0.157
+TE  7-12    0.165   0.311
+TE  13-24   0.368   0.282
+TE  25-40   0.532   0.514
+TE  41-60   0.448   0.591
+WR  1-6     0.196   0.174
+WR  7-12    0.180   0.173
+WR  13-24   0.158   0.214
+WR  25-40   0.317   0.276
+WR  41-60   0.298   0.403
+
+=== 2020-exclusion sensitivity ===
+  QB: P(mult>=1.5) all=0.154  no2020=0.156   robust sigma(mult_pg) all=0.272 no2020=0.283
+  RB: P(mult>=1.5) all=0.158  no2020=0.158   robust sigma(mult_pg) all=0.361 no2020=0.363
+  TE: P(mult>=1.5) all=0.184  no2020=0.189   robust sigma(mult_pg) all=0.415 no2020=0.420
+  WR: P(mult>=1.5) all=0.125  no2020=0.138   robust sigma(mult_pg) all=0.271 no2020=0.292
+
+=== starter played_frac / P(9+ missed): all vs no-2020 ===
+  QB: played 0.845/0.837   cat9 0.103/0.111
+  RB: played 0.817/0.827   cat9 0.108/0.103
+  WR: played 0.841/0.842   cat9 0.089/0.080
+  TE: played 0.828/0.818   cat9 0.071/0.083
+
+=== FINAL per-game sigma anchors (paste into compute_outcomes.py) ===
+  QB: [(3, np.float64(0.235)), (9, np.float64(0.238)), (18, np.float64(0.238)), (32, np.float64(0.294)), (50, np.float64(0.734))]  (pooled=0.272)
+  RB: [(3, np.float64(0.334)), (9, np.float64(0.334)), (18, np.float64(0.334)), (32, np.float64(0.398)), (50, np.float64(0.491))]  (pooled=0.361)
+  WR: [(3, np.float64(0.24)), (9, np.float64(0.24)), (18, np.float64(0.246)), (32, np.float64(0.287)), (50, np.float64(0.351))]  (pooled=0.271)
+  TE: [(3, np.float64(0.305)), (9, np.float64(0.346)), (18, np.float64(0.364)), (32, np.float64(0.497)), (50, np.float64(0.504))]  (pooled=0.415)
+
+=== coupling fit: per-game multiplier vs fraction of season missed ===
+                 n    mid     pg
+miss_frac                       
+(-0.01, 0.05]  371  0.000  1.075
+(0.05, 0.2]    489  0.118  1.032
+(0.2, 0.5]     355  0.312  0.901
+(0.5, 1.0]     228  0.706  0.792
+linear slope ~ -0.41  -> per_game_eff = per_game * (1 + -0.41 * (1 - games/GAMES))

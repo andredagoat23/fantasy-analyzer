@@ -1,0 +1,125 @@
+starter pool: 764 player-seasons ({'QB': np.int64(126), 'RB': np.int64(249), 'TE': np.int64(98), 'WR': np.int64(291)})
+
+=== STARTER availability base rates ===
+            n  games_mean  played_frac  miss4  miss9  missed_med
+position                                                        
+QB        126      14.119        0.845  0.262  0.103         1.0
+RB        249      13.659        0.817  0.309  0.108         2.0
+TE         98      13.837        0.828  0.306  0.071         2.0
+WR        291      14.058        0.841  0.278  0.089         1.0
+MC AVAIL_PRIOR: RB .86  WR .92  TE .91  QB .94 | MC p_major floor .06 cap .30
+
+=== age x availability + per-game outcome (starters) ===
+                 n  played  miss4  miss9  mult_pg_med
+position age_b                                       
+QB       24-25  29   0.877  0.241  0.034        1.046
+         26-27  27   0.854  0.296  0.037        0.994
+         28-29  17   0.800  0.353  0.235        0.962
+         32+    29   0.844  0.172  0.138        0.930
+RB       <=23   38   0.786  0.342  0.132        1.009
+         24-25  75   0.818  0.293  0.120        0.995
+         26-27  78   0.843  0.269  0.090        0.981
+         28-29  40   0.828  0.300  0.075        0.972
+         30-31  15   0.716  0.467  0.200        0.922
+TE       24-25  23   0.790  0.391  0.130        0.979
+         26-27  21   0.882  0.143  0.000        1.032
+         28-29  20   0.850  0.250  0.050        1.015
+         30-31  15   0.759  0.467  0.133        0.932
+         32+    11   0.835  0.273  0.091        1.055
+WR       <=23   33   0.876  0.152  0.061        0.954
+         24-25  70   0.853  0.243  0.071        0.988
+         26-27  75   0.863  0.267  0.067        1.019
+         28-29  56   0.847  0.268  0.107        0.996
+         30-31  35   0.796  0.400  0.086        0.999
+         32+    22   0.735  0.455  0.227        1.024 
+
+=== recurrence: availability by LAST season's games missed (starters) ===
+                  n  played  miss4  miss9
+position prev_b                          
+QB       0       47   0.841  0.255  0.149
+         1-2     29   0.866  0.241  0.034
+         3-5     12   0.871  0.333  0.000
+         6+      15   0.800  0.333  0.133
+RB       0       58   0.812  0.310  0.103
+         1-2     61   0.844  0.295  0.066
+         3-5     45   0.796  0.356  0.133
+         6+      27   0.757  0.370  0.222
+TE       0       24   0.811  0.333  0.083
+         1-2     32   0.840  0.312  0.031
+         3-5     11   0.865  0.182  0.000
+         6+      10   0.847  0.300  0.100
+WR       0       92   0.825  0.315  0.120
+         1-2     79   0.863  0.266  0.076
+         3-5     38   0.792  0.342  0.132
+         6+      23   0.818  0.304  0.087 
+
+             n  miss4  miss9  played
+prev_inj3                           
+False      423  0.291  0.090   0.838
+True       181  0.331  0.122   0.804 
+
+=== Out/Doubtful player-weeks by body part (starters; note: IR often unlisted) ===
+report_primary_injury
+Knee           118
+Hamstring      117
+Ankle          109
+Concussion      53
+Shoulder        50
+Foot            42
+Calf            21
+Hip             19
+Toe             18
+Quadricep       17
+right Thumb     13
+Groin           13
+Ribs            11
+Heel            10 
+
+=== NEXT-season miss4 by prior-year primary injury type (baseline=0.289) ===
+             n  miss4  played
+inj_type                     
+Ankle       30  0.367   0.804
+Concussion  18  0.333   0.817
+Shoulder    15  0.333   0.787
+Knee        26  0.308   0.797
+Hamstring   34  0.294   0.862 
+
+             n  miss4  played
+cls                          
+other       54  0.352   0.827
+soft        53  0.302   0.857
+structural  78  0.333   0.798 
+
+=== per-game outcome vs games missed (starters) - the correlation MC ignores ===
+                   n  mult_pg_med
+position miss_b                  
+QB       0        53        1.052
+         1-3      40        1.038
+         4-8      20        0.930
+         9+       13        0.794
+RB       0        69        1.045
+         1-3     103        1.039
+         4-8      50        0.890
+         9+       27        0.807
+TE       0        25        1.055
+         1-3      43        1.024
+         4-8      23        0.984
+WR       0        99        1.027
+         1-3     110        1.015
+         4-8      55        0.925
+         9+       26        0.790 
+
+corr(games_frac, per-game mult) = 0.288  (MC sims these independently)
+
+=== catastrophic (9+ missed) starters: games played ===
+count    73.0
+mean      5.3
+std       2.4
+min       1.0
+25%       3.0
+50%       6.0
+75%       7.0
+max       8.0
+
+empirical P(catastrophic) by pos: {'QB': np.float64(0.103), 'RB': np.float64(0.108), 'TE': np.float64(0.071), 'WR': np.float64(0.089)}
+MC p_major: 6% (healthy) to 30% (fragile), U(0,8) games -> mean 4

@@ -1,0 +1,17 @@
+Expectation curves (pts/scheduled-game) at ranks 1/5/12/24/36/48:
+  QB: ['22.1', '19.5', '16.9', '13.7', '6.5', '2.0']
+  RB: ['14.7', '14.7', '13.3', '9.7', '7.3', '5.4']
+  WR: ['15.5', '15.3', '12.3', '10.0', '9.7', '7.6']
+  TE: ['12.3', '9.2', '7.7', '6.0', '4.6', '2.8']
+
+multiplier pool: 1454 player-seasons
+mult by position:  mean / median / p20 / p80:
+  QB: 1.08 / 1.00 / 0.54 / 1.39  (n=305)
+  RB: 1.03 / 1.01 / 0.59 / 1.43  (n=411)
+  TE: 1.03 / 0.95 / 0.57 / 1.45  (n=323)
+  WR: 1.03 / 1.06 / 0.67 / 1.36  (n=415)
+  Cooper Kupp 2021: exp_rank=17 exp_pts=205 actual=438 mult=2.13 mult_pg=1.80 games=17
+  Puka Nacua 2023: exp_rank=96 exp_pts=62 actual=298 mult=4.82 mult_pg=3.48 games=17
+  Christian McCaffrey 2022: exp_rank=1 exp_pts=251 actual=358 mult=1.43 mult_pg=1.11 games=17
+  Jonathan Taylor 2022: exp_rank=2 exp_pts=251 actual=152 mult=0.61 mult_pg=0.73 games=11
+  Javonte Williams 2022: exp_rank=13 exp_pts=225 actual=44 mult=0.20 mult_pg=0.71 games=4
