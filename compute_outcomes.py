@@ -160,7 +160,14 @@ for pos in ["QB", "RB", "WR", "TE", "K"]:
         tilt = np.where(chg, tilt * 0.97, tilt)
         season_sigma = np.where(chg, season_sigma * 1.40, season_sigma)
     elif pos == "RB":
-        tilt = np.where(chg, tilt * 0.94, tilt)
+        # Wave-2b (user challenge, validated): movers split by PROVEN production. A proven
+        # producer changing teams (2yr ppg>=10, 12+ games - e.g. an established back moving
+        # into a new lead role) historically DELIVERS his price (bust 30%, med mult 1.01) ->
+        # no penalty. The mover trap is the UNPROVEN back handed a new chance (bust 52%,
+        # med 0.64) -> harsher than the old uniform 0.94. See 09_wave2_validation.py.
+        proven = (sub["wk_mean"].fillna(0).values >= 10) & (sub["games"].fillna(0).values >= 12)
+        tilt = np.where(chg & ~proven, tilt * 0.86, tilt)
+        season_sigma = np.where(chg & ~proven, season_sigma * 1.20, season_sigma)
         season_sigma = np.where(stay, season_sigma * 0.85, season_sigma)
     elif pos == "TE":
         tilt = np.where(chg, tilt * 0.95, tilt)

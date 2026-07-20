@@ -329,6 +329,25 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L24 — A user challenge to a model rule is a subgroup hypothesis — test it, don't defend it (Jul 2026)
+- **Symptom:** the user pushed back on the Wave-2 blanket RB team-changer penalty: "players who
+  moved into a better role (e.g. Montgomery) should be boosted, not taken down."
+- **What the data said:** the intuitive mechanism was WRONG but the conclusion was RIGHT. Splitting
+  7 seasons of RB movers: "market-perceived role upgrade" movers bust MORE (44% — the market prices
+  the new role in and reality underdelivers), and unproven backs handed a new chance are the real
+  trap (52% bust, med mult 0.64). But PROVEN producers who moved (2yr ppg≥10, 12+ games) deliver
+  their price (bust 30%, med 1.01) — the blanket 0.94 tilt was punishing exactly the wrong guys.
+- **Fix:** split the RB mover tilt on proven production (no penalty for proven; .86 tilt + σ×1.2
+  for unproven), validated in the backtest harness (subgroup pred/real: proven .33/.30, unproven
+  .51/.52; global coverage 60.2%). Montgomery: bust 42→38%, ceiling 297→316, composite 58→53.
+- **Teaches:** when the user says a rule feels wrong, the rule is often too COARSE rather than
+  wrong-directioned — find the subgroup split that separates their counterexample from the cases
+  the rule was built on, and let the backtest arbitrate. Also: definitions must survive contact
+  with the pipeline's data window (snap-based "established" misfiled Montgomery; production-based
+  didn't). (Principles 1, 5; collaboration rule: take "this looks off" seriously)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

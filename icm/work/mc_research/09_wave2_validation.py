@@ -169,3 +169,43 @@ gap_report(pool.wr30, "WR 30+")
 print("-- CV terciles --")
 gap_report(pool["cv_rel"] <= q1, "low prev CV (steady)")
 gap_report(pool["cv_rel"] >= q3, "high prev CV (volatile)")
+
+# ================= Wave-2b: split the RB mover tilt by PROVEN production =================
+# User challenge: role-upgrade movers (e.g. Montgomery) shouldn't eat the blanket penalty.
+# Data: proven movers (2yr ppg>=10, games>=12) bust 30% / med 1.01 -> NO tilt;
+#       unproven movers bust 52% / med 0.64 -> HARSHER tilt than the uniform 0.94.
+sea2 = sea.sort_values(["player_id","season"])
+g2 = sea2.groupby("player_id")
+sea2["pts_2p"] = g2["total_pts"].apply(lambda s: s.shift(1).rolling(2, min_periods=1).sum()).reset_index(level=0, drop=True)
+sea2["gms_2p"] = g2["games"].apply(lambda s: s.shift(1).rolling(2, min_periods=1).sum()).reset_index(level=0, drop=True)
+pool = pool.merge(sea2[["player_id","season","pts_2p","gms_2p"]], on=["player_id","season"], how="left")
+pool["proven2"] = (pool["pts_2p"] / pool["gms_2p"] >= 10) & (pool["gms_2p"] >= 12)
+
+def wave2b_adjust(sp):
+    tilt, smult = wave2_adjust(sp)
+    pos = sp["position"].values
+    chg = sp["team_changed"].values & ~sp["rookie"].values
+    proven = sp["proven2"].fillna(False).values
+    rb_chg = (pos == "RB") & chg
+    tilt[rb_chg & proven] = 1.0                      # proven mover: no penalty (was 0.94)
+    tilt[rb_chg & ~proven] = 0.86                    # unproven mover: harsher (real med 0.64)
+    smult[rb_chg & ~proven] *= 1.20
+    return tilt, smult
+
+recs3, cov3 = [], []
+for season, sp in pool.groupby("season"):
+    tilt, smult = wave2b_adjust(sp)
+    sims = simulate(sp, GAMES_BY_SEASON[season], mean_tilt=tilt, sigma_mult=smult)
+    proj = sp["exp_pts"].values
+    p20 = np.percentile(sims, 20, 1); p80 = np.percentile(sims, 80, 1)
+    cov3.extend(((sp["total_pts"].values >= p20) & (sp["total_pts"].values <= p80)).tolist())
+    recs3.append(pd.DataFrame({"idx": sp.index,
+        "pred_boom": (sims >= 1.5 * proj[:, None]).mean(1),
+        "pred_bust": (sims <= 0.7 * proj[:, None]).mean(1)}))
+pred3 = pd.concat(recs3).set_index("idx")
+pool["pred_boom"], pool["pred_bust"] = pred3["pred_boom"], pred3["pred_bust"]
+print(f"\n=== AFTER Wave-2b (split RB mover tilt) ===")
+print(f"global coverage: {np.mean(cov3):.1%}   boom pred {pool['pred_boom'].mean():.3f} vs real {pool['real_boom'].mean():.3f}")
+gap_report((pool.position=="RB") & pool.team_changed & pool.proven2, "RB movers PROVEN (2yr ppg>=10)")
+gap_report((pool.position=="RB") & pool.team_changed & ~pool.proven2, "RB movers unproven")
+gap_report((pool.position=="RB") & ~pool.team_changed & pool.prev_team_last.notna(), "RB stayed (unchanged)")

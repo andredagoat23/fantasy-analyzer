@@ -146,9 +146,15 @@ position each sim → `p_elite`/`p_startable`/`p_bust` + `floor`/`ceiling`/`p10`
   (miss 4-8 → ~10% worse, 9+ → ~20%; corr .29) — this is what fattens the left tail correctly.
 - **Draft-capital tilt (refit):** top-15 1.10, 16-32 1.08, 2nd rd 1.00, 3rd rd 0.92 (the dead zone),
   4th+ 0.95. rng seeded.
-- **Wave-2 situational tilts (backtested in `09_wave2_validation.py`; global coverage held 59.7%):**
-  team-changers (vs last 2025 team, LA→LAR normalized) — QB tilt .97 σ×1.40, RB tilt .94,
-  TE tilt .95 σ×1.15 (real changer bust .38-.40 vs .23-.27 stayers); stable RB/TE vets σ×0.85;
+- **Wave-2 situational tilts (backtested in `09_wave2_validation.py`; global coverage held ~60%):**
+  team-changers (vs last 2025 team, LA→LAR normalized) — QB tilt .97 σ×1.40, TE tilt .95 σ×1.15
+  (real changer bust .38-.40 vs .23-.27 stayers). **RB movers split by PROVEN production (Wave-2b,
+  user challenge validated):** a proven producer moving (2yr ppg≥10, 12+ games — Montgomery-to-a-new-
+  lead-role types) historically DELIVERS his price (bust 30%, med mult 1.01) → NO tilt; the unproven
+  back handed a new chance is the trap (bust 52%, med 0.64) → tilt .86 σ×1.20. Note the counter-
+  intuitive finding: "market-perceived-upgrade" movers bust MORE (44%) — the market prices the new
+  role in and reality underdelivers; proven-ness, not role-upgrade, is the real discriminator.
+  Stable RB/TE vets σ×0.85;
   WR age-30+ tilt .98 σ×0.70 (booms fade — kept conservative, n=53); CV blend
   σ×clip(1+0.30·(cv_rel−1), .8, 1.3) for non-rookie vets (volatile players run wider). Late-usage
   surge tested and DROPPED (noise under Wave-1). Known residuals (documented, not chased): RB/TE
