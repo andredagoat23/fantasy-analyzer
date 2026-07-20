@@ -53,7 +53,7 @@ YOUR JOB
 Recommend the pick that maximizes my roster's value given my needs, strategy, and risk appetite. Decide in THIS ORDER, and never let a later factor override an earlier one:
 1) ROSTER NEED filters what's DRAFTABLE — a position that helps my roster: an open starter/FLEX, or RB/WR bench depth (RB and WR ALWAYS keep bench/FLEX value). QB and TE are 1-START positions — once mine is filled, a 2nd one is NOT draftable no matter how high its VONA (a backup QB/TE is nearly worthless — I start one and they're streamable). Never draft a filled 1-start position, or a K/D-ST before my lineup is full. Roster need does NOT force me to fill an open starter this instant: a still-open slot whose good options will KEEP (wheel "safe", low VONA) can wait while I grab a bigger VONA cliff at a draftable RB/WR — I'll fill the safe slot next pick for the same value (but don't let it rot if its options are going).
 2) VALUE — the **TOP PICKS NOW** line ranks your draftable options by VONA. VONA gives you the SHORTLIST, not the final answer: the ***starred** picks are within a few VONA of each other = a genuine TIE, so among them pick the BEST PLAYER by age, risk/reward, offense (vegas), and role (tgt%/snap%) — NOT the tiny VONA gap. Only when one option's VONA clearly stands alone above the rest (nothing else starred) does VONA alone decide. NEVER bump a lower one up just to fill an open starter: a safe open slot WAITS (you fill it next pick for the same value); a filled 1-start QB/TE is already excluded (VONA "n/a"). WITHIN a position, take the best available (highest VOLS).
-3) UPSIDE & RISK break the close calls — when two candidates' VONA is genuinely close, pick the one that fits my RISK APPETITE: upside build → lean ceiling/boom, ascending young roles, high vegas + role; safe build → lean floor, durable, low bust. Use role / situation (vegas) / xPPG-regression as tiebreakers; `market` is a pricing tiebreaker only (can I wait on him?), never a talent signal. Say which factors drove the call.
+3) UPSIDE & RISK break the close calls — when two candidates' VONA is genuinely close, pick the one that fits my RISK APPETITE: upside build → lean ceiling/boom, ascending young roles, high vegas + role; safe build → lean floor, durable, low bust. Use role / situation (vegas) / xPPG-regression as tiebreakers; `market` is a pricing tiebreaker only (can I wait on him?), never a talent signal. Say which factors drove the call. RISK ACCUMULATES ACROSS MY ROSTER: bust risks multiply — if the ROSTER RISK line says one of my rooms is already bust-heavy, break ties toward the STABLE option at that position (TOP PICKS already demotes the risky ones there — trust it). High bust% is only ever acceptable when the upside PAYS for it (big ceiling or real top-3 odds — a compensated boom/bust swing); a high-bust player with a mediocre ceiling is a coin-flip with no jackpot, and stacking several at one position is how a season quietly dies.
 Only recommend players on the "available" list — never invent players. **NEVER state a player's NFL team, role, or stats from your own memory — rosters change every year and your training is stale, so you WILL get teams wrong (e.g. saying a player is on his old team). Use ONLY the `team`/`role`/numbers in the data I give you, verbatim.** If a player is NOT in my data, say you don't have him, do NOT guess his team, and do NOT recommend him — he's either an unsigned free agent or a player my board has faded (over-projected vs expert consensus); tell me that and move on.
 
 DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
@@ -219,6 +219,37 @@ def _bench_overstacked(mine_df):
     if cnt["WR"] - cnt["RB"] >= _BENCH_BALANCE_GAP:
         over.add("WR")
     return over
+
+
+# --- roster risk accumulation (lesson L23) ---
+# The MC layer prices each player's bust risk, but nothing stopped a roster from STACKING
+# uncompensated risk (five 40%+-bust RBs with mediocre ceilings = coin-flip odds that two bust).
+# Risk with a real jackpot (big ceiling / elite odds) is a legitimate swing; risk without one isn't.
+_HIGH_BUST = 0.40      # a roster piece this bust-prone counts toward the position's risk load
+_RISK_STACK_N = 2      # this many high-bust players at a position = the room is risk-stacked
+_RISK_PENALTY = 6.0    # VONA-scale demotion for adding MORE uncompensated risk to a stacked room
+
+
+def _is_compensated(p_bust, ceiling, total_points, p_elite):
+    """High risk is OK if the upside pays for it: big ceiling ratio or real elite odds."""
+    ratio = (ceiling / total_points) if (pd.notna(ceiling) and pd.notna(total_points)
+                                         and total_points) else np.nan
+    return (pd.notna(ratio) and ratio >= 1.45) or (pd.notna(p_elite) and p_elite >= 0.10)
+
+
+def _roster_risk(mine_df):
+    """Per FLEX position: how many of MY current players are high-bust, and the room's avg bust.
+    Returns {pos: (n_high, avg_bust)} for positions where I have 2+ players with bust data."""
+    out = {}
+    if not len(mine_df) or "p_bust" not in mine_df.columns:
+        return out
+    base = (mine_df["pos_label"].astype(str).str.replace(r"\d+$", "", regex=True)
+            if "pos_label" in mine_df.columns else mine_df.get("position", pd.Series(dtype=str)))
+    for pos in ("RB", "WR", "TE"):
+        room = mine_df[(base == pos) & mine_df["p_bust"].notna()]
+        if len(room) >= 2:
+            out[pos] = (int((room["p_bust"] >= _HIGH_BUST).sum()), float(room["p_bust"].mean()))
+    return out
 
 
 def _lineup_gaps(mine_df):
@@ -477,6 +508,26 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         pool = available[~available["position"].isin(skip)].copy()
         # rank by VONA + a bounded depth-chart ROLE nudge (WR1 beats a comparable WR2); real VONA still shown
         pool["_rk"] = pool["vona"] + _role_bonus_series(pool)
+        # ROSTER RISK gate (L23): if my room at a position is already risk-stacked (>=2 high-bust
+        # players), demote a FURTHER high-bust candidate there — but ONLY when a genuinely more
+        # stable same-position swap exists at comparable value (late in drafts EVERYONE is
+        # high-bust; penalizing all of them equally is noise, not advice). Compensated risk
+        # (big ceiling / elite odds) is a legitimate swing and is never demoted.
+        risk_state = _roster_risk(mine_df)
+        risk_stacked = {p for p, (n, _) in risk_state.items() if n >= _RISK_STACK_N}
+        pool["riskstack"] = False
+        if risk_stacked and {"p_bust", "ceiling", "total_points"} <= set(pool.columns):
+            for pos_ in risk_stacked:
+                sub_ = pool[(pool["position"] == pos_) & pool["p_bust"].notna()]
+                for i, r in sub_.iterrows():
+                    if r["p_bust"] < _HIGH_BUST or _is_compensated(
+                            r["p_bust"], r["ceiling"], r["total_points"], r.get("p_elite")):
+                        continue
+                    stable_swap = ((sub_["p_bust"] <= r["p_bust"] - 0.10)
+                                   & (sub_["vona"] >= r["vona"] - 8)).any()
+                    if stable_swap:
+                        pool.loc[i, "_rk"] -= _RISK_PENALTY
+                        pool.loc[i, "riskstack"] = True
         ok = pool.sort_values("_rk", ascending=False).head(25)
         # Best VONA available at a position that fills an OPEN DEDICATED slot (not a punt-able QB) — the
         # bar a FLEX-only option must clear by _FLEX_MARGIN to be worth taking over a dedicated need.
@@ -513,6 +564,10 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                        else ", BENCH-ONLY (starter open elsewhere)" if r.position in bench_sat
                        else ", PUNT-ABLE fill late" if r.position in punt_pos
                        else ", FLEX-only (fill a dedicated starter first)" if _flex_demoted(r.position, r.vona)
+                       else f", RISK-STACKED (your {r.position} room already carries "
+                            f"{risk_state[r.position][0]} high-bust players and this adds more "
+                            "uncompensated risk — prefer the stable option)"
+                       if getattr(r, "riskstack", False)
                        else "")
                 return f"{star}{r.full_name} ({r.pos_label}, VONA {r.vona:.0f}{w}{role}{tag})"
             picks_line = ("TOP PICKS NOW — this is the FINAL ranking: TAKE #1. The order already blends "
@@ -523,7 +578,11 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                           "(you already have plenty of that position — keep RB/WR depth even, don't add a "
                           "5th RB with 2 WR), BENCH-ONLY (a 4th RB while a starter is open), punt-able "
                           "1-start QB/TE, FLEX-only pieces (fill fixed QB/RB/WR/TE starters before the "
-                          "week-to-week FLEX). The *starred ones are "
+                          "week-to-week FLEX). A RISK-STACKED warning = my room there is already "
+                          "bust-heavy and this player adds more risk WITHOUT a paying ceiling — he's "
+                          "already down-weighted, so if a stable option sits near him, take the stable "
+                          "one; if he STILL ranks #1, he's simply the value — take him, but say the risk "
+                          "out loud. The *starred ones are "
                           "within a few VONA = a TIE — among them pick the BEST PLAYER by CLEAR-ALPHA role, "
                           "age, risk/reward, offense (vegas). Only override #1 for a real risk/upside reason. "
                           + " | ".join(f"{i+1}. {_pk(r)}" for i, r in enumerate(ok.itertuples())) + "\n")
@@ -560,12 +619,26 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                 dp_line += f" Then #{d['following']} after that."
         dp_line += "\n"
 
+    # ROSTER RISK line (L23): tell the model how much bust risk each of my rooms already carries,
+    # so tie-breaks lean stable when a room is loaded and a swing stays fine when it isn't.
+    risk_bits = []
+    for p, (n, avg) in _roster_risk(mine_df).items():
+        if n >= _RISK_STACK_N:
+            risk_bits.append(f"{p} room is BUST-HEAVY ({n} players ≥{_HIGH_BUST:.0%} bust, avg "
+                             f"{avg:.0%}) — on close calls take the STABLE {p}; more uncompensated "
+                             f"risk there is already demoted in TOP PICKS")
+        elif n == 0 and avg < 0.25:
+            risk_bits.append(f"{p} room is safe (avg bust {avg:.0%}) — a compensated boom/bust "
+                             f"swing there is affordable")
+    risk_line = ("ROSTER RISK: " + " | ".join(risk_bits) + "\n") if risk_bits else ""
+
     dst_line = f"\n\nD/ST draft ranking (streamer, draft late): {DST_TEXT}" if DST_TEXT else ""
     return (
         "LIVE DRAFT STATE\n"
         + dp_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"{needs}\n"
+        f"{risk_line}"
         f"{punt_line}"
         f"{picks_line}"
         f"Startable pool left by position (context only — VONA already prices scarcity): {scar}\n\n"

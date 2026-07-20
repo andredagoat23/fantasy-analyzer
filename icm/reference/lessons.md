@@ -310,6 +310,25 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L23 — Risk accumulates across a roster; the advisor must see the ROOM, not just the player (Jul 2026)
+- **Symptom:** a mock draft graded fine pick-by-pick (fair value everywhere) but assembled five RBs
+  at 25–76% bust with mediocre ceilings — better-than-coin-flip odds that two bust, with no jackpot
+  compensation. Every per-player signal was correct; nothing watched the pile.
+- **Root cause:** the advisor priced each candidate's bust risk but had no roster-level state: no
+  notion of a "bust-heavy room," and no preference for compensated risk (big ceiling / elite odds)
+  over uncompensated risk at equal VONA.
+- **Fix (`advisor.py`):** `_roster_risk` computes per-room high-bust counts from MY roster; when a
+  room has ≥2 players ≥40% bust, a further uncompensated high-bust candidate there is VONA-penalized
+  and tagged RISK-STACKED — but ONLY if a genuinely stabler same-position swap exists at comparable
+  value (late in drafts everyone is high-bust; penalizing all of them equally is noise). A ROSTER
+  RISK line states each room's load. Verified against the real mock: at pick 127 the 76%-bust
+  handcuff fell out of TOP PICKS and stable swaps surfaced; at pick 90 the risky-but-correct value
+  pick stayed #1 with the room warning attached; a clean roster shows nothing.
+- **Teaches:** independent risks multiply — evaluate additions against the portfolio, not in
+  isolation; and risk is only worth carrying when the upside pays for it. (Principles 3, 5)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.
