@@ -1,0 +1,225 @@
+season,team,playcaller,pc_prev,pc_changed
+2019,ARI,Kliff Kingsbury,,False
+2020,ARI,Kliff Kingsbury,Kliff Kingsbury,False
+2021,ARI,Kliff Kingsbury,Kliff Kingsbury,False
+2022,ARI,Kliff Kingsbury,Kliff Kingsbury,False
+2023,ARI,Drew Petzing,Kliff Kingsbury,True
+2024,ARI,Drew Petzing,Drew Petzing,False
+2025,ARI,Drew Petzing,Drew Petzing,False
+2019,ATL,Dirk Koetter,,False
+2020,ATL,Dirk Koetter,Dirk Koetter,False
+2021,ATL,Arthur Smith,Dirk Koetter,True
+2022,ATL,Arthur Smith,Arthur Smith,False
+2023,ATL,Arthur Smith,Arthur Smith,False
+2024,ATL,Zac Robinson,Arthur Smith,True
+2025,ATL,Zac Robinson,Zac Robinson,False
+2019,BAL,Greg Roman,,False
+2020,BAL,Greg Roman,Greg Roman,False
+2021,BAL,Greg Roman,Greg Roman,False
+2022,BAL,Greg Roman,Greg Roman,False
+2023,BAL,Todd Monken,Greg Roman,True
+2024,BAL,Todd Monken,Todd Monken,False
+2025,BAL,Todd Monken,Todd Monken,False
+2019,BUF,Brian Daboll,,False
+2020,BUF,Brian Daboll,Brian Daboll,False
+2021,BUF,Brian Daboll,Brian Daboll,False
+2022,BUF,Ken Dorsey,Brian Daboll,True
+2023,BUF,Ken Dorsey,Ken Dorsey,False
+2024,BUF,Joe Brady,Ken Dorsey,True
+2025,BUF,Joe Brady,Joe Brady,False
+2019,CAR,Norv Turner,,False
+2020,CAR,Joe Brady,Norv Turner,True
+2021,CAR,Joe Brady,Joe Brady,False
+2022,CAR,Ben McAdoo,Joe Brady,True
+2023,CAR,Frank Reich,Ben McAdoo,True
+2024,CAR,Dave Canales,Frank Reich,True
+2025,CAR,Dave Canales,Dave Canales,False
+2019,CHI,Matt Nagy,,False
+2020,CHI,Matt Nagy,Matt Nagy,False
+2021,CHI,Matt Nagy,Matt Nagy,False
+2022,CHI,Luke Getsy,Matt Nagy,True
+2023,CHI,Luke Getsy,Luke Getsy,False
+2024,CHI,Shane Waldron,Luke Getsy,True
+2025,CHI,Ben Johnson,Shane Waldron,True
+2019,CIN,Zac Taylor,,False
+2020,CIN,Zac Taylor,Zac Taylor,False
+2021,CIN,Zac Taylor,Zac Taylor,False
+2022,CIN,Zac Taylor,Zac Taylor,False
+2023,CIN,Zac Taylor,Zac Taylor,False
+2024,CIN,Zac Taylor,Zac Taylor,False
+2025,CIN,Zac Taylor,Zac Taylor,False
+2019,CLE,Freddie Kitchens,,False
+2020,CLE,Kevin Stefanski,Freddie Kitchens,True
+2021,CLE,Kevin Stefanski,Kevin Stefanski,False
+2022,CLE,Kevin Stefanski,Kevin Stefanski,False
+2023,CLE,Kevin Stefanski,Kevin Stefanski,False
+2024,CLE,Kevin Stefanski,Kevin Stefanski,False
+2025,CLE,Kevin Stefanski,Kevin Stefanski,False
+2019,DAL,Kellen Moore,,False
+2020,DAL,Kellen Moore,Kellen Moore,False
+2021,DAL,Kellen Moore,Kellen Moore,False
+2022,DAL,Kellen Moore,Kellen Moore,False
+2023,DAL,Mike McCarthy,Kellen Moore,True
+2024,DAL,Mike McCarthy,Mike McCarthy,False
+2025,DAL,Brian Schottenheimer,Mike McCarthy,True
+2019,DEN,Rich Scangarello,,False
+2020,DEN,Pat Shurmur,Rich Scangarello,True
+2021,DEN,Pat Shurmur,Pat Shurmur,False
+2022,DEN,Nathaniel Hackett,Pat Shurmur,True
+2023,DEN,Sean Payton,Nathaniel Hackett,True
+2024,DEN,Sean Payton,Sean Payton,False
+2025,DEN,Sean Payton,Sean Payton,False
+2019,DET,Darrell Bevell,,False
+2020,DET,Darrell Bevell,Darrell Bevell,False
+2021,DET,Anthony Lynn,Darrell Bevell,True
+2022,DET,Ben Johnson,Anthony Lynn,True
+2023,DET,Ben Johnson,Ben Johnson,False
+2024,DET,Ben Johnson,Ben Johnson,False
+2025,DET,John Morton,Ben Johnson,True
+2019,GB,Matt LaFleur,,False
+2020,GB,Matt LaFleur,Matt LaFleur,False
+2021,GB,Matt LaFleur,Matt LaFleur,False
+2022,GB,Matt LaFleur,Matt LaFleur,False
+2023,GB,Matt LaFleur,Matt LaFleur,False
+2024,GB,Matt LaFleur,Matt LaFleur,False
+2025,GB,Matt LaFleur,Matt LaFleur,False
+2019,HOU,Bill O'Brien,,False
+2020,HOU,Tim Kelly,Bill O'Brien,True
+2021,HOU,Tim Kelly,Tim Kelly,False
+2022,HOU,Pep Hamilton,Tim Kelly,True
+2023,HOU,Bobby Slowik,Pep Hamilton,True
+2024,HOU,Bobby Slowik,Bobby Slowik,False
+2025,HOU,Nick Caley,Bobby Slowik,True
+2019,IND,Frank Reich,,False
+2020,IND,Frank Reich,Frank Reich,False
+2021,IND,Frank Reich,Frank Reich,False
+2022,IND,Frank Reich,Frank Reich,False
+2023,IND,Shane Steichen,Frank Reich,True
+2024,IND,Shane Steichen,Shane Steichen,False
+2025,IND,Shane Steichen,Shane Steichen,False
+2019,JAX,John DeFilippo,,False
+2020,JAX,Jay Gruden,John DeFilippo,True
+2021,JAX,Darrell Bevell,Jay Gruden,True
+2022,JAX,Doug Pederson,Darrell Bevell,True
+2023,JAX,Doug Pederson,Doug Pederson,False
+2024,JAX,Press Taylor,Doug Pederson,True
+2025,JAX,Liam Coen,Press Taylor,True
+2019,KC,Andy Reid,,False
+2020,KC,Andy Reid,Andy Reid,False
+2021,KC,Andy Reid,Andy Reid,False
+2022,KC,Andy Reid,Andy Reid,False
+2023,KC,Andy Reid,Andy Reid,False
+2024,KC,Andy Reid,Andy Reid,False
+2025,KC,Andy Reid,Andy Reid,False
+2019,LAC,Ken Whisenhunt,,False
+2020,LAC,Shane Steichen,Ken Whisenhunt,True
+2021,LAC,Joe Lombardi,Shane Steichen,True
+2022,LAC,Joe Lombardi,Joe Lombardi,False
+2023,LAC,Kellen Moore,Joe Lombardi,True
+2024,LAC,Greg Roman,Kellen Moore,True
+2025,LAC,Greg Roman,Greg Roman,False
+2019,LAR,Sean McVay,,False
+2020,LAR,Sean McVay,Sean McVay,False
+2021,LAR,Sean McVay,Sean McVay,False
+2022,LAR,Sean McVay,Sean McVay,False
+2023,LAR,Sean McVay,Sean McVay,False
+2024,LAR,Sean McVay,Sean McVay,False
+2025,LAR,Sean McVay,Sean McVay,False
+2019,LV,Jon Gruden,,False
+2020,LV,Jon Gruden,Jon Gruden,False
+2021,LV,Jon Gruden,Jon Gruden,False
+2022,LV,Josh McDaniels,Jon Gruden,True
+2023,LV,Josh McDaniels,Josh McDaniels,False
+2024,LV,Luke Getsy,Josh McDaniels,True
+2025,LV,Chip Kelly,Luke Getsy,True
+2019,MIA,Chad O'Shea,,False
+2020,MIA,Chan Gailey,Chad O'Shea,True
+2021,MIA,Godsey/Studesville,Chan Gailey,True
+2022,MIA,Mike McDaniel,Godsey/Studesville,True
+2023,MIA,Mike McDaniel,Mike McDaniel,False
+2024,MIA,Mike McDaniel,Mike McDaniel,False
+2025,MIA,Mike McDaniel,Mike McDaniel,False
+2019,MIN,Kevin Stefanski,,False
+2020,MIN,Gary Kubiak,Kevin Stefanski,True
+2021,MIN,Klint Kubiak,Gary Kubiak,True
+2022,MIN,Kevin O'Connell,Klint Kubiak,True
+2023,MIN,Kevin O'Connell,Kevin O'Connell,False
+2024,MIN,Kevin O'Connell,Kevin O'Connell,False
+2025,MIN,Kevin O'Connell,Kevin O'Connell,False
+2019,NE,Josh McDaniels,,False
+2020,NE,Josh McDaniels,Josh McDaniels,False
+2021,NE,Josh McDaniels,Josh McDaniels,False
+2022,NE,Patricia/Judge,Josh McDaniels,True
+2023,NE,Bill O'Brien,Patricia/Judge,True
+2024,NE,Alex Van Pelt,Bill O'Brien,True
+2025,NE,Josh McDaniels,Alex Van Pelt,True
+2019,NO,Sean Payton,,False
+2020,NO,Sean Payton,Sean Payton,False
+2021,NO,Sean Payton,Sean Payton,False
+2022,NO,Pete Carmichael,Sean Payton,True
+2023,NO,Pete Carmichael,Pete Carmichael,False
+2024,NO,Klint Kubiak,Pete Carmichael,True
+2025,NO,Kellen Moore,Klint Kubiak,True
+2019,NYG,Pat Shurmur,,False
+2020,NYG,Jason Garrett,Pat Shurmur,True
+2021,NYG,Jason Garrett,Jason Garrett,False
+2022,NYG,Mike Kafka,Jason Garrett,True
+2023,NYG,Mike Kafka,Mike Kafka,False
+2024,NYG,Brian Daboll,Mike Kafka,True
+2025,NYG,Mike Kafka,Brian Daboll,True
+2019,NYJ,Adam Gase,,False
+2020,NYJ,Adam Gase,Adam Gase,False
+2021,NYJ,Mike LaFleur,Adam Gase,True
+2022,NYJ,Mike LaFleur,Mike LaFleur,False
+2023,NYJ,Nathaniel Hackett,Mike LaFleur,True
+2024,NYJ,Nathaniel Hackett,Nathaniel Hackett,False
+2025,NYJ,Tanner Engstrand,Nathaniel Hackett,True
+2019,PHI,Doug Pederson,,False
+2020,PHI,Doug Pederson,Doug Pederson,False
+2021,PHI,Nick Sirianni,Doug Pederson,True
+2022,PHI,Shane Steichen,Nick Sirianni,True
+2023,PHI,Brian Johnson,Shane Steichen,True
+2024,PHI,Kellen Moore,Brian Johnson,True
+2025,PHI,Kevin Patullo,Kellen Moore,True
+2019,PIT,Randy Fichtner,,False
+2020,PIT,Randy Fichtner,Randy Fichtner,False
+2021,PIT,Matt Canada,Randy Fichtner,True
+2022,PIT,Matt Canada,Matt Canada,False
+2023,PIT,Matt Canada,Matt Canada,False
+2024,PIT,Arthur Smith,Matt Canada,True
+2025,PIT,Arthur Smith,Arthur Smith,False
+2019,SEA,Brian Schottenheimer,,False
+2020,SEA,Brian Schottenheimer,Brian Schottenheimer,False
+2021,SEA,Shane Waldron,Brian Schottenheimer,True
+2022,SEA,Shane Waldron,Shane Waldron,False
+2023,SEA,Shane Waldron,Shane Waldron,False
+2024,SEA,Ryan Grubb,Shane Waldron,True
+2025,SEA,Klint Kubiak,Ryan Grubb,True
+2019,SF,Kyle Shanahan,,False
+2020,SF,Kyle Shanahan,Kyle Shanahan,False
+2021,SF,Kyle Shanahan,Kyle Shanahan,False
+2022,SF,Kyle Shanahan,Kyle Shanahan,False
+2023,SF,Kyle Shanahan,Kyle Shanahan,False
+2024,SF,Kyle Shanahan,Kyle Shanahan,False
+2025,SF,Kyle Shanahan,Kyle Shanahan,False
+2019,TB,Byron Leftwich,,False
+2020,TB,Byron Leftwich,Byron Leftwich,False
+2021,TB,Byron Leftwich,Byron Leftwich,False
+2022,TB,Byron Leftwich,Byron Leftwich,False
+2023,TB,Dave Canales,Byron Leftwich,True
+2024,TB,Liam Coen,Dave Canales,True
+2025,TB,Josh Grizzard,Liam Coen,True
+2019,TEN,Arthur Smith,,False
+2020,TEN,Arthur Smith,Arthur Smith,False
+2021,TEN,Todd Downing,Arthur Smith,True
+2022,TEN,Todd Downing,Todd Downing,False
+2023,TEN,Tim Kelly,Todd Downing,True
+2024,TEN,Brian Callahan,Tim Kelly,True
+2025,TEN,Brian Callahan,Brian Callahan,False
+2019,WAS,Jay Gruden,,False
+2020,WAS,Scott Turner,Jay Gruden,True
+2021,WAS,Scott Turner,Scott Turner,False
+2022,WAS,Scott Turner,Scott Turner,False
+2023,WAS,Eric Bieniemy,Scott Turner,True
+2024,WAS,Kliff Kingsbury,Eric Bieniemy,True
+2025,WAS,Kliff Kingsbury,Kliff Kingsbury,False

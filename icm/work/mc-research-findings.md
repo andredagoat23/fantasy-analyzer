@@ -156,3 +156,14 @@ flags on upside picks); the risk dial gets meaningfully wider bands to work with
    pool: segment boom pred .137 vs real .133; global coverage 61.1%.
 6. **Positional SOS** (`sos_priors.py` -> `sos_data.csv`): 2026 opponents x 2025 per-position points
    allowed; rank 1-32 in the advisor table with tie-break-only usage rules.
+
+## ✅ PLAYCALLER LAYER COMPLETE (Jul 20, late)
+2026 playcallers news-verified for all 32 teams (`data/playcallers_2026.csv`: 18 changes, 6
+first-timers — vs only 10 HC changes; BUF new-HC but SAME caller). Historical playcallers
+2019-2025 compiled from contemporaneous sources, 224/224 team-seasons (`data/playcallers_hist.csv`).
+**Decomposition verdict (stayed QB/RB/WR, 2020-25):** the continuity mispricing lives with the
+FULL REGIME CHANGE — new playcaller + new HC med 1.09x/bust 17%; **OC-only change (same HC,
+n=135) is price-NEUTRAL (med 1.00x)** — the market prices OC swaps correctly. So the MC tilt
+stays on its validated new-HC basis; the playcaller layer is advisor USAGE-reasoning context
+(stale tgt%/snap% under a new scheme, first-timer uncertainty), with the neutrality finding
+encoded so the advisor never fades/boosts on an OC change alone. Stress suite + tests pass.
