@@ -25,12 +25,11 @@ The NEXT TASK is a **Monte Carlo deep-dive** — details + the questions to ask 
   a `poll_sleeper` fragment. 13 unit tests pass; app boots + UI renders. Coverage now ESPN+Sleeper ≈81%.
 
 ## Git / deploy state (IMPORTANT)
-- **Pushed/deployed** (Streamlit Cloud auto-deploys `main`): through commit **`6cfe100`** — includes
-  L11–L19 + the numpy pin.
-- **Committed locally but NOT pushed** (so the DEPLOYED app does NOT have these yet):
-  `ea8bc04` (pipeline doc fix), `e798429` (**L20 strategy tuning**), `8eb5d7b` (**Sleeper sync**).
-  → When the user is ready, `git push origin main` deploys them.
-- **Uncommitted scratch** in `icm/work/`: `sleeper-sync-scope.md`, `yahoo-probe-scope.md`, `diagnosis.md`.
+- **Pushed/deployed** (Streamlit Cloud auto-deploys `main`): through commit **`8237cc5`** (Jul 19,
+  2026) — everything is live: L20 strategy tuning, Sleeper sync, and **MC Waves 1+2** (recalibrated
+  `compute_outcomes.py` + regenerated board).
+- Local `icm/work/mc_research/` data artifacts (parquets/raw/board snapshots) are gitignored —
+  rebuild via `01_build_panel.py` if a fresh machine needs them.
 
 ## Verified vs still-pending
 - **Pending live verify:** a real **Sleeper mock draft end-to-end** (needs the user's Sleeper
