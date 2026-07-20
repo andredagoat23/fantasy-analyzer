@@ -90,6 +90,12 @@ def build():
     board["missed_last"] = (17 - board["gsis_id"].map(g25).fillna(0)).clip(lower=0)
 
     K = 15   # cohort = the K most-similar historical player-seasons (no bucket cliffs)
+    M_SHRINK = 25   # empirical-Bayes: shrink 15-sample rates toward the position base rate.
+    # Fitted on leave-one-season-out validation (11_stress_test.py): raw K=15 rates are
+    # directionally right but overconfident at the extremes (raw 51% boom -> realized 33%);
+    # with m=25 the max calibration gap drops from .18 to .03 with discrimination intact.
+    pos_base = hist.assign(boom=hist["mult"] >= 1.3, bust=hist["mult"] <= 0.7,
+                           top5=hist["pos_rank_total"] <= 5).groupby("position")[["boom", "bust", "top5"]].mean()
     rows = []
     for _, p in board.iterrows():
         is_rk = bool(p.get("is_rookie", False))
@@ -134,10 +140,12 @@ def build():
             prof.append("new team")
         desc = " ".join(prof)
 
-        boom = (cohort["mult"] >= 1.3).mean()
-        bust = (cohort["mult"] <= 0.7).mean()
+        bb = pos_base.loc[p["position"]]
+        shrink = lambda raw, b: (raw * K + b * M_SHRINK) / (K + M_SHRINK)
+        boom = shrink((cohort["mult"] >= 1.3).mean(), bb["boom"])
+        bust = shrink((cohort["mult"] <= 0.7).mean(), bb["bust"])
         med = cohort["mult"].median()
-        top5 = (cohort["pos_rank_total"] <= 5).mean()
+        top5 = shrink((cohort["pos_rank_total"] <= 5).mean(), bb["top5"])
 
         # the 5 ABSOLUTE best matches (closest profiles), shown with their real outcomes
         def fmt(i):

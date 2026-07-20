@@ -1,0 +1,40 @@
+=== A. cohort LOSO validation ===
+boom calibration by predicted quintile:
+    pred   real    n
+q                   
+0  0.101  0.198  486
+1  0.234  0.258  964
+2  0.333  0.275  397
+3  0.400  0.298  292
+4  0.510  0.331  284
+  [PASS] boom quintiles monotone-increasing in realized rate - realized: [0.2, 0.26, 0.27, 0.3, 0.33]
+  [FAIL] boom calibration gap (max |pred-real| per quintile) < 0.08 - max gap 0.179
+  [PASS] discrimination: top-quintile realized boom >= 1.5x bottom - 0.33 vs 0.20
+bust calibration by predicted quintile:
+     pred   real
+qb              
+0   0.096  0.183
+1   0.200  0.263
+2   0.267  0.276
+3   0.333  0.294
+4   0.458  0.386
+  [PASS] bust quintiles monotone - [0.18, 0.26, 0.28, 0.29, 0.39]
+  [FAIL] bust calibration gap < 0.08 - max gap 0.087
+
+=== B. board + data invariants ===
+  [PASS] percentile ordering p10<=floor<=ceiling<=p90 for all
+  [PASS] probabilities in [0,1]
+  [PASS] p_startable + p_bust == 1
+  [PASS] P_pos1 >= p_elite
+  [PASS] availability in [0.5, 1] where set
+  [PASS] new_hc_team flag == verified 10-team list - ['ARI', 'ATL', 'BAL', 'BUF', 'CLE', 'LV', 'MIA', 'NYG', 'PIT', 'TEN']
+  [PASS] elite band ratio < deep band ratio (all positions)
+  [PASS] value_board floors present, no NaN
+  [PASS] cohort coverage ~280 with n=15 all - 280 rows
+  [PASS] cohort rates in [0,1]
+  [PASS] cohort comps well-formed (5 entries)
+  [PASS] sos 32x4 rows
+  [PASS] sos ranks span 1..32 per position
+  [PASS] new_hc csv has 10 TRUE rows
+
+FAILURES: boom calibration gap (max |pred-real| per quintile) < 0.08, bust calibration gap < 0.08
