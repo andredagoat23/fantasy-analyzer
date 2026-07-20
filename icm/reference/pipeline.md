@@ -146,6 +146,14 @@ position each sim → `p_elite`/`p_startable`/`p_bust` + `floor`/`ceiling`/`p10`
   (miss 4-8 → ~10% worse, 9+ → ~20%; corr .29) — this is what fattens the left tail correctly.
 - **Draft-capital tilt (refit):** top-15 1.10, 16-32 1.08, 2nd rd 1.00, 3rd rd 0.92 (the dead zone),
   4th+ 0.95. rng seeded.
+- **Wave-2 situational tilts (backtested in `09_wave2_validation.py`; global coverage held 59.7%):**
+  team-changers (vs last 2025 team, LA→LAR normalized) — QB tilt .97 σ×1.40, RB tilt .94,
+  TE tilt .95 σ×1.15 (real changer bust .38-.40 vs .23-.27 stayers); stable RB/TE vets σ×0.85;
+  WR age-30+ tilt .98 σ×0.70 (booms fade — kept conservative, n=53); CV blend
+  σ×clip(1+0.30·(cv_rel−1), .8, 1.3) for non-rookie vets (volatile players run wider). Late-usage
+  surge tested and DROPPED (noise under Wave-1). Known residuals (documented, not chased): RB/TE
+  stayers' bust still ~7pp overpredicted (games-machinery-driven; stayers actually get MORE
+  catastrophic injuries — selection effect), WR30+ boom residual within noise at n=53.
 - ⚠️ CAVEATS: sigma anchors estimated vs MARKET expectation (≈ our projections in accuracy, not
   identical); deep-QB sigma clipped (backup contamination); per-player CV no longer feeds sigma
   (unvalidated — candidate for Wave 2 re-validation); handcuff contingent upside still understated.

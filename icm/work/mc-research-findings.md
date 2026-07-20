@@ -110,6 +110,19 @@ Per-player CV personalization of sigma was REMOVED (unvalidated) — Wave-2 cand
 team-change/WR-age tilts. Note: live-board deep-QB odds stay below history because 2026 projections
 rate deep QBs low — projection input, not sim miscalibration.
 
+## ✅ WAVE 2 APPLIED (Jul 19, 2026)
+Each candidate measured for RESIDUAL calibration gaps under Wave-1 machinery, minimal tilts fitted,
+subgroup + global calibration re-verified (`09_wave2_validation.py`). **Shipped:** team-change
+tilts (QB .97/σ1.40, RB .94, TE .95/σ1.15 — changer bust gaps closed from ~+11pp to ~±1pp),
+stable-RB/TE narrowing (σ×.85), WR30+ fade (tilt .98, σ×.70 — conservative; n=53 residual within
+noise), CV blend (σ×[.8–1.3] by relative volatility — closed both tercile gaps). **Dropped:**
+late-usage surge (calibrated already under Wave-1 = noise). Global coverage after Wave 2: 59.7%
+(target 60), boom .145 pred vs .153 real. Known residual: RB/TE stayers' bust ~7pp overpredicted —
+structural (games-machinery); stayers empirically get MORE 9+-game injuries than changers
+(selection effect), so the lever isn't availability. Implementation detail: flags computed in
+`compute_outcomes.py` from 2025 last-team (LA→LAR) vs current team; `team_2025` intermediate NOT
+persisted (collides with `load_ff_opportunity.py`'s own merge).
+
 ## Original proposal (kept for the record — now implemented)
 Wave 1 (the calibration fixes, ~30 lines in `compute_outcomes.py`):
 1. Depth-dependent sigma table (finding 1) — replaces flat ROLE_RISK for vets.

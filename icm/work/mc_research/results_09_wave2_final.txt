@@ -1,0 +1,16 @@
+=== AFTER Wave-2 adjustments ===
+global 20/80 coverage: 59.7% (target ~60%)   global boom pred 0.145 vs real 0.153
+-- team change --
+  QB changed                         n=  73  boom pred 0.157 vs real 0.178   bust pred 0.389 vs real 0.384
+  QB stayed                          n= 170  boom pred 0.120 vs real 0.141   bust pred 0.239 vs real 0.235
+  RB changed                         n=  62  boom pred 0.149 vs real 0.129   bust pred 0.392 vs real 0.403
+  RB stayed                          n= 231  boom pred 0.158 vs real 0.147   bust pred 0.304 vs real 0.234
+  TE changed                         n=  52  boom pred 0.157 vs real 0.192   bust pred 0.422 vs real 0.404
+  TE stayed                          n= 214  boom pred 0.154 vs real 0.182   bust pred 0.306 vs real 0.266
+  WR changed                         n=  57  boom pred 0.139 vs real 0.105   bust pred 0.274 vs real 0.263
+  WR stayed                          n= 262  boom pred 0.124 vs real 0.107   bust pred 0.247 vs real 0.210
+-- WR 30+ --
+  WR 30+                             n=  53  boom pred 0.139 vs real 0.075   bust pred 0.293 vs real 0.226
+-- CV terciles --
+  low prev CV (steady)               n= 368  boom pred 0.129 vs real 0.122   bust pred 0.262 vs real 0.242
+  high prev CV (volatile)            n= 368  boom pred 0.157 vs real 0.185   bust pred 0.337 vs real 0.318

@@ -54,9 +54,10 @@ p_bust) → `icm/reference/lessons.md` (L11–L20).
 > constants backtested (60.3% band coverage vs 60% target; old 41.5%), `compute_outcomes.py`
 > recalibrated (depth-dependent SIGMA_ANCHORS, honest availability/p_major/age, games↔per-game
 > coupling, draft_tilt refit), pipeline re-run, acceptance tests pass, 13 unit tests pass, app boots.
-> Lessons L21–L22 logged. **Wave 2 candidates (not built):** team-change bust risk (QB/RB/TE),
-> WR age-30 boom fade, CV-personalized sigma (re-validate first), late-usage-surge tilt — these fit
-> the ADVISOR/value_board layer (not frozen) or need their own backtest before another frozen edit.
+> Lessons L21–L22 logged. **WAVE 2 ALSO SHIPPED (same session):** team-change tilts (QB/RB/TE),
+> stable-RB/TE narrowing, WR30+ fade, CV-blend sigma — each fitted to close subgroup calibration
+> gaps and verified to keep global coverage at 59.7% (`09_wave2_validation.py`); late-usage surge
+> tested and dropped (noise). Both waves committed locally; push deploys.
 
 The user believes the **Monte Carlo model (`compute_outcomes.py`) could be the best predictor** and
 wants to "utilize it to its very highest possibility." **`compute_outcomes.py` is a FROZEN pipeline

@@ -1,0 +1,171 @@
+# Wave-2 candidate validation: under the WAVE-1 machinery, do these subgroups still show
+# calibration gaps (realized boom/bust vs simulated), and does a minimal tilt close them
+# without breaking global calibration?
+# Candidates: (a) team-changers QB/RB/TE, (b) WR age 30+, (c) high prev-season CV,
+#             (d) late-season target-share surge (WR/TE).
+import pandas as pd
+import numpy as np
+
+rng = np.random.default_rng(0)
+OUT = "icm/work/mc_research"
+N_SIMS = 4000
+GAMES_BY_SEASON = {2019: 16, 2020: 16, 2021: 17, 2022: 17, 2023: 17, 2024: 17, 2025: 17}
+
+SIGMA_ANCHORS = {
+    "QB": [(3, 0.235), (9, 0.238), (18, 0.238), (32, 0.294), (50, 0.45)],
+    "RB": [(3, 0.334), (9, 0.334), (18, 0.334), (32, 0.398), (50, 0.491)],
+    "WR": [(3, 0.240), (9, 0.240), (18, 0.246), (32, 0.287), (50, 0.351)],
+    "TE": [(3, 0.305), (9, 0.346), (18, 0.364), (32, 0.497), (50, 0.504)],
+}
+AVAIL_PRIOR = {"QB": 0.845, "RB": 0.817, "WR": 0.841, "TE": 0.828}
+P_MAJOR_POS = {"QB": 0.103, "RB": 0.108, "WR": 0.089, "TE": 0.071}
+AGE_CLIFF = {"QB": 99, "RB": 29, "WR": 29, "TE": 29}
+AGE_SLOPE = {"QB": 0.0, "RB": 0.035, "WR": 0.025, "TE": 0.030}
+COUPLE, COUPLE_FLOOR = 0.41, 0.55
+ROOKIE_SIGMA_MULT = {"QB": 1.5, "RB": 1.4, "WR": 1.0, "TE": 1.1}
+
+def sigma_for(pos, rank):
+    xs, ys = zip(*SIGMA_ANCHORS[pos])
+    return float(np.interp(rank, xs, ys))
+
+def simulate(sp, G, mean_tilt=None, sigma_mult=None):
+    """Wave-1 machinery over one season's pool; optional per-player tilt/sigma multipliers."""
+    n = len(sp)
+    proj = sp["exp_pts"].values
+    pos = sp["position"].values
+    rank = sp["exp_pos_rank"].values
+    age = sp["age"].values
+    rookie = sp["rookie"].values
+    av = np.array([AVAIL_PRIOR[p] for p in pos])
+    pen = np.array([max(0.0, (a - AGE_CLIFF[p])) * AGE_SLOPE[p] if not np.isnan(a) else 0.0
+                    for a, p in zip(age, pos)])
+    av = np.clip(av - pen, 0.5, 1.0)
+    p_major = np.clip(np.array([P_MAJOR_POS[p] for p in pos]) + 0.5 * (0.84 - av), 0.05, 0.18)
+    sig = np.array([sigma_for(p, r) * (ROOKIE_SIGMA_MULT[p] if rk else 1.0)
+                    for p, r, rk in zip(pos, rank, rookie)])
+    if sigma_mult is not None:
+        sig = sig * sigma_mult
+    normal_games = np.clip(rng.normal((G * av)[:, None], (1.0 * (1 - av) * G)[:, None], (n, N_SIMS)), 0, G)
+    major = rng.random((n, N_SIMS)) < p_major[:, None]
+    games = np.where(major, rng.uniform(1, 8, (n, N_SIMS)), normal_games)
+    couple = np.clip(1 - COUPLE * (1 - games / G), COUPLE_FLOOR, 1.0)
+    M = rng.lognormal((-(sig ** 2) / 2)[:, None], sig[:, None], (n, N_SIMS))
+    raw = games * couple * M
+    sims = raw * (proj / raw.mean(1))[:, None]
+    if mean_tilt is not None:
+        sims = sims * mean_tilt[:, None]
+    return sims
+
+# ---------- panel + subgroup features ----------
+sea = pd.read_parquet(f"{OUT}/seasons_exp.parquet")
+wk = pd.read_parquet(f"{OUT}/weekly.parquet")
+pool = sea[sea["exp_pts"].notna() & (sea["exp_pos_rank"] <= 60) & sea["total_pts"].notna()].copy()
+pool["rookie"] = pool["years_exp"].fillna(1) == 0
+pool["team_changed"] = (pool["team_last"] != pool["prev_team_last"]) & pool["prev_team_last"].notna()
+pool["wr30"] = (pool["position"] == "WR") & (pool["age"] >= 30)
+med_cv = pool.groupby("position")["prev_cv"].transform("median")
+pool["cv_rel"] = pool["prev_cv"] / med_cv
+# late-usage surge: last-4-played-weeks target share minus season avg, PRIOR season
+wk_r = wk[wk["position"].isin(["WR", "TE", "RB"])].sort_values(["player_id", "season", "week"])
+l4 = (wk_r.groupby(["player_id", "season"])
+      .apply(lambda g: g.tail(4)["target_share"].mean() - g["target_share"].mean(), include_groups=False)
+      .rename("ts_surge").reset_index())
+l4["join_season"] = l4["season"] + 1
+pool = pool.merge(l4[["player_id", "join_season", "ts_surge"]],
+                  left_on=["player_id", "season"], right_on=["player_id", "join_season"], how="left")
+
+# ---------- baseline Wave-1 predictions per player ----------
+recs = []
+for season, sp in pool.groupby("season"):
+    sims = simulate(sp, GAMES_BY_SEASON[season])
+    proj = sp["exp_pts"].values
+    recs.append(pd.DataFrame({
+        "idx": sp.index,
+        "pred_boom": (sims >= 1.5 * proj[:, None]).mean(1),
+        "pred_bust": (sims <= 0.7 * proj[:, None]).mean(1)}))
+pred = pd.concat(recs).set_index("idx")
+pool["pred_boom"], pool["pred_bust"] = pred["pred_boom"], pred["pred_bust"]
+pool["real_boom"] = pool["mult"] >= 1.5
+pool["real_bust"] = pool["mult"] <= 0.7
+
+def gap_report(mask, label):
+    d = pool[mask & pool["pred_boom"].notna()]
+    if len(d) < 25:
+        print(f"  {label:34} n={len(d)} (too thin)")
+        return None
+    print(f"  {label:34} n={len(d):4}  boom pred {d['pred_boom'].mean():.3f} vs real {d['real_boom'].mean():.3f}"
+          f"   bust pred {d['pred_bust'].mean():.3f} vs real {d['real_bust'].mean():.3f}")
+    return d
+
+print("=== subgroup calibration gaps under WAVE-1 machinery ===")
+print("-- (a) team-changers vs stayers, by position --")
+for p in ["QB", "RB", "TE", "WR"]:
+    gap_report((pool.position == p) & pool.team_changed, f"{p} changed")
+    gap_report((pool.position == p) & ~pool.team_changed & pool.prev_team_last.notna(), f"{p} stayed")
+print("-- (b) WR age 30+ --")
+gap_report(pool.wr30, "WR 30+")
+gap_report((pool.position == "WR") & (pool.age < 30), "WR <30")
+print("-- (c) prev-season CV terciles (vets with history) --")
+cvd = pool[pool["cv_rel"].notna()]
+q1, q3 = cvd["cv_rel"].quantile(1/3), cvd["cv_rel"].quantile(2/3)
+gap_report(pool["cv_rel"] <= q1, "low prev CV (steady)")
+gap_report(pool["cv_rel"] >= q3, "high prev CV (volatile)")
+print("-- (d) late-usage surge terciles (WR/TE) --")
+sd = pool[pool["ts_surge"].notna() & pool["position"].isin(["WR", "TE"])]
+s1, s3 = sd["ts_surge"].quantile(1/3), sd["ts_surge"].quantile(2/3)
+gap_report(pool.index.isin(sd[sd["ts_surge"] >= s3].index), "surge top tercile")
+gap_report(pool.index.isin(sd[sd["ts_surge"] <= s1].index), "surge bottom tercile")
+
+# ================= fit-and-verify: apply candidate adjustments, recheck =================
+# Adjustments under test (survivors only, minimal form):
+#   team-change (non-rookie): QB tilt .97 sigma x1.25 | RB tilt .94 | TE tilt .95 sigma x1.10
+#   stable RB/TE vets (no team change): sigma x0.90 / x0.92 (safer than position-wide machinery)
+#   WR age 30+: sigma x0.70 (known quantities: fewer booms AND fewer busts)
+#   CV blend: sigma x clip(1 + 0.20*(cv_rel - 1), 0.85, 1.25)
+def wave2_adjust(sp):
+    tilt = np.ones(len(sp))
+    smult = np.ones(len(sp))
+    pos = sp["position"].values
+    chg = sp["team_changed"].values & ~sp["rookie"].values
+    stay = ~sp["team_changed"].values & sp["prev_team_last"].notna().values & ~sp["rookie"].values
+    tilt[(pos == "QB") & chg] = 0.97
+    smult[(pos == "QB") & chg] = 1.40
+    tilt[(pos == "RB") & chg] = 0.94
+    tilt[(pos == "TE") & chg] = 0.95
+    smult[(pos == "TE") & chg] = 1.15
+    smult[(pos == "RB") & stay] *= 0.85
+    smult[(pos == "TE") & stay] *= 0.85
+    wr30 = (pos == "WR") & (sp["age"].values >= 30)
+    smult[wr30] *= 0.70
+    tilt[wr30] = 0.98
+    cvr = sp["cv_rel"].fillna(1.0).values
+    smult *= np.clip(1 + 0.30 * (cvr - 1), 0.80, 1.30)
+    return tilt, smult
+
+recs2, cov2 = [], []
+for season, sp in pool.groupby("season"):
+    tilt, smult = wave2_adjust(sp)
+    sims = simulate(sp, GAMES_BY_SEASON[season], mean_tilt=tilt, sigma_mult=smult)
+    proj = sp["exp_pts"].values
+    p20 = np.percentile(sims, 20, 1); p80 = np.percentile(sims, 80, 1)
+    actual = sp["total_pts"].values
+    cov2.extend(((actual >= p20) & (actual <= p80)).tolist())
+    recs2.append(pd.DataFrame({
+        "idx": sp.index,
+        "pred_boom": (sims >= 1.5 * proj[:, None]).mean(1),
+        "pred_bust": (sims <= 0.7 * proj[:, None]).mean(1)}))
+pred2 = pd.concat(recs2).set_index("idx")
+pool["pred_boom"], pool["pred_bust"] = pred2["pred_boom"], pred2["pred_bust"]
+
+print(f"\n=== AFTER Wave-2 adjustments ===")
+print(f"global 20/80 coverage: {np.mean(cov2):.1%} (target ~60%)   "
+      f"global boom pred {pool['pred_boom'].mean():.3f} vs real {pool['real_boom'].mean():.3f}")
+print("-- team change --")
+for p in ["QB", "RB", "TE", "WR"]:
+    gap_report((pool.position == p) & pool.team_changed, f"{p} changed")
+    gap_report((pool.position == p) & ~pool.team_changed & pool.prev_team_last.notna(), f"{p} stayed")
+print("-- WR 30+ --")
+gap_report(pool.wr30, "WR 30+")
+print("-- CV terciles --")
+gap_report(pool["cv_rel"] <= q1, "low prev CV (steady)")
+gap_report(pool["cv_rel"] >= q3, "high prev CV (volatile)")

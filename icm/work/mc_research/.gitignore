@@ -4,3 +4,4 @@ seasons.parquet
 seasons_exp.parquet
 board_before_wave1.csv
 .nflcache/
+board_wave1_only.csv

@@ -1,0 +1,35 @@
+=== subgroup calibration gaps under WAVE-1 machinery ===
+-- (a) team-changers vs stayers, by position --
+  QB changed                         n=  73  boom pred 0.141 vs real 0.178   bust pred 0.275 vs real 0.384
+  QB stayed                          n= 170  boom pred 0.120 vs real 0.141   bust pred 0.236 vs real 0.235
+  RB changed                         n=  62  boom pred 0.174 vs real 0.129   bust pred 0.348 vs real 0.403
+  RB stayed                          n= 231  boom pred 0.167 vs real 0.147   bust pred 0.326 vs real 0.234
+  TE changed                         n=  52  boom pred 0.170 vs real 0.192   bust pred 0.352 vs real 0.404
+  TE stayed                          n= 214  boom pred 0.164 vs real 0.182   bust pred 0.334 vs real 0.266
+  WR changed                         n=  57  boom pred 0.144 vs real 0.105   bust pred 0.274 vs real 0.263
+  WR stayed                          n= 262  boom pred 0.126 vs real 0.107   bust pred 0.246 vs real 0.210
+-- (b) WR age 30+ --
+  WR 30+                             n=  53  boom pred 0.167 vs real 0.075   bust pred 0.312 vs real 0.226
+  WR <30                             n= 362  boom pred 0.125 vs real 0.133   bust pred 0.244 vs real 0.210
+-- (c) prev-season CV terciles (vets with history) --
+  low prev CV (steady)               n= 368  boom pred 0.141 vs real 0.122   bust pred 0.276 vs real 0.242
+  high prev CV (volatile)            n= 368  boom pred 0.154 vs real 0.185   bust pred 0.308 vs real 0.318
+-- (d) late-usage surge terciles (WR/TE) --
+  surge top tercile                  n= 195  boom pred 0.145 vs real 0.144   bust pred 0.287 vs real 0.226
+  surge bottom tercile               n= 195  boom pred 0.141 vs real 0.133   bust pred 0.279 vs real 0.210
+=== AFTER Wave-2 adjustments ===
+global 20/80 coverage: 59.8% (target ~60%)   global boom pred 0.146 vs real 0.153
+-- team change --
+  QB changed                         n=  73  boom pred 0.148 vs real 0.178   bust pred 0.357 vs real 0.384
+  QB stayed                          n= 170  boom pred 0.121 vs real 0.141   bust pred 0.239 vs real 0.235
+  RB changed                         n=  62  boom pred 0.148 vs real 0.129   bust pred 0.390 vs real 0.403
+  RB stayed                          n= 231  boom pred 0.161 vs real 0.147   bust pred 0.312 vs real 0.234
+  TE changed                         n=  52  boom pred 0.155 vs real 0.192   bust pred 0.410 vs real 0.404
+  TE stayed                          n= 214  boom pred 0.159 vs real 0.182   bust pred 0.320 vs real 0.266
+  WR changed                         n=  57  boom pred 0.142 vs real 0.105   bust pred 0.270 vs real 0.263
+  WR stayed                          n= 262  boom pred 0.125 vs real 0.107   bust pred 0.245 vs real 0.210
+-- WR 30+ --
+  WR 30+                             n=  53  boom pred 0.153 vs real 0.075   bust pred 0.284 vs real 0.226
+-- CV terciles --
+  low prev CV (steady)               n= 368  boom pred 0.132 vs real 0.122   bust pred 0.267 vs real 0.242
+  high prev CV (volatile)            n= 368  boom pred 0.156 vs real 0.185   bust pred 0.331 vs real 0.318

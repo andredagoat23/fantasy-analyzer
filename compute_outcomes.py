@@ -121,6 +121,17 @@ def durability(row):
 df["availability"] = df.apply(durability, axis=1)
 df = df.drop(columns=["_obs", "_ns"])
 
+# ---- Wave-2 situation flags (backtested: icm/work/mc_research/09_wave2_validation.py) ----
+# team change: last 2025 team (nflverse codes; LA -> LAR) vs current Sleeper team
+last25 = (wk[wk["season"] == 2025].sort_values("week")
+          .groupby("player_id")["team"].last().replace({"LA": "LAR"}))
+_t25 = df["gsis_id"].map(last25)
+df["team_changed"] = _t25.notna() & (_t25 != df["team"])
+df["team_stayed"] = _t25.notna() & (_t25 == df["team"])   # (no team_2025 col: load_ff_opportunity merges its own)
+# volatility relative to position peers (prior 2 seasons' weekly CV)
+pos_med_cv = df.groupby("position")["consistency"].transform("median")
+df["cv_rel"] = (df["consistency"] / pos_med_cv).fillna(1.0)
+
 # ---- 5. Monte Carlo: right-skewed, injury- & capital-aware ----
 NEW = ["floor", "ceiling", "p10", "p90", "P_pos1", "P_pos2", "P_pos3", "p_elite", "p_startable", "p_bust",
        "floor_healthy", "ceiling_healthy"]   # injury-free floor/ceiling (for the injury-neutral composite base)
@@ -140,6 +151,28 @@ for pos in ["QB", "RB", "WR", "TE", "K"]:
     season_sigma = np.array([sigma_for(pos, r) for r in pos_rank])
     season_sigma = np.where(rookie, season_sigma * ROOKIE_SIGMA_MULT[pos], season_sigma)
     tilt = np.where(rookie, np.array([draft_tilt(p) for p in sub["draft_pick"].values]), 1.0)
+    # Wave-2 situational adjustments (each backtested; see 09_wave2_validation.py):
+    # team-changers bust hard at QB/RB/TE (real bust .38-.40 vs .23-.27 stayers); stable
+    # RB/TE vets run tighter; WR 30+ are known quantities (booms fade); volatile players wider.
+    chg = sub["team_changed"].values & ~rookie
+    stay = sub["team_stayed"].values & ~rookie
+    if pos == "QB":
+        tilt = np.where(chg, tilt * 0.97, tilt)
+        season_sigma = np.where(chg, season_sigma * 1.40, season_sigma)
+    elif pos == "RB":
+        tilt = np.where(chg, tilt * 0.94, tilt)
+        season_sigma = np.where(stay, season_sigma * 0.85, season_sigma)
+    elif pos == "TE":
+        tilt = np.where(chg, tilt * 0.95, tilt)
+        season_sigma = np.where(chg, season_sigma * 1.15,
+                       np.where(stay, season_sigma * 0.85, season_sigma))
+    elif pos == "WR":
+        wr30 = sub["age"].fillna(0).values >= 30
+        tilt = np.where(wr30, tilt * 0.98, tilt)
+        season_sigma = np.where(wr30, season_sigma * 0.70, season_sigma)
+    if pos != "K":
+        cv_blend = np.clip(1 + 0.30 * (sub["cv_rel"].values - 1), 0.80, 1.30)
+        season_sigma = season_sigma * np.where(rookie, 1.0, cv_blend)
     # season-tanking injury: position base rate + mild bump for low-availability players
     p_major = np.clip(P_MAJOR_POS[pos] + 0.5 * (0.84 - av), 0.05, 0.18)
 
