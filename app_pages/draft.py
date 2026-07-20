@@ -576,20 +576,13 @@ with st.container(border=True):
             full_context = f"{note}\n\n{context}" if note else context
             api_messages = (st.session_state.chat[:-1]
                             + [{"role": "user", "content": f"{full_context}\n\n{prompt}"}])
-            # PICK button: serve the pre-read instantly when it matches the CURRENT board.
-            # A future still in flight for this exact board is usually seconds from done — wait
-            # briefly rather than firing a duplicate live call. Any miss -> normal live call.
-            prelook_hit = None
-            if mode == "pick" and pl["key"] == cur_key:
-                if pl["text"]:
-                    prelook_hit = pl["text"]
-                elif pl["future"] is not None:
-                    try:
-                        with st.spinner("finishing the pre-read…"):
-                            prelook_hit = pl["future"].result(timeout=25)
-                        pl["text"], pl["future"] = prelook_hit, None
-                    except Exception:
-                        prelook_hit = None      # timeout/error -> live call below
+            # PICK button: serve the pre-read ONLY if it ALREADY finished for this exact board (the
+            # .done() check above populates pl["text"] across reruns). NEVER block on an in-flight
+            # pre-read — a live draft can't wait ~20s for the deep call, and since every opponent pick
+            # restarts it, it's rarely ready in time anyway. Not ready -> straight to the fast PICK
+            # call (~4-5s). If I sit on the clock a moment, a rerun lands the pre-read and the next
+            # click serves it instantly; a fast click just gets the live call. Either way: no 20s wait.
+            prelook_hit = pl["text"] if (mode == "pick" and pl["key"] == cur_key and pl["text"]) else None
             with history_box:
                 with st.chat_message("user"):
                     st.markdown(prompt)
