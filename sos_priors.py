@@ -25,6 +25,18 @@ POS = ["QB", "RB", "WR", "TE"]
 # nflverse codes -> board (Sleeper) codes
 TEAM_FIX = {"LA": "LAR"}
 
+# 2026 head-coaching changes, NEWS-VERIFIED Jul 20 2026 (Panthers.com full table + SI/Yahoo/NBC/
+# Fox trackers all agree; 10 changes). The schedules feed was STALE for ARI/ATL/BUF (still showed
+# the 2025 coach) - this verified list is authoritative; the schedules derivation below is kept
+# as a cross-check and warns on disagreement.
+VERIFIED_NEW_HC_2026 = {
+    "ARI": ("Jonathan Gannon", "Mike LaFleur"),  "ATL": ("Raheem Morris", "Kevin Stefanski"),
+    "BAL": ("John Harbaugh", "Jesse Minter"),    "BUF": ("Sean McDermott", "Joe Brady"),
+    "CLE": ("Kevin Stefanski", "Todd Monken"),   "LV":  ("Pete Carroll", "Klint Kubiak"),
+    "MIA": ("Mike McDaniel", "Jeff Hafley"),     "NYG": ("Brian Daboll", "John Harbaugh"),
+    "PIT": ("Mike Tomlin", "Mike McCarthy"),     "TEN": ("Brian Callahan", "Robert Saleh"),
+}
+
 
 def build():
     # ---- 2025 fantasy points allowed per position, per defense ----
@@ -70,9 +82,15 @@ def build():
         r25[["away_team", "away_coach"]].rename(columns={"away_team": "team", "away_coach": "coach"}),
     ]).groupby("team")["coach"].agg(lambda s: s.mode().iloc[0])
     hc = pd.DataFrame({"coach_2026": c26, "coach_2025": c25})
-    hc["new_hc"] = hc["coach_2026"] != hc["coach_2025"]
+    hc["sched_new_hc"] = hc["coach_2026"] != hc["coach_2025"]
     hc = hc.reset_index().rename(columns={"index": "team"})
     hc["team"] = hc["team"].map(lambda t: TEAM_FIX.get(t, t))
+    hc["new_hc"] = hc["team"].isin(VERIFIED_NEW_HC_2026)
+    for t, (old_c, new_c) in VERIFIED_NEW_HC_2026.items():
+        hc.loc[hc["team"] == t, ["coach_2025", "coach_2026"]] = [old_c, new_c]
+    stale = hc[hc["new_hc"] != hc["sched_new_hc"]]["team"].tolist()
+    if stale:
+        print(f"NOTE: schedules feed stale for {stale} - verified news list used")
     os.makedirs("data", exist_ok=True)
     hc.to_csv("data/new_hc_2026.csv", index=False)
 
