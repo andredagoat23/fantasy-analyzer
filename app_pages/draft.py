@@ -450,7 +450,8 @@ following = upcoming[1] if len(upcoming) > 1 else None
 my_turn = next_pick == overall_now
 picks_away = (next_pick - overall_now) if next_pick else None
 draft_pos = {"slot": slot, "teams": teams, "overall_now": overall_now, "my_turn": my_turn,
-             "next_pick": next_pick, "following": following, "picks_away": picks_away}
+             "next_pick": next_pick, "following": following, "picks_away": picks_away,
+             "total_rounds": 16}   # league draft length (streamer-alert timing)
 if my_turn:
     nxt = f" &nbsp;·&nbsp; next at #{following}" if following else ""
     st.markdown(f"### :material/sports_football: YOUR PICK — overall #{overall_now}{nxt}")

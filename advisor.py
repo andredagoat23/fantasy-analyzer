@@ -153,7 +153,7 @@ Be concise and skimmable, bold player names, and ground everything in the data I
 
 
 # Appended per call depending on how I engaged (button vs. typing).
-PICK_MODE = """MODE: PICK — I just hit "Recommend my pick" and I'm ON THE CLOCK. Give me the single pick that EXECUTES MY STRATEGY right now: one **bold name** + at most one short sentence why, then "Plan: [how it advances my strategy, a few words]" (if no strategy is set, use need/value instead), then one **bold** fallback in a few words. Under ~55 words total. No preamble, no long options list, no questions back. COMMIT — do NOT think out loud, second-guess, or write "wait"/"actually"/"hmm". EXCEPTION — only when deviating clears the deviation protocol (a 12+ VONA cliff or a hard gate), replace the fallback with the two labeled options PLAN-FIRST ("**Sticking to your plan: Y**" then "**Worth breaking it: X (+N VONA)**"), still under ~60 words, so I can choose on the clock."""
+PICK_MODE = """MODE: PICK — I just hit "Recommend my pick" and I'm ON THE CLOCK. If a STREAMER ALERT line is present, IT WINS over everything below: the pick is the K (or D/ST) it names — one bold name + "last-rounds K/D-ST" as the reason, done. Give me the single pick that EXECUTES MY STRATEGY right now: one **bold name** + at most one short sentence why, then "Plan: [how it advances my strategy, a few words]" (if no strategy is set, use need/value instead), then one **bold** fallback in a few words. Under ~55 words total. No preamble, no long options list, no questions back. COMMIT — do NOT think out loud, second-guess, or write "wait"/"actually"/"hmm". EXCEPTION — only when deviating clears the deviation protocol (a 12+ VONA cliff or a hard gate), replace the fallback with the two labeled options PLAN-FIRST ("**Sticking to your plan: Y**" then "**Worth breaking it: X (+N VONA)**"), still under ~60 words, so I can choose on the clock."""
 
 CHAT_MODE = """MODE: CONVERSATION — I'm talking things through, NOT asking for a pick. Discuss, compare, react, answer my question. Do NOT declare a single "pick" or tell me who to draft unless I literally ask "who should I take / who do I pick." Just have the conversation with me. Keep it short."""
 
@@ -707,6 +707,24 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                              f"swing there is affordable")
     risk_line = ("ROSTER RISK: " + " | ".join(risk_bits) + "\n") if risk_bits else ""
 
+    # STREAMER ALERT (full-system stress catch): TOP PICKS excludes K/D-ST by design, so in the
+    # FINAL rounds nothing ever forced them - a live-API test draft finished with no kicker.
+    # When remaining picks barely cover the open streamer slots, force the call.
+    streamer_line = ""
+    total_rounds = (draft_pos or {}).get("total_rounds")
+    if draft_pos and total_rounds:
+        picks_made = len(mine_df) + (1 if my_dst else 0)
+        have_k = any(str(p.get("pos_label", "")).startswith("K") for _, p in mine_df.iterrows())
+        open_streamers = (0 if have_k else 1) + (0 if my_dst else 1)
+        picks_left = max(total_rounds - picks_made, 0)
+        if open_streamers and picks_left <= open_streamers + 1:
+            ks = available[available["position"] == "K"].nsmallest(3, "rank_composite")                 if "position" in available.columns else available.iloc[0:0]
+            kn = ", ".join(ks["full_name"]) if len(ks) else "any listed K"
+            needs_txt = " and ".join((["your K"] if not have_k else []) + (["your D/ST"] if not my_dst else []))
+            streamer_line = (f"STREAMER ALERT: only {picks_left} pick(s) left and {needs_txt} still open - "
+                             f"your remaining pick(s) MUST be spent there. Best K available: {kn}. "
+                             f"D/ST: take the top available from the ranking below.\n")
+
     pc = _playcallers()
     pc_line = ""
     if pc:
@@ -728,6 +746,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         f"{picks_line}"
         f"{cohort_line}"
         f"{pc_line}"
+        f"{streamer_line}"
         f"Startable pool left by position (context only — VONA already prices scarcity): {scar}\n\n"
         f"Top {len(top)} available players (sorted by composite value; "
         f"ADP 'UD' = undrafted/no ADP, i.e. very likely to still be available later):\n{board_txt}"
