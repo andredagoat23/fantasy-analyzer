@@ -372,6 +372,25 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L26 — Per-pick tests can't catch whole-draft failures; and a failing test isn't always a bug (Jul 2026)
+- **Symptom:** every per-pick invariant passed (384/384 across 24 simulated drafts), yet a full
+  LIVE-API test draft finished **without a kicker** — TOP PICKS excludes K/D-ST by design
+  ("final-round call"), and no mechanism ever FORCED the final-rounds call, so the advisor kept
+  recommending skill-player darts through R16.
+- **Fix:** STREAMER ALERT in `build_context` — when remaining picks (needs `total_rounds`, now
+  passed from `draft.py`) barely cover the open K/D-ST slots, a hard line names the best available
+  Ks and PICK mode treats it as overriding everything. Replayed live at R15: advisor takes the K.
+- **Also learned:** two race tests initially reported FAIL and both were TEST bugs — one had the
+  live-sync poller (correctly) overwriting injected test state; one mutated the board out of the
+  prefetch window and then demanded a refetch that correctly shouldn't happen. Trace a failing
+  test to root cause before "fixing" the system — sometimes the system is right and the test's
+  model of it is wrong.
+- **Teaches:** closed-loop testing (whole drafts, real API) finds omission bugs that assertion
+  testing at each step structurally cannot — "nothing recommended X" is invisible per-pick; and
+  keep the burden of proof symmetric between the system and its tests. (Principles 1, 9)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

@@ -29,6 +29,12 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
   the TOP PICKS shortlist). NOT in run_all — rerun manually after board rebuilds; needs the local
   research panel (`icm/work/mc_research/seasons_exp.parquet`, rebuildable via `01+02` there).
   Cohorts are PRIORS + explainable stories; the calibrated MC numbers always win on disagreement.
+- `sos_priors.py` — positional strength of schedule (`sos_data.csv`: 2026 opponents x 2025
+  points allowed per position, rank 1=easiest) + the news-verified 2026 coaching files in `data/`:
+  `new_hc_2026.csv` (10 teams — drives the MC stayed+new-HC tilt; schedules feed was stale for
+  ARI/ATL/BUF, the VERIFIED_NEW_HC_2026 constant is authoritative), `playcallers_2026.csv`
+  (18 changes, 6 first-timers) and `playcallers_hist.csv` (224 sourced team-seasons 2019-25 —
+  validated that OC-only changes are price-neutral). NOT in run_all; rerun with cohort_priors.
 - `bridge.py` — reads the live-draft Firebase mailbox and resolves picks to board players. See
   `bridge.md`.
 - `auth.py`, `config_store.py`, `utils.py` (`normalize_name`), `espn_sync.py` (ESPN-API fallback).
