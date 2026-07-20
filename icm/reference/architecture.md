@@ -13,8 +13,15 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
   draft settings, roster popover, compact toggle), scarcity readout, **live sync**, on-the-clock +
   cliff watch, **AI advisor**, filters, the `st.data_editor` board, undo drawer.
 - `advisor.py` — the Claude advisor. `build_context()` turns the live board into the prompt context
-  (incl. the Python-computed `wheel` column and roster-needs line); `stream_advice()` streams the
-  pick/chat; `parse_scoring()` / `suggest_strategy()` are one-shot setup helpers.
+  (incl. the Python-computed `wheel` column, roster-needs + ROSTER RISK lines); `stream_advice()`
+  streams the pick/chat; `prelook()` is the deep BACKGROUND pre-read (adaptive thinking on — it runs
+  off the clock); `parse_scoring()` / `suggest_strategy()` are one-shot setup helpers. The big SYSTEM
+  prompt is prompt-cached (`_system_blocks`) — ~90% cheaper + faster after the first call.
+  **Speculative precompute (draft.py):** every new pick fully reruns the page; within 3 picks of my
+  turn it fires `prelook()` on a background thread (`prelook_pool`, st.cache_resource — one worker,
+  never touches st.*). The answer is stamped with an exact board fingerprint (drafted ∪ mine ∪ setup);
+  on the clock the Recommend button serves it INSTANTLY only on an exact match, else falls back to
+  the live call. Verified via AppTest: click→answer 0.1s with identical text.
 - `bridge.py` — reads the live-draft Firebase mailbox and resolves picks to board players. See
   `bridge.md`.
 - `auth.py`, `config_store.py`, `utils.py` (`normalize_name`), `espn_sync.py` (ESPN-API fallback).

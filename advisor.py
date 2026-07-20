@@ -692,11 +692,44 @@ def stream_advice(client, messages, mode="chat"):
     mode="chat"  -> deeper model, pure conversation (typed messages).
     """
     is_pick = mode == "pick"
-    system = SYSTEM + "\n\n" + (PICK_MODE if is_pick else CHAT_MODE)
     with client.messages.stream(
         model=MODEL_ADVISOR,                    # Sonnet for both; the terse PICK prompt keeps it fast
         max_tokens=400 if is_pick else 900,
-        system=system,
+        system=_system_blocks(PICK_MODE if is_pick else CHAT_MODE),
         messages=messages,
     ) as stream:
         yield from stream.text_stream
+
+
+def _system_blocks(mode_text):
+    """System prompt as blocks: the big shared SYSTEM is cached (prompt caching — identical on
+    every call, so the API bills ~10% of it after the first call in each 5-min window), while the
+    small per-mode suffix stays uncached after the breakpoint."""
+    return [
+        {"type": "text", "text": SYSTEM, "cache_control": {"type": "ephemeral"}},
+        {"type": "text", "text": mode_text},
+    ]
+
+
+# The PRE-READ runs in the BACKGROUND while other teams pick (speculative precompute) — no clock
+# pressure, so it thinks deeper than the on-clock PICK mode and plans contingencies. The app shows
+# it instantly when you go on the clock IF the board hasn't changed since (exact state-key match).
+PRELOOK_MODE = """MODE: PRE-READ — you are thinking AHEAD of my turn while other teams pick. There is no clock pressure: reason deeply about the board, my roster, and my strategy before answering. Your answer will be shown to me INSTANTLY when I go on the clock with this exact board, so make it decision-ready:
+**PICK: Name (POS)** — one short sentence why (need / value / role / risk fit).
+If sniped: **Name2** — a few words when/why. (Up to two pivots, only for players realistically taken before my turn — use the `wheel` column.)
+Watch: one short line — who wheels back safely, or a strategy-conflict note if one exists (then give BOTH labeled options like PICK mode does).
+Under ~110 words visible. COMMIT — no hedging, no questions back."""
+
+
+def prelook(client, context):
+    """Deep background pre-read of the current board (non-streaming; runs in a worker thread).
+    Adaptive thinking is ON — this call happens off the clock, so spend the extra seconds on
+    quality; the user only ever sees the finished text."""
+    msg = client.messages.create(
+        model=MODEL_ADVISOR,
+        max_tokens=3000,                        # room for thinking + the short visible answer
+        thinking={"type": "adaptive"},
+        system=_system_blocks(PRELOOK_MODE),
+        messages=[{"role": "user", "content": context}],
+    )
+    return "".join(b.text for b in msg.content if getattr(b, "type", None) == "text").strip()

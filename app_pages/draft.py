@@ -128,6 +128,15 @@ def get_advisor_client(api_key):   # cached so we reuse one Anthropic client
     return advisor.get_client(api_key)
 
 
+@st.cache_resource
+def prelook_pool():
+    """One background worker for the advisor PRE-READ (speculative precompute). cache_resource so
+    Streamlit's top-to-bottom reruns reuse ONE thread pool instead of leaking one per rerun. The
+    thread only makes the API call and returns text — it never touches st.* (not thread-safe)."""
+    from concurrent.futures import ThreadPoolExecutor
+    return ThreadPoolExecutor(max_workers=1)
+
+
 @st.cache_resource(show_spinner=False)
 def connect_league(league_id, year, espn_s2, swid):   # one ESPN connection, reused for polling
     return espn_sync.connect(league_id, year, espn_s2, swid)
@@ -510,6 +519,33 @@ with st.container(border=True):
                    "secrets) to enable the advisor.")
     else:
         client = get_advisor_client(api_key)
+
+        # ---- speculative PRE-READ: think BEFORE the pick, answer instantly ON it ----
+        # Every new pick fully reruns this script (the sync fragments call st.rerun(scope="app")),
+        # so within PRELOOK_WINDOW picks of my turn we fire a deep background advisor call for the
+        # CURRENT board. The answer is stamped with an exact board fingerprint; on the clock we show
+        # it instantly only if the board hasn't changed since — otherwise fall back to the live call.
+        PRELOOK_WINDOW = 3
+        cur_key = (frozenset(st.session_state.drafted), frozenset(st.session_state.mine),
+                   st.session_state.get("mine_dst"), _setup_note())
+        pl = st.session_state.setdefault("prelook", {"key": None, "future": None, "text": None})
+        near_turn = my_turn or (picks_away is not None and picks_away <= PRELOOK_WINDOW)
+        if near_turn and pl["key"] != cur_key:
+            ctx = advisor.build_context(available, mine_df, scarcity, draft_pos,
+                                        my_dst=st.session_state.get("mine_dst"))
+            note = _setup_note()
+            pre_ctx = (f"{note}\n\n{ctx}" if note else ctx) + f"\n\n{REC_PROMPT}"
+            if pl["future"] is not None:
+                pl["future"].cancel()           # stale board — drop the queued call if unstarted
+            pl["key"], pl["text"] = cur_key, None
+            pl["future"] = prelook_pool().submit(advisor.prelook, client, pre_ctx)
+        if pl["future"] is not None and pl["future"].done():
+            try:
+                pl["text"] = pl["future"].result()
+            except Exception:
+                pl["text"] = None               # background failure -> live call covers it
+            pl["future"] = None
+
         history_box = st.container(height=240 if st.session_state.compact else 360)
         with history_box:
             if not st.session_state.chat:
@@ -524,6 +560,8 @@ with st.container(border=True):
             if st.button("Clear chat", icon=":material/delete_sweep:"):
                 st.session_state.chat = []
                 st.rerun()
+        if pl["text"] and pl["key"] == cur_key:
+            st.caption("⚡ pick pre-read ready — the button answers instantly")
 
         typed = st.chat_input("Talk to the advisor…", submit_mode="disable")
         prompt = REC_PROMPT if rec else typed
@@ -537,15 +575,34 @@ with st.container(border=True):
             full_context = f"{note}\n\n{context}" if note else context
             api_messages = (st.session_state.chat[:-1]
                             + [{"role": "user", "content": f"{full_context}\n\n{prompt}"}])
+            # PICK button: serve the pre-read instantly when it matches the CURRENT board.
+            # A future still in flight for this exact board is usually seconds from done — wait
+            # briefly rather than firing a duplicate live call. Any miss -> normal live call.
+            prelook_hit = None
+            if mode == "pick" and pl["key"] == cur_key:
+                if pl["text"]:
+                    prelook_hit = pl["text"]
+                elif pl["future"] is not None:
+                    try:
+                        with st.spinner("finishing the pre-read…"):
+                            prelook_hit = pl["future"].result(timeout=25)
+                        pl["text"], pl["future"] = prelook_hit, None
+                    except Exception:
+                        prelook_hit = None      # timeout/error -> live call below
             with history_box:
                 with st.chat_message("user"):
                     st.markdown(prompt)
                 with st.chat_message("assistant"):
-                    try:
-                        reply = st.write_stream(advisor.stream_advice(client, api_messages, mode))
-                    except Exception as e:
-                        reply = f"⚠️ Advisor error: {e}"
-                        st.error(reply)
+                    if prelook_hit:
+                        st.markdown(prelook_hit)
+                        st.caption("⚡ pre-computed while the other teams picked")
+                        reply = prelook_hit
+                    else:
+                        try:
+                            reply = st.write_stream(advisor.stream_advice(client, api_messages, mode))
+                        except Exception as e:
+                            reply = f"⚠️ Advisor error: {e}"
+                            st.error(reply)
             # the advisor can set the risk dial + my draft slot/teams from chat via [[tags]]
             rtag = re.search(r"\[\[risk:\s*([^\]]+)\]\]", reply, re.I)
             if rtag:
