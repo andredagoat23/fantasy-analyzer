@@ -50,7 +50,8 @@ THE DATA I GIVE YOU (per available player)
 - age = age this season. rook_pk = for rookies, their NFL draft pick (lower = more pedigree/opportunity); blank for veterans.
 
 YOUR JOB
-Recommend the pick that maximizes my roster's value given my needs, strategy, and risk appetite. Decide in THIS ORDER, and never let a later factor override an earlier one:
+Recommend the pick that best executes MY plan given my roster and the board. My stated strategy is not a tiebreaker — it is the PLAN I chose for my draft, and following it is what makes this MY draft instead of a generic value sheet. Decide in THIS ORDER, and never let a later factor override an earlier one:
+0) MY STRATEGY IS THE PLAN (when the setup gives one) — your default recommendation is the pick that ADVANCES it, and every pick answer states how it does (or explicitly flags a deviation — see the deviation protocol below). An ABSOLUTE instruction ("no X before round N", "only Y early", "no matter what") is BINDING: recommend the best pick that obeys it, full stop — no deviation option, no reinterpreting it as "executable later"; the deviation protocol exists for soft preferences only. Python HARD GATES still outrank everything (VONA "n/a" filled 1-start positions, BENCH-ONLY, OVER-STACKED — a strategy can't make a worthless backup useful), but SOFT demotions (PUNT-ABLE, FLEX-only ordering) yield to an explicit strategy instruction — if I said "elite QB early," recommend the QB even though the punt read would wait.
 1) ROSTER NEED filters what's DRAFTABLE — a position that helps my roster: an open starter/FLEX, or RB/WR bench depth (RB and WR ALWAYS keep bench/FLEX value). QB and TE are 1-START positions — once mine is filled, a 2nd one is NOT draftable no matter how high its VONA (a backup QB/TE is nearly worthless — I start one and they're streamable). Never draft a filled 1-start position, or a K/D-ST before my lineup is full. Roster need does NOT force me to fill an open starter this instant: a still-open slot whose good options will KEEP (wheel "safe", low VONA) can wait while I grab a bigger VONA cliff at a draftable RB/WR — I'll fill the safe slot next pick for the same value (but don't let it rot if its options are going).
 2) VALUE — the **TOP PICKS NOW** line ranks your draftable options by VONA. VONA gives you the SHORTLIST, not the final answer: the ***starred** picks are within a few VONA of each other = a genuine TIE, so among them pick the BEST PLAYER by age, risk/reward, offense (vegas), and role (tgt%/snap%) — NOT the tiny VONA gap. Only when one option's VONA clearly stands alone above the rest (nothing else starred) does VONA alone decide. NEVER bump a lower one up just to fill an open starter: a safe open slot WAITS (you fill it next pick for the same value); a filled 1-start QB/TE is already excluded (VONA "n/a"). WITHIN a position, take the best available (highest VOLS).
 3) UPSIDE & RISK break the close calls — when two candidates' VONA is genuinely close, pick the one that fits my RISK APPETITE: upside build → lean ceiling/boom, ascending young roles, high vegas + role; safe build → lean floor, durable, low bust. Use role / situation (vegas) / xPPG-regression as tiebreakers; `market` is a pricing tiebreaker only (can I wait on him?), never a talent signal. Say which factors drove the call. RISK ACCUMULATES ACROSS MY ROSTER: bust risks multiply — if the ROSTER RISK line says one of my rooms is already bust-heavy, break ties toward the STABLE option at that position (TOP PICKS already demotes the risky ones there — trust it). High bust% is only ever acceptable when the upside PAYS for it (big ceiling or real top-3 odds — a compensated boom/bust swing); a high-bust player with a mediocre ceiling is a coin-flip with no jackpot, and stacking several at one position is how a season quietly dies.
@@ -65,13 +66,14 @@ DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
 - DEDICATED starters before the FLEX: fill my fixed positional slots (QB/RB/RB/WR/WR/TE) before spending a pick that only upgrades the FLEX — the FLEX is a week-to-week / matchup slot I can stream, so a piece that ONLY improves it (a 3rd RB/WR when my dedicated RB/WR slots are full) is worth less than filling a real positional need. I tag these "FLEX-only" and demote them below the dedicated-need fillers UNLESS one is WAY better in VONA. Take the dedicated filler unless the FLEX-only piece is a clear value cliff.
 - Archetype playbooks: Best-Available = top VONA; Hero-RB = one anchor RB early then hammer WR; Zero-RB = load elite WR/TE early, attack RB value/upside mid-late; Robust-RB = RB-heavy early for the positional edge; Upside = weight ceiling, boom, ascending young roles and rookie capital over safe floors.
 
-HOW TO USE MY STATED STRATEGY (when the setup gives you one)
-VONA/value is the backbone and you weight it highly — but my strategy shapes HOW you use it, in two ways:
-1. **A RISK-FLAVORED strategy re-weights value, it doesn't just break ties.** If my strategy leans high-risk/high-reward (upside, ceiling, boom, "swing for it") then VONA matters LESS — a high-ceiling boom player can beat a modestly-higher-VONA safe one; lean into ascending young roles, high vegas + role, rookie capital. If it leans safe/floor, do the opposite (down-weight boom, prefer durable floor). Say which factor drove it.
-2. **When a POSITIONAL rule in my strategy CONFLICTS with the best-value pick** (e.g. I said "no RB early / Zero-RB" but the top VONA is an RB, or "punt TE" but an elite TE is the cliff): do NOT silently override it and do NOT blindly obey it — give me BOTH, clearly labeled, and let ME choose:
-   - Lead with the honest best-value call: "**Best value: [player]** — [why], but this breaks your [strategy] (costs ~N VONA to follow it)."
-   - Then the strategy-compliant call: "**Sticking to your [strategy]: [player]** — the best [position/type] that follows your plan."
-   Recommend the best-value pick as your default, but make the strategy option explicit and easy to take.
+HOW TO EXECUTE MY STATED STRATEGY (when the setup gives you one)
+The strategy is MY plan — your job is to run it proactively, not merely avoid violating it:
+1. **Steer toward it, actively.** If it names positions, rounds, archetypes, risk levels, or specific players, hunt for the picks that advance it: "solid players early" → prefer high-floor/low-bust among the starred ties; "Zero-RB" → build my WR/TE core and time the RB value attack; "swing for upside" → weight ceiling/boom over modest VONA edges; a named player I like → track when he's reachable and TELL me the round to strike. Every PICK answer includes a short **Plan:** note — how this pick advances my strategy, in a few words.
+2. **A RISK-FLAVORED strategy re-weights value, it doesn't just break ties.** High-risk/high-reward → VONA matters LESS: a high-ceiling boom player can beat a modestly-higher-VONA safe one (ascending young roles, high vegas + role, rookie capital). Safe/floor → the opposite (down-weight boom, prefer durable floor + low bust). Say which factor drove it.
+3. **Deviation protocol — leaving the plan is the EXCEPTION and must be earned.** Deviate only when following the plan has a LARGE, named cost: a genuine value cliff (roughly 12+ VONA left on the table), a PUNT-READ CLIFF at an unfilled slot, or a Python hard gate. When that happens, show BOTH with the PLAN option FIRST and let me choose:
+   - "**Sticking to your plan: [player]** — the best pick that follows your [strategy]."
+   - "**Worth breaking it: [player]** — [the one concrete reason], gains ~N VONA."
+   Small edges NEVER justify deviating: if the value gap is under ~12 VONA, the plan pick IS the pick — don't even frame it as a sacrifice.
 
 READING THE SITUATION (this is your edge over a raw projection)
 - ROLE beats last year's box score. Read `role` (depth-chart slot) WITH vegas: a team's WR1/RB1 on a high-vegas offense has secure, repeatable volume; a WR2/WR3 competes with the alpha AND a pass-catching RB1 for the same targets, so his ceiling is capped even if the offense is good. On two close players, prefer the better ROLE + situation — the TOP PICKS ranking ALREADY bumps a team's WR1/RB1 above a comparable WR2/WR3, but ONLY when the offense actually throws (decent vegas OR pass volume); a clear WR1 on a bad, run-heavy team gets NO bump (few valuable targets to lock up), so his ranking rests on his value alone. Trust that order (a lower-role player sits on top only when his value edge is big enough to overcome it). But `tgt%/snap%` are last year's — for a mover (regr "new-tm") they describe the OLD team, so a player who upgraded roles (e.g. a former WR2 who's now his new team's WR1) is UNDERRATED by those stale stats: lean on `role` + the projection, and say so.
@@ -101,7 +103,7 @@ Be concise and skimmable, bold player names, and ground everything in the data I
 
 
 # Appended per call depending on how I engaged (button vs. typing).
-PICK_MODE = """MODE: PICK — I just hit "Recommend my pick" and I'm ON THE CLOCK. Give me your single best pick RIGHT NOW: one **bold name** + at most one short sentence why (need / value / will-he-wheel-back), then one **bold** fallback in a few words. Under ~50 words total. No preamble, no long options list, no questions back. COMMIT to one pick — do NOT think out loud, second-guess, or write "wait"/"actually"/"hmm"; decide first, then write the clean call. EXCEPTION — if my stated strategy CONFLICTS with the best-value pick, replace the fallback with the two labeled options ("**Best value: X**" then "**Sticking to your [strategy]: Y**"), still under ~55 words, so I can choose on the clock."""
+PICK_MODE = """MODE: PICK — I just hit "Recommend my pick" and I'm ON THE CLOCK. Give me the single pick that EXECUTES MY STRATEGY right now: one **bold name** + at most one short sentence why, then "Plan: [how it advances my strategy, a few words]" (if no strategy is set, use need/value instead), then one **bold** fallback in a few words. Under ~55 words total. No preamble, no long options list, no questions back. COMMIT — do NOT think out loud, second-guess, or write "wait"/"actually"/"hmm". EXCEPTION — only when deviating clears the deviation protocol (a 12+ VONA cliff or a hard gate), replace the fallback with the two labeled options PLAN-FIRST ("**Sticking to your plan: Y**" then "**Worth breaking it: X (+N VONA)**"), still under ~60 words, so I can choose on the clock."""
 
 CHAT_MODE = """MODE: CONVERSATION — I'm talking things through, NOT asking for a pick. Discuss, compare, react, answer my question. Do NOT declare a single "pick" or tell me who to draft unless I literally ask "who should I take / who do I pick." Just have the conversation with me. Keep it short."""
 
@@ -411,7 +413,8 @@ def _punt_read(available, open_1start, current_overall, teams):
     return reads, best_rbwr
 
 
-def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst=None):
+def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst=None,
+                  strategy=None):
     """Compact text snapshot of the live board for the current turn. `my_dst` = the D/ST you drafted
     (name) if any — defenses aren't on the board, so it's threaded in separately."""
     horizon = _horizon(draft_pos)
@@ -570,7 +573,10 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                        if getattr(r, "riskstack", False)
                        else "")
                 return f"{star}{r.full_name} ({r.pos_label}, VONA {r.vona:.0f}{w}{role}{tag})"
-            picks_line = ("TOP PICKS NOW — this is the FINAL ranking: TAKE #1. The order already blends "
+            picks_line = ("TOP PICKS NOW — the value ranking, but it is STRATEGY-BLIND (Python doesn't "
+                          "read my plan): take #1 when it fits MY STRATEGY; when my plan directs elsewhere, "
+                          "take the highest-ranked pick that FOLLOWS the plan (rule 0 — an absolute "
+                          "instruction is binding). Within that, the order already blends "
                           "VONA with roster gates AND role security, so DON'T re-sort it by the raw VONA "
                           "column — a lower-VONA player placed higher is INTENTIONAL (a team's clear WR1/"
                           "RB1 with locked targets beats a higher-VONA WR2/WR3 whose targets are capped "
@@ -638,7 +644,9 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         + dp_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"{needs}\n"
-        f"{risk_line}"
+        + (f"MY DRAFT PLAN — this is the strategy I chose; EXECUTE it (deviation protocol applies, "
+           f"and every pick answer includes the Plan: note): {strategy}\n" if strategy else "")
+        + f"{risk_line}"
         f"{punt_line}"
         f"{picks_line}"
         f"Startable pool left by position (context only — VONA already prices scarcity): {scar}\n\n"
@@ -714,11 +722,12 @@ def _system_blocks(mode_text):
 # The PRE-READ runs in the BACKGROUND while other teams pick (speculative precompute) — no clock
 # pressure, so it thinks deeper than the on-clock PICK mode and plans contingencies. The app shows
 # it instantly when you go on the clock IF the board hasn't changed since (exact state-key match).
-PRELOOK_MODE = """MODE: PRE-READ — you are thinking AHEAD of my turn while other teams pick. There is no clock pressure: reason deeply about the board, my roster, and my strategy before answering. Your answer will be shown to me INSTANTLY when I go on the clock with this exact board, so make it decision-ready:
-**PICK: Name (POS)** — one short sentence why (need / value / role / risk fit).
+PRELOOK_MODE = """MODE: PRE-READ — you are thinking AHEAD of my turn while other teams pick. There is no clock pressure: reason deeply about the board, my roster, and MY STRATEGY before answering — the pick must EXECUTE my plan (deviation protocol applies). Your answer will be shown to me INSTANTLY when I go on the clock with this exact board, so make it decision-ready:
+**PICK: Name (POS)** — one short sentence why.
+Plan: how this advances my strategy, a few words (if none set, need/value instead).
 If sniped: **Name2** — a few words when/why. (Up to two pivots, only for players realistically taken before my turn — use the `wheel` column.)
-Watch: one short line — who wheels back safely, or a strategy-conflict note if one exists (then give BOTH labeled options like PICK mode does).
-Under ~110 words visible. COMMIT — no hedging, no questions back."""
+Watch: one short line — who wheels back safely; or, if deviating cleared the protocol, both options PLAN-FIRST like PICK mode.
+Under ~120 words visible. COMMIT — no hedging, no questions back."""
 
 
 def prelook(client, context):

@@ -503,8 +503,6 @@ def _setup_note():
             bits.append(f"Scoring (custom, my exact league rules):\n{st.session_state['scoring_parsed']}")
         else:
             bits.append(f"Scoring: {sc}")
-    if st.session_state.get("strategy"):
-        bits.append(f"My stated strategy: {st.session_state['strategy']}")
     return "MY LEAGUE SETUP — " + "; ".join(bits) if bits else ""
 
 
@@ -532,7 +530,8 @@ with st.container(border=True):
         near_turn = my_turn or (picks_away is not None and picks_away <= PRELOOK_WINDOW)
         if near_turn and pl["key"] != cur_key:
             ctx = advisor.build_context(available, mine_df, scarcity, draft_pos,
-                                        my_dst=st.session_state.get("mine_dst"))
+                                        my_dst=st.session_state.get("mine_dst"),
+                                        strategy=st.session_state.get("strategy"))
             note = _setup_note()
             pre_ctx = (f"{note}\n\n{ctx}" if note else ctx) + f"\n\n{REC_PROMPT}"
             if pl["future"] is not None:
@@ -570,7 +569,8 @@ with st.container(border=True):
         if prompt:
             st.session_state.chat.append({"role": "user", "content": prompt})
             context = advisor.build_context(available, mine_df, scarcity, draft_pos,
-                                            my_dst=st.session_state.get("mine_dst"))
+                                            my_dst=st.session_state.get("mine_dst"),
+                                            strategy=st.session_state.get("strategy"))
             note = _setup_note()
             full_context = f"{note}\n\n{context}" if note else context
             api_messages = (st.session_state.chat[:-1]

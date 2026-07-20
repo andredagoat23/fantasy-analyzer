@@ -348,6 +348,30 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L25 — The strategy is the PLAN, not a tiebreaker (user contract change, Jul 2026)
+- **Symptom:** the user: "the model isn't following the strategy or really going out of its way to
+  follow the strategy — which is what makes it the specific person's draft." The advisor treated
+  value as the backbone with strategy as a conflict-surfacing tiebreak (the L20 contract).
+- **Root cause of the worst failure:** the TOP PICKS prose said "this is the FINAL ranking: TAKE #1"
+  — but that ranking is STRATEGY-BLIND (Python doesn't read the plan), so the prompt's own
+  instructions contradicted each other and value won. Live test: strategy said "no WRs early no
+  matter what" and the advisor still led with the WR, rationalizing the plan as "executes later."
+- **Fix (`advisor.py`):** new decision order rule 0 — the strategy is the plan; ABSOLUTE
+  instructions ("no X before round N", "no matter what") are BINDING with no deviation option;
+  soft preferences deviate only via a protocol (12+ VONA cliff or hard gate) presented PLAN-FIRST.
+  TOP PICKS prose now says the ranking is strategy-blind and the plan outranks it. Every PICK /
+  PRE-READ answer includes a "Plan:" note. Strategy renders as its own MY DRAFT PLAN context block
+  (passed to `build_context(strategy=...)`), no longer buried in the setup note. Python hard gates
+  (n/a, BENCH-ONLY, OVER-STACKED) still outrank everything; soft demotions (PUNT-ABLE) yield to an
+  explicit instruction. Verified with three live scenarios (absolute obeyed; soft preference read
+  by its own terms; safe-early drives risk reasoning).
+- **Teaches:** when two prompt sections give the model contradictory authority ("take #1" vs
+  "follow the plan"), the model picks one and rationalizes — find and break the contradiction, and
+  make precedence explicit. Personalization = the user's plan outranking the generic optimum.
+  (Supersedes L20's value-first default; keeps its both-options transparency.)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

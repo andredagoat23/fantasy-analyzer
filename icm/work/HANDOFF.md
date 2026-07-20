@@ -39,6 +39,16 @@ The NEXT TASK is a **Monte Carlo deep-dive** — details + the questions to ask 
 - **Yahoo:** NOT started. Next platform toward the user's 95%-automated goal (ESPN 48% + Sleeper 33% +
   Yahoo 18%). A **verification probe is scoped** (`yahoo-probe-scope.md`) — do that BEFORE building.
 
+## Backlog (user-requested, parked Jul 20, 2026)
+- **New-head-coach tilt (PARKED, validated):** stayed players on new-HC teams beat price (med 1.04,
+  bust 21% vs 24%; QBs strongest 1.19). Shippable but marginal; needs a hand-maintained 2026 new-HC
+  team list (schedules don't carry 2026 coaches). OC changes exist in NO dataset — strategy-note only.
+  Analysis in the Jul 20 session; rerun the schedules-based test in `icm/work/mc_research/` if built.
+- **"My guys" watchlist (FUTURE feature):** a place to add players the user already likes so the
+  model targets them — track reachability by round, highlight on the board, advisor strikes when
+  value arrives. Interim: naming players in the strategy text now works (L25 makes the advisor
+  execute it — it tracks named players and tells you the round to strike).
+
 ## Reading order to get oriented
 `icm/CONTEXT.md` → this file → `icm/reference/pipeline.md` (§`compute_outcomes.py` — Monte Carlo) →
 `compute_outcomes.py` itself → `icm/reference/draft-strategy.md` (how the advisor uses floor/ceiling/
