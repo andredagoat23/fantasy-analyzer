@@ -46,11 +46,28 @@ The NEXT TASK is a **Monte Carlo deep-dive** — details + the questions to ask 
   → `cohort_data.csv`: every player's 15 nearest historical seasons + named comps, cited by the
   advisor). Regenerate cohort_data.csv manually after board rebuilds (needs local panel).
 
+## ROADMAP — next features ranked (best edge-per-effort first; user-approved list)
+1. **Opponent-aware survival** — replace ADP-only "will he last" with actual roster needs of the
+   specific teams picking before my wheel (live-synced rosters make this free info). Sharpens VONA
+   + wheel labels. App/advisor layer only.
+2. **Positional-run detection** — "5 of the last 8 picks were RBs" -> cliff is NOW. Trivial compute
+   from the live pick stream.
+3. **Live news/injury layer** — the real July-31 difference-maker; needs a source decision
+   (scrape vs manual override field). MC machinery is ready to react.
+4. **Mock draft simulator** — rehearse from slot 7 vs ADP-bots; banks prep edge + stress-tests the
+   advisor.
+5. **Rest-of-draft lookahead** — simulate remaining rounds, optimize the FINAL roster not this pick.
+   The ceiling feature; biggest build.
+6. **August usage refresh** — preseason snaps/depth charts into team_role once games start.
+7. **ESPN-vs-consensus divergence** — exploit the exact room you draft in.
+8. **Live draft grade** — "your roster projects 3rd of 12" after each pick.
+9. **"My guys" watchlist UI** — interim: name them in the strategy (advisor executes it).
+10. **Coordinator/OC layer** — no dataset exists; manual-note only.
+
 ## Backlog (user-requested, parked Jul 20, 2026)
-- **New-head-coach tilt (PARKED, validated):** stayed players on new-HC teams beat price (med 1.04,
-  bust 21% vs 24%; QBs strongest 1.19). Shippable but marginal; needs a hand-maintained 2026 new-HC
-  team list (schedules don't carry 2026 coaches). OC changes exist in NO dataset — strategy-note only.
-  Analysis in the Jul 20 session; rerun the schedules-based test in `icm/work/mc_research/` if built.
+- **New-head-coach tilt: SHIPPED as Wave-2c** (Jul 20 evening) — 2026 schedules DO carry coach
+  fields, so the 7-team new-HC list is data-derived (`sos_priors.py` → `data/new_hc_2026.csv`).
+  Stayers under a new HC: tilt 1.02 σ×0.85 (QB/RB/WR). OC changes still have NO dataset — strategy-note only.
 - **"My guys" watchlist (FUTURE feature):** a place to add players the user already likes so the
   model targets them — track reachability by round, highlight on the board, advisor strikes when
   value arrives. Interim: naming players in the strategy text now works (L25 makes the advisor

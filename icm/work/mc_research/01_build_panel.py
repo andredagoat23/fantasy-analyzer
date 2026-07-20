@@ -18,8 +18,8 @@ sys.path.insert(0, ".")
 from utils import normalize_name
 
 OUT = "icm/work/mc_research"
-YEARS = [2019, 2020, 2021, 2022, 2023, 2024, 2025]
-SEASON_GAMES = {2019: 16, 2020: 16, 2021: 17, 2022: 17, 2023: 17, 2024: 17, 2025: 17}
+YEARS = list(range(2014, 2026))   # modern-era window: 2x the cohort sample
+SEASON_GAMES = {y: (16 if y <= 2020 else 17) for y in range(2014, 2026)}
 POS = ["QB", "RB", "WR", "TE"]
 # boom/bust week thresholds — identical to compute_outcomes.py
 BOOM = {"QB": 25, "RB": 20, "WR": 20, "TE": 15}

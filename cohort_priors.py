@@ -61,11 +61,11 @@ def build():
     sea = pd.read_parquet(PANEL)
     hist = sea[sea["mult"].notna() & (sea["exp_pos_rank"] <= MAX_POS_RANK)].copy()
     hist["moved"] = (hist["team_last"] != hist["prev_team_last"]) & hist["prev_team_last"].notna()
-    hist["exp_b"] = hist["years_exp"].map(lambda v: bucket(v, EXP_BUCKETS))
-    hist["tier_b"] = hist["exp_pos_rank"].map(lambda v: bucket(v, TIERS))
-    hist["cap_b"] = hist["draft_number"].map(lambda v: bucket(v, CAPITAL, "day-3/UDFA"))
-    hist["prod_b"] = hist["prev_ppg"].map(lambda v: bucket(v, PROD))
-    hist["age_b"] = hist["age"].map(lambda v: bucket(v, AGES))
+    # team-role analog: rank among same-position teammates by preseason expectation
+    hist["role_rank"] = hist.groupby(["season", "team_last", "position"])["exp_pos_rank"].rank(method="first")
+    # older roster years carry mixed types - force every matching feature numeric
+    for c in ["draft_number", "years_exp", "age", "prev_ppg", "prev_games_missed", "implied_total_avg"]:
+        hist[c] = pd.to_numeric(hist[c], errors="coerce")
 
     board = pd.read_csv("players_with_outcomes.csv", dtype={"player_id": str})
     board = board[board["position"].isin(["QB", "RB", "WR", "TE"]) & board["total_points"].notna()].copy()
@@ -79,6 +79,15 @@ def build():
               .set_index("gsis_id")[["years_exp", "draft_number"]])
     board["years_exp"] = board["gsis_id"].map(ros["years_exp"])
     board["career_pick"] = board["gsis_id"].map(ros["draft_number"])
+    # enrichment from the value board (role, vegas env) + last-season games from the panel weekly
+    vb = pd.read_csv("value_board.csv")
+    vb["nn"] = vb["full_name"].apply(normalize_name)
+    vb["role_rank"] = vb["team_role"].astype(str).str.extract(r"(\d+)").astype(float)
+    board["nn"] = board["full_name"].apply(normalize_name)
+    board = board.merge(vb[["nn", "role_rank", "team_implied_total"]], on="nn", how="left")
+    wk25 = pd.read_parquet("icm/work/mc_research/weekly.parquet")
+    g25 = wk25[wk25["season"] == 2025].groupby("player_id").size()
+    board["missed_last"] = (17 - board["gsis_id"].map(g25).fillna(0)).clip(lower=0)
 
     K = 15   # cohort = the K most-similar historical player-seasons (no bucket cliffs)
     rows = []
@@ -103,6 +112,13 @@ def build():
         if pd.notna(p["age"]):
             d += (base["age"].fillna(26) - p["age"]).abs() / 2.5           # age
         d += (base["moved"] != bool(p.get("team_changed", False))).astype(float) * 0.7  # mover status
+        if pd.notna(p.get("role_rank")):
+            d += (base["role_rank"].fillna(2) - p["role_rank"]).abs() / 1.0          # depth-chart role
+        if pd.notna(p.get("team_implied_total")):
+            d += (base["implied_total_avg"].fillna(22.5) - p["team_implied_total"]).abs() / 2.5  # vegas env
+        if not is_rk:
+            d += (base["prev_games_missed"].fillna(3) - p["missed_last"]).abs() / 5.0  # injury history
+        d += (2025 - base["season"]) * 0.05                                          # mild recency preference
         cohort = base.loc[d.nsmallest(K).index]
         dist = d.loc[cohort.index]
 
@@ -123,22 +139,21 @@ def build():
         med = cohort["mult"].median()
         top5 = (cohort["pos_rank_total"] <= 5).mean()
 
-        # comps: the 2 closest profiles, plus the cohort's best and worst outcomes
+        # the 5 ABSOLUTE best matches (closest profiles), shown with their real outcomes
         def fmt(i):
             r = cohort.loc[i]
             fin = f"{r['position']}{int(r['pos_rank_total'])}" if pd.notna(r["pos_rank_total"]) else "-"
             return f"{r['name_disp']} '{int(r['season']) % 100:02d}->{fin} ({r['mult']:.2f}x)"
-        idxs = list(dist.nsmallest(2).index)
-        for i in (cohort["mult"].idxmax(), cohort["mult"].idxmin()):
-            if i not in idxs:
-                idxs.append(i)
-        comps = [fmt(i) for i in idxs]
+        best5_idx = list(dist.nsmallest(5).index)
+        comps = [fmt(i) for i in best5_idx]
+        b5 = cohort.loc[best5_idx]
+        best5_note = f"{(b5['mult']>=1.3).sum()}/5 boomed, {(b5['mult']<=0.7).sum()}/5 busted"
 
         rows.append({"full_name": p["full_name"], "position": p["position"],
                      "cohort_desc": desc, "cohort_n": len(cohort),
                      "cohort_boom": round(boom, 3), "cohort_bust": round(bust, 3),
                      "cohort_med": round(med, 2), "cohort_top5": round(top5, 3),
-                     "cohort_comps": " | ".join(comps)})
+                     "cohort_comps": " | ".join(comps), "cohort_best5": best5_note})
 
     out = pd.DataFrame(rows)
     out["nn"] = out["full_name"].apply(normalize_name)

@@ -9,7 +9,7 @@ import numpy as np
 rng = np.random.default_rng(0)
 OUT = "icm/work/mc_research"
 N_SIMS = 4000
-GAMES_BY_SEASON = {2019: 16, 2020: 16, 2021: 17, 2022: 17, 2023: 17, 2024: 17, 2025: 17}
+GAMES_BY_SEASON = {y: (16 if y <= 2020 else 17) for y in range(2014, 2026)}
 
 SIGMA_ANCHORS = {
     "QB": [(3, 0.235), (9, 0.238), (18, 0.238), (32, 0.294), (50, 0.45)],
@@ -209,3 +209,50 @@ print(f"global coverage: {np.mean(cov3):.1%}   boom pred {pool['pred_boom'].mean
 gap_report((pool.position=="RB") & pool.team_changed & pool.proven2, "RB movers PROVEN (2yr ppg>=10)")
 gap_report((pool.position=="RB") & pool.team_changed & ~pool.proven2, "RB movers unproven")
 gap_report((pool.position=="RB") & ~pool.team_changed & pool.prev_team_last.notna(), "RB stayed (unchanged)")
+
+# ================= Wave-2c: stayed + NEW HEAD COACH tilt (backlog, user go) =================
+# Raw research: stayers on new-HC teams beat price (med 1.04, bust 21% vs 24%; QB strongest).
+# Historical new-HC flags derived from schedules coach fields (same source as the 2026 list).
+import os
+os.environ.setdefault("NFLREADPY_CACHE_MODE", "filesystem")
+os.environ.setdefault("NFLREADPY_CACHE_DIR", "icm/work/mc_research/.nflcache")
+import nflreadpy as nfl
+_sch = nfl.load_schedules(seasons=list(range(2013, 2026))).to_pandas()
+_sch = _sch[_sch.game_type == "REG"]
+_hc = pd.concat([_sch[["season","home_team","home_coach"]].rename(columns={"home_team":"team","home_coach":"coach"}),
+                 _sch[["season","away_team","away_coach"]].rename(columns={"away_team":"team","away_coach":"coach"})])
+_tc = _hc.groupby(["season","team"])["coach"].agg(lambda s: s.mode().iloc[0]).reset_index().sort_values(["team","season"])
+_tc["prev_coach"] = _tc.groupby("team")["coach"].shift(1)
+_tc["new_hc"] = _tc["prev_coach"].notna() & (_tc["coach"] != _tc["prev_coach"])
+pool = pool.merge(_tc[["season","team","new_hc"]], left_on=["season","team_last"], right_on=["season","team"], how="left")
+pool["stayed_flag"] = ~pool["team_changed"] & pool["prev_team_last"].notna() & ~pool["rookie"]
+pool["nhc_seg"] = pool["stayed_flag"] & pool["new_hc"].fillna(False) & pool["position"].isin(["QB","RB","WR"])
+
+def wave2c_adjust(sp):
+    tilt, smult = wave2b_adjust(sp)
+    seg = sp["nhc_seg"].values
+    tilt[seg] *= 1.02          # small mean lift (raw med 1.04)
+    smult[seg] *= 0.85         # narrower: fewer busts AND fewer booms than machinery predicts
+    return tilt, smult
+
+recs4, cov4 = [], []
+for season, sp in pool.groupby("season"):
+    tilt, smult = wave2c_adjust(sp)
+    sims = simulate(sp, GAMES_BY_SEASON[season], mean_tilt=tilt, sigma_mult=smult)
+    proj = sp["exp_pts"].values
+    p20 = np.percentile(sims, 20, 1); p80 = np.percentile(sims, 80, 1)
+    cov4.extend(((sp["total_pts"].values >= p20) & (sp["total_pts"].values <= p80)).tolist())
+    recs4.append(pd.DataFrame({"idx": sp.index,
+        "pred_boom": (sims >= 1.5 * proj[:, None]).mean(1),
+        "pred_bust": (sims <= 0.7 * proj[:, None]).mean(1)}))
+pred4 = pd.concat(recs4).set_index("idx")
+pool["pred_boom"], pool["pred_bust"] = pred4["pred_boom"], pred4["pred_bust"]
+print(f"\n=== AFTER Wave-2c (stayed + new-HC tilt 1.035) — FULL 2014-25 POOL (out-of-sample incl.) ===")
+print(f"global coverage: {np.mean(cov4):.1%}   boom pred {pool['pred_boom'].mean():.3f} vs real {pool['real_boom'].mean():.3f}")
+gap_report(pool["nhc_seg"], "stayed + new HC (QB/RB/WR)")
+gap_report(pool["stayed_flag"] & ~pool["new_hc"].fillna(False), "stayed + same HC")
+# era split: the constants were FIT on 2019-25; 2014-18 is true out-of-sample
+early = pool[pool.season <= 2018]
+late = pool[pool.season >= 2019]
+print(f"OOS check — 2014-18 coverage: {np.mean([c for c, s in zip(cov4, pool['season']) if s <= 2018]):.1%} | "
+      f"2019-25: {np.mean([c for c, s in zip(cov4, pool['season']) if s >= 2019]):.1%}")

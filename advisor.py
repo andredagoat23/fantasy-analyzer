@@ -44,6 +44,20 @@ def _cohorts():
     return _COHORTS
 
 
+_SOS = None
+
+
+def _sos():
+    global _SOS
+    if _SOS is None:
+        try:
+            _s = pd.read_csv("sos_data.csv")
+            _SOS = {(r["team"], r["position"]): (int(r["sos_rank"]), r["sos_delta"]) for _, r in _s.iterrows()}
+        except Exception:
+            _SOS = {}
+    return _SOS
+
+
 SYSTEM = """You are an elite fantasy football draft strategist advising me LIVE during my draft. Give sharp, fast, decision-ready advice — I have about 90 seconds on the clock.
 
 MY LEAGUE
@@ -65,6 +79,7 @@ THE DATA I GIVE YOU (per available player)
   - "Sustainable" = scoring matched his role. IMPORTANT: elite players are deliberately NOT flagged TD-lucky even when they outscore their opportunity — they MAKE their touchdowns (repeatable finishing), so never fade a stud on xPPG alone. Blank = rookie / too few games. "new-tm" = he changed teams this off-season, so his xPPG is from his OLD situation — don't lean on it; trust his 2026 projection/ADP for the new spot. Use xPPG as a tiebreaker and a sustainability check, not as a projection.
 - COHORT HISTORY (given for the TOP PICKS shortlist): the player's 15 most-similar historical player-seasons (same position, experience, draft capital, recent production, preseason price, age, mover status — from 2019-2025) and how that archetype ACTUALLY performed vs its draft price: boom (>=1.3x price) / bust (<=0.7x) rates, median multiplier, top-5 finish rate, plus REAL comp names with their outcomes. Use it to (a) explain picks with names ("profile like Jonathan Taylor '21"), (b) break close calls when archetype history clearly favors one profile, (c) flag when an archetype's tail differs from what the player's own numbers suggest. NEVER let cohort rates override the calibrated floor/ceiling/bust%/P_start% — 15 seasons of lookalikes is a PRIOR and a story; the MC numbers are calibration. When they disagree, trust the MC numbers and use the cohort to explain the shape.
 - team = his NFL team. vegas = his team's Vegas season implied points/game (league avg ~22.7). This is the sharpest read on the scoring environment — a featured player on a high-vegas offense (25+) has real upside; a good role on a low-vegas offense (<20) is capped. Weight it heavily for ceiling/situation, and pair it with role: high tgt%/snap% AND high vegas = league-winning opportunity.
+- sos = his team's 2026 POSITIONAL schedule rank (1 = EASIEST: his opponents allowed the most fantasy points to his position last season; 32 = hardest). A mild, tie-break-level signal — schedules shuffle and defenses change. Flag extremes (top-5 easiest is a small plus, bottom-5 a small minus); never let it outrank role, value, or vegas.
 - role = his depth-chart slot at his position ON HIS CURRENT TEAM, ranked by 2026 projection (e.g. "WR1" = his team's top WR, "WR2" = behind an alpha, "RB1" = lead back). This is the CURRENT-team role — pair it with vegas (offense strength) to read situation: a team's WR1 on a high-vegas offense has real target security; a WR2/WR3 sits behind a bigger target earner and a pass-catching RB1 also eats targets. Weight this heavily for how safe/repeatable his volume is.
 - tgt% / snap% = target share / snap share, but from LAST SEASON. For a player who CHANGED TEAMS (regr shows "new-tm"), these are his OLD team's numbers — DISCOUNT them and trust `role` + the 2026 projection for his new spot instead (a WR1 move looks low if his old role was a WR2). High on his current team = locked featured role; low or blank = committee, unproven, or rookie.
 - age = age this season. rook_pk = for rookies, their NFL draft pick (lower = more pedigree/opportunity); blank for veterans.
@@ -477,6 +492,11 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         top["vegas"] = to_1dp(top["team_implied_total"])
     if "xppg" in top:
         top["xPPG"] = to_1dp(top["xppg"])
+    smap = _sos()
+    if smap and "team" in top.columns and "pos_label" in top.columns:
+        bpos = top["pos_label"].str.replace(r"\d+$", "", regex=True)
+        top["sos"] = [str(smap[(t, p)][0]) if (t, p) in smap else ""
+                      for t, p in zip(top["team"], bpos)]
     is_rook = top["is_rookie"].astype(str).str.lower().isin(["true", "1"])
     top["rook_pk"] = [(str(int(pk)) if pd.notna(pk) else "rook") if r else ""
                       for r, pk in zip(is_rook, top["draft_pick"])]
@@ -580,7 +600,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                 if c:
                     cl.append(f"{r.full_name}: [{c['cohort_desc']}] — boom {c['cohort_boom']:.0%}, "
                               f"bust {c['cohort_bust']:.0%}, med {c['cohort_med']}x, "
-                              f"top-5 {c['cohort_top5']:.0%} | history: {c['cohort_comps']}")
+                              f"top-5 {c['cohort_top5']:.0%} ({c.get('cohort_best5', '')}) "
+                              f"| closest matches: {c['cohort_comps']}")
             if cl:
                 cohort_line = ("COHORT HISTORY (shortlist players' 15 most-similar 2019-25 seasons "
                                "vs their price — comps are real, cite them):\n  " + "\n  ".join(cl) + "\n")
@@ -625,7 +646,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                           "within a few VONA = a TIE — among them pick the BEST PLAYER by CLEAR-ALPHA role, "
                           "age, risk/reward, offense (vegas). Only override #1 for a real risk/upside reason. "
                           + " | ".join(f"{i+1}. {_pk(r)}" for i, r in enumerate(ok.itertuples())) + "\n")
-    order = ["player", "pos", "team", "role", "vegas", "VONA", "vols", "ADP", "wheel", "tgt%", "snap%",
+    order = ["player", "pos", "team", "role", "vegas", "sos", "VONA", "vols", "ADP", "wheel", "tgt%", "snap%",
              "age", "rook_pk", "market", "risk", "floor", "ceiling", "P_start%", "bust%", "xPPG", "regr"]
     board_txt = top[[c for c in order if c in top.columns]].to_string(index=False)
 

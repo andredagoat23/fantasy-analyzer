@@ -131,6 +131,13 @@ df["team_stayed"] = _t25.notna() & (_t25 == df["team"])   # (no team_2025 col: l
 # volatility relative to position peers (prior 2 seasons' weekly CV)
 pos_med_cv = df.groupby("position")["consistency"].transform("median")
 df["cv_rel"] = (df["consistency"] / pos_med_cv).fillna(1.0)
+# 2026 new-head-coach teams (data/new_hc_2026.csv from sos_priors.py; schedules-derived)
+try:
+    _hc = pd.read_csv("data/new_hc_2026.csv")
+    _newhc = set(_hc.loc[_hc["new_hc"], "team"])
+except Exception:
+    _newhc = set()
+df["new_hc_team"] = df["team"].isin(_newhc)
 
 # ---- 5. Monte Carlo: right-skewed, injury- & capital-aware ----
 NEW = ["floor", "ceiling", "p10", "p90", "P_pos1", "P_pos2", "P_pos3", "p_elite", "p_startable", "p_bust",
@@ -177,6 +184,13 @@ for pos in ["QB", "RB", "WR", "TE", "K"]:
         wr30 = sub["age"].fillna(0).values >= 30
         tilt = np.where(wr30, tilt * 0.98, tilt)
         season_sigma = np.where(wr30, season_sigma * 0.70, season_sigma)
+    if pos in ("QB", "RB", "WR"):
+        # Wave-2c (backlog, validated 2014-25): stayers under a NEW head coach run NARROWER
+        # with a small lift (real: boom .133 bust .170 vs same-HC .140/.234) - continuity
+        # players deliver under new coaching. TE showed nothing -> excluded.
+        nhc = stay & sub["new_hc_team"].values
+        tilt = np.where(nhc, tilt * 1.02, tilt)
+        season_sigma = np.where(nhc, season_sigma * 0.85, season_sigma)
     if pos != "K":
         cv_blend = np.clip(1 + 0.30 * (sub["cv_rel"].values - 1), 0.80, 1.30)
         season_sigma = season_sigma * np.where(rookie, 1.0, cv_blend)

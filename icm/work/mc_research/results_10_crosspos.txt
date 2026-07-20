@@ -1,0 +1,32 @@
+=== (a) QB quality (primary QB's prior-season EPA/dropback) -> WR/TE vs price ===
+  WR/TE by QB quality bottom n= 309  boom 26%  bust 25%  med 1.00  med/gm 0.96
+  WR/TE by QB quality middle n= 303  boom 24%  bust 24%  med 0.97  med/gm 1.00
+  WR/TE by QB quality top    n= 309  boom 22%  bust 24%  med 1.03  med/gm 1.00
+
+  WR only bottom n= 194  boom 26%  bust 21%  med 1.05  med/gm 0.99
+  WR only middle n= 190  boom 23%  bust 24%  med 1.00  med/gm 1.00
+  WR only top    n= 195  boom 18%  bust 21%  med 1.05  med/gm 1.00
+
+  TE only bottom n= 114  boom 26%  bust 32%  med 0.93  med/gm 0.91
+  TE only middle n= 114  boom 23%  bust 25%  med 0.92  med/gm 0.95
+  TE only top    n= 114  boom 29%  bust 27%  med 1.05  med/gm 1.03
+
+=== (b) OL quality -> RB and QB vs price ===
+  RB by prior team YPC bottom n= 211  boom 31%  bust 28%  med 1.04  med/gm 1.00
+  RB by prior team YPC middle n= 210  boom 30%  bust 25%  med 1.08  med/gm 0.98
+  RB by prior team YPC top    n= 212  boom 28%  bust 32%  med 0.98  med/gm 0.98
+
+  RB by prior sack rate (inverse OL) bottom n= 211  boom 33%  bust 26%  med 1.03  med/gm 1.00
+  RB by prior sack rate (inverse OL) middle n= 208  boom 28%  bust 33%  med 1.00  med/gm 0.97
+  RB by prior sack rate (inverse OL) top    n= 214  boom 28%  bust 25%  med 1.04  med/gm 1.01
+
+  QB by prior sack rate bottom n= 133  boom 23%  bust 22%  med 1.04  med/gm 0.99
+  QB by prior sack rate middle n= 131  boom 18%  bust 25%  med 0.95  med/gm 0.97
+  QB by prior sack rate top    n= 133  boom 31%  bust 26%  med 1.09  med/gm 1.02
+
+=== (c) receiver-corps quality -> QB vs price ===
+  QB by corps top-2 prior ppg bottom n= 141  boom 25%  bust 23%  med 1.08  med/gm 1.00
+  QB by corps top-2 prior ppg middle n= 137  boom 27%  bust 23%  med 1.04  med/gm 1.00
+  QB by corps top-2 prior ppg top    n= 140  boom 19%  bust 26%  med 1.00  med/gm 0.97
+
+saved enriched pool: 2227 rows

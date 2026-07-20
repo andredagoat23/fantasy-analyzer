@@ -136,3 +136,23 @@ Wave 2 (situational tilts, finding 5) — after Wave 1 validates, so effects don
 Downstream effects to expect: elite-RB p_bust rises to honest ~20%; late QB/TE p_startable
 becomes nonzero (strengthens PUNT READ); ceilings for rounds 6–12 players rise (more real VALUE
 flags on upside picks); the risk dial gets meaningfully wider bands to work with.
+
+## ✅ EXPANSION SESSION (Jul 20, evening — user directive: "massively improve the advantage")
+1. **Panel extended to 2014-2025** (12 seasons, 2,227 priced player-seasons, +53%). Distribution
+   stats stable across eras -> pooling is legitimate.
+2. **TRUE OUT-OF-SAMPLE VALIDATION: 62.1% band coverage on 2014-2018** — five seasons the Wave-1/2
+   constants never saw (fit era 60.7-61.2%). The calibration generalizes; it is not overfit.
+3. **Cross-positional dependencies (QB->WR/TE, OL->RB/QB, corps->QB): NULL vs price.** The market
+   fully prices teammate quality — even overprices it (elite-QB receivers boom LESS: 18% vs 26%;
+   bad-corps QBs mildly beat their discount). Only whisper: TE-with-elite-QB med 1.05 vs 0.93.
+   Per the "include if big" rule: excluded from matching; encoded as advisor wisdom (don't pay a
+   premium purely for supporting cast). QB-behind-bad-OL positive was confounded (scramblers).
+4. **Cohorts v3**: kNN on the 12-season pool with enriched features (vegas environment, depth-chart
+   role, injury history, recency preference) + the 5 ABSOLUTE closest matches shown with outcomes
+   ("3/5 boomed"). Rates still from K=15 (the user's higher-sample approximate).
+5. **Wave-2c shipped (frozen edit, user go)**: stayers under a NEW head coach run narrower with a
+   small lift (tilt 1.02, sigma x0.85, QB/RB/WR; TE null). 2026 new-HC list derived from schedules
+   coach fields (7 teams: BAL, CLE, LV, MIA, NYG, PIT, TEN), not from memory. Validated on the full
+   pool: segment boom pred .137 vs real .133; global coverage 61.1%.
+6. **Positional SOS** (`sos_priors.py` -> `sos_data.csv`): 2026 opponents x 2025 per-position points
+   allowed; rank 1-32 in the advisor table with tie-break-only usage rules.
