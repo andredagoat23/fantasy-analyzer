@@ -9,6 +9,8 @@ import anthropic
 import numpy as np
 import pandas as pd
 
+from utils import normalize_name
+
 # The advisor runs on Sonnet for BOTH the "Recommend my pick" button and typed chat — sound roster
 # and player-quality judgment matters more on the clock than shaving a second, and a smaller model
 # was latching onto the VALUE tag and misreading roster needs. Thinking is off by default on 4.6, so
@@ -24,6 +26,23 @@ try:
     DST_TEXT = "  ".join(f"{r.rank}.{r.team}(T{r.tier})" for r in _dst.itertuples())
 except Exception:
     DST_TEXT = ""
+
+# Cohort priors (cohort_data.csv, built by cohort_priors.py): each player's 15 most-similar
+# historical player-seasons and how that archetype performed vs its price. Loaded once; the
+# advisor cites them as explainable comps. Missing file -> feature silently off.
+_COHORTS = None
+
+
+def _cohorts():
+    global _COHORTS
+    if _COHORTS is None:
+        try:
+            _df = pd.read_csv("cohort_data.csv")
+            _COHORTS = {r["nn"]: dict(r) for _, r in _df.iterrows()}
+        except Exception:
+            _COHORTS = {}
+    return _COHORTS
+
 
 SYSTEM = """You are an elite fantasy football draft strategist advising me LIVE during my draft. Give sharp, fast, decision-ready advice — I have about 90 seconds on the clock.
 
@@ -44,6 +63,7 @@ THE DATA I GIVE YOU (per available player)
   - "TD-lucky" = scored well above his opportunity (touchdown-dependent) -> regression risk, don't reach for him.
   - "Buy-low" = scored below his opportunity (efficient role, unlucky TDs) -> bounce-back value, worth a slight bump.
   - "Sustainable" = scoring matched his role. IMPORTANT: elite players are deliberately NOT flagged TD-lucky even when they outscore their opportunity — they MAKE their touchdowns (repeatable finishing), so never fade a stud on xPPG alone. Blank = rookie / too few games. "new-tm" = he changed teams this off-season, so his xPPG is from his OLD situation — don't lean on it; trust his 2026 projection/ADP for the new spot. Use xPPG as a tiebreaker and a sustainability check, not as a projection.
+- COHORT HISTORY (given for the TOP PICKS shortlist): the player's 15 most-similar historical player-seasons (same position, experience, draft capital, recent production, preseason price, age, mover status — from 2019-2025) and how that archetype ACTUALLY performed vs its draft price: boom (>=1.3x price) / bust (<=0.7x) rates, median multiplier, top-5 finish rate, plus REAL comp names with their outcomes. Use it to (a) explain picks with names ("profile like Jonathan Taylor '21"), (b) break close calls when archetype history clearly favors one profile, (c) flag when an archetype's tail differs from what the player's own numbers suggest. NEVER let cohort rates override the calibrated floor/ceiling/bust%/P_start% — 15 seasons of lookalikes is a PRIOR and a story; the MC numbers are calibration. When they disagree, trust the MC numbers and use the cohort to explain the shape.
 - team = his NFL team. vegas = his team's Vegas season implied points/game (league avg ~22.7). This is the sharpest read on the scoring environment — a featured player on a high-vegas offense (25+) has real upside; a good role on a low-vegas offense (<20) is capped. Weight it heavily for ceiling/situation, and pair it with role: high tgt%/snap% AND high vegas = league-winning opportunity.
 - role = his depth-chart slot at his position ON HIS CURRENT TEAM, ranked by 2026 projection (e.g. "WR1" = his team's top WR, "WR2" = behind an alpha, "RB1" = lead back). This is the CURRENT-team role — pair it with vegas (offense strength) to read situation: a team's WR1 on a high-vegas offense has real target security; a WR2/WR3 sits behind a bigger target earner and a pass-catching RB1 also eats targets. Weight this heavily for how safe/repeatable his volume is.
 - tgt% / snap% = target share / snap share, but from LAST SEASON. For a player who CHANGED TEAMS (regr shows "new-tm"), these are his OLD team's numbers — DISCOUNT them and trust `role` + the 2026 projection for his new spot instead (a WR1 move looks low if his old role was a WR2). High on his current team = locked featured role; low or blank = committee, unproven, or rookie.
@@ -506,6 +526,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     # hard-demoted below RB/WR (L8/L11), so the model can't misread the table or reach for a recoverable
     # QB/TE over the scarce value. Take #1 unless a clear risk/upside reason moves you to #2-3.
     picks_line = ""
+    cohort_line = ""
     if "vona" in available.columns:
         skip = set(blocked) | {"K", "DEF", "DST", "D/ST"}   # streamers (K/D-ST) are a final-round call
         pool = available[~available["position"].isin(skip)].copy()
@@ -551,6 +572,18 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
             ok = ok.assign(_sink=[_sink_rank(p, v) for p, v in zip(ok["position"], ok["vona"])]
                            ).sort_values("_sink", kind="stable").drop(columns="_sink")
         ok = ok.head(6)
+        if len(ok):
+            ch = _cohorts()
+            cl = []
+            for r in ok.itertuples():
+                c = ch.get(normalize_name(r.full_name))
+                if c:
+                    cl.append(f"{r.full_name}: [{c['cohort_desc']}] — boom {c['cohort_boom']:.0%}, "
+                              f"bust {c['cohort_bust']:.0%}, med {c['cohort_med']}x, "
+                              f"top-5 {c['cohort_top5']:.0%} | history: {c['cohort_comps']}")
+            if cl:
+                cohort_line = ("COHORT HISTORY (shortlist players' 15 most-similar 2019-25 seasons "
+                               "vs their price — comps are real, cite them):\n  " + "\n  ".join(cl) + "\n")
         if len(ok):
             top_v = float(ok.iloc[0]["vona"])
             close = 4.0   # players within this many VONA of the top are a genuine tie -> profile decides
@@ -649,6 +682,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         + f"{risk_line}"
         f"{punt_line}"
         f"{picks_line}"
+        f"{cohort_line}"
         f"Startable pool left by position (context only — VONA already prices scarcity): {scar}\n\n"
         f"Top {len(top)} available players (sorted by composite value; "
         f"ADP 'UD' = undrafted/no ADP, i.e. very likely to still be available later):\n{board_txt}"
@@ -723,7 +757,7 @@ def _system_blocks(mode_text):
 # pressure, so it thinks deeper than the on-clock PICK mode and plans contingencies. The app shows
 # it instantly when you go on the clock IF the board hasn't changed since (exact state-key match).
 PRELOOK_MODE = """MODE: PRE-READ — you are thinking AHEAD of my turn while other teams pick. There is no clock pressure: reason deeply about the board, my roster, and MY STRATEGY before answering — the pick must EXECUTE my plan (deviation protocol applies). Your answer will be shown to me INSTANTLY when I go on the clock with this exact board, so make it decision-ready:
-**PICK: Name (POS)** — one short sentence why.
+**PICK: Name (POS)** — one short sentence why; cite ONE cohort comp when it strengthens the case ("profile like X '21").
 Plan: how this advances my strategy, a few words (if none set, need/value instead).
 If sniped: **Name2** — a few words when/why. (Up to two pivots, only for players realistically taken before my turn — use the `wheel` column.)
 Watch: one short line — who wheels back safely; or, if deviating cleared the protocol, both options PLAN-FIRST like PICK mode.

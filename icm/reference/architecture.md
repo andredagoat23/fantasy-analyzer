@@ -22,6 +22,13 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
   never touches st.*). The answer is stamped with an exact board fingerprint (drafted ∪ mine ∪ setup);
   on the clock the Recommend button serves it INSTANTLY only on an exact match, else falls back to
   the live call. Verified via AppTest: click→answer 0.1s with identical text.
+- `cohort_priors.py` — the "Hampton treatment" for every board player: kNN over the 2019-25
+  research panel (position, experience, draft capital, production, price, age, mover status) →
+  each player's 15 most-similar historical seasons, their boom/bust/median-vs-price rates, and
+  REAL named comps → `cohort_data.csv` (committed; the advisor's COHORT HISTORY block reads it for
+  the TOP PICKS shortlist). NOT in run_all — rerun manually after board rebuilds; needs the local
+  research panel (`icm/work/mc_research/seasons_exp.parquet`, rebuildable via `01+02` there).
+  Cohorts are PRIORS + explainable stories; the calibrated MC numbers always win on disagreement.
 - `bridge.py` — reads the live-draft Firebase mailbox and resolves picks to board players. See
   `bridge.md`.
 - `auth.py`, `config_store.py`, `utils.py` (`normalize_name`), `espn_sync.py` (ESPN-API fallback).

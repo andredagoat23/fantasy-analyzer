@@ -39,6 +39,13 @@ The NEXT TASK is a **Monte Carlo deep-dive** — details + the questions to ask 
 - **Yahoo:** NOT started. Next platform toward the user's 95%-automated goal (ESPN 48% + Sleeper 33% +
   Yahoo 18%). A **verification probe is scoped** (`yahoo-probe-scope.md`) — do that BEFORE building.
 
+## Shipped Jul 20 (post-MC session): advisor personalization layer
+- **L23 roster-risk gate**, **L25 strategy-is-the-plan** (absolutes binding, deviation protocol,
+  Plan: note in every pick), **speculative PRE-READ** (background deep call, instant on the clock,
+  prompt-cached SYSTEM), **Wave-2b proven-mover split**, and **COHORT PRIORS** (`cohort_priors.py`
+  → `cohort_data.csv`: every player's 15 nearest historical seasons + named comps, cited by the
+  advisor). Regenerate cohort_data.csv manually after board rebuilds (needs local panel).
+
 ## Backlog (user-requested, parked Jul 20, 2026)
 - **New-head-coach tilt (PARKED, validated):** stayed players on new-HC teams beat price (med 1.04,
   bust 21% vs 24%; QBs strongest 1.19). Shippable but marginal; needs a hand-maintained 2026 new-HC
