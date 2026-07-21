@@ -690,13 +690,28 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
             for r in ok.itertuples():
                 c = ch.get(normalize_name(r.full_name))
                 if c:
+                    # median = the TYPICAL comp season; trimmed mean = the EXPECTED return once the
+                    # boom tail is counted (outcomes are right-skewed, so the median alone hides it).
+                    # When the two straddle 1.0x the profile is TAIL-DRIVEN: the middle of the range
+                    # mildly misses his price, but you're buying the ceiling. Flagged only on that
+                    # crossing — a real verdict flip, not a tuned cutoff.
+                    trim = c.get("cohort_trimmed")
+                    tail = ""
+                    if trim is not None and pd.notna(trim):
+                        skew = (" — TAIL-DRIVEN: the typical comp misses his price but the trimmed "
+                                "mean clears it, so the value is in the ceiling, not the median"
+                                if float(c["cohort_med"]) < 1.0 <= float(trim) else "")
+                        tail = f", trimmed-mean {trim}x{skew}"
                     cl.append(f"{r.full_name}: [{c['cohort_desc']}] — boom {c['cohort_boom']:.0%}, "
-                              f"bust {c['cohort_bust']:.0%}, med {c['cohort_med']}x, "
+                              f"bust {c['cohort_bust']:.0%}, med {c['cohort_med']}x{tail}, "
                               f"top-5 {c['cohort_top5']:.0%} ({c.get('cohort_best5', '')}) "
                               f"| closest matches: {c['cohort_comps']}")
             if cl:
-                cohort_line = ("COHORT HISTORY (shortlist players' 15 most-similar 2019-25 seasons "
-                               "vs their price — comps are real, cite them):\n  " + "\n  ".join(cl) + "\n")
+                cohort_line = ("COHORT HISTORY (shortlist players' 15 most-similar 2019-25 seasons vs "
+                               "their price — comps are real, cite them). med = the TYPICAL comp season; "
+                               "trimmed-mean = the expected return WITH the boom tail (fantasy outcomes "
+                               "are right-skewed, so a low median can still hide real upside):\n  "
+                               + "\n  ".join(cl) + "\n")
         if len(ok):
             top_v = float(ok.iloc[0]["vona"])
             close = 4.0   # players within this many VONA of the top are a genuine tie -> profile decides

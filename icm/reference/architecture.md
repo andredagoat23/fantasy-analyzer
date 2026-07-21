@@ -29,6 +29,13 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
   the TOP PICKS shortlist). NOT in run_all — rerun manually after board rebuilds; needs the local
   research panel (`icm/work/mc_research/seasons_exp.parquet`, rebuildable via `01+02` there).
   Cohorts are PRIORS + explainable stories; the calibrated MC numbers always win on disagreement.
+  **Median AND trimmed mean (L29):** outcomes are right-skewed, so `cohort_med` alone hides the boom
+  tail (mean > median for 61% of players; 30% flip their "beats his price?" verdict). `cohort_trimmed`
+  (drop the 2 best + 2 worst of 15) captures that tail without the raw mean's blow-ups — `mult` is
+  finish/price, so a cheap backup QB who starts a few games explodes it (Tyrod Taylor med 0.69x →
+  mean 2.01x → trimmed 1.12x). The advisor prints both and tags TAIL-DRIVEN when they straddle 1.0x
+  (41 board players; e.g. JSN 0.91x median but 1.01x trimmed). `cohort_mean` is stored for reference
+  but is NOT what the advisor reads.
 - `sos_priors.py` — positional strength of schedule (`sos_data.csv`: 2026 opponents x 2025
   points allowed per position, rank 1=easiest) + the news-verified 2026 coaching files in `data/`:
   `new_hc_2026.csv` (10 teams — drives the MC stayed+new-HC tilt; schedules feed was stale for

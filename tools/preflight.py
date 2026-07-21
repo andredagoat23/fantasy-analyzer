@@ -145,6 +145,23 @@ if coh is not None and vb is not None:
     rates_ok = coh[["cohort_boom", "cohort_bust"]].apply(lambda s: s.between(0, 1).all()).all() \
         if {"cohort_boom", "cohort_bust"} <= set(coh.columns) else False
     ok("cohort boom/bust rates in [0,1]") if rates_ok else fail("cohort rates out of [0,1]")
+    # the skew read (L29) — a regen that drops these silently costs the advisor the boom-tail signal
+    if {"cohort_med", "cohort_trimmed"} <= set(coh.columns):
+        ok(f"cohort median + trimmed-mean present "
+           f"({int(((coh.cohort_med < 1.0) & (coh.cohort_trimmed >= 1.0)).sum())} tail-driven players)")
+        # Scope to players who can actually reach the advisor's shortlist. Bottom-of-board backup QBs
+        # (Rudolph/Mullens, composite ~#506) legitimately show trimmed >2x — their WHOLE comp set is
+        # inflated because a backup who starts games beats a near-zero price. Warning on them would be
+        # permanent noise, which is how a preflight gets ignored.
+        core_nn = set(skill["full_name"].apply(normalize_name)) if len(skill) else set()
+        core = coh[coh["nn"].isin(core_nn)] if "nn" in coh.columns else coh.iloc[0:0]
+        blow = int((core["cohort_trimmed"] > 2.0).sum()) if len(core) else 0
+        ok(f"trimmed means outlier-resistant across the draftable core "
+           f"(max {core['cohort_trimmed'].max():.2f}x)") if blow == 0 and len(core) \
+            else warn(f"{blow} DRAFTABLE players have trimmed mean > 2.0x",
+                      "trimming may not be suppressing blow-up comps")
+    else:
+        fail("cohort_trimmed column missing", "rerun cohort_priors.py — advisor loses the skew read")
 
 sos = loaded.get("sos_data.csv")
 if sos is not None and {"position", "sos_rank"}.issubset(sos.columns):

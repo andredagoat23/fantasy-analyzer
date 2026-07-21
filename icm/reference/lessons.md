@@ -441,6 +441,32 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L29 — The median hid the boom tail; report a TRIMMED mean beside it (user catch, Jul 2026)
+- **Symptom:** walking JSN's cohort, his 5 closest comps were CeeDee '23→WR1, Chase '24→WR1,
+  Jefferson '22→WR1 — yet the summary said median **0.91x**, i.e. "typically misses his price." The
+  user asked: *"should we mix mean and median — if there are 10 average seasons and 5 massive booms the
+  median says he has an average season?"* Correct.
+- **Root cause:** fantasy outcomes are RIGHT-SKEWED (floor 0, ceiling unbounded), and we reported only
+  the median. Measured across all 280 cohorts: **mean > median for 61% of players**, and **30% flip
+  their "beats his price?" verdict** depending which stat you read. JSN's 15 are bimodal — 5 comps at
+  1.31-1.60x and a fat cluster at 0.74-0.97x — so the median lands in a mushy middle that describes
+  almost none of them.
+- **Why the naive fix fails:** the RAW mean is unusable. `mult = finish / price`, so a cheap backup QB
+  who starts a few games explodes it — Tyrod Taylor median 0.69x → **mean 2.01x**, Mason Rudolph 2.99x.
+  The advisor would have drooled over waiver QBs.
+- **Fix:** `cohort_trimmed` — drop the 2 best and 2 worst of the 15, average the middle 11. Keeps the
+  tail, kills the blow-ups (Tyrod → 1.12x; JSN keeps 1.01x). The advisor prints **median + trimmed
+  mean** and tags **TAIL-DRIVEN** only when the two straddle 1.0x (a real verdict flip, not a tuned
+  cutoff) — 41 board players, concentrated exactly where you'd predict: young/prime alpha WRs whose
+  value lives in the ceiling (JSN, Drake London, A.J. Brown, Garrett Wilson, McLaurin).
+  Tests: `tests/test_cohort_skew.py` (10). Preflight guards the columns, scoped to the DRAFTABLE core
+  (bottom-of-board backup QBs legitimately exceed 2x — warning on them is permanent noise).
+- **Teaches:** a single central-tendency number is a lossy summary of a skewed distribution — report
+  the shape, not just the middle. And when the robust statistic and the EV statistic disagree, that gap
+  IS the signal worth surfacing. (Principles 3, 8; L24 — another user challenge that was right)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

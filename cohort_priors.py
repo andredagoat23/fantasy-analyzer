@@ -145,6 +145,16 @@ def build():
         boom = shrink((cohort["mult"] >= 1.3).mean(), bb["boom"])
         bust = shrink((cohort["mult"] <= 0.7).mean(), bb["bust"])
         med = cohort["mult"].median()
+        # Fantasy outcomes are RIGHT-SKEWED (floor is 0, ceiling is unbounded), so the median alone
+        # hides the boom tail that actually wins leagues: across the board mean > median for 61% of
+        # players, and 30% flip their "beats his price?" verdict depending which you read. But the RAW
+        # mean is unusable — mult = finish/price, so a cheap backup QB who starts a few games explodes
+        # it (Tyrod Taylor: median 0.69x, mean 2.01x). The TRIMMED mean (drop the 2 best + 2 worst of
+        # 15) keeps the tail and kills the blow-ups (Tyrod -> 1.12x; JSN keeps 1.01x). Report both:
+        # median = the typical season, trimmed mean = the expected return, and the GAP is the skew.
+        ms = cohort["mult"].sort_values()
+        trimmed = float(ms.iloc[2:-2].mean()) if len(ms) >= 7 else float(ms.mean())
+        mean = float(cohort["mult"].mean())
         top5 = shrink((cohort["pos_rank_total"] <= 5).mean(), bb["top5"])
 
         # the 5 ABSOLUTE best matches (closest profiles), shown with their real outcomes
@@ -160,7 +170,8 @@ def build():
         rows.append({"full_name": p["full_name"], "position": p["position"],
                      "cohort_desc": desc, "cohort_n": len(cohort),
                      "cohort_boom": round(boom, 3), "cohort_bust": round(bust, 3),
-                     "cohort_med": round(med, 2), "cohort_top5": round(top5, 3),
+                     "cohort_med": round(med, 2), "cohort_trimmed": round(trimmed, 2),
+                     "cohort_mean": round(mean, 2), "cohort_top5": round(top5, 3),
                      "cohort_comps": " | ".join(comps), "cohort_best5": best5_note})
 
     out = pd.DataFrame(rows)
