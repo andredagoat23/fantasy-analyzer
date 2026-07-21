@@ -391,6 +391,25 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L27 — The 1-start block is risk-blind; a boom/bust QB/TE starter needs a HEDGE READ (Jul 2026)
+- **Symptom:** in a live mock the user's plan said "hedge our risky positions," but the advisor
+  never surfaced a backup for their only TE — a boom/bust starter (Colston Loveland, 37% bust). It
+  went silent on a decision the plan explicitly asked for (an L25 miss).
+- **Root cause:** `_blocked_positions` blocks a filled 1-start slot (QB/TE) wholesale — nulls its
+  VONA, drops it from TOP PICKS — with NO regard for the starter's risk. So it (correctly) stays
+  silent on a safe stud QB *and* (wrongly) on a boom/bust rookie TE, identically.
+- **Fix:** `_hedge_read` (advisor.py) — a Python-computed HEDGE READ line (family of PUNT READ /
+  STREAMER ALERT / ROSTER RISK). Fires only when a FILLED 1-start starter is risky (`risk_tier` in
+  Boom/Bust / Injury Risk, or `p_bust ≥ _HEDGE_BUST=0.35`) AND dedicated starters are set (a hedge is
+  a bench decision — don't nag mid-draft). Surfaces the safest available hedge + the stream
+  alternative, and is explicit that it's INSURANCE not a value pick (VONA stays blocked, so a backup
+  never masquerades as a value in TOP PICKS). It stayed silent for safe-QB Allen and fired for
+  boom/bust Loveland — the exact split we wanted. Tests: `tests/test_hedge.py` (8).
+- **Teaches:** a blanket roster rule that's usually right can still violate the user's PLAN in the
+  risky-starter case; make the rule risk-aware and let the plan drive. (Principles 3, 8; L25)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

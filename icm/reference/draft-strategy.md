@@ -113,6 +113,15 @@ over an elite TE, unlike the earlier `keep_frac` version that always grabbed TE.
 keeps TE stickier than QB (its streamers bust more) but does not override a genuine QB VONA edge.
 Verified: mock pick 24 takes Chase Brown (scarce RB) and passes the round-2 QB; the L11 reach is gone.
 
+**The HEDGE READ — the flip side of the punt read (L27).** The punt read governs an UNFILLED 1-start
+slot (wait vs. grab). Once a 1-start slot is FILLED, `_blocked_positions` blocks a 2nd (a backup QB/TE
+is nearly worthless) — but that block is risk-BLIND. So when my only QB/TE is a boom/bust starter and
+my plan says to hedge risky positions, `_hedge_read` surfaces the hedge-vs-stream CALL: it names the
+safest available backup + the stream alternative, fires only for a risky starter (Boom/Bust / Injury
+Risk / `p_bust ≥ _HEDGE_BUST`=0.35) and only once dedicated starters are set, and is explicit that a
+backup is INSURANCE not a value pick (the backup's VONA stays blocked — it never enters TOP PICKS).
+It stays silent for a safe stud QB and fires for a boom/bust TE — exactly the split we want.
+
 ## Wheel-back — still Python-computed, still read never re-derived
 The `wheel` column (gone / risky / safe) is the per-player timing read; VONA is the position-level
 decision. Both use the same `horizon`. The model reads them; it never does the ADP arithmetic.

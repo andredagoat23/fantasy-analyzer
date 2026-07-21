@@ -304,6 +304,49 @@ def _roster_risk(mine_df):
     return out
 
 
+_HEDGE_BUST = 0.35    # a FILLED 1-start starter (QB/TE) this bust-prone — or Boom/Bust / Injury Risk —
+#                       is risky enough that hedging it is a legitimate call (see _hedge_read).
+
+
+def _hedge_read(mine_df, available, dedicated_open):
+    """A FILLED 1-start slot (QB/TE) is normally BLOCKED (a backup is nearly worthless), but that block
+    is risk-BLIND: it stays silent even when my only QB/TE is a boom/bust starter and my plan says
+    "hedge risky positions" (L25/L27). This surfaces the hedge-vs-stream CALL — never a value pick (the
+    backup's VONA stays blocked). Fires only once my dedicated starters are set (a hedge is a bench
+    decision, not a reason to skip a starter). Returns a note string, or "" when there's nothing to raise.
+    """
+    if len(dedicated_open) or not len(mine_df) or "p_bust" not in mine_df.columns:
+        return ""                                  # still filling fixed starters — not hedge time yet
+    base = (mine_df["pos_label"].astype(str).str.replace(r"\d+$", "", regex=True)
+            if "pos_label" in mine_df.columns else mine_df.get("position", pd.Series(dtype=str)))
+    bits = []
+    for pos in ("QB", "TE"):
+        room = mine_df[base == pos]
+        if not len(room):
+            continue                               # position not filled -> the PUNT READ owns it, not this
+        starter = room.sort_values("total_points", ascending=False).iloc[0]
+        bust = float(starter["p_bust"]) if pd.notna(starter.get("p_bust")) else 0.0
+        tier = str(starter.get("risk_tier", ""))
+        if tier not in ("Boom/Bust", "Injury Risk") and bust < _HEDGE_BUST:
+            continue                               # a safe starter (e.g. a stud QB) needs no hedge
+        pool = (available[available["position"] == pos] if "position" in available.columns
+                else available[available["pos_label"].astype(str).str.startswith(pos)])
+        pool = pool[pool["p_bust"].notna() & (pool["total_points"] > 0)]
+        if len(pool):
+            h = pool.sort_values(["p_bust", "floor"], ascending=[True, False]).iloc[0]
+            opt = f"safest hedge available: {h['full_name']} (bust {h['p_bust']:.0%}, floor {h['floor']:.0f})"
+        else:
+            opt = "no safe-floor hedge left — plan to stream"
+        bits.append(f"your only {pos} ({starter['full_name']}) is {tier or 'high-bust'} at "
+                    f"{bust:.0%} bust — {opt}")
+    if not bits:
+        return ""
+    return ("HEDGE READ (my plan hedges risky positions; a backup 1-start is INSURANCE, not a value "
+            "pick — its VONA stays blocked): " + " | ".join(bits)
+            + ". The alternative to each is to STREAM the position off waivers and spend the pick on "
+            "upside instead — present the tradeoff and let me choose.\n")
+
+
 def _lineup_gaps(mine_df):
     """Categorize positions by how my NEXT pick there would fit the STARTING lineup (1QB/2RB/2WR/1TE +
     1 FLEX of RB/WR/TE):
@@ -725,6 +768,10 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                              f"your remaining pick(s) MUST be spent there. Best K available: {kn}. "
                              f"D/ST: take the top available from the ranking below.\n")
 
+    # HEDGE READ (L27): the 1-start block is risk-blind, so when my only QB/TE is a boom/bust starter
+    # and my plan hedges risky positions, surface the hedge-vs-stream call (dedicated starters must be set).
+    hedge_line = _hedge_read(mine_df, available, dedicated_open)
+
     pc = _playcallers()
     pc_line = ""
     if pc:
@@ -742,6 +789,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         + (f"MY DRAFT PLAN — this is the strategy I chose; EXECUTE it (deviation protocol applies, "
            f"and every pick answer includes the Plan: note): {strategy}\n" if strategy else "")
         + f"{risk_line}"
+        f"{hedge_line}"
         f"{punt_line}"
         f"{picks_line}"
         f"{cohort_line}"
