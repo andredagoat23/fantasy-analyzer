@@ -410,6 +410,37 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L28 — "Fixing" a pick the metrics got RIGHT: a positional prior almost overrode the data (Jul 2026)
+- **Symptom:** in a live ESPN mock the advisor recommended Josh Allen at pick 29 (R3). It *looked* like
+  the L11 bug (a deep QB taken early), so it was reported as one.
+- **What I did wrong:** I "fixed" it — first with a tuned `_PUNT_CLIFF_MARGIN` (0.20), then with a
+  cleverer VONA-derived margin — so a near-tie could not flip the "QB/TE fall on their own" default.
+  Both demoted Allen. Both were a **preconceived notion wearing a formula**.
+- **The user caught it:** "is Allen the best pick there VONA+risk wise? I don't want preconceived notions
+  that make it take the wrong guy because it's following the rules you set." Checking properly:
+  **Allen VONA 50.7 vs the best RB's 13.3 (3.8x)**, higher risk-adj VOLS (60.3 vs 55.3), higher ceiling
+  (564 vs 389), higher P(elite) (28% vs 8%), LOWEST cohort bust (18%). The RB pool was deep; the QB pool
+  cliffed. **Allen was the correct pick — the model was right and my fix would have forced a worse one.**
+- **The "it broke the boom-upside plan" claim was ALSO wrong.** Allen ranked **#1 of all 507 available
+  players in raw ceiling, P(elite) 28%, P(positional #1) 75%, AND ceiling-over-replacement (201 vs 158
+  next)**. He *was* the boom pick, so there was no strategy conflict to surface either. The trap: his
+  upside MULTIPLIER (ceiling/proj 1.27x) and cohort boom rate (25%) are lower than a mid RB's — but those
+  measure spread RELATIVE TO PRICE, not upside. A player projected that high doesn't need to beat his
+  price to win a league. Do not read "low variance" as "low ceiling."
+- **Real defects found + fixed (they did NOT change this verdict):** (a) only the FALLBACK was
+  risk-adjusted while the elite stayed raw — now both are; (b) the fallback was a single player, so
+  "punting" ignored DEPTH — now it's `_expected_best_survivor` over the whole pool (the same expectation
+  `add_vona` uses), which prices the streaming value punting actually buys. Margin removed entirely.
+- **Also rejected after testing:** symmetric risk adjustment as a *fix* (it favours the QB more, since
+  Allen's bust is low); MC ceiling−floor as a noise margin (178 VOLS — that's outcome variance, not
+  decision uncertainty); adjacent-tier step (2.2 VOLS, noise).
+- **Teaches:** a bug report that matches a known pattern is still a HYPOTHESIS — reproduce and check the
+  metrics before "fixing." When a model contradicts conventional wisdom, verify which one is wrong; don't
+  encode the wisdom as a guard. If a stated strategy wants a different pick, that belongs in the
+  strategy-conflict protocol (L20/L25), not baked into the value math. (Principles 1, 8, 9; L24)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

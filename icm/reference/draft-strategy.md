@@ -100,8 +100,22 @@ window:
 
 The `× (1 − bust%)` is the VARIANCE factor: a boom/bust late streamer (an old TE dart) is worth less
 than its projection, so deferring that position costs MORE. An unfilled 1-start slot (QB/TE) is
-**punt-able iff its punt_loss < the best RB/WR's punt_loss** — i.e. deferring the 1-start slot loses
-LESS than deferring the scarce skill value. Pure comparison: no keep_frac, no 0.75, no magic numbers.
+**punt-able iff its punt_loss < the best RB/WR's punt_loss** — a straight comparison, no margin. Two
+refinements make that comparison honest (L28):
+- **Both sides risk-adjusted.** The elite is `VOLS × (1 − p_bust)`, same as the fallback. The old form
+  discounted only the fallback and left the elite raw, which inflated every punt_loss.
+- **The fallback is the EXPECTED BEST SURVIVOR** (`_expected_best_survivor`, the same expectation
+  `add_vona` uses for `best_wait`) over the whole remaining pool — not one player. A position with many
+  streamable options left therefore costs less to defer. *That depth is what "punting" actually buys*,
+  and it's now priced instead of assumed.
+
+**No positional prior gets a veto.** A "QB/TE should fall" margin was added here and then REMOVED: on the
+real pick-29 board it demoted Josh Allen — VONA **50.7 vs the best RB's 13.3**, higher risk-adjusted VOLS
+(60.3 vs 55.3), higher ceiling (564 vs 389), higher P(elite) (28% vs 8%) and the LOWEST cohort bust (18%)
+— in favour of a worse player. The RB pool was simply deep there and the QB pool cliffed. The metrics
+exist to make this call; conventional wisdom about which positions "should" wait does not override them.
+If a stated STRATEGY wants a different pick, that belongs in the strategy-conflict protocol (L20/L25),
+not baked into the value math.
 Punt-able slots are HARD-DEMOTED below the RB/WR in TOP PICKS (enforced in data) and tagged; the PUNT
 READ line shows each position's punt_loss + streamer + bust%. It self-corrects: once the elite QB is
 the scarcest value or depth dries up, its punt_loss exceeds the RB/WR bar → it's a CLIFF → grabbed

@@ -447,19 +447,46 @@ def _wheel_label(adp, horizon):
 _PUNT_LATE_ROUNDS = 5
 
 
+def _expected_best_survivor(pool, horizon, risk_adj=True):
+    """Expected VOLS of the BEST player at `pool`'s position still on the board at `horizon` — each
+    candidate weighted by P(he survives) × P(everyone better is gone). Same expectation form add_vona
+    uses for `best_wait`, so VONA and the punt read price "what's left later" identically.
+
+    `risk_adj` scales each candidate by (1 − p_bust) so the expectation is in risk-adjusted VOLS.
+    Because it's an expectation over the WHOLE remaining pool (not one player), a DEEP position — many
+    streamable options — correctly prices out higher than a thin one. That depth IS the streaming
+    value of punting a 1-start slot (L28)."""
+    g = pool.sort_values("vols", ascending=False)
+    busts = g["p_bust"].fillna(0.0) if "p_bust" in g.columns else pd.Series(0.0, index=g.index)
+    gone_above, exp_best = 1.0, 0.0
+    for v, bust, pi in zip(g["vols"], busts, _survival_prob(g["adp_rank"], horizon)):
+        vv = 0.0 if pd.isna(v) else max(float(v), 0.0)
+        if risk_adj:
+            vv *= (1.0 - float(bust))
+        pi = float(pi)
+        exp_best += vv * pi * gone_above          # v_i · P(i survives) · P(all better gone)
+        gone_above *= (1.0 - pi)
+    return exp_best
+
+
 def _pos_punt_loss(available, pos, late_pick, teams):
     """Risk-adjusted value you LOSE by deferring a position to your fill window, computed identically
     for every position (no magic thresholds — a pure stats comparison):
 
-        punt_loss = elite VOLS now − (best VOLS still ~50%+ available at the fill window) × (1 − bust%)
+        punt_loss = elite risk-adj VOLS now − E[best risk-adj VOLS still there at the fill window]
 
-    The `× (1 − bust%)` is the VARIANCE factor: a boom/bust late streamer (an old TE dart) is worth
-    less than its projection, so deferring that position costs MORE → you grab the elite; a reliable
-    late streamer (a steady QB) keeps its value → you can punt. Returns None if the position is empty."""
+    Both sides are RISK-ADJUSTED (the old form discounted only the fallback while leaving the elite
+    raw, which systematically inflated every punt_loss — an apples-to-oranges comparison), and the
+    fallback is the EXPECTED BEST SURVIVOR over the whole remaining pool rather than a single player,
+    so a position with many streamable options left costs less to defer. Returns None if empty."""
     pool = available[(available["position"] == pos) & available["vols"].notna()]
     if not len(pool):
         return None
-    elite = float(pool.loc[pool["vols"].idxmax(), "vols"])
+    ei = pool["vols"].idxmax()
+    e_bust = float(pool.loc[ei, "p_bust"]) if "p_bust" in pool and pd.notna(pool.loc[ei, "p_bust"]) else 0.0
+    elite = max(float(pool.loc[ei, "vols"]), 0.0) * (1.0 - e_bust)
+    late_adj = _expected_best_survivor(pool, late_pick, risk_adj=True)
+    # descriptors for the human-readable streamer text: the best SINGLE option likely to still be there
     surv = pool[_survival_prob(pool["adp_rank"], late_pick) >= 0.5]
     if len(surv):
         i = surv["vols"].idxmax()
@@ -470,9 +497,8 @@ def _pos_punt_loss(available, pos, late_pick, teams):
         late_name = str(surv.loc[i, "full_name"])
     else:
         late_vols, bust, lasts_round, late_name = 0.0, 0.0, None, None
-    late_adj = late_vols * (1.0 - bust)
     return {"punt_loss": max(elite - late_adj, 0.0), "late_vols": late_vols, "late_bust": bust,
-            "lasts_round": lasts_round, "late_name": late_name}
+            "lasts_round": lasts_round, "late_name": late_name, "late_pool": late_adj}
 
 
 def _punt_read(available, open_1start, current_overall, teams):
@@ -501,7 +527,13 @@ def _punt_read(available, open_1start, current_overall, teams):
         r = _pos_punt_loss(available, pos, late_pick, teams)
         if r is None:
             continue
-        r["punt_able"] = r["punt_loss"] < best_rbwr     # pure comparison: cheaper to defer than the RB/WR
+        # Straight comparison, NO safety margin: cheaper to defer than the scarce RB/WR -> punt.
+        # A tuned/derived "QB should fall" margin was tried here and REMOVED (L28) — on the real
+        # pick-29 board it demoted Josh Allen (VONA 50.7, 3.8x the best RB's 13.3; higher risk-adj
+        # VOLS, ceiling, P(elite) AND lower cohort bust) in favour of a worse player. The metrics
+        # exist to decide this; a prior about which positions "should" fall does not get a veto.
+        r["cliff_bar"] = best_rbwr
+        r["punt_able"] = r["punt_loss"] < best_rbwr
         reads[pos] = r
     return reads, best_rbwr
 
@@ -592,6 +624,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
             lr = f"~R{r['lasts_round']}" if r["lasts_round"] else "late"
             stream = (f"streamer {r['late_name']} lasts {lr}, bust {r['late_bust']:.0%}"
                       if r["late_name"] else "no startable one lasts")
+            # Both numbers are risk-adjusted and the fallback prices the whole streamable pool (L28),
+            # so state the straight comparison — no margin, no hedging language.
             if r["punt_able"]:
                 bits.append(f"{p} is DEEP — deferring costs only ~{r['punt_loss']:.0f} risk-adj VOLS "
                             f"({stream}), LESS than the scarce RB/WR (~{best_rbwr:.0f}) → PUNT: take the "
