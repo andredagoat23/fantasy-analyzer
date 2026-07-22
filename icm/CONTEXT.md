@@ -45,6 +45,8 @@ session.
 - `reference/collaboration.md` — who the user is + how to explain + the collaboration contract.
 - `reference/lessons.md` — every mistake we've hit + its fix. **Check before diagnosing.**
 - `reference/draft-strategy.md` — the codified draft methodology the advisor is built from.
+- `reference/late-round-strategy.md` — the validated R11-16 playbook (buys/fades/handcuffs + what
+  FAILED validation); source of truth for the DART READ.
 - `reference/architecture.md` — system map: files, data flow, pipeline overview, deploy.
 - `reference/pipeline.md` — deep FROZEN-pipeline internals (gsis bridge, rookies, layer sources,
   scoring buckets, VOLS/Monte-Carlo/xPPG knobs, value board). Read before touching or debugging data.

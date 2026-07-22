@@ -5,6 +5,8 @@ st.secrets) and passes a client + messages down. This keeps the LLM layer
 testable and keeps the app free of modeling.
 """
 
+import os
+
 import anthropic
 import numpy as np
 import pandas as pd
@@ -42,6 +44,33 @@ def _cohorts():
         except Exception:
             _COHORTS = {}
     return _COHORTS
+
+
+# Role priors (role_data.csv, built by role_priors.py): each board player's PREVIOUS-season workload
+# share (carries for RB/QB, targets for WR/TE), ppg, games, NFL draft capital, and the market's
+# positional ADP rank. Powers the L31 late-round reads. Missing file -> features silently off.
+_ROLES = None
+_ROLES_MTIME = None
+
+
+def _roles():
+    """role_data.csv keyed by nn, reloaded when the file changes (the app mtime-busts the board the
+    same way — a stale cache after a regen would silently serve last month's roles). Missing file ->
+    BUY profiles + price bands go dark; the board-column fades (age/moved/rookie) still fire."""
+    global _ROLES, _ROLES_MTIME
+    try:
+        mt = os.path.getmtime("role_data.csv")
+    except OSError:
+        _ROLES, _ROLES_MTIME = {}, None
+        return _ROLES
+    if _ROLES is None or mt != _ROLES_MTIME:
+        try:
+            _r = pd.read_csv("role_data.csv")
+            _ROLES = {r["nn"]: dict(r) for _, r in _r.iterrows()}
+            _ROLES_MTIME = mt
+        except Exception:
+            _ROLES = {}
+    return _ROLES
 
 
 _PC = None
@@ -115,6 +144,7 @@ DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
 - BENCH-ONLY positions (fill starters first): if I already have enough at a FLEX position to start all I'd play there (3 RB = RB1+RB2+FLEX, 3 WR, 2 TE), a FURTHER one is BENCH-ONLY — it can't crack my lineup. While a starter slot elsewhere is open (e.g. I have 3 RB and 0 WR), NEVER take that bench-only player over a player who fills the open starter, no matter how high his VONA. I mark these "BENCH-ONLY" in ROSTER NEEDS + TOP PICKS and demote them below the fillers — trust it: draft the open-starter filler.
 - DEDICATED starters before the FLEX: fill my fixed positional slots (QB/RB/RB/WR/WR/TE) before spending a pick that only upgrades the FLEX — the FLEX is a week-to-week / matchup slot I can stream, so a piece that ONLY improves it (a 3rd RB/WR when my dedicated RB/WR slots are full) is worth less than filling a real positional need. I tag these "FLEX-only" and demote them below the dedicated-need fillers UNLESS one is WAY better in VONA. Take the dedicated filler unless the FLEX-only piece is a clear value cliff.
 - Archetype playbooks: Best-Available = top VONA; Hero-RB = one anchor RB early then hammer WR; Zero-RB = load elite WR/TE early, attack RB value/upside mid-late; Robust-RB = RB-heavy early for the positional edge; Upside = weight ceiling, boom, ascending young roles and rookie capital over safe floors.
+- LATE ROUNDS (R11+) — the DART READ is the validated playbook (backtested 2014-25, held out-of-sample on 2022-25; its BUY/FADE profiles are already boosted/demoted in TOP PICKS — trust the order): late VONA sorts sub-replacement noise, so profiles beat projections there. BUYS: post-hype target-share WR (20%+ of his team's WR-room targets last yr — the single strongest late signal), GO-screen committee RB handcuffs (prior role, good offense, real price), a proven pocket vet QB who KEPT his team on a good offense (only while my QB is open), a young high-NFL-capital TE dart in the final rounds (only while TE is open/hedging). FADES (do not talk me into these): the injury-discount vet (formerly-good + missed time — 0 league-winners in 47 cases), WRs 29+, late QBs on NEW teams, rookies without top-100 NFL capital, and the deep end of every position's price band. HANDCUFF READ: only GO-screened backups behind MY starting RBs (the screen = prior role + offense + real price; non-GO handcuffs hit at roughly half the GO rate); NEVER a TE handcuff. Frame ALL of these as startable-floor plays, never "league-winning" — and be honest when asked: about a third of each season's late-round league-winners fit no draftable profile, and the sharpest handcuff signal is IN-SEASON (weeks 3-4 usage; budget FAAB), not at the draft.
 
 HOW TO EXECUTE MY STATED STRATEGY (when the setup gives you one)
 The strategy is MY plan — your job is to run it proactively, not merely avoid violating it:
@@ -345,6 +375,235 @@ def _hedge_read(mine_df, available, dedicated_open):
             "pick — its VONA stays blocked): " + " | ".join(bits)
             + ". The alternative to each is to STREAM the position off waivers and spend the pick on "
             "upside instead — present the tradeoff and let me choose.\n")
+
+
+def _starters(mine_df):
+    """The full_names actually in my STARTING lineup (1QB/2RB/2WR/1TE + 1 FLEX of RB/WR/TE), filled
+    greedily by projection — the same fill the roster panel uses. Everyone else is BENCH."""
+    if not len(mine_df):
+        return set()
+    cap, filled, flex = {"QB": 1, "RB": 2, "WR": 2, "TE": 1}, {"QB": [], "RB": [], "WR": [], "TE": []}, []
+    for _, p in mine_df.sort_values("total_points", ascending=False).iterrows():
+        pos = str(p.get("pos_label", "")).rstrip("0123456789") or p.get("position", "")
+        if pos in cap and len(filled[pos]) < cap[pos]:
+            filled[pos].append(p["full_name"])
+        elif pos in ("RB", "WR", "TE") and not flex:
+            flex.append(p["full_name"])
+    return {n for v in filled.values() for n in v} | set(flex)
+
+
+def _go_score(nn, pos_adp_rank, implied):
+    """The RB handcuff GO screen (L31/B1, validated out-of-sample: GO booms 42% vs 18% rest, and it
+    survives the implied-leak re-basing). +1 each for: prev-season carry share >= .30 (the committee
+    signal — HALF the in-season edge survives to draft day through it), preseason team implied >= 23,
+    and a real market price (<= RB50). NaN scores 0. GO = score >= 2."""
+    r = _roles().get(nn, {})
+    s = 0
+    if pd.notna(r.get("share_2025")) and r.get("share_2025", 0) >= 0.30:
+        s += 1
+    if pd.notna(implied) and implied >= 23:
+        s += 1
+    pr = r.get("pos_adp_rank", pos_adp_rank)
+    if pd.notna(pr) and pr <= 50:
+        s += 1
+    return s
+
+
+def _handcuff_read(mine_df, available, dedicated_open, top_n=2, current_round=None):
+    """Late-round CONTINGENCY read (L30/L31). The board prices every player standalone, so it cannot
+    see that a backup behind one of MY OWN fragile STARTERS pays out exactly when I need him.
+
+    Scope (all MEASURED, 2014-25, adversarially re-verified):
+    * RB ONLY — carries transfer ~1-for-1 (backup 4.0 -> 9.5 ppg when the starter sits); vacated WR/TE
+      targets scatter. TE handcuffs are the one absolute fade (boom 4.5%, p=5.5e-6).
+    * STARTERS ONLY — a contingency behind a bench player is worthless (FLEX counts, bench doesn't).
+    * GO SCREEN over ceiling (L31): the one variable that predicts a handcuff paying off is the role
+      he ALREADY has. A committee backup (30%+ of carries) booms ~51% once promoted; a pure clipboard
+      backup ~5% — and the clipboard trap is invisible in projections. The draft-day GO screen
+      (_go_score >= 2) kept a 42%-vs-18% split on 2022-25 holdout. STARTABLE language only — the
+      share signal predicts startable weeks, never league-winners (holdout slope at >=15 ppg: p=.88)."""
+    if len(dedicated_open) or not len(mine_df) or "team" not in available.columns:
+        return ""
+    if current_round is not None and current_round < _DART_ROUND:
+        return ""                       # a handcuff is a BENCH-rounds decision (Part 3: R12-14)
+    starters = _starters(mine_df)
+    base = (mine_df["pos_label"].astype(str).str.replace(r"\d+$", "", regex=True)
+            if "pos_label" in mine_df.columns else mine_df.get("position", pd.Series(dtype=str)))
+    mine_names = set(mine_df["full_name"])
+    cands = []
+    for (_, p), pos in zip(mine_df.iterrows(), base):
+        if pos != "RB" or p["full_name"] not in starters or pd.isna(p.get("availability")):
+            continue
+        miss = 1.0 - float(p["availability"])
+        pool = available[(available["team"] == p["team"]) & (available["position"] == pos)
+                         & (~available["full_name"].isin(mine_names))]
+        pool = pool[pool["total_points"] > 0]
+        if not len(pool):
+            continue
+        h = pool.loc[pool["total_points"].idxmax()]
+        nn = normalize_name(h["full_name"])
+        go = _go_score(nn, None, p.get("team_implied_total"))
+        share = _roles().get(nn, {}).get("share_2025")
+        sh_txt = f"{share:.0%} of team carries last yr" if pd.notna(share) else "no prior-year role data"
+        cands.append((go, miss, p["full_name"], p.get("risk_tier", ""), h["full_name"],
+                      h.get("team_role", ""), sh_txt))
+    if not cands:
+        return ""
+    cands.sort(key=lambda c: (-c[0], -c[1]))
+    bits = []
+    for go, miss, starter, tier, hn, tr, sh_txt in cands[:top_n]:
+        tag = ("GO (passes the validated screen: prior role / offense / real price — roughly "
+               "DOUBLE the hit rate of a non-GO handcuff, held out-of-sample)"
+               if go >= 2 else "NO-GO (fails the screen — non-GO handcuffs hit at roughly half the "
+               "GO rate; prefer a validated dart)")
+        bits.append(f"{hn} ({tr}, {sh_txt}) behind MY {starter} ({tier or 'starter'}, "
+                    f"{miss:.0%} miss risk) — screen: {tag}")
+    return ("HANDCUFF READ (my starting RBs' contingencies, GO-screened by PRIOR ROLE — the one "
+            "validated predictor; projections can't see it): " + " | ".join(bits)
+            + ". Handcuffs buy STARTABLE WEEKS, never league-winners — say it that way. RB only; "
+              "never a TE handcuff.\n")
+
+
+# --- L31: the late-round DART READ (the validated R11-16 strategy, enforced in data per L8) ---
+_DART_ROUND = 11          # bench rounds begin here — where VONA sorts sub-replacement noise (L30)
+_DART_BONUS = 15.0        # bounded TOP-PICKS rank adjustment for profile matches / fades
+
+
+def _risky_1start(mine_df):
+    """1-start positions (QB/TE) whose FILLED starter is risky (same criteria as the hedge read) —
+    the TE dart is sanctioned there as the upside alternative to the safe hedge."""
+    out = set()
+    if not len(mine_df) or "p_bust" not in mine_df.columns:
+        return out
+    base = (mine_df["pos_label"].astype(str).str.replace(r"\d+$", "", regex=True)
+            if "pos_label" in mine_df.columns else mine_df.get("position", pd.Series(dtype=str)))
+    for pos in ("QB", "TE"):
+        room = mine_df[base == pos]
+        if not len(room):
+            continue
+        st = room.sort_values("total_points", ascending=False).iloc[0]
+        bust = float(st["p_bust"]) if pd.notna(st.get("p_bust")) else 0.0
+        if str(st.get("risk_tier", "")) in ("Boom/Bust", "Injury Risk") or bust >= _HEDGE_BUST:
+            out.add(pos)
+    return out
+
+
+# the price band each position's late-round rules were VALIDATED on (by ADP positional rank);
+# fades apply only inside the band — a mid-priced player falling late is a different situation.
+_LATE_BAND = {"RB": 31, "WR": 41, "TE": 13, "QB": 15}
+
+
+def _dart_profiles(available, mine_df, open_1start, current_round=None, total_rounds=16):
+    """Classify available players into validated late-round BUY profiles and FADES (L31).
+    Returns (buys, fades). Branch order encodes the synthesis EXACTLY (adversarial-review fix):
+    specific fades first (they poison a profile), then BUY profiles, then the deep-band fade LAST —
+    P1's carve-out ("deep end is dead money UNLESS it fits a Tier A/B profile") falls out of the
+    ordering. Rates in the copy follow the synthesis rulings: Tier-A numbers quotable, Tier-B
+    direction-only ("roughly double"), in-season Tier-C numbers never used in draft copy."""
+    buys_ranked, fades = [], {}
+    R = _roles()
+    # the young-TE dart is a FINAL-ROUNDS play only (B6) — and only when TE is open or my TE
+    # starter is risky enough that the hedge read is live
+    te_count = 0
+    if len(mine_df):
+        _b = (mine_df["pos_label"].astype(str).str.replace(r"\d+$", "", regex=True)
+              if "pos_label" in mine_df.columns else mine_df.get("position", pd.Series(dtype=str)))
+        te_count = int((_b == "TE").sum())
+    te_dart_ok = (("TE" in open_1start) or ("TE" in _risky_1start(mine_df))) and te_count < 2 and (
+        current_round is not None and current_round >= (total_rounds or 16) - 1)
+    for r in available.itertuples():
+        nn = normalize_name(r.full_name)
+        rd = R.get(nn, {})
+        pos = r.position
+        pr = rd.get("pos_adp_rank", np.nan)
+        share = rd.get("share_2025", np.nan)
+        ppg25, wks25 = rd.get("ppg_2025", np.nan), rd.get("weeks_2025", np.nan)
+        nfl_pick = rd.get("nfl_pick", np.nan)
+        if pd.isna(nfl_pick):
+            nfl_pick = getattr(r, "draft_pick", np.nan)      # board capital as fallback (rookies)
+        age = float(r.age) if pd.notna(r.age) else np.nan
+        in_band = pd.notna(pr) and pos in _LATE_BAND and pr >= _LATE_BAND[pos]
+        if pd.isna(pr) and pos in _LATE_BAND:
+            # no price rank (older role_data): conservative overall-ADP proxy; undrafted = late
+            adp = getattr(r, "adp_rank", np.nan)
+            in_band = pd.isna(adp) or adp >= {"RB": 80, "WR": 100, "TE": 95, "QB": 105}[pos]
+        # ---- specific fades (validated poison combos — they beat any profile) ----
+        if in_band and pos in ("RB", "WR") and pd.notna(ppg25) and pd.notna(wks25) \
+                and ppg25 >= 10 and wks25 <= 11:
+            fades[r.full_name] = ("injury-discount vet (formerly good + missed real time last yr — "
+                                  "the validated trap: zero league-winners in 47 cases; the discount is correct)")
+            continue
+        if in_band and pos == "WR" and pd.notna(age) and age >= 29:
+            fades[r.full_name] = "WR 29+ (0 late league-winners in 71 cases)"
+            continue
+        if in_band and pos == "QB" and bool(getattr(r, "switched_team", False)):
+            fades[r.full_name] = "late QB on a NEW team (top-8 rate 2% vs 17% for stayers)"
+            continue
+        if in_band and pos == "QB" and pd.notna(age) and age >= 33:
+            fades[r.full_name] = "QB 33+ (the worst late-QB age bin)"
+            continue
+        if in_band and bool(getattr(r, "is_rookie", False)) \
+                and not (pd.notna(nfl_pick) and nfl_pick <= 100):
+            fades[r.full_name] = "rookie without top-100 NFL capital (startable 6.5%)"
+            continue
+        # ---- BUY profiles, priority-ordered (Part 3) ----
+        if pos == "QB" and "QB" in open_1start and pd.notna(pr) and 15 <= pr <= 20 \
+                and not bool(getattr(r, "switched_team", False)) \
+                and pd.notna(getattr(r, "team_implied_total", np.nan)) and r.team_implied_total >= 23 \
+                and pd.notna(ppg25) and ppg25 >= 15 \
+                and (pd.isna(age) or 26 <= age <= 32):
+            buys_ranked.append((0, pr, r.full_name,
+                                "late-QB profile: proven vet in his prime, kept his team, good offense "
+                                "(the highest-equity late cell: front-band top-8 ~21% modern)"))
+        elif pos == "WR" and pd.notna(pr) and 41 <= pr <= 65 and pd.notna(share) and share >= 0.20:
+            solid = pd.notna(ppg25) and ppg25 >= 10
+            buys_ranked.append((1 if solid else 2, -share, r.full_name,
+                                f"post-hype target-share WR ({share:.0%} of his team's WR-room targets "
+                                "last yr" + (" + real prior ppg" if solid else "")
+                                + " — the strongest validated late buy: startable 17% vs 4%)"))
+        elif pos == "RB" and pd.notna(pr) and 31 <= pr <= 50:
+            go = _go_score(nn, pr, getattr(r, "team_implied_total", np.nan))
+            if go >= 2:
+                buys_ranked.append((2, -(go + (share if pd.notna(share) else 0)), r.full_name,
+                                    f"GO-screen RB (score {go}/3"
+                                    + (f", {share:.0%} carry share" if pd.notna(share) else ", rookie/no-role — qualifies on price+offense")
+                                    + " — roughly DOUBLE the hit rate of non-GO handcuffs, held out-of-sample)"))
+        elif pos == "TE" and te_dart_ok and pd.notna(age) and age <= 25 \
+                and pd.notna(nfl_pick) and nfl_pick <= 105 \
+                and pd.notna(pr) and 13 <= pr <= 40:
+            buys_ranked.append((3, pr, r.full_name,
+                                "young high-capital TE dart (~1-in-6 top-6 optimistic, ~1-in-10 modern — "
+                                "final-round only; the UPSIDE alternative to a safe TE hedge)"))
+        # ---- deep-band fade LAST (P1: dead money UNLESS a profile above claimed him) ----
+        elif pd.notna(pr) and ((pos == "RB" and pr > 56) or (pos == "WR" and pr > 74)
+                               or (pos == "TE" and pr > 30) or (pos == "QB" and pr > 28)):
+            fades[r.full_name] = ("deep-band flyer (pooled across positions the back third of the "
+                                  "late band is near-dead: ~2% league-winner rate)")
+    buys_ranked.sort(key=lambda t: (t[0], t[1]))
+    buys = {name: {"prio": pr_, "why": reason} for pr_, _, name, reason in buys_ranked}
+    return buys, fades
+
+
+def _dart_read(buys, fades, current_round):
+    """The DART READ context line (bench rounds only). The numbers are already enforced in the TOP
+    PICKS ranking (_dart_bonus); this line makes the WHY legible + carries the honesty cap."""
+    if current_round is None or current_round < _DART_ROUND or not (buys or fades):
+        return ""
+    shown, per_prio = [], {}
+    for n, v in buys.items():                     # max 2 per profile so one archetype can't flood
+        if per_prio.get(v["prio"], 0) < 2 and len(shown) < 5:
+            shown.append((n, v)); per_prio[v["prio"]] = per_prio.get(v["prio"], 0) + 1
+    b = " | ".join(f"{n}: {v['why']}" for n, v in shown) or "none on the board"
+    f = " | ".join(f"{n}: {why}" for n, why in list(fades.items())[:5])
+    out = (f"DART READ (R{current_round} — validated late-round strategy; profiles already boosted/"
+           f"demoted in TOP PICKS): BUY {b}.")
+    if f:
+        out += f" FADE {f}."
+    out += (" Honesty cap: these profiles roughly DOUBLE per-pick odds and buy startable floors, but "
+            "~1/3 of the league-winners that will exist this season fit no draftable signal — the "
+            "committee-handcuff edge is strongest IN-SEASON (weeks 3-4 usage + FAAB), so leave bench "
+            "flexibility.\n")
+    return out
 
 
 def _lineup_gaps(mine_df):
@@ -612,6 +871,15 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     # elite QB's cliff. Computed in Python; a punt-able slot is HARD-DEMOTED below RB/WR in TOP PICKS
     # (enforced in data, gated) so the model can't reach for a recoverable QB/TE.
     open_1start = [p for p in ("QB", "TE") if p not in blocked]
+    # L31 — late-round dart profiles (bench rounds only). Computed HERE so the TOP PICKS ranking
+    # below can enforce them in data (L8); the DART READ line then explains the why.
+    current_round = None
+    if draft_pos and draft_pos.get("overall_now") and draft_pos.get("teams"):
+        current_round = (int(draft_pos["overall_now"]) - 1) // int(draft_pos["teams"]) + 1
+    dart_buys, dart_fades = ({}, {})
+    if current_round is not None and current_round >= _DART_ROUND:
+        dart_buys, dart_fades = _dart_profiles(available, mine_df, open_1start,
+                                               current_round, (draft_pos or {}).get("total_rounds", 16))
     reads, best_rbwr = ({}, 0.0)
     if draft_pos and open_1start:
         reads, best_rbwr = _punt_read(available, open_1start, draft_pos.get("overall_now"),
@@ -642,8 +910,29 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     if "vona" in available.columns:
         skip = set(blocked) | {"K", "DEF", "DST", "D/ST"}   # streamers (K/D-ST) are a final-round call
         pool = available[~available["position"].isin(skip)].copy()
+        # L31: a dart-BUY at a blocked 1-start position (the sanctioned young-TE dart when my TE
+        # starter is risky) re-enters the pool in bench rounds — it's a deliberate hedge/upside pick,
+        # not the worthless-backup trap the block exists for.
+        if dart_buys:
+            back = available[available["full_name"].isin(dart_buys) & ~available.index.isin(pool.index)]
+            if len(back):
+                pool = pd.concat([pool, back.copy()])
         # rank by VONA + a bounded depth-chart ROLE nudge (WR1 beats a comparable WR2); real VONA still shown
         pool["_rk"] = pool["vona"] + _role_bonus_series(pool)
+        # L31: in bench rounds the validated dart profiles OUTRANK raw VONA entirely — late VONA is
+        # sorting sub-replacement noise (L30), so a linear bonus isn't enough. Deterministic tiers:
+        # BUY profiles first, neutrals second, FADES last; VONA orders within a tier. Enforced in
+        # data so the model can't ignore it (L8).
+        if dart_buys or dart_fades:
+            pool["_rk"] += pool["full_name"].map(
+                lambda n: _DART_BONUS if n in dart_buys else (-_DART_BONUS if n in dart_fades else 0.0))
+            pool["_darttier"] = pool["full_name"].map(
+                lambda n: 0 if n in dart_buys else (2 if n in dart_fades else 1))
+            pool["_dartprio"] = pool["full_name"].map(
+                lambda n: dart_buys[n]["prio"] if n in dart_buys else 9)
+        else:
+            pool["_darttier"] = 1
+            pool["_dartprio"] = 9
         # ROSTER RISK gate (L23): if my room at a position is already risk-stacked (>=2 high-bust
         # players), demote a FURTHER high-bust candidate there — but ONLY when a genuinely more
         # stable same-position swap exists at comparable value (late in drafts EVERYONE is
@@ -664,7 +953,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                     if stable_swap:
                         pool.loc[i, "_rk"] -= _RISK_PENALTY
                         pool.loc[i, "riskstack"] = True
-        ok = pool.sort_values("_rk", ascending=False).head(25)
+        ok = (pool.sort_values(["_darttier", "_dartprio", "_rk"], ascending=[True, True, False])
+              .head(25).drop(columns=["_darttier", "_dartprio"]))
         # Best VONA available at a position that fills an OPEN DEDICATED slot (not a punt-able QB) — the
         # bar a FLEX-only option must clear by _FLEX_MARGIN to be worth taking over a dedicated need.
         ded_pool = ok[ok["position"].isin(dedicated_open - punt_pos)]
@@ -724,7 +1014,10 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                 env_ok = bool(env_ok) if pd.notna(env_ok) else True
                 role = (", CLEAR ALPHA (locked targets)" if rl >= 15 and r.position in _FLEX_OK and env_ok
                         else ", behind the alpha (capped targets)" if rl <= -15 and r.position in _FLEX_OK and env_ok else "")
-                tag = (", OVER-STACKED (you have plenty — fill a thinner position)" if r.position in bench_over
+                tag = (", TE DART — sanctioned exception to the 1-start block (deliberate final-round "
+                       "hedge/upside pick; the block otherwise stands)"
+                       if r.position in blocked and r.full_name in dart_buys
+                       else ", OVER-STACKED (you have plenty — fill a thinner position)" if r.position in bench_over
                        else ", BENCH-ONLY (starter open elsewhere)" if r.position in bench_sat
                        else ", PUNT-ABLE fill late" if r.position in punt_pos
                        else ", FLEX-only (fill a dedicated starter first)" if _flex_demoted(r.position, r.vona)
@@ -820,6 +1113,10 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     # HEDGE READ (L27): the 1-start block is risk-blind, so when my only QB/TE is a boom/bust starter
     # and my plan hedges risky positions, surface the hedge-vs-stream call (dedicated starters must be set).
     hedge_line = _hedge_read(mine_df, available, dedicated_open)
+    # HANDCUFF READ (L30): in the bench rounds VONA is sorting sub-replacement noise, so surface the
+    # contingencies behind MY OWN fragile starters — value the standalone board can't see.
+    handcuff_line = _handcuff_read(mine_df, available, dedicated_open, current_round=current_round)
+    dart_line = _dart_read(dart_buys, dart_fades, current_round)
 
     pc = _playcallers()
     pc_line = ""
@@ -839,6 +1136,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
            f"and every pick answer includes the Plan: note): {strategy}\n" if strategy else "")
         + f"{risk_line}"
         f"{hedge_line}"
+        f"{handcuff_line}"
+        f"{dart_line}"
         f"{punt_line}"
         f"{picks_line}"
         f"{cohort_line}"

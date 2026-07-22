@@ -33,6 +33,7 @@ RUNTIME_FILES = {
     "value_board.csv":            {"rows": (300, 900)},
     "cohort_data.csv":            {"rows": (150, 500)},
     "sos_data.csv":               {"rows": (128, 128)},
+    "role_data.csv":              {"rows": (200, 700)},
     "data/playcallers_2026.csv":  {"rows": (32, 32)},
     "data/new_hc_2026.csv":       {"rows": (32, 32)},
     "data/dst_rankings.csv":      {"rows": (10, 40), "comment": "#"},
@@ -162,6 +163,23 @@ if coh is not None and vb is not None:
                       "trimming may not be suppressing blow-up comps")
     else:
         fail("cohort_trimmed column missing", "rerun cohort_priors.py — advisor loses the skew read")
+
+role = loaded.get("role_data.csv")
+if role is not None:
+    # the L31 dart/handcuff reads go dark without these — a regen that drops them is a FAIL
+    need = {"nn", "share_2025", "ppg_2025", "weeks_2025", "pos_adp_rank"}
+    if need <= set(role.columns):
+        shares_ok = role["share_2025"].dropna().between(0, 1).all()
+        ok(f"role_data has the L31 columns; shares in [0,1] "
+           f"({int((role['share_2025'] >= 0.30).sum())} committee-share players)") if shares_ok \
+            else fail("role_data share_2025 out of [0,1]")
+        # staleness: must be regenerated alongside the board (same trap as cohorts)
+        if os.path.getmtime(_p("role_data.csv")) + 1 >= os.path.getmtime(_p("value_board.csv")):
+            ok("role_data.csv is at least as new as value_board.csv")
+        else:
+            warn("role_data.csv is OLDER than value_board.csv", "rerun role_priors.py after a board regen")
+    else:
+        fail(f"role_data missing columns {need - set(role.columns)}", "rerun role_priors.py — dart/handcuff reads dark")
 
 sos = loaded.get("sos_data.csv")
 if sos is not None and {"position", "sos_rank"}.issubset(sos.columns):

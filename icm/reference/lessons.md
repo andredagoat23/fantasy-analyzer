@@ -467,6 +467,71 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L30 — Late rounds: price the CONTINGENCY — but only for RBs, and only for STARTERS (Jul 2026)
+- **Symptom:** across two mocks the last ~5 picks went to low-ceiling darts. The user asked to fix it.
+- **First correction:** the user was FOLLOWING the advisor (Wease was TOP PICKS #1 at R16, Tucker #2 at
+  R12). Not user error. An earlier "#109 available" figure I quoted was misleading — it counted BLOCKED
+  QB/TE.
+- **Root cause:** by R12 every option has VONA −49 to −90. The ranking sorts NEGATIVE expected values
+  ("least bad"), which systematically prefers safe low-ceiling veterans (P(elite) 0-1%) over darts. A
+  bench player only matters if he BREAKS OUT, so expected points is the wrong objective there.
+- **Rejected after testing:** re-ranking late by `P_pos1` barely moves the list (everyone is a 2-5%
+  shot); raw `ceiling` just returns QBs, whose raw totals dominate cross-position. Re-sorting bad
+  options is not the win.
+- **The real gap:** the board prices every player STANDALONE, so it cannot see that a backup behind MY
+  OWN fragile starter has CONDITIONAL value. `_handcuff_read`: contingency = P(starter misses) x
+  backup's ceiling (availability IS the probability — no tuned threshold).
+- **THE USER CAUGHT TWO SCOPE ERRORS in my first version, and both were right:**
+  1. *"those weren't really my starters — 2 bench 1 flex."* I looped over every rostered RB/WR/TE. A
+     contingency behind a BENCH player is worthless — I wasn't starting him anyway. Added `_starters`
+     (greedy 1QB/2RB/2WR/1TE + FLEX); FLEX counts, bench doesn't.
+  2. *"shouldn't we not grab handcuffs for WR/TE — lost targets get spread out, not given to one
+     person."* MEASURED on 2014-25 weekly data (281 team-seasons, starter missed 3+): backup **RB
+     4.0 -> 9.5 ppg (2.25x, 56% gain 5+)**; **WR 7.2 -> 8.6 (1.17x)**; **TE 2.3 -> 4.8 (1.48x, still
+     below streaming level)**. Carries transfer ~1-for-1; targets scatter. Handcuffing is RB-ONLY.
+  - Consequence worth noting: correcting the scope made the feature fire LESS and say LESS (mock-2
+    contingency dropped from 54 to 15) — my first version was surfacing impressive-looking WR handcuffs
+    that would have made the late picks WORSE.
+- **Teaches:** when a ranking's inputs go sub-replacement the OBJECTIVE has changed, not just the
+  scale. A standalone-priced board is blind to relationships — if value is conditional, compute the
+  condition. And scope a new signal to where it's MEASURED to hold; a plausible mechanism applied too
+  broadly is a regression wearing a feature's clothes. (Principles 1, 3, 8; L24)
+
+---
+
+## L31 — Late-round strategy: profiles beat projections, and half the "obvious" rules failed validation (Jul 2026)
+- **Context:** after L30, the user asked for the deepest possible data-driven late-round strategy.
+  Ran a full research campaign (13 analyses + 5 adversarial reviews + independent audit) on canonical
+  datasets built from 2014-25 weekly data: 289 handcuff-promotion cases + 3,329 late player-seasons.
+  All headline numbers bootstrap-CI'd and validated on a 2022-25 holdout. Key spot-checks re-verified
+  by hand before encoding.
+- **What survived (now encoded as the DART READ + GO-screened HANDCUFF READ, enforced in TOP PICKS):**
+  A1 post-hype target-share WR (>=20% of team WR targets: startable 17% vs 4% — strengthens OOS);
+  B1 RB GO screen (>=2 of prev share>=.30 / implied>=23 / <=RB50: holdout 42% vs 18%); late-QB
+  proven-vet-who-stayed profile (~21% top-8 front band); B6 young high-capital TE dart (final rounds);
+  fades: injury-discount vet (0/47 LW), WR 29+ (0/71), moved QB (2% vs 17%), capital-less rookies,
+  deep bands (1.9% back-third), TE handcuffs (4.5%, the one absolute), clipboard handcuffs (~5%).
+- **What FAILED validation (encoded as REFUSALS — do not re-litigate):** the combined dart score
+  (beat by plain ADP order OOS — its capital component inverted), good-offense gates for late RB/WR
+  (a Vegas-total data LEAK: season-averaged implied drifts toward the player's outcome; clean
+  week-1-2 totals kill it), bell-cow-handcuff logic (position-mix artifact), rushing-QB late edge
+  (null), year-2 WR breakout (0/74), share signals at league-winner thresholds (p=.88 — they buy
+  STARTABLE weeks only; all advisor copy must say so).
+- **The honesty cap (advisor must carry it):** ~35% of late-round league-winners fit NO preseason
+  archetype; the best profile set captures ~half the rest; ~6-7 late league-winners exist per season
+  league-wide. Roughly HALF the handcuff edge is in-season only (weeks 3-4 usage; FAAB).
+- **Mechanics:** `role_priors.py` -> `role_data.csv` (prev-season workload shares, ppg, games, NFL
+  capital, positional ADP rank; suffix-stripped name fallback — the Godwin bug); `_dart_profiles` /
+  `_dart_read` / `_go_score`; TOP PICKS gets deterministic BUY/neutral/FADE tiers in R11+ (a linear
+  bonus was not enough — L8, enforce in data). MC unchanged: the campaign validated its calibration
+  (availability feeds the reads); the frozen boundary held with zero edits.
+- **Teaches:** backtest + holdout + adversarial review BEFORE encoding a strategy; most folk wisdom
+  (handcuff your stud, buy the offense, chase rushing QBs) dies under a clean test, and the fade
+  list ends up better-validated than the buy list. And a strategy layer must state its own luck
+  ceiling or it oversells. (Principles 1, 2, 3, 8, 9)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

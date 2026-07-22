@@ -87,6 +87,9 @@ def run_draft(slot, strategy, seed):
           pos_counts.get("QB", 0) >= 1 and pos_counts.get("RB", 0) >= 2
           and pos_counts.get("WR", 0) >= 2 and pos_counts.get("TE", 0) >= 1, str(pos_counts))
     check(f"{label} no more than 1 QB+1 TE... (1-start gates)", pos_counts.get("QB", 0) <= 2, str(pos_counts))
+    # L31: the TE-dart pool re-entry is the one path that can add a 2nd TE — it must stay capped
+    # (a sanctioned final-round hedge, never a third TE / never a runaway)
+    check(f"{label} TE capped at 2 (dart re-entry bounded)", pos_counts.get("TE", 0) <= 2, str(pos_counts))
     return pos_counts
 
 scenarios = [(s, st, sd) for s in (1, 7, 12)

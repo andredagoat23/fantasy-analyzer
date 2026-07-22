@@ -136,6 +136,28 @@ Risk / `p_bust ≥ _HEDGE_BUST`=0.35) and only once dedicated starters are set, 
 backup is INSURANCE not a value pick (the backup's VONA stays blocked — it never enters TOP PICKS).
 It stays silent for a safe stud QB and fires for a boom/bust TE — exactly the split we want.
 
+**The HANDCUFF READ — late rounds price the CONTINGENCY (L30).** By the bench rounds every remaining
+player is below replacement, so VONA sorts negative numbers ("least bad") and prefers safe low-ceiling
+veterans over darts. Worse, the board prices players STANDALONE and cannot see that a backup behind my
+own fragile starter pays out exactly when I need him. `_handcuff_read` computes **contingency value =
+P(my starter misses time) x the backup's ceiling** (`availability` IS the probability — no tuned
+threshold), and surfaces the top one or two once dedicated starters are set. Explicitly NOT a value
+ranking, so it informs without distorting TOP PICKS. **Two scope rules, both measured on 2014-25 weekly
+data (281 team-seasons where a starter missed 3+ games):**
+- **RB ONLY.** Backup RB goes **4.0 -> 9.5 ppg (2.25x, 56% gain 5+)** when the starter sits — carries
+  transfer ~1-for-1. **WR is 7.2 -> 8.6 (1.17x)** because vacated targets scatter across WR2/WR3/TE/RB,
+  and **TE 2.3 -> 4.8**, still below streaming level. WR/TE handcuffs are noise.
+- **STARTERS ONLY** (`_starters`, greedy 1QB/2RB/2WR/1TE + FLEX). A contingency behind a BENCH player is
+  worthless — I wasn't starting him anyway. FLEX counts; pure bench does not.
+(Tested and rejected: re-ranking late by `P_pos1` barely changes the list; raw `ceiling` returns only QBs.)
+
+**The DART READ — the validated late-round playbook (L31).** From R11 on, TOP PICKS switches to
+deterministic BUY / neutral / FADE tiers driven by `_dart_profiles` (profiles beat projections once
+everyone is below replacement). The full evidence-backed playbook — buys, fades, the handcuff GO
+screen, what failed validation, and the honesty cap — lives in **`late-round-strategy.md`** (source
+of truth for the advisor's late-round behavior). Data layer: `role_priors.py` -> `role_data.csv`
+(prev-season workload shares; regenerate with the other priors after a board rebuild).
+
 ## Wheel-back — still Python-computed, still read never re-derived
 The `wheel` column (gone / risky / safe) is the per-player timing read; VONA is the position-level
 decision. Both use the same `horizon`. The model reads them; it never does the ADP arithmetic.
