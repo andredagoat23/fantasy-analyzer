@@ -1,10 +1,9 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
 **How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
-docs the task needs. Everything below is CURRENT as of **Jul 21, 2026**. **DEPLOYED = `origin/main` =
-commit `835189e`** (Streamlit Cloud auto-deploys on push to main). **Local `main` is 2 commits AHEAD of
-deployed, both UNPUSHED (so NOT deployed): `33d3aa3` (ICM-refresh docs) and `d56c90d` (L32 cohort
-sanity-pull — `cohort_pull.py` + `test_cohort_pull.py`). A push deploys BOTH.**
+docs the task needs. Everything below is CURRENT as of **Jul 21, 2026**. **DEPLOYED: local `main` is in
+sync with `origin/main`, tree clean** (Streamlit Cloud auto-deploys on push to main). Latest functional
+change is LIVE: **L32 cohort sanity-pull** (commit `d25df50` — `cohort_pull.py` + `test_cohort_pull.py`).
 Draft day: **July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (The recent practice
 mocks were slot 5 — the real draft is slot 7.)
 
