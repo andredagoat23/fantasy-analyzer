@@ -142,6 +142,15 @@ per-round TE gate would overfit and fight the validated machinery). Guidance: pa
 tier or wait for the R6 pocket; don't reach for a mid-TE in R4-5. Evidence: `icm/work/mc_research`
 all-TEs analysis.
 
+**QB SHAPE (advisory tie-breaker, in the SYSTEM prompt) — the OPPOSITE of TE.** The same backtest for
+every startable QB showed QB is DEEP: taking the elite QB early (~R2) buys ~zero edge over waiting
+(losses across the whole tier are only −2 to −12 on a ~1780 lineup), and the **~R7-9 pocket is a small
+NET GAIN** — Jaxson Dart (+9) and Stafford (+5) BEAT taking Josh Allen early, because you keep your
+early RB/WR starters while your QB is nearly as good. Waiting PAST ~R11 finally costs a little
+(Herbert −8, Goff −12). So: PUNT QB, grab one in the R7-9 pocket (a proven pocket vet who kept his
+offense = the DART buy, or a value QB) — never an early pick. This validates the existing PUNT READ +
+DART late-QB logic rather than adding a new rule. Evidence: `icm/work/mc_research` all-QBs analysis.
+
 **Consequence to know:** because this is raw-value-optimal, at a turn it grabs the highest-punt_loss
 player first (often the scarce RB, then the elite QB by VONA) — so it will sometimes take an elite QB
 over an elite TE, unlike the earlier `keep_frac` version that always grabbed TE. The variance factor
