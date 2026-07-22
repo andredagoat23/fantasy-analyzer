@@ -562,6 +562,48 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L33 — The punt read looked 5 rounds out; it also needed to look ONE pick out (Jul 2026)
+- **Context:** a strategy bake-off (`icm/work/mc_research/13_strategy_bakeoff.py`, real advisor vs
+  ADP/VOLS/Zero-RB/Robust-RB/Double-QB across all 12 slots) showed our seat reaching for the top TE
+  (McBride) in ROUND 1 at the snake turn (slots 8-12). The user challenged it: McBride's ADP is 21, so
+  at those slots he survives to my round-2 pick — I should take the scarcer RB/WR now and grab him
+  next. Verified with real sims: he survives R1->R2 **79-100%** at slots 8-12, and deferring gains
+  **+8..+33 pts** on the R1+R2 pick pair (`te_defer`).
+- **Root cause:** the PUNT READ (`_pos_punt_loss`) measures recoverability **5 rounds out**
+  (`_PUNT_LATE_ROUNDS`). At a turn that horizon says "no TE lasts 5 rounds -> cliff," so it stops
+  demoting the TE — and the ranking `_rk = vona + role_bonus` (advisor line ~921) then lets McBride's
+  TE1 role bonus lift him over an RB/WR whose raw VONA was marginally *higher*. VONA (one-pick horizon)
+  was right; the punt read's coarse horizon + the role bonus overrode it.
+- **Fix (L33, `advisor._punt_read`, next-pick defer):** a 1-start QB/TE also becomes punt-able when the
+  ELITE one there survives to my very NEXT pick (`_survival_prob(elite_adp, horizon) >= _NEXT_DEFER_P`
+  =0.6) AND a scarce RB/WR exists (`best_rbwr > 0`). It then joins `punt_pos` and the existing `_sink`
+  demotion pushes it below RB/WR — no new plumbing. **Survival-primary, NOT a single-pick VONA
+  compare:** the per-pick VONA gap is too noisy at the turn (McBride's VONA usually edges the *typical*
+  RB/WR's; the field mean is pulled up by the rare stud who falls), so a strict `rbwr_vona >= te_vona`
+  gate fired only ~22-48% and left McBride the pick. Survival matches the roster-value ground truth.
+  **Self-limiting:** a genuine cliff never lasts to the next pick, so Josh Allen (survival ~0) is never
+  deferred (L28 preserved). Tests: `tests/test_defer.py` (8).
+- **Honest outcome — the fix is score-NEUTRAL:** it flips the turn R1 pick McBride -> best RB/WR
+  (Lamb/London) as intended, but pooled value is unchanged (2155 -> 2155) and Ours stays #1 on all
+  three lenses. The +8..33 was on the isolated pick pair; across a full 16-man optimized roster it
+  washes out (and McBride was only a ~50% plurality R1 before). It's a **behavior-correctness** win
+  (no turn reach; drafts like a sharp human), validated non-harmful — not a points gain. Reported as
+  such; did not oversell it.
+- **Also fixed en route (sim realism):** the bake-off's ADP-bots sampled the top-12 by ADP with near-
+  flat weights, so elite players FREE-FELL (Gibbs reached slot 12 in 25% of sims). Replaced with
+  noise-around-ADP (`ADP + N(0, 1.5 + 0.10*ADP)`): elites sticky, late picks variable. This changed
+  the *strategy standings* (Zero-RB rose from last to #2 once RBs stopped falling) — proof that a
+  strategy sim is only as trustworthy as its opponent model.
+- **Teaches:** (1) a coarse lookahead (5 rounds) and a fine one (next pick) answer different questions —
+  a 1-start slot can be a cliff five rounds out yet still be *this-pick* deferrable. (2) A single-pick
+  value delta is too noisy to gate on at the snake turn; validate defer decisions on **full-draft
+  roster value**, not one VONA compare. (3) "Measured neutral" is a real, honest result — a
+  correctness fix need not move the scoreboard to be right. (4) An adversarial sim needs a realistic
+  opponent model or it hides the very inefficiencies (and mis-ranks the strategies) you built it to
+  find. (Principles 1, 5, 6, 9)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

@@ -1,0 +1,86 @@
+Bake-off across ALL 12 draft slots x 100 seeds/strategy = 1200 drafts/strategy (8400 total), 8 procs.
+
+  slot 8 done (1/12)
+  slot 6 done (2/12)
+  slot 7 done (3/12)
+  slot 5 done (4/12)
+  slot 4 done (5/12)
+  slot 1 done (6/12)
+  slot 2 done (7/12)
+  slot 3 done (8/12)
+  slot 9 done (9/12)
+  slot 10 done (10/12)
+  slot 11 done (11/12)
+  slot 12 done (12/12)
+
+=== POOLED over all slots (1200 drafts/strategy) ===
+strategy           value    SE   floor  injury   #QB  unfilled
+--------------------------------------------------------------
+Ours                2155   0.9    1489    1845   1.0      0.00
+Zero-RB             2102   0.9    1474    1795   1.0      0.00
+ADP-follow          2096   1.6    1431    1740   1.0      0.00
+VOLS-max            2091   1.2    1424    1774   1.0      0.00
+Double-late-QB      2074   1.2    1428    1769   2.0      0.00
+Robust-RB           2058   1.3    1376    1732   1.0      0.00
+ECR-follow          1900   2.0    1335    1646   1.0      0.00
+(SE = standard error of the value mean; gaps > ~2-3x SE are real)
+
+Ranking by lens:
+  value  : Ours > Zero-RB > ADP-follow > VOLS-max > Double-late-QB > Robust-RB > ECR-follow
+  floor  : Ours > Zero-RB > ADP-follow > Double-late-QB > VOLS-max > Robust-RB > ECR-follow
+  injury : Ours > Zero-RB > VOLS-max > Double-late-QB > ADP-follow > Robust-RB > ECR-follow
+
+=== PER-SLOT: Ours vs the field at each draft position (rank out of 7) ===
+slot  OursVal  bestOther            name  margin  rkVal  rkFlr  rkInj
+   1     2192       2143      ADP-follow     +49      1      1      1
+   2     2191       2148      ADP-follow     +43      1      1      1
+   3     2179       2117         Zero-RB     +62      1      3      1
+   4     2175       2127         Zero-RB     +48      1      3      1
+   5     2170       2125         Zero-RB     +45      1      2      1
+   6     2164       2124         Zero-RB     +40      1      2      1
+   7     2153       2112         Zero-RB     +41      1      1      1
+   8     2151       2104        VOLS-max     +47      1      1      1
+   9     2131       2084         Zero-RB     +47      1      1      1
+  10     2120       2075         Zero-RB     +45      1      1      1
+  11     2115       2067         Zero-RB     +48      1      1      1
+  12     2115       2062         Zero-RB     +52      1      1      1
+
+Ours is #1 on ALL THREE lenses at 8/12 draft slots.
+
+=== FOCUS: Double-late-QB vs Ours (pooled) ===
+  value  : Ours 2155 vs Double-QB 2074 (-80, -3.7%)
+  floor  : Ours 1489 vs Double-QB 1428 (-62, -4.1%)
+  injury : Ours 1845 vs Double-QB 1769 (-76, -4.1%)
+  QB-insurance bonus (not in base injury): +39; injury WITH it: Double-QB 1808 vs Ours 1845 (-37).
+
+=== WHY (pooled): starting-lineup points per slot, value lens ===
+strategy             QB    RB1    RB2    WR1    WR2     TE   FLEX      K   TOTAL
+Ours                372    337    273    292    245    244    238    154    2155
+Zero-RB             380    249    224    334    266    261    233    155    2102
+ADP-follow          376    331    255    300    241    202    237    154    2096
+VOLS-max            376    357    292    217    188    240    266    155    2091
+Double-late-QB      363    357    292    216    184    239    267    155    2074
+Robust-RB           375    363    309    194    185    199    278    155    2058
+ECR-follow          363    193    149    332    280    175    256    152    1900
+vs-Ours (negative = weaker slot):
+  Zero-RB              +8    -88    -48    +41    +21    +17     -5     +0   worst: RB1 (-88)
+  ADP-follow           +4     -6    -17     +8     -3    -42     -1     -1   worst: TE (-42)
+  VOLS-max             +4    +20    +20    -75    -57     -4    +28     +0   worst: WR1 (-75)
+  Double-late-QB       -9    +20    +20    -76    -60     -4    +29     +0   worst: WR1 (-76)
+  Robust-RB            +3    +26    +37    -98    -59    -45    +39     +0   worst: WR1 (-98)
+  ECR-follow           -9   -144   -124    +39    +36    -69    +18     -3   worst: RB1 (-144)
+
+wrote pick_capture.json (12 slots; top-3 R1-8, top-1 R9-16)
+R1 pick per slot (sanity: Gibbs should NOT appear past slot 2):
+  slot  1 R1: Jahmyr Gibbs (100%)
+  slot  2 R1: Jahmyr Gibbs (66%)
+  slot  3 R1: Christian McCaffrey (56%)
+  slot  4 R1: Christian McCaffrey (63%)
+  slot  5 R1: Christian McCaffrey (56%)
+  slot  6 R1: Jaxon Smith-Njigba (43%)
+  slot  7 R1: Amon-Ra St. Brown (49%)
+  slot  8 R1: Amon-Ra St. Brown (48%)
+  slot  9 R1: CeeDee Lamb (53%)
+  slot 10 R1: CeeDee Lamb (51%)
+  slot 11 R1: Drake London (56%)
+  slot 12 R1: Drake London (64%)

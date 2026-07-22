@@ -139,7 +139,8 @@ Only recommend players on the "available" list — never invent players. **NEVER
 DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
 - Draft the value CLIFF, not the rank: VONA already tells you where waiting costs the most — take the high-VONA player before the drop; don't reach across a position for a tiny ADP edge when VONA is flat.
 - Positional value is handled BY VONA, not a rule: QB and TE are deep, so comparable production usually still lasts → their VONA is low → you'll naturally wait on them, no hard cutoff needed. On a genuine VONA tie, still lean RB/WR (FLEX-eligible, thin out with injury). If a QB/TE shows a real top VONA at a needed position, trust it and take him. K is always the final pick.
-- PUNT READ for unfilled QB/TE (precomputed — trust it): VONA only looks one pick ahead, so at a snake TURN it can over-rate an elite QB/TE. For each unfilled 1-start slot I tell you if it's DEEP (a startable one lasts to a late round → the slot is PUNT-ABLE, and I've already demoted it below the scarce RB/WR in TOP PICKS — take the RB/WR and fill the slot late) or a CLIFF (no startable one lasts → grab the elite now if you need it). A "PUNT-ABLE" tag in TOP PICKS means do NOT reach for that QB/TE now even if its VONA looks high — its edge is recoverable late; the scarce RB/WR is the pick.
+- PUNT READ for unfilled QB/TE (precomputed — trust it): VONA only looks one pick ahead, so at a snake TURN it can over-rate an elite QB/TE. For each unfilled 1-start slot I tell you if it's DEEP (a startable one lasts to a late round → the slot is PUNT-ABLE, and I've already demoted it below the scarce RB/WR in TOP PICKS — take the RB/WR and fill the slot late) or a CLIFF (no startable one lasts → grab the elite now if you need it). A "PUNT-ABLE" tag in TOP PICKS means do NOT reach for that QB/TE now even if its VONA looks high — its edge is recoverable late; the scarce RB/WR is the pick. A DEFER tag means the elite one at that slot lasts to MY VERY NEXT pick — take the scarce RB/WR now and grab him next pick (L33).
+- TE SHAPE (backtested tie-breaker, advisory — the punt read + VONA still decide the trigger): the position is TOP-HEAVY, so time the TE. If I take one, either pay up for the ELITE tier (top ~2, ~R2) or WAIT for the ~R6 value pocket (a mid-tier startable TE lands there cheap). The R4-5 mid-TEs are the DEAD ZONE — worst value per pick (they cost a good RB/WR yet barely beat the R6 TE). So don't reach for a mid-TE in R4-5: pay up for the elite tier or wait for the R6 pocket.
 - Roster construction (HARD GATE): lock startable-quality starters early; chase upside (ceiling, boom, rookies) on the bench late. Once my starters + FLEX are full, only recommend a player who genuinely raises my bench's upside at a position that wins leagues (RB/WR ceiling, an elite TE). NEVER recommend a 2nd QB, or any D/ST or K before my lineup is full, or a redundant backup, just because his VONA or a VALUE tag looks good — a steal I can't start adds nothing to my roster.
 - BENCH-ONLY positions (fill starters first): if I already have enough at a FLEX position to start all I'd play there (3 RB = RB1+RB2+FLEX, 3 WR, 2 TE), a FURTHER one is BENCH-ONLY — it can't crack my lineup. While a starter slot elsewhere is open (e.g. I have 3 RB and 0 WR), NEVER take that bench-only player over a player who fills the open starter, no matter how high his VONA. I mark these "BENCH-ONLY" in ROSTER NEEDS + TOP PICKS and demote them below the fillers — trust it: draft the open-starter filler.
 - DEDICATED starters before the FLEX: fill my fixed positional slots (QB/RB/RB/WR/WR/TE) before spending a pick that only upgrades the FLEX — the FLEX is a week-to-week / matchup slot I can stream, so a piece that ONLY improves it (a 3rd RB/WR when my dedicated RB/WR slots are full) is worth less than filling a real positional need. I tag these "FLEX-only" and demote them below the dedicated-need fillers UNLESS one is WAY better in VONA. Take the dedicated filler unless the FLEX-only piece is a clear value cliff.
@@ -757,10 +758,18 @@ def _pos_punt_loss(available, pos, late_pick, teams):
     else:
         late_vols, bust, lasts_round, late_name = 0.0, 0.0, None, None
     return {"punt_loss": max(elite - late_adj, 0.0), "late_vols": late_vols, "late_bust": bust,
-            "lasts_round": lasts_round, "late_name": late_name, "late_pool": late_adj}
+            "lasts_round": lasts_round, "late_name": late_name, "late_pool": late_adj,
+            "elite_adp": pool.loc[ei, "adp_rank"]}                                   # for next-pick defer (L33)
 
 
-def _punt_read(available, open_1start, current_overall, teams):
+# If the ELITE 1-start player himself lasts to my NEXT pick at >= this prob, defer him — grab the
+# scarcer RB/WR now and take him next pick. Survival-primary (NOT a single-pick VONA compare, which is
+# too noisy at the turn): validated on actual roster value — deferring a surviving TE/QB gains +8..+33
+# projected pts at the snake turn (icm/work/mc_research te_defer analysis). L33.
+_NEXT_DEFER_P = 0.6
+
+
+def _punt_read(available, open_1start, current_overall, teams, next_pick=None):
     """For each UNFILLED 1-start slot (QB/TE), decide whether it's PUNT-ABLE — i.e. a startable player
     at that position still lasts to my realistic fill window, so an early pick there is high
     opportunity cost vs a scarce RB/WR (lesson L11). Data-driven, NOT a hardcoded QB/TE discount:
@@ -793,6 +802,17 @@ def _punt_read(available, open_1start, current_overall, teams):
         # exist to decide this; a prior about which positions "should" fall does not get a veto.
         r["cliff_bar"] = best_rbwr
         r["punt_able"] = r["punt_loss"] < best_rbwr
+        # NEXT-PICK DEFER (L33): even if the position isn't punt-able 5 rounds out, defer the ELITE one
+        # HERE when he lasts to my very NEXT pick (and a scarce RB/WR exists to take instead). Because he
+        # survives, I get him back next pick regardless, so taking the scarcer RB/WR now is a free gain
+        # (+8..33 pts at the snake turn — validated on actual roster value, te_defer). Self-limiting: a
+        # genuine cliff never lasts to the next pick, so Josh Allen (survival ~0) is never deferred.
+        surv = float(_survival_prob(pd.Series([r["elite_adp"]]), next_pick).iloc[0]) \
+            if next_pick and pd.notna(r.get("elite_adp")) else 0.0
+        r["elite_survives_next"] = surv
+        if surv >= _NEXT_DEFER_P and best_rbwr > 0:
+            r["punt_able"] = True
+            r["next_defer"] = True
         reads[pos] = r
     return reads, best_rbwr
 
@@ -883,8 +903,9 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     reads, best_rbwr = ({}, 0.0)
     if draft_pos and open_1start:
         reads, best_rbwr = _punt_read(available, open_1start, draft_pos.get("overall_now"),
-                                      draft_pos.get("teams"))
+                                      draft_pos.get("teams"), next_pick=horizon)
     punt_pos = {p for p, r in reads.items() if r["punt_able"]}
+    defer_pos = {p for p, r in reads.items() if r.get("next_defer")}   # demoted because he lasts to my next pick (L33)
     punt_line = ""
     if reads:
         bits = []
@@ -1019,6 +1040,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                        if r.position in blocked and r.full_name in dart_buys
                        else ", OVER-STACKED (you have plenty — fill a thinner position)" if r.position in bench_over
                        else ", BENCH-ONLY (starter open elsewhere)" if r.position in bench_sat
+                       else ", DEFER (he lasts to your NEXT pick — take the scarcer RB/WR now, grab him next)" if r.position in defer_pos
                        else ", PUNT-ABLE fill late" if r.position in punt_pos
                        else ", FLEX-only (fill a dedicated starter first)" if _flex_demoted(r.position, r.vona)
                        else f", RISK-STACKED (your {r.position} room already carries "

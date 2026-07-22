@@ -15,7 +15,9 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
 - `advisor.py` — the Claude advisor. `build_context()` turns the live board into the prompt context:
   the Python-computed `wheel` column, roster-needs, and a stack of **precomputed READ lines all
   enforced in the TOP PICKS ranking (L8 — the model can't ignore them):** VONA (`add_vona`); PUNT READ
-  (`_punt_read`, L28 — risk-symmetric, depth-aware, no positional margin); HEDGE READ (`_hedge_read`,
+  (`_punt_read`, L28 — risk-symmetric, depth-aware, no positional margin; + L33 NEXT-PICK DEFER: also
+  demotes a 1-start QB/TE whose elite one lasts to my next pick, so I take the scarcer RB/WR at a turn);
+  HEDGE READ (`_hedge_read`,
   L27 — risky filled 1-start); HANDCUFF READ (`_handcuff_read` + `_go_score`, L30/31 — GO-screened RB
   backups behind my starters); DART READ (`_dart_profiles`/`_dart_read`, L31 — R11+ BUY/FADE tiers);
   ROSTER RISK (L23); STREAMER ALERT (L26). Cohort block prints median + trimmed-mean (L29).
@@ -99,7 +101,8 @@ API key in `.streamlit/secrets.toml` (`ANTHROPIC_API_KEY`); also needs it in Str
 ## Tests
 Plain-assert suites (no pytest dep), run each with `.venv/bin/python tests/<file>.py`:
 `test_bridge` (26), `test_sleeper` (13), `test_hedge` (8, L27), `test_punt` (8, L28),
-`test_cohort_skew` (10, L29), `test_dart` (21, L31), `test_handcuff` (16, L30/31).
+`test_cohort_skew` (10, L29), `test_dart` (21, L31), `test_handcuff` (16, L30/31),
+`test_cohort_pull` (19, L32), `test_defer` (8, L33).
 Plus the two stress suites: `icm/work/mc_research/11_stress_test.py` (component invariants + cohort
 LOSO) and `12_full_system_stress.py` (24 offline drafts). And `tools/preflight.py` (runtime CSV
 health) — run all after any board/priors regeneration.

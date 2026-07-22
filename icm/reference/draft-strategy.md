@@ -121,6 +121,27 @@ READ line shows each position's punt_loss + streamer + bust%. It self-corrects: 
 the scarcest value or depth dries up, its punt_loss exceeds the RB/WR bar → it's a CLIFF → grabbed
 (an open QB/TE never rots). Knob: `_PUNT_LATE_ROUNDS` (5).
 
+**NEXT-PICK DEFER (L33).** The punt_loss horizon is 5 rounds out; that's the wrong horizon at a snake
+TURN. There, a 1-start slot can read as a "cliff" 5 rounds out yet the ELITE one still lasts to my
+very NEXT pick — so I should take the scarcer RB/WR now and grab him next pick. `_punt_read` also marks
+a slot punt-able when `_survival_prob(elite_adp, my_next_pick) >= _NEXT_DEFER_P` (0.6) and a scarce
+RB/WR exists — tagged `DEFER` (vs `PUNT-ABLE fill late`). **Survival-primary, not a single-pick VONA
+compare** (too noisy at the turn — see L33). Self-limiting: a real cliff never lasts to the next pick,
+so an elite that goes before it (Josh Allen) is never deferred. Validated on roster value (deferring a
+surviving TE gains +8..33 on the pick pair; score-neutral over a full roster — a behavior fix, not a
+points gain). This is why our seat takes the best RB/WR (not the top TE) in R1 at slots 8-12.
+
+**TE SHAPE (advisory tie-breaker, in the SYSTEM prompt).** A per-slot backtest (every startable TE
+drafted at its ADP vs an RB/WR, scored on the optimal skill lineup) showed the position is TOP-HEAVY
+and non-monotonic: McBride/Bowers (elite, ~R2) are best; the **R4-5 mid-TEs (Loveland/Warren) are a
+DEAD ZONE** — worst value per pick (they cost a good RB/WR yet barely beat a later TE); the **~R6
+pocket (Pitts/Fannin) is the best non-elite value** (−7 vs McBride, they even beat Bowers on
+opportunity cost); R8+ declines. All losses are modest (−7 to −32 on a ~1620 lineup) — so this is an
+ADVISORY tie-breaker, NOT a hard demotion (VONA + the punt read still decide the trigger; a hardcoded
+per-round TE gate would overfit and fight the validated machinery). Guidance: pay up for the elite
+tier or wait for the R6 pocket; don't reach for a mid-TE in R4-5. Evidence: `icm/work/mc_research`
+all-TEs analysis.
+
 **Consequence to know:** because this is raw-value-optimal, at a turn it grabs the highest-punt_loss
 player first (often the scarce RB, then the elite QB by VONA) — so it will sometimes take an elite QB
 over an elite TE, unlike the earlier `keep_frac` version that always grabbed TE. The variance factor

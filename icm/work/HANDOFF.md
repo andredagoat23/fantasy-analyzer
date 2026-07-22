@@ -1,9 +1,12 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
 **How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
-docs the task needs. Everything below is CURRENT as of **Jul 21, 2026**. **DEPLOYED: local `main` is in
+docs the task needs. Everything below is CURRENT as of **Jul 22, 2026**. **DEPLOYED: local `main` in
 sync with `origin/main`, tree clean** (Streamlit Cloud auto-deploys on push to main). Latest functional
-change is LIVE: **L32 cohort sanity-pull** (commit `d25df50` — `cohort_pull.py` + `test_cohort_pull.py`).
+change is LIVE: **L33 next-pick DEFER + TE-shape guidance** (`advisor._punt_read` next_pick path +
+`test_defer.py`; a 1-start QB/TE that lasts to my next pick is deferred so I take the scarcer RB/WR
+now). Prior: L32 cohort sanity-pull (`cohort_pull.py`). Also banked this session: the strategy
+bake-off + capture + reason harness in `icm/work/mc_research/` (`13`/`14`/`15` + `pick_capture.json`).
 Draft day: **July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (The recent practice
 mocks were slot 5 — the real draft is slot 7.)
 
