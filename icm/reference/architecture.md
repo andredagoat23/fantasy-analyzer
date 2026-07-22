@@ -12,16 +12,20 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
 - `app_pages/draft.py` — the draft board: sidebar (scarcity, roster, reset), main strip (exit,
   draft settings, roster popover, compact toggle), scarcity readout, **live sync**, on-the-clock +
   cliff watch, **AI advisor**, filters, the `st.data_editor` board, undo drawer.
-- `advisor.py` — the Claude advisor. `build_context()` turns the live board into the prompt context
-  (incl. the Python-computed `wheel` column, roster-needs + ROSTER RISK lines); `stream_advice()`
-  streams the pick/chat; `prelook()` is the deep BACKGROUND pre-read (adaptive thinking on — it runs
-  off the clock); `parse_scoring()` / `suggest_strategy()` are one-shot setup helpers. The big SYSTEM
-  prompt is prompt-cached (`_system_blocks`) — ~90% cheaper + faster after the first call.
-  **Speculative precompute (draft.py):** every new pick fully reruns the page; within 3 picks of my
-  turn it fires `prelook()` on a background thread (`prelook_pool`, st.cache_resource — one worker,
-  never touches st.*). The answer is stamped with an exact board fingerprint (drafted ∪ mine ∪ setup);
-  on the clock the Recommend button serves it INSTANTLY only on an exact match, else falls back to
-  the live call. Verified via AppTest: click→answer 0.1s with identical text.
+- `advisor.py` — the Claude advisor. `build_context()` turns the live board into the prompt context:
+  the Python-computed `wheel` column, roster-needs, and a stack of **precomputed READ lines all
+  enforced in the TOP PICKS ranking (L8 — the model can't ignore them):** VONA (`add_vona`); PUNT READ
+  (`_punt_read`, L28 — risk-symmetric, depth-aware, no positional margin); HEDGE READ (`_hedge_read`,
+  L27 — risky filled 1-start); HANDCUFF READ (`_handcuff_read` + `_go_score`, L30/31 — GO-screened RB
+  backups behind my starters); DART READ (`_dart_profiles`/`_dart_read`, L31 — R11+ BUY/FADE tiers);
+  ROSTER RISK (L23); STREAMER ALERT (L26). Cohort block prints median + trimmed-mean (L29).
+  `stream_advice()` streams the pick/chat; `prelook()` is the deep BACKGROUND pre-read; `parse_scoring()`
+  / `suggest_strategy()` are one-shot setup helpers. SYSTEM is prompt-cached (`_system_blocks`, ~90%
+  cache reads). Data readers (`_cohorts`/`_playcallers`/`_sos`/`_roles`) are try/excepted (a missing
+  CSV = feature off, never a crash); `_roles` is mtime-keyed so a regen doesn't serve stale roles.
+  **Speculative precompute (draft.py):** within 3 picks of my turn `prelook()` fires on a background
+  thread (`prelook_pool`); the Recommend button serves a ready pre-read on an exact board-fingerprint
+  match, else the fast live call. **It NEVER blocks the pick** (the 20s-wait bug is fixed).
 - `cohort_priors.py` — the "Hampton treatment" for every board player: kNN over the 2019-25
   research panel (position, experience, draft capital, production, price, age, mover status) →
   each player's 15 most-similar historical seasons, their boom/bust/median-vs-price rates, and
@@ -42,6 +46,13 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
   ARI/ATL/BUF, the VERIFIED_NEW_HC_2026 constant is authoritative), `playcallers_2026.csv`
   (18 changes, 6 first-timers) and `playcallers_hist.csv` (224 sourced team-seasons 2019-25 —
   validated that OC-only changes are price-neutral). NOT in run_all; rerun with cohort_priors.
+- `role_priors.py` — the LATE-ROUND role layer (L31): each board skill player's PREVIOUS-season
+  workload share (carries for RB/QB, targets for WR/TE — the one validated handcuff/dart predictor),
+  full-season ppg/games, NFL draft capital, and the market's positional ADP rank → `role_data.csv`
+  (committed; the advisor's DART READ / GO-screened HANDCUFF READ read it). BOARD-FIRST (every skill
+  player gets a row, rookies included); share is primary-stint, ppg/games are full-season (the
+  midseason-trade false-fade fix), suffix-stripped name matching (the Godwin fix). NOT in run_all;
+  rerun with cohort_priors/sos_priors after a board rebuild. Full playbook: `late-round-strategy.md`.
 - `bridge.py` — reads the live-draft Firebase mailbox and resolves picks to board players. See
   `bridge.md`.
 - `auth.py`, `config_store.py`, `utils.py` (`normalize_name`), `espn_sync.py` (ESPN-API fallback).
@@ -81,8 +92,12 @@ the board — run it after any regen.
 API key in `.streamlit/secrets.toml` (`ANTHROPIC_API_KEY`); also needs it in Streamlit Cloud secrets.
 
 ## Tests
-`tests/test_bridge.py` — plain-assert regression suite (no pytest dep):
-`.venv/bin/python tests/test_bridge.py`.
+Plain-assert suites (no pytest dep), run each with `.venv/bin/python tests/<file>.py`:
+`test_bridge` (26), `test_sleeper` (13), `test_hedge` (8, L27), `test_punt` (8, L28),
+`test_cohort_skew` (10, L29), `test_dart` (21, L31), `test_handcuff` (16, L30/31).
+Plus the two stress suites: `icm/work/mc_research/11_stress_test.py` (component invariants + cohort
+LOSO) and `12_full_system_stress.py` (24 offline drafts). And `tools/preflight.py` (runtime CSV
+health) — run all after any board/priors regeneration.
 
 ## Deploy (USER TRIGGERS)
 Streamlit Community Cloud, auto-deploys on push to `main` (repo: andredagoat23/fantasy-analyzer).

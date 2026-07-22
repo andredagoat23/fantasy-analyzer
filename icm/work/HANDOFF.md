@@ -1,81 +1,115 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
-**How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever
-reference docs the task needs. Everything below is CURRENT as of **Jul 20, 2026 (late)** —
-deployed through commit `2042da9`. Draft day is **July 31, 2026** (ESPN, 12-team, slot 7,
-custom PPR, 16 rounds).
+**How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
+docs the task needs. Everything below is CURRENT as of **Jul 21, 2026**. **Deployed to `main` =
+`origin/main` = commit `835189e`** (Streamlit Cloud auto-deploys on push to main).
+Draft day: **July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (The recent practice
+mocks were slot 5 — the real draft is slot 7.)
+
+---
 
 ## The stack as it stands (all LIVE on Streamlit Cloud)
-1. **Calibrated Monte Carlo** (`compute_outcomes.py`, FROZEN — user authorized all shipped edits):
-   Waves 1/2/2b/2c. Depth-dependent `SIGMA_ANCHORS`, honest availability (~.82-.85 all positions),
-   games↔per-game injury coupling, exact mean re-centering, draft-capital refit, team-changer split
-   by PROVEN production (proven movers untouched, unproven 0.86/σ×1.2), stable-vet narrowing,
-   WR30+ fade, CV blend, stayed+new-HC tilt (1.02/σ×0.85, QB/RB/WR). **Backtested 60-62% band
-   coverage INCLUDING true out-of-sample 2014-18 (62.1%)** — not overfit. Acceptance tests:
-   `icm/work/mc_research/05_distribution.py` + `06_finish_odds.py` after ANY re-tune.
-2. **Cohort priors** (`cohort_priors.py` → `cohort_data.csv`): every board player's 15 nearest
-   historical seasons (kNN over 2014-2025: price, experience, capital, production, age, mover,
-   role, vegas, injury history, recency) with **empirical-Bayes-shrunken rates (m=25, LOSO-fitted
-   — raw 15-sample rates were overconfident)** + the 5 absolute closest matches with outcomes.
-   Advisor cites them by name.
-3. **Coaching intelligence** (`sos_priors.py`, `data/`): news-verified 2026 lists — 10 new HCs
-   (`new_hc_2026.csv`, drives the MC tilt; the schedules feed was STALE for ARI/ATL/BUF — the
-   verified list is authoritative), 18 new PLAYCALLERS incl. 6 first-timers
-   (`playcallers_2026.csv` + `playcallers_hist.csv`, 224 sourced team-seasons 2019-25).
-   **Validated split: the mispricing lives with FULL regime change (new HC, med 1.09x); OC-only
-   changes are price-NEUTRAL (med 1.00x)** → MC tilts on HC only; playcaller = advisor
-   usage-reasoning context (never fade/boost on an OC change alone — encoded in SYSTEM).
-4. **Positional SOS** (`sos_data.csv`): 2026 opponents × 2025 per-position points allowed;
-   `sos` column (rank 1=easiest..32) in the advisor table, tie-break-only rules.
-5. **Advisor** (`advisor.py`): strategy-is-the-plan (L25 — absolutes BINDING, deviation protocol
-   plan-first, Plan: note in every pick), roster-risk accumulation gate (L23), cohort/SOS/
-   playcaller context blocks, **STREAMER ALERT** (forces K/D-ST when remaining picks barely cover
-   them — a live full-draft test finished kicker-less without it; `draft.py` passes
-   `total_rounds: 16`), prompt-cached SYSTEM (~4.9k tokens, verified ~90% cache reads).
-6. **Speculative PRE-READ** (`app_pages/draft.py`): background deep call (adaptive thinking)
-   within 3 picks of the clock; exact board-fingerprint guard (race-tested under pick storms —
-   stale text can never be served; worst case ≈30s live fallback); instant serve on match.
-7. **Live sync**: ESPN + Sleeper (~81% platform coverage). Yahoo not started
-   (`icm/work/yahoo-probe-scope.md` — probe BEFORE building).
 
-## Regeneration playbook (data freshens between now and draft day)
-- Board: `.venv/bin/python run_all.py` (or the tail: `compute_outcomes.py` →
-  `load_ff_opportunity.py` → `value_board.py`). Deterministic (seeded, verified byte-identical);
-  upstream nflverse data DRIFTS between days — regenerate close to draft day.
-- Then re-run the non-frozen priors: `cohort_priors.py`, `sos_priors.py` (needs the local research
-  panel: `icm/work/mc_research/01_build_panel.py` + `02_expectation.py` rebuild it; heavy data is
-  gitignored). Commit the regenerated CSVs (deployed app reads them from the repo).
-- Verify after regeneration: `icm/work/mc_research/11_stress_test.py` (component invariants +
-  cohort LOSO) and `12_full_system_stress.py` (24 offline drafts) — both must say ALL PASS;
-  `python -m unittest discover -s tests` (13 checks).
+### The modeling core (FROZEN pipeline — do not edit without an explicit ask)
+1. **Calibrated Monte Carlo** (`compute_outcomes.py`): Waves 1/2/2b/2c. Depth-dependent
+   `SIGMA_ANCHORS`, honest availability (~.82-.85), games↔per-game injury coupling, exact mean
+   re-centering, draft-capital refit, team-changer split by PROVEN production, stable-vet narrowing,
+   WR30+ fade, CV blend, stayed+new-HC tilt. **Backtested 60-62% band coverage incl. true OOS 2014-18
+   (62.1%)** — not overfit. Re-tune acceptance tests: `icm/work/mc_research/05_distribution.py` +
+   `06_finish_odds.py`. The late-round research campaign (Jul 21) independently re-validated the MC's
+   availability/outcome numbers — no recalibration needed.
+2. **Cohort priors** (`cohort_priors.py` → `cohort_data.csv`): each board player's 15 nearest
+   historical seasons (kNN 2014-25) with empirical-Bayes-shrunken rates (m=25, LOSO-fitted). Now also
+   emits **`cohort_trimmed` + `cohort_mean`** (L29 — outcomes are right-skewed; the advisor shows
+   median + trimmed mean and tags TAIL-DRIVEN when they straddle 1.0x; raw mean stored but NEVER read
+   — it explodes for cheap backup QBs).
+3. **Coaching intelligence** (`sos_priors.py`, `data/`): news-verified 2026 — 10 new HCs
+   (`new_hc_2026.csv`, drives the MC tilt), 18 playcallers (`playcallers_2026.csv` +
+   `playcallers_hist.csv`). Validated: mispricing lives with FULL regime change (new HC); OC-only is
+   price-neutral → MC tilts on HC only, playcaller = advisor usage context.
+4. **Positional SOS** (`sos_data.csv`): 2026 opponents × 2025 per-position points allowed; tie-break
+   context in the advisor table.
+
+### The advisor (`advisor.py` — the app layer, freely editable; `draft-strategy.md` is source of truth)
+5. **Value engine:** VONA (Value Over Next Available, shared board column + advisor), roster/lineup
+   gates, role-lead bump, ROSTER RISK accumulation (L23), strategy-is-the-plan (L25).
+6. **The read stack** (all Python-computed, enforced in TOP PICKS data per L8 — the model can't ignore them):
+   - **PUNT READ** (L11/L28): unfilled QB/TE — risk-symmetric, depth-aware (`_expected_best_survivor`),
+     NO positional margin. Correctly recommends elite QB when the metrics say so (the "Josh Allen at 29
+     is CORRECT" resolution — do NOT re-open it as a bug; see L28).
+   - **HEDGE READ** (L27): a FILLED risky 1-start starter (boom/bust/injury) → surface the
+     hedge-vs-stream call once dedicated starters are set. Insurance, not a value pick.
+   - **HANDCUFF READ** (L30/L31): GO-screened backups behind MY starting RBs only (never a bench
+     player, never WR/TE). GO screen = prior role + offense + real price.
+   - **DART READ** (L31): from R11+, TOP PICKS switches to deterministic BUY/neutral/FADE tiers from
+     `_dart_profiles`. Full validated playbook (buys, fades, honesty cap, what FAILED validation) lives
+     in `reference/late-round-strategy.md`. Backed by `role_priors.py` → `role_data.csv`.
+   - **STREAMER ALERT** (L26): forces K/D-ST when remaining picks barely cover them.
+   - Prompt-cached SYSTEM (~90% cache reads).
+7. **Speculative PRE-READ** (`app_pages/draft.py`): background deep call within 3 picks of the clock,
+   exact board-fingerprint guard. **FIXED (Jul 20): it never BLOCKS the pick** — the Recommend button
+   serves a ready pre-read or falls straight to the fast ~4-5s live call; no 20s clock wait.
+8. **Live sync**: ESPN + Sleeper (~81% coverage). **Preflight health check**: `tools/preflight.py`
+   (run after the morning-of regen — validates every runtime CSV, NaN guards, ADP freshness,
+   priors/role staleness, cross-file consistency; fault-tested). Plus `tools/name_audit.py` (network).
+
+---
+
+## Git / branch state (Jul 21)
+- **`main` = `origin/main` = `835189e` — DEPLOYED.** Contains the entire advisor arc: L27 hedge,
+  L28 punt read, L29 cohort trimmed-mean, L30/L31 late-round campaign, + preflight tool + prelook fix.
+- **Two branches UNMERGED (both now BEHIND main → need a rebase before shipping):**
+  - `opponent-aware-survival` (`832cf38`): per-position effective-horizon survival that folds in the
+    live rosters of teams picking before my wheel. `opp=None` is byte-identical (can't regress); only
+    the opp-active path is unproven. **Gated on a live-sync rehearsal.** Touches `advisor.py` — rebase
+    will conflict. Design/diagnosis: `icm/work/plan.md` + `diagnosis.md`.
+  - `yahoo-probe` (`b8cb697`): Yahoo probe tooling `tools/yahoo_probe/` — awaits the user's Yahoo
+    dev-app + a mock to run the live-vs-post go/no-go (the library docstring already leans PASS).
+    Doesn't touch `advisor.py`, rebases trivially. See `icm/work/yahoo-probe-scope.md`.
+
+---
+
+## Regeneration ritual (data drifts; regenerate close to draft day)
+1. **Board** (FROZEN, deterministic): `.venv/bin/python run_all.py` (refreshes live ESPN ADP).
+2. **Non-frozen priors** — rerun all three after a board rebuild:
+   `cohort_priors.py`, `sos_priors.py`, **`role_priors.py`** (new — the late-round role layer; needs
+   the local research panel `icm/work/mc_research/seasons_exp.parquet`, rebuildable via `01`+`02`).
+   Commit the regenerated CSVs (deployed app reads them from the repo).
+3. **Verify**: `tools/preflight.py` (must say PREFLIGHT OK — it now guards `role_data.csv` +
+   priors-staleness), then `icm/work/mc_research/11_stress_test.py` + `12_full_system_stress.py`
+   (both ALL PASS), then the unit suites (below). Then `tools/name_audit.py` (network) + eyeball the app.
+
+## Tests (all plain-assert, run individually)
+`tests/`: `test_bridge` (26), `test_sleeper` (13), `test_hedge` (8), `test_punt` (8, L28),
+`test_cohort_skew` (10, L29), `test_dart` (21, L31), `test_handcuff` (16, L30/31). Plus the two
+stress suites in `icm/work/mc_research/`.
 
 ## Verified vs pending
-- **Stress-tested end-to-end** (Jul 20): component suite, 24 offline drafts (384 advised picks),
-  a full LIVE-API 16-round draft (16/16 valid picks, strategy executed, median 4.7s), prelook
-  races, determinism. The one real bug found (kicker never forced) is fixed + retested live.
-- **Pending live verify:** a real **Sleeper mock draft** end-to-end (needs the user's account);
-  a user-driven ESPN mock through the deployed app is the best pre-draft-day rehearsal.
-- **Pre-draft-day checklist:** regenerate board + priors on fresh data (see playbook), rerun the
-  two stress suites, and eyeball the app once.
+- **Deployed + fully regression-verified** (Jul 21): 102 unit checks, both stress suites ALL PASS,
+  preflight clean, AppTest clean — verified on the exact `835189e` state before the push.
+- **Pending live verify:** a user-driven **ESPN mock through the deployed app** is the best pre-draft
+  rehearsal (also the gate for merging opponent-aware survival); a real **Sleeper mock** end-to-end.
+- **Pre-draft-day checklist:** run the regeneration ritual above on fresh data; do one live ESPN mock.
 
-## ROADMAP — next features ranked (user-approved ordering)
-1. **Opponent-aware survival** — replace ADP-only "will he last" with the actual roster needs of
-   the specific teams picking before my wheel (live rosters are already synced). Sharpens VONA +
-   wheel. App/advisor layer only.
-2. **Positional-run detection** — "5 of the last 8 picks were RBs → the cliff is NOW."
-3. **Live news/injury layer** — the real July-31 difference-maker; needs a source decision.
-4. **Mock draft simulator** — rehearse from slot 7 vs ADP-bots (the offline engine in
-   `12_full_system_stress.py` is 80% of it already).
-5. **Rest-of-draft lookahead** — optimize the FINAL roster, not this pick. Biggest build.
-6. **August usage refresh** · 7. **ESPN-vs-consensus divergence** · 8. **Live draft grade** ·
-9. **"My guys" watchlist UI** (interim: name them in the strategy — the advisor executes it) ·
-10. **OC/coordinator dataset** (none exists; manual-note only).
+---
 
-## Where the research lives
-- Findings narrative: `icm/work/mc-research-findings.md` (Waves 1-2c, expansion, playcaller
-  decomposition, cross-positional NULLs — the market prices teammate quality, don't pay premiums
-  for supporting cast).
-- Scripts + results: `icm/work/mc_research/` (01-12; results_*.txt committed, heavy parquets
-  gitignored/rebuildable).
-- Lessons L21-L26: `icm/reference/lessons.md`. Non-negotiables unchanged:
-  `icm/reference/engineering-principles.md`, `icm/reference/collaboration.md`.
+## ROADMAP — next features (user-approved ordering)
+1. **Opponent-aware survival** — BUILT on `opponent-aware-survival`, pending the live rehearsal + a
+   rebase onto current main. (This was #1; it's done, just not shipped.)
+2. **Positional-run detection** — "5 of last 8 picks were RBs → the cliff is NOW."
+3. **Live news/injury layer** — the real July-31 difference-maker; needs a source decision. (The
+   late-round research underscores this: ~half the handcuff edge and the sharpest signals are
+   in-season, so a live layer + a FAAB plan is where the next real edge is.)
+4. **Mock draft simulator** — rehearse slot 7 vs ADP-bots (`12_full_system_stress.py` is 80% of it).
+5. **Rest-of-draft lookahead** · 6. August usage refresh · 7. ESPN-vs-consensus divergence ·
+   8. Live draft grade · 9. "My guys" watchlist UI · 10. OC/coordinator dataset.
+
+## Where the knowledge lives
+- **Late-round playbook** (validated buys/fades/handcuffs + what FAILED validation):
+  `icm/reference/late-round-strategy.md`. Campaign evidence: scratchpad `lateround/` (13 analysis +
+  5 adversarial reports + SYNTHESIS.md — ephemeral, regenerable via the workflow).
+- **MC research narrative:** `icm/work/mc-research-findings.md`; scripts + committed results in
+  `icm/work/mc_research/`.
+- **Lessons L1-L31:** `icm/reference/lessons.md` (**check before diagnosing** — L28 in particular:
+  the Josh Allen pick is CORRECT, not a bug). Non-negotiables: `engineering-principles.md`,
+  `collaboration.md`.
