@@ -1,8 +1,10 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
 **How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
-docs the task needs. Everything below is CURRENT as of **Jul 21, 2026**. **Deployed to `main` =
-`origin/main` = commit `835189e`** (Streamlit Cloud auto-deploys on push to main).
+docs the task needs. Everything below is CURRENT as of **Jul 21, 2026**. **DEPLOYED = `origin/main` =
+commit `835189e`** (Streamlit Cloud auto-deploys on push to main). **Local `main` is 2 commits AHEAD of
+deployed, both UNPUSHED (so NOT deployed): `33d3aa3` (ICM-refresh docs) and `d56c90d` (L32 cohort
+sanity-pull — `cohort_pull.py` + `test_cohort_pull.py`). A push deploys BOTH.**
 Draft day: **July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (The recent practice
 mocks were slot 5 — the real draft is slot 7.)
 
@@ -33,6 +35,12 @@ mocks were slot 5 — the real draft is slot 7.)
 ### The advisor (`advisor.py` — the app layer, freely editable; `draft-strategy.md` is source of truth)
 5. **Value engine:** VONA (Value Over Next Available, shared board column + advisor), roster/lineup
    gates, role-lead bump, ROSTER RISK accumulation (L23), strategy-is-the-plan (L25).
+   - **Cohort sanity-pull (L32, `cohort_pull.py`, called in `draft.py` `load_board`):** the LOSO-
+     validated `cohort_trimmed` (finish/price multiplier) now nudges `rank_composite` at board-load —
+     bounded (deadband / cap ±4 / startable-gate / freeze top-8), `trimmed` not median (L29), missing
+     CSV = no-op. Flows to the Everything board, the risk dial, AND the advisor's TOP PICKS shortlist
+     (`build_context` sorts on `rank_composite`). App-layer only; frozen pipeline untouched. Confirmed
+     our TE lean is history-backed (McBride/Kittle/Kelce/Pitts) but flags Andrews as a real overpay.
 6. **The read stack** (all Python-computed, enforced in TOP PICKS data per L8 — the model can't ignore them):
    - **PUNT READ** (L11/L28): unfilled QB/TE — risk-symmetric, depth-aware (`_expected_best_survivor`),
      NO positional margin. Correctly recommends elite QB when the metrics say so (the "Josh Allen at 29
@@ -81,8 +89,8 @@ mocks were slot 5 — the real draft is slot 7.)
 
 ## Tests (all plain-assert, run individually)
 `tests/`: `test_bridge` (26), `test_sleeper` (13), `test_hedge` (8), `test_punt` (8, L28),
-`test_cohort_skew` (10, L29), `test_dart` (21, L31), `test_handcuff` (16, L30/31). Plus the two
-stress suites in `icm/work/mc_research/`.
+`test_cohort_skew` (10, L29), `test_dart` (21, L31), `test_handcuff` (16, L30/31),
+`test_cohort_pull` (19, L32). Plus the two stress suites in `icm/work/mc_research/`.
 
 ## Verified vs pending
 - **Deployed + fully regression-verified** (Jul 21): 102 unit checks, both stress suites ALL PASS,
@@ -110,6 +118,6 @@ stress suites in `icm/work/mc_research/`.
   5 adversarial reports + SYNTHESIS.md — ephemeral, regenerable via the workflow).
 - **MC research narrative:** `icm/work/mc-research-findings.md`; scripts + committed results in
   `icm/work/mc_research/`.
-- **Lessons L1-L31:** `icm/reference/lessons.md` (**check before diagnosing** — L28 in particular:
+- **Lessons L1-L32:** `icm/reference/lessons.md` (**check before diagnosing** — L28 in particular:
   the Josh Allen pick is CORRECT, not a bug). Non-negotiables: `engineering-principles.md`,
   `collaboration.md`.

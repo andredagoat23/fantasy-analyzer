@@ -532,6 +532,36 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L32 — A validated signal we already computed only fed the PROSE, not the RANK (Jul 2026)
+- **Context:** the user asked how the model could improve after comparing our board to the field
+  (ESPN ADP = market, FantasyPros ECR = expert consensus). The one systematic divergence was tight
+  ends — we rank them well above everyone (McBride, Kelce, Kittle, Pitts, Goedert, Andrews). Pulling
+  the cohort evidence (`cohort_trimmed`, the LOSO-validated finish/price multiplier) adjudicated it:
+  our TE lean is history-backed for McBride/Kittle/Kelce/Pitts (trimmed 1.1-1.2) but Andrews (0.90)
+  is a real overpay the field is right about. The catch — `cohort_trimmed` was computed, committed,
+  and only ever read by the advisor's COHORT HISTORY **prose**; the board **rank** (`rank_composite`)
+  never touched it.
+- **What we did (L32 — a BOUNDED cohort sanity-pull, `cohort_pull.py`):** let `cohort_trimmed` nudge
+  `rank_composite` at load time (`load_board` in `draft.py`), so it reaches the Everything board, the
+  risk dial, AND the advisor's TOP PICKS shortlist (`build_context` sorts on `rank_composite`, L8 —
+  data, not prompt). A sanity-pull, never a re-rank: **deadband** (ignore near-fair cohorts),
+  **cap** ±4 spots, **startable-gate** (only LIFT p_start>=0.40 — a bench/handcuff's contingent value
+  is the DART/HANDCUFF read's job, never double-count it), **freeze** the top-8 (efficient; we agree
+  with the field there). `trimmed` not `median` (dodges the L29 cheap-backup blow-up). Missing CSV /
+  no name-match = a clean no-op.
+- **Mechanics:** knobs `SCALE=30, DEAD=0.08, CAP=4, GATE=0.40, FREEZE=8`, chosen via a sensitivity
+  sweep over the real board (the gate is load-bearing — off, handcuffs jump and double-count DART;
+  freeze=12 silences the validated McBride lean; cap>=6 scrambles the top). App-layer only — the
+  frozen pipeline held with **zero edits** (VOLS scarcity is mostly RIGHT; cohorts confirm it, so it
+  was NOT a data-quality flag). `load_board` re-keyed on `cohort_data.csv` mtime so a regen busts the
+  cache. Tests: `tests/test_cohort_pull.py` (19). Kept the raw rank as `rank_composite_base` for audit.
+- **Teaches:** if a signal is trustworthy enough to *explain* a pick, it's trustworthy enough to
+  *move* the pick — a validated number that only feeds the narration is half-used. And bound every
+  correction (deadband/cap/gate/freeze) so a sanity-pull stays a sanity-pull instead of quietly
+  becoming a re-rank. (Principles 4, 5, 7, 9, 10)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

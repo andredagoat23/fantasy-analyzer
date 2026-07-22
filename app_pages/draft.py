@@ -7,6 +7,7 @@ import streamlit as st
 import advisor
 import auth
 import bridge
+import cohort_pull
 import config_store
 import sleeper_sync
 from utils import normalize_name
@@ -74,7 +75,7 @@ RISK_BG = {"Safe": "rgba(46,160,67,.20)", "Boom/Bust": "rgba(210,153,34,.20)",
 
 
 @st.cache_data
-def load_board(mtime):   # mtime arg busts the cache when the CSV is regenerated
+def load_board(mtime, cohort_mtime):   # both mtime args bust the cache when their CSV is regenerated
     board = pd.read_csv("value_board.csv", dtype={"player_id": str})
     board["position"] = board["pos_label"].str.replace(r"\d+$", "", regex=True)
     # team_role (depth-chart slot, e.g. BUF WR1) + no-team FA flag are now produced by value_board.py.
@@ -87,7 +88,7 @@ def load_board(mtime):   # mtime arg busts the cache when the CSV is regenerated
             board.loc[grp.index, "team_role"] = pos + rank.astype(str)
     if "no_team" not in board.columns:
         board["no_team"] = ~has_team
-    return board
+    return cohort_pull.apply_pull(board)
 
 
 def style_board(df):
@@ -108,7 +109,8 @@ def style_board(df):
     return css
 
 
-board = load_board(os.path.getmtime("value_board.csv"))
+_cohort_mt = os.path.getmtime("cohort_data.csv") if os.path.exists("cohort_data.csv") else 0
+board = load_board(os.path.getmtime("value_board.csv"), _cohort_mt)
 
 # Auto-play the fanfare once every time the draft page is OPENED (via the "Enter the draft"
 # button or the top nav) — never on in-page reruns. The audio player is hidden via CSS in app.py,
