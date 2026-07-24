@@ -88,6 +88,25 @@ def load_board(mtime, cohort_mtime):   # both mtime args bust the cache when the
             board.loc[grp.index, "team_role"] = pos + rank.astype(str)
     if "no_team" not in board.columns:
         board["no_team"] = ~has_team
+    # L34: cross-position target-competition gate for the WR alpha role bump. A nominal "team WR1" by
+    # projection is only a LOCKED-TARGET alpha if no same-team RB/TE out-targets him — a receiving RB or
+    # target-hog TE eats the looks first (Mike Evans on SF behind CMC + Kittle). role_alpha_ok = his
+    # target share >= the top same-team RB/TE share; the advisor gates the WR alpha nudge + tag on it.
+    # best-DEMONSTRATED target share (max of 2024/25) so a WR's down/injury year (Nabers) doesn't wrongly
+    # strip his alpha; a mover's stale peak still fails when the new team's RB/TE out-targets even that
+    # (Evans's 0.195 TB peak < CMC's 0.235). target_share_2024 isn't on the board -> pull from players_final.
+    ts25 = board["target_share_2025"].fillna(0.0) if "target_share_2025" in board.columns else pd.Series(0.0, index=board.index)
+    ts_demo = ts25
+    try:
+        _pf = pd.read_csv("players_final.csv", usecols=["full_name", "target_share_2024"]).drop_duplicates("full_name")
+        ts24 = board["full_name"].map(_pf.set_index("full_name")["target_share_2024"]).fillna(0.0)
+        ts_demo = pd.concat([ts25, ts24], axis=1).max(axis=1)
+    except Exception:
+        pass
+    rbte_top = ts_demo.where(board["position"].isin(["RB", "TE"])).groupby(board["team"]).transform("max")
+    # strip a WR's alpha only when an RB/TE out-targets even his BEST year by >3% (a receiving RB / target
+    # TE genuinely eats the looks — Evans behind CMC); the margin protects co-alphas (Drake London + Pitts).
+    board["role_alpha_ok"] = ts_demo >= (rbte_top.fillna(0.0) - 0.03)
     return cohort_pull.apply_pull(board)
 
 

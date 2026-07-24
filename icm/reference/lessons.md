@@ -604,6 +604,27 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L34 — "Team WR1" by projection ≠ locked-target alpha (user catch, mock draft, Jul 2026)
+- **Context:** in a live mock the user questioned Mike Evans as our WR2. Our board labeled him SF "WR1"
+  (`team_role`, `role_lead +40`) and the advisor would tag him **CLEAR ALPHA (locked targets)** with a
+  +10 VONA nudge — but Evans is a 32-yo on an 11.5% target share, the THIRD pass-catcher on SF behind
+  Christian McCaffrey (RB, 23.4%) and George Kittle (TE, 12.5%). The user was right: he's not an alpha.
+- **Root cause:** `team_role` / `role_lead` rank a player only **within his own position** on his team
+  (WR-vs-WR by projection). They're blind to a pass-catching RB or a target-hog TE eating the looks
+  FIRST — so a nominal top-WR-by-projection gets an unearned "locked targets" bump.
+- **Fix (L34, app layer):** `draft.load_board` computes `role_alpha_ok` = the WR's **best-demonstrated**
+  target share (max of 2024/25, so a down/injury year like Nabers doesn't wrongly strip him; a mover's
+  stale peak still fails when the new team's RB/TE out-targets even it — Evans's 0.195 < CMC's 0.235) is
+  within 3% of the top same-team RB/TE share. The advisor gates the WR's POSITIVE role nudge
+  (`_role_bonus_series`) AND the CLEAR ALPHA tag on it. WR-only; the negative "behind the alpha" nudge
+  and RB/TE roles are untouched. Verified: strips Evans/Pierce/Watson (crowded/buried), keeps
+  Nabers/London/Puka/Chase/JJ (real alphas, incl. co-alphas next to a good TE like London+Pitts).
+- **Teaches:** a role signal must see the WHOLE pass game, not just the position room — "role beats box
+  score" (L14) extends to cross-position target competition. And the user's eye on target context caught
+  what the metric missed; take "why is he ranked here?" seriously. (Principles 4, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

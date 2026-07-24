@@ -279,6 +279,12 @@ def _role_bonus_series(df):
     skill = df["position"].isin(("RB", "WR", "TE"))
     env = df["role_env_ok"].fillna(True).astype(bool) if "role_env_ok" in df.columns else True
     nudge = (df["role_lead"].astype("float") * _ROLE_LEAD_K).clip(-_ROLE_CAP, _ROLE_CAP)
+    # L34: a WR's POSITIVE alpha bump requires that no same-team RB/TE out-targets him (role_alpha_ok).
+    # A nominal "WR1" by projection isn't a locked-target alpha if a receiving RB / target TE eats the
+    # looks first (Mike Evans on SF behind CMC + Kittle). The negative "behind the alpha" nudge stays.
+    if "role_alpha_ok" in df.columns:
+        wr_no_alpha = (df["position"] == "WR") & ~df["role_alpha_ok"].fillna(True).astype(bool)
+        nudge = nudge.mask(wr_no_alpha & (nudge > 0), 0.0)
     return nudge.where(skill & env, 0.0).fillna(0.0)
 
 
@@ -1034,7 +1040,10 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                 rl = float(rl) if rl is not None and pd.notna(rl) else 0.0
                 env_ok = getattr(r, "role_env_ok", True)
                 env_ok = bool(env_ok) if pd.notna(env_ok) else True
-                role = (", CLEAR ALPHA (locked targets)" if rl >= 15 and r.position in _FLEX_OK and env_ok
+                alpha_ok = getattr(r, "role_alpha_ok", True)                          # L34
+                alpha_ok = bool(alpha_ok) if pd.notna(alpha_ok) else True
+                wr_alpha = r.position != "WR" or alpha_ok    # a WR isn't a locked alpha if an RB/TE out-targets him
+                role = (", CLEAR ALPHA (locked targets)" if rl >= 15 and r.position in _FLEX_OK and env_ok and wr_alpha
                         else ", behind the alpha (capped targets)" if rl <= -15 and r.position in _FLEX_OK and env_ok else "")
                 tag = (", TE DART — sanctioned exception to the 1-start block (deliberate final-round "
                        "hedge/upside pick; the block otherwise stands)"
