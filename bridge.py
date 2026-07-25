@@ -74,6 +74,18 @@ def my_dst(raw_picks, my_team=None):
     return None
 
 
+def drafted_dsts(raw_picks):
+    """Every D/ST already drafted by ANY team — their pick names. Defenses aren't on our board, so this
+    is how the advisor learns which are gone and stops recommending a taken one (L36)."""
+    out = set()
+    for p in raw_picks:
+        name = str(p.get("player", ""))
+        u = name.upper()
+        if "D/ST" in u or u.endswith(" DST") or "DEFENSE" in u:
+            out.add(name)
+    return out
+
+
 def resolve(raw_picks, by_name, my_team=None):
     """Raw browser picks -> (drafted set, mine set, sorted team names seen, total pick count).
 

@@ -1,12 +1,17 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
 **How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
-docs the task needs. Everything below is CURRENT as of **Jul 22, 2026**. **DEPLOYED: local `main` in
-sync with `origin/main`, tree clean** (Streamlit Cloud auto-deploys on push to main). Latest functional
-change is LIVE: **L33 next-pick DEFER + TE-shape guidance** (`advisor._punt_read` next_pick path +
-`test_defer.py`; a 1-start QB/TE that lasts to my next pick is deferred so I take the scarcer RB/WR
-now). Prior: L32 cohort sanity-pull (`cohort_pull.py`). Also banked this session: the strategy
-bake-off + capture + reason harness in `icm/work/mc_research/` (`13`/`14`/`15` + `pick_capture.json`).
+docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**. **DEPLOYED: local `main` in
+sync with `origin/main`, tree clean** (Streamlit Cloud auto-deploys on push to main). A full live-mock
+rehearsal ran — the FA bridge synced all 192 picks cleanly, and the user's post-mock catches became
+fixes: **L34** (WR alpha bump gated by cross-position target competition — the Mike Evans fix),
+**L35** (ambiguous-room pairs: buy both RBs, diversify WRs), **L36** (advisor no longer recommends an
+already-drafted D/ST — `bridge.drafted_dsts` → filtered ranking). Prior this session: L32 cohort
+sanity-pull, L33 next-pick DEFER + TE/QB-shape guidance, and the strategy bake-off harness in
+`icm/work/mc_research/`. All 10 unit suites green (test_dst/defer/punt/hedge/dart/handcuff/cohort_pull/
+cohort_skew/bridge/sleeper). **OPEN (user's 1st mock concern, not yet built):** the DART "post-hype
+target-share WR" buy fires on a MOVER's STALE old-team share (bought Jauan Jennings on his 36% SF share
+though he's now MIN's buried WR3) — gate it on the player's NEW-team role. See L34 for the analogous fix.
 Draft day: **July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (The recent practice
 mocks were slot 5 — the real draft is slot 7.)
 

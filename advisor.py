@@ -24,10 +24,46 @@ MODEL_FAST = "claude-haiku-4-5"
 # D/ST draft ranking (defenses aren't projected in the pipeline — this is the reference the advisor
 # uses for the 1 D/ST pick). Loaded once; edit data/dst_rankings.csv to update.
 try:
-    _dst = pd.read_csv("data/dst_rankings.csv", comment="#")
-    DST_TEXT = "  ".join(f"{r.rank}.{r.team}(T{r.tier})" for r in _dst.itertuples())
+    _DST_DF = pd.read_csv("data/dst_rankings.csv", comment="#")
 except Exception:
-    DST_TEXT = ""
+    _DST_DF = None
+
+# nickname / city -> team code, so a drafted "Texans D/ST" pick matches the code-based ranking (HOU).
+DST_ALIASES = {
+    "cardinals": "ARI", "arizona": "ARI", "falcons": "ATL", "atlanta": "ATL", "ravens": "BAL", "baltimore": "BAL",
+    "bills": "BUF", "buffalo": "BUF", "panthers": "CAR", "carolina": "CAR", "bears": "CHI", "chicago": "CHI",
+    "bengals": "CIN", "cincinnati": "CIN", "browns": "CLE", "cleveland": "CLE", "cowboys": "DAL", "dallas": "DAL",
+    "broncos": "DEN", "denver": "DEN", "lions": "DET", "detroit": "DET", "packers": "GB", "green bay": "GB",
+    "texans": "HOU", "houston": "HOU", "colts": "IND", "indianapolis": "IND", "jaguars": "JAX", "jacksonville": "JAX",
+    "chiefs": "KC", "kansas city": "KC", "raiders": "LV", "las vegas": "LV", "chargers": "LAC", "rams": "LAR",
+    "dolphins": "MIA", "miami": "MIA", "vikings": "MIN", "minnesota": "MIN", "patriots": "NE", "new england": "NE",
+    "saints": "NO", "new orleans": "NO", "giants": "NYG", "jets": "NYJ", "eagles": "PHI", "philadelphia": "PHI",
+    "steelers": "PIT", "pittsburgh": "PIT", "49ers": "SF", "niners": "SF", "san francisco": "SF",
+    "seahawks": "SEA", "seattle": "SEA", "buccaneers": "TB", "bucs": "TB", "tampa bay": "TB", "tampa": "TB",
+    "titans": "TEN", "tennessee": "TEN", "commanders": "WAS", "washington": "WAS",
+}
+_DST_CODES = set(DST_ALIASES.values())
+
+
+def _dst_code(name):
+    """Map a drafted D/ST pick name ('Texans D/ST', 'San Francisco D/ST', or a raw code) to its team code."""
+    s = str(name).lower().replace("d/st", "").replace("dst", "").replace("defense", "").strip()
+    if s.upper() in _DST_CODES:
+        return s.upper()
+    for alias, code in DST_ALIASES.items():
+        if alias in s:
+            return code
+    return None
+
+
+def dst_ranking_text(drafted_dsts=None):
+    """The D/ST ranking string with ALREADY-DRAFTED defenses removed, so the advisor never recommends a
+    taken one (L36). drafted_dsts = the set of drafted D/ST pick names across ALL teams."""
+    if _DST_DF is None:
+        return ""
+    gone = {_dst_code(n) for n in (drafted_dsts or ())} - {None}
+    rows = [r for r in _DST_DF.itertuples() if r.team not in gone]
+    return "  ".join(f"{r.rank}.{r.team}(T{r.tier})" for r in rows)
 
 # Cohort priors (cohort_data.csv, built by cohort_priors.py): each player's 15 most-similar
 # historical player-seasons and how that archetype performed vs its price. Loaded once; the
@@ -826,9 +862,10 @@ def _punt_read(available, open_1start, current_overall, teams, next_pick=None):
 
 
 def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst=None,
-                  strategy=None):
+                  strategy=None, drafted_dsts=None):
     """Compact text snapshot of the live board for the current turn. `my_dst` = the D/ST you drafted
-    (name) if any — defenses aren't on the board, so it's threaded in separately."""
+    (name) if any — defenses aren't on the board, so it's threaded in separately. `drafted_dsts` = the
+    D/STs already taken by ANY team, so the ranking never recommends a drafted defense (L36)."""
     horizon = _horizon(draft_pos)
     if "vona" not in available.columns:      # normally precomputed in draft.py; compute if standalone
         available = add_vona(available, horizon)
@@ -1159,7 +1196,9 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         if chg:
             pc_line = ("PLAYCALLER CHANGES 2026 (* = first-time caller; scheme uncertainty — see rules): "
                        + ", ".join(chg) + "\n")
-    dst_line = f"\n\nD/ST draft ranking (streamer, draft late): {DST_TEXT}" if DST_TEXT else ""
+    _dst_txt = dst_ranking_text(drafted_dsts)
+    dst_line = (f"\n\nD/ST draft ranking (streamer, draft late; already-drafted defenses removed — "
+                f"recommend ONLY from this list): {_dst_txt}") if _dst_txt else ""
     return (
         "LIVE DRAFT STATE\n"
         + dp_line +

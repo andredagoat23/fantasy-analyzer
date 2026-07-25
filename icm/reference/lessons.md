@@ -646,6 +646,24 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L36 — The advisor recommended a D/ST that was already drafted (user catch, mock draft, Jul 2026)
+- **Context:** in the live mock the advisor kept recommending the Houston D/ST even after another team
+  drafted it. Defenses aren't in `value_board.csv` (not projected), so they never enter the `drafted`
+  set via `resolve()` — the advisor was shown the full static ranking (`dst_rankings.csv`) with NO
+  availability filter, and `bridge` only ever tracked MY D/ST (`my_dst`), not everyone's.
+- **Root cause:** an off-board position had no "who's already taken" tracking. DST_TEXT was a fixed
+  string; the model literally couldn't know Houston was gone.
+- **Fix (L36):** `bridge.drafted_dsts(raw_picks)` collects every drafted D/ST (any team); `draft.py`
+  threads it into `build_context(drafted_dsts=)`; `advisor.dst_ranking_text()` maps each drafted pick
+  name to its team code (`DST_ALIASES`: "Texans D/ST" → HOU; nickname/city; LAC≠LAR / NYG≠NYJ handled)
+  and drops it from the ranking the model sees. The prelook cache key now includes the drafted-D/ST set
+  so the pre-read refreshes when a defense goes. Tests: `test_dst` (14).
+- **Teaches:** any position the advisor recommends needs availability tracking — an OFF-BOARD position
+  (D/ST) silently escaped the `drafted` guard that covers on-board players. When a resource isn't in
+  the main data structure, it needs its own "what's left" accounting. (Principles 5, 9)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

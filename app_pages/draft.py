@@ -186,6 +186,7 @@ def do_reset():
     st.session_state.drafted = set()
     st.session_state.mine = set()
     st.session_state.mine_dst = None
+    st.session_state.drafted_dsts = set()
     st.session_state.confirm_reset = False
     st.session_state.version += 1
 
@@ -335,11 +336,14 @@ if sleeper_draft:
                     st.rerun(scope="app")   # let app.py apply teams/slot, then re-poll
             drafted, mine, _teams, total = bridge.resolve(raw, by_name, my_team=None)
             my_dst = bridge.my_dst(raw)   # defenses aren't on the board — tracked via the mine flag
+            drafted_dst = bridge.drafted_dsts(raw)   # all D/STs taken (any team) — filter the ranking (L36)
             if (drafted != st.session_state.drafted or mine != st.session_state.mine
                     or total != st.session_state.get("pick_count")
-                    or my_dst != st.session_state.get("mine_dst")):
+                    or my_dst != st.session_state.get("mine_dst")
+                    or drafted_dst != st.session_state.get("drafted_dsts")):
                 st.session_state.drafted, st.session_state.mine = drafted, mine
                 st.session_state.mine_dst = my_dst
+                st.session_state.drafted_dsts = drafted_dst
                 st.session_state.pick_count = total
                 st.session_state.version += 1
                 st.rerun(scope="app")   # refresh the whole board with the new picks
@@ -399,14 +403,17 @@ elif bridge_url:
 
             drafted, mine, teams_seen, total = bridge.resolve(raw, by_name, my_team)
             my_dst = bridge.my_dst(raw, my_team)   # defenses aren't on the board — track separately
+            drafted_dst = bridge.drafted_dsts(raw)   # all D/STs taken (any team) — filter the ranking (L36)
             teams_changed = teams_seen != st.session_state.get("bridge_teams", [])
             if teams_changed:
                 st.session_state.bridge_teams = teams_seen
             if (drafted != st.session_state.drafted or mine != st.session_state.mine
                     or total != st.session_state.get("pick_count") or teams_changed
-                    or my_dst != st.session_state.get("mine_dst")):
+                    or my_dst != st.session_state.get("mine_dst")
+                    or drafted_dst != st.session_state.get("drafted_dsts")):
                 st.session_state.drafted, st.session_state.mine = drafted, mine
                 st.session_state.mine_dst = my_dst
+                st.session_state.drafted_dsts = drafted_dst
                 st.session_state.pick_count = total
                 st.session_state.version += 1
                 st.rerun(scope="app")   # refresh the whole board with the new picks
@@ -547,12 +554,14 @@ with st.container(border=True):
         # it instantly only if the board hasn't changed since — otherwise fall back to the live call.
         PRELOOK_WINDOW = 3
         cur_key = (frozenset(st.session_state.drafted), frozenset(st.session_state.mine),
-                   st.session_state.get("mine_dst"), _setup_note())
+                   st.session_state.get("mine_dst"),
+                   frozenset(st.session_state.get("drafted_dsts") or ()), _setup_note())
         pl = st.session_state.setdefault("prelook", {"key": None, "future": None, "text": None})
         near_turn = my_turn or (picks_away is not None and picks_away <= PRELOOK_WINDOW)
         if near_turn and pl["key"] != cur_key:
             ctx = advisor.build_context(available, mine_df, scarcity, draft_pos,
                                         my_dst=st.session_state.get("mine_dst"),
+                                        drafted_dsts=st.session_state.get("drafted_dsts"),
                                         strategy=st.session_state.get("strategy"))
             note = _setup_note()
             pre_ctx = (f"{note}\n\n{ctx}" if note else ctx) + f"\n\n{REC_PROMPT}"
@@ -592,6 +601,7 @@ with st.container(border=True):
             st.session_state.chat.append({"role": "user", "content": prompt})
             context = advisor.build_context(available, mine_df, scarcity, draft_pos,
                                             my_dst=st.session_state.get("mine_dst"),
+                                            drafted_dsts=st.session_state.get("drafted_dsts"),
                                             strategy=st.session_state.get("strategy"))
             note = _setup_note()
             full_context = f"{note}\n\n{context}" if note else context
