@@ -10,8 +10,11 @@ already-drafted D/ST — `bridge.drafted_dsts` → filtered ranking), **L37** (D
 excludes movers — it was buying Jauan Jennings on his stale 36% SF share though he's now MIN's buried
 WR3). Prior this session: L32 cohort sanity-pull, L33 next-pick DEFER + TE/QB-shape guidance, and the
 strategy bake-off harness in `icm/work/mc_research/`. All 10 unit suites green (test_dst/defer/punt/
-hedge/dart/handcuff/cohort_pull/cohort_skew/bridge/sleeper). Both mock rehearsal concerns are now
-resolved; no open items. (Note: one class of bug — stale mover role — is patched in three layers now:
+hedge/dart/handcuff/cohort_pull/cohort_skew/bridge/sleeper). **Second mock (slot 1):** two more catches
+fixed — **L38** (advisor recommended a kicker from memory — Jake Moody, whom we rank K19; now handed the
+board's top-8 K ranking in `build_context`, like D/ST) and a **WR-SHAPE advisory note** (WR validated
+thin+risky — reliable tier gone by ~WR10, bust 38% vs RB 25% — so secure reliable WRs early; NO board
+re-rank, the composite is already near-even). No open items. (Note: one class of bug — stale mover role — is patched in three layers now:
 composite role_pct L16, the alpha tag L34, the dart buy L37.)
 Draft day: **July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (The recent practice
 mocks were slot 5 — the real draft is slot 7.)

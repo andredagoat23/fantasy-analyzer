@@ -682,6 +682,26 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L38 — The advisor recommended a kicker from MEMORY, not the board (user catch, mock draft, Jul 2026)
+- **Context:** the advisor kept calling Jake Moody the best kicker. Our board correctly ranks him **K19**
+  (rank_composite 181) — our top Ks are Aubrey/Dicker/Myers/Fairbairn. So the board was right; the
+  advisor just never saw it.
+- **Root cause:** kickers are on the board but excluded from TOP PICKS, and the system prompt only said
+  "grab a top-scoring kicker" — it handed the model NO K list (unlike D/ST, which gets a ranking). So the
+  LLM named one from training memory (a stale big name), the exact failure mode D/ST had (L36).
+- **Fix (L38):** `build_context` now includes a `k_line` — the board's top-8 Ks by `rank_composite` —
+  and the prompt says recommend ONLY from that list, never from memory. (K IS on the board, so no alias
+  map needed as with D/ST; it's just the board's K order.)
+- **Also validated this session (WR SHAPE, advisory note — no lesson-worthy bug, but recorded):** the
+  user's read that WR is thin+risky checks out (reliable tier gone by ~WR10 vs RB ~RB20; WR bust 38% vs
+  RB 25%). Added a WR-shape tie-breaker (secure reliable WRs early; RB is deep) — but NO board re-rank
+  (composite is already near-even at the top; the real driver of thin-WR rooms was taking QB in R3).
+- **Teaches:** if the advisor RECOMMENDS from a position, give it that position's ranking explicitly —
+  never let it fall back on training memory for player quality (names go stale). Same lesson as L36,
+  different position. (Principles 2, 9)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

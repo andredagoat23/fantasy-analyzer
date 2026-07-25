@@ -151,6 +151,20 @@ early RB/WR starters while your QB is nearly as good. Waiting PAST ~R11 finally 
 offense = the DART buy, or a value QB) — never an early pick. This validates the existing PUNT READ +
 DART late-QB logic rather than adding a new rule. Evidence: `icm/work/mc_research` all-QBs analysis.
 
+**WR SHAPE (advisory tie-breaker, in the SYSTEM prompt).** Validated on the board: WR is THIN and RISKY
+— the reliable tier (p_startable >= 0.70) runs out by ~WR10 (RB stays reliable to ~RB20), and top-30 WR
+bust at 38% vs RB's 25%. So the advisor SECURES a reliable WR early rather than leaving the room to the
+mid-rounds; RB is the deep/safe position, so on a reliable-WR-now vs RB-later choice it leans WR. NOT a
+board re-rank — the composite is already near-even at the top (top-12 = 6 RB / 5 WR); re-ranking would
+overfit. It's a timing tie-breaker + a guard against the recurring trap of stacking RB + an early QB and
+ending with an all-mid-tier WR room (the driver in both mock rehearsals was Josh Allen in R3).
+
+**KICKER ranking (L38, in build_context).** The advisor was recommending kickers from the LLM's memory
+(Jake Moody — a stale big name we rank K19) because the prompt only said "grab a top kicker" and never
+gave it a list. Fix: build_context now hands it the board's top-8 Ks (by `rank_composite`) as a
+`k_line`, and the prompt says recommend ONLY from that list, never from memory. (Kickers ARE on the
+board — unlike D/ST — so the ranking is just the board's K order: Aubrey, Dicker, Myers, Fairbairn…)
+
 **CROSS-POSITION target competition (L34, `draft.load_board` + advisor — the Mike Evans fix).**
 `team_role`/`role_lead` rank WR-vs-WR only, so a WR who is his team's WR1 *by projection* was tagged
 CLEAR ALPHA ("locked targets") even when a receiving RB or elite TE out-targets him (Mike Evans: SF's
