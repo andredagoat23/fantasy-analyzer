@@ -625,6 +625,27 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L35 — Buy BOTH from an ambiguous room? Yes for RB, no for WR (user thesis, mock draft, Jul 2026)
+- **Context:** in the same mock the user liked having drafted BOTH backs of an unsettled backfield
+  (Warren + Dowdle, PIT) AND both WRs of a room (Pierce + Downs, IND) — the "own whoever breaks out"
+  bet — and asked to break/uphold it with data.
+- **Backtest (2015-24, same-team same-position mid-ADP pairs, `icm/work/mc_research` same-room-pair
+  analysis):** the answer is position-dependent, for a structural reason:
+  - **RB — UPHELD.** Same-team RBs are **anti-correlated (−0.28)**: carries are a one-winner pie, the
+    committee resolves to one back. Owning both lands a startable RB **73%** (vs 68% diversifying) and a
+    higher max — you own whoever wins the job. A smart, floor-raising consolidation.
+  - **WR — BROKEN.** Same-team WRs are **positively correlated (+0.12)**: targets are shared AND both
+    ride the same offense/QB, so they rise and fall together. A 2nd WR from the same room is redundant;
+    diversifying to another team gives a higher max (197 vs 190) and startable rate (69% vs 62%).
+- **Shipped:** an AMBIGUOUS-ROOM PAIRS advisory tie-breaker in the advisor SYSTEM prompt (a 2nd back
+  from a committee I'm in = fine; a 2nd WR from a room I own → prefer a different team). Advisory, not a
+  hard gate (effect sizes are real but modest — a few pts / ~5% startable).
+- **Teaches:** "handcuff yourself to the outcome" only works where the outcome is WINNER-TAKE-ONE (RB
+  carries), not where it's SHARED-AND-CORRELATED (WR targets on one offense). Test a strategy's
+  mechanism, don't assume it generalizes across positions. (Principles 1, 9)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

@@ -151,6 +151,26 @@ early RB/WR starters while your QB is nearly as good. Waiting PAST ~R11 finally 
 offense = the DART buy, or a value QB) — never an early pick. This validates the existing PUNT READ +
 DART late-QB logic rather than adding a new rule. Evidence: `icm/work/mc_research` all-QBs analysis.
 
+**CROSS-POSITION target competition (L34, `draft.load_board` + advisor — the Mike Evans fix).**
+`team_role`/`role_lead` rank WR-vs-WR only, so a WR who is his team's WR1 *by projection* was tagged
+CLEAR ALPHA ("locked targets") even when a receiving RB or elite TE out-targets him (Mike Evans: SF's
+WR1 by projection but the 3rd pass-catcher behind CMC 23% + Kittle 12.5%). Fix: `load_board` computes
+`role_alpha_ok` = the WR's **best-demonstrated** target share (max of 2024/25) is within 3% of the top
+same-team RB/TE share; the advisor gates the WR's POSITIVE role bonus (`_role_bonus_series`) AND the
+CLEAR ALPHA tag on it. Best-demonstrated (not current-year) on purpose — a down/injury year doesn't
+wrongly strip a real alpha (Nabers' 2024 peak saves him), while a mover's stale peak still fails when
+the new team's RB/TE out-targets even it (Evans 0.195 < CMC 0.235). WR-only (a TE1's role is inherently
+locked; an RB's lead is workload). Strips Evans/Pierce/Watson; keeps Nabers/London/Puka/Chase.
+
+**AMBIGUOUS-ROOM PAIRS (L35, advisory note in the SYSTEM prompt).** Backtest (2015-24, same-team
+same-position mid-ADP pairs): **RB** — buy BOTH. Carries are a one-winner pie, so same-team RBs
+anti-correlate (**−0.28**); owning both lands a startable back **73%** (vs 68% diversifying) — a smart
+consolidation (you own whoever wins the job). **WR** — do NOT. Same-team WRs are positively correlated
+(**+0.12**) — shared targets + the same offense, so they rise/fall together; a 2nd WR from the same room
+is redundant, and diversifying gives a higher max (197 vs 190) and startable rate (69% vs 62%). So: a
+2nd back from a committee I'm in = fine; a 2nd WR from a room I own → prefer a different team. Evidence:
+`icm/work/mc_research` same-room-pair analysis.
+
 **Consequence to know:** because this is raw-value-optimal, at a turn it grabs the highest-punt_loss
 player first (often the scarce RB, then the elite QB by VONA) — so it will sometimes take an elite QB
 over an elite TE, unlike the earlier `keep_frac` version that always grabbed TE. The variance factor
