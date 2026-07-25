@@ -880,6 +880,9 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         drop = available["team"].isna() | available["team"].astype(str).str.upper().isin({"FA", "NAN", ""})
     if "proj_outlier" in available.columns:
         drop = drop | available["proj_outlier"].fillna(False).astype(bool)
+    if "position" in available.columns:                    # kickers trip proj_outlier STRUCTURALLY (high
+        drop = drop & (available["position"] != "K")        # raw VOLS vs very late ECR) — never drop a K,
+        # else the K ranking inverts and the advisor recommends the WORST kickers (Jake Moody bug, L38b)
     available = available[~drop]
     cols = ["full_name", "pos_label", "team", "team_role", "team_implied_total", "vols", "vona",
             "adp_rank", "market", "risk_tier", "target_share_2025", "snap_share_2025", "age",

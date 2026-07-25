@@ -692,6 +692,14 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 - **Fix (L38):** `build_context` now includes a `k_line` — the board's top-8 Ks by `rank_composite` —
   and the prompt says recommend ONLY from that list, never from memory. (K IS on the board, so no alias
   map needed as with D/ST; it's just the board's K order.)
+- **L38b — the fix above was INCOMPLETE (2nd user catch, same mock):** the k_line still showed Jake
+  Moody #1 because it ran on the POST-FILTER `available`. build_context drops `proj_outlier` rows (L17,
+  meant for skill outliers like Metchie), and **every good kicker trips proj_outlier structurally** —
+  our VOLS ranks Ks ~#50 overall but ECR ranks them ~#200, a >100 gap. So 26 of 34 kickers were dropped,
+  leaving the k_line to rank the 8 WORST (Moody, Gay, Szmyt…). Real fix: **never drop a kicker for
+  proj_outlier** (`drop &= position != "K"` before the filter). Tests: `test_kicker` (6). The D/ST
+  recommendation the user also flagged (Minnesota) was NOT a bug — MIN is rank 6 and only surfaces once
+  HOU/DEN/SEA/LAR/PHI are drafted (the L36 filter working), so it was the best AVAILABLE.
 - **Also validated this session (WR SHAPE, advisory note — no lesson-worthy bug, but recorded):** the
   user's read that WR is thin+risky checks out (reliable tier gone by ~WR10 vs RB ~RB20; WR bust 38% vs
   RB 25%). Added a WR-shape tie-breaker (secure reliable WRs early; RB is deep) — but NO board re-rank
