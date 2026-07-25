@@ -664,6 +664,24 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L37 — The DART post-hype-WR buy fired on a MOVER's stale old-team share (user catch, mock draft, Jul 2026)
+- **Context:** in the mock the advisor bought Jauan Jennings late. The DART "post-hype target-share WR"
+  BUY (L31) keys on `role_data.share_2025` = 20%+ of his WR-room targets last year. Jennings had a 36%
+  share — but that was in **San Francisco**; he's now **Minnesota's WR3**, buried behind Jefferson (30%)
+  + Addison (17%), `role_lead −147`, p_startable 0.11. The dart bought a share that evaporated on the move.
+- **Root cause:** `share_2025` for a team-changer describes the OLD team (the same stale-role trap as
+  L16/L34). The WR post-hype buy read it as current — even though the QB late-buy right beside it already
+  excluded movers (`not switched_team`), the WR buy didn't.
+- **Fix (L37):** add `and not switched_team` to the WR post-hype-share buy (mirrors the QB profile). A
+  mover falls through to neutral (ranked by VONA, not boosted) — not force-faded, just no longer sold as
+  a validated buy. Verified in `test_dart` (a mover with a big old-team share is not a buy).
+- **Teaches:** every prior-season signal (share, ppg, role) is OLD-team data for a mover — any profile
+  that reads it must gate on `switched_team`, the same way L34 did for the alpha bump. One class of bug
+  (stale mover role), three layers patched now: composite role_pct (L16), the alpha tag (L34), the dart
+  buy (L37). (Principles 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

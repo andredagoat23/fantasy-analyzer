@@ -6,12 +6,13 @@ sync with `origin/main`, tree clean** (Streamlit Cloud auto-deploys on push to m
 rehearsal ran — the FA bridge synced all 192 picks cleanly, and the user's post-mock catches became
 fixes: **L34** (WR alpha bump gated by cross-position target competition — the Mike Evans fix),
 **L35** (ambiguous-room pairs: buy both RBs, diversify WRs), **L36** (advisor no longer recommends an
-already-drafted D/ST — `bridge.drafted_dsts` → filtered ranking). Prior this session: L32 cohort
-sanity-pull, L33 next-pick DEFER + TE/QB-shape guidance, and the strategy bake-off harness in
-`icm/work/mc_research/`. All 10 unit suites green (test_dst/defer/punt/hedge/dart/handcuff/cohort_pull/
-cohort_skew/bridge/sleeper). **OPEN (user's 1st mock concern, not yet built):** the DART "post-hype
-target-share WR" buy fires on a MOVER's STALE old-team share (bought Jauan Jennings on his 36% SF share
-though he's now MIN's buried WR3) — gate it on the player's NEW-team role. See L34 for the analogous fix.
+already-drafted D/ST — `bridge.drafted_dsts` → filtered ranking), **L37** (DART post-hype-WR buy now
+excludes movers — it was buying Jauan Jennings on his stale 36% SF share though he's now MIN's buried
+WR3). Prior this session: L32 cohort sanity-pull, L33 next-pick DEFER + TE/QB-shape guidance, and the
+strategy bake-off harness in `icm/work/mc_research/`. All 10 unit suites green (test_dst/defer/punt/
+hedge/dart/handcuff/cohort_pull/cohort_skew/bridge/sleeper). Both mock rehearsal concerns are now
+resolved; no open items. (Note: one class of bug — stale mover role — is patched in three layers now:
+composite role_pct L16, the alpha tag L34, the dart buy L37.)
 Draft day: **July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (The recent practice
 mocks were slot 5 — the real draft is slot 7.)
 

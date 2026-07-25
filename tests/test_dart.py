@@ -37,6 +37,8 @@ def board(rows):
 FAKE_ROLES = {
     "share wr": {"nn": "share wr", "position": "WR", "share_2025": 0.24, "ppg_2025": 11.0,
                  "weeks_2025": 16, "pos_adp_rank": 50, "nfl_pick": 40},
+    "moved wr": {"nn": "moved wr", "position": "WR", "share_2025": 0.36, "ppg_2025": 11.0,   # big OLD-team share
+                 "weeks_2025": 16, "pos_adp_rank": 63, "nfl_pick": 40},                       # but now a mover (Jennings)
     "thin wr": {"nn": "thin wr", "position": "WR", "share_2025": 0.10, "ppg_2025": 6.0,
                 "weeks_2025": 16, "pos_adp_rank": 52, "nfl_pick": 90},
     "inj vet": {"nn": "inj vet", "position": "WR", "share_2025": 0.25, "ppg_2025": 13.0,
@@ -57,6 +59,7 @@ FAKE_ROLES = {
 
 AVAIL = board([
     ("Share WR", "WR", 25.0, 22.0, False, False, float("nan")),
+    ("Moved WR", "WR", 28.0, 22.0, True, False, float("nan")),   # mover with a big OLD-team share (Jennings)
     ("Thin WR", "WR", 24.0, 22.0, False, False, float("nan")),
     ("Inj Vet", "WR", 27.0, 24.0, False, False, float("nan")),
     ("Go RB", "RB", 24.0, 24.0, False, False, float("nan")),
@@ -86,6 +89,8 @@ try:
     buys, fades = advisor._dart_profiles(AVAIL, MINE_RISKY_TE, ["QB"], current_round=15, total_rounds=16)
     check("A1 buy: WR41-65 with share >= 20%", "Share WR" in buys)
     check("thin-share WR is NOT a buy", "Thin WR" not in buys)
+    check("L37: a MOVER's post-hype share does NOT buy him (stale old-team share)", "Moved WR" not in buys)
+    check("L37: and the mover WR isn't force-faded either — just neutral", "Moved WR" not in fades)
     check("B1 buy: GO-screen RB in band", "Go RB" in buys)
     check("B2 buy: proven vet QB (kept team, good offense) while QB open", "Vet QB" in buys)
     check("B6 buy: young high-capital TE when my TE starter is RISKY (hedge scenario)",
