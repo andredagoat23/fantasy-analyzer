@@ -7,13 +7,13 @@ docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
 - **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **`fe94011`**, working tree clean. Streamlit
   Cloud auto-deploys on push to `main`, so `main` == what's live.
 - **Health:** preflight **OK** (0 blocking, 0 warnings). **All 12 unit suites green — 158 checks.**
-  Board + all three priors regenerated this session (L39). No open CODE items.
+  Board + all three priors regenerated this session (L39). No open CODE items, no open DATA flags.
 - **Draft day: July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (Recent practice
   mocks ran at slots 5 and 1; the real draft is **slot 7** — don't hardcode a slot.)
-- ⚠️ **One OPEN DATA flag (not a bug):** FantasyPros projects rookie **Jadarian Price as SEA RB1 over
-  the proven Zach Charbonnet** (role_lead +59 vs −59). It's an upstream FROZEN-pipeline projection, so
-  it's flagged, not overridden — **verify the real SEA depth chart before draft day.** See
-  `memory/sea-backfield-projection-flag.md`.
+- ✅ **SEA/Charbonnet flag RESOLVED (Jul 25) — the board was RIGHT.** The board has Jadarian Price as
+  SEA RB1 over Charbonnet; verified against real news that's correct — Walker signed with **KC** and
+  Charbonnet **tore his ACL** (out most/all of 2026), so a first-round rookie is the legit lead. No
+  board change needed. Do NOT re-open. See `memory/sea-backfield-projection-flag.md`.
 
 ## What shipped this session (L32–L39) — the live-mock rehearsal arc
 A full live-mock rehearsal ran end-to-end; the **FA bridge synced all 192 picks cleanly**, and the
@@ -57,7 +57,8 @@ at all 12 slots (Zero-RB #2 after the opponent-model fix).
 strong ones — Fantasy Points/ETR/PFF/FTN/RotoWire — are paid). `ff_opportunity` (ffverse) is the best
 free *opportunity* model and is **already ingested** (it's `xppg`). The realistic future upgrade is a
 **FP+ESPN projection consensus + grounding `role_lead` in ff_opportunity** — a scoped feature, not a
-quick fix (see ROADMAP #3). This is what would catch a single-source miss like Price>Charbonnet.
+quick fix (see ROADMAP #3). (NB: the Price>Charbonnet case turned out NOT to be a single-source miss —
+FP was right — so it's no longer the motivating example; the feature still has general merit.)
 
 ---
 
@@ -166,8 +167,9 @@ quick fix (see ROADMAP #3). This is what would catch a single-source miss like P
    rebase onto current main.
 2. **Positional-run detection** — "5 of last 8 picks were RBs → the cliff is NOW."
 3. **Projection-consensus layer** (NEW, from this session's research) — blend FP + ESPN forward
-   projections + ground `role_lead` in ff_opportunity, to damp single-source misses (the Price>Charbonnet
-   class). Scoped feature; the public-product path needs a licensed forward-projection API.
+   projections + ground `role_lead` in ff_opportunity, to damp single-source misses. Scoped feature; the
+   public-product path needs a licensed forward-projection API. (General merit; not urgent — the one case
+   that prompted it, Price>Charbonnet, turned out to be FP being correct.)
 4. **Live news/injury layer** — the real July-31 difference-maker; needs a source decision. (~half the
    handcuff edge and sharpest signals are in-season → a live layer + FAAB plan is the next real edge.)
 5. **Mock draft simulator** — rehearse slot 7 vs ADP-bots (`13_strategy_bakeoff.py` + `12_full_system_
@@ -186,4 +188,5 @@ quick fix (see ROADMAP #3). This is what would catch a single-source miss like P
   `icm/reference/late-round-strategy.md`.
 - **MC research narrative:** `icm/work/mc-research-findings.md`; scripts + committed results (incl. the
   strategy bake-off `13`/`14`/`15`) in `icm/work/mc_research/`.
-- **Open data flag:** `memory/sea-backfield-projection-flag.md` (SEA backfield / Charbonnet).
+- **Resolved data flag (do NOT re-open):** `memory/sea-backfield-projection-flag.md` — the board is
+  correct that Price is SEA RB1 (Walker→KC + Charbonnet ACL).
