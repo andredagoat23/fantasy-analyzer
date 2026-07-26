@@ -13,6 +13,12 @@ docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
   sacks** (~−30 to −55/QB, the big one), 2pt conversions, PAT missed, return yds/TDs; fixed a
   tiered-vs-stacked big-game bug. Board re-scored + regenerated; top-12 unchanged, QBs re-ranked by
   sack-proneness. See `memory/league-scoring.md`.
+- **Position-shape advisory is now HYBRID (L46).** Durable historical patterns (prose, corrected: QB is
+  opportunity-cost not "no edge"; WR usually safe but check the board; TE dead-zone→pocket) + a COMPUTED
+  `POSITION SHAPE` line (`advisor.position_shape`) that reads THIS class's cliffs/next-tier-bust/value-
+  pockets from the live board — self-updating each regen (no more stale "this class" prose). Validated in
+  `mc_research/20`; `tests/test_shape.py`. (Per-position composite *weights* were tested and DON'T help —
+  within-position ADP dominates, `mc_research/19`.)
 - **Composite weights RE-TUNED from a 13-season backtest (L45).** LOSO-cross-validated backtest
   (`mc_research/17`+`18`, real FFC ADP + real finishes) showed the board under-weighted the outcome
   distribution. Shifted market .36→.19 into ceiling .13→.25 + floor .09→.15 (halfway to the optimum;

@@ -141,6 +141,52 @@ def _sos():
     return _SOS
 
 
+def position_shape(board):
+    """Per-position SHAPE of the CURRENT class, computed from the board's MC outcomes (L46) — so the
+    numbers are always this year's real shape, never hand-typed prose that drifts. For each of RB/WR/TE/QB:
+    the reliable-tier cliff (positional rank where p_startable falls below 70%), the next-tier bust rate,
+    and a value POCKET (the ADP round with the most cheap-but-startable players — p_startable>=.5 AND going
+    later than board value). Pairs with the DURABLE historical note in the system prompt (the WHY)."""
+    if board is None or "p_startable" not in board.columns or "adp_rank" not in board.columns:
+        return ""
+    b = board.copy()
+    if "position" not in b.columns:
+        b["position"] = b["pos_label"].astype(str).str.replace(r"\d+$", "", regex=True)
+    parts = []
+    for pos in ("RB", "WR", "TE", "QB"):
+        sub = b[b["position"] == pos].dropna(subset=["adp_rank", "p_startable"]).sort_values("adp_rank").reset_index(drop=True)
+        if len(sub) < 8:
+            continue
+        rel, below = 0, 0                              # reliable cliff: first sustained drop under 70% p_startable
+        for i, v in enumerate(sub["p_startable"], 1):
+            if v >= 0.70:
+                rel, below = i, 0
+            else:
+                below += 1
+                if below >= 2:
+                    break
+        mid = sub.iloc[rel:rel + 10]
+        bust = f"{mid['p_bust'].mean():.0%}" if len(mid) and "p_bust" in sub.columns else "n/a"
+        pocket = ""
+        later = sub.iloc[rel:].copy()
+        if len(later) and "value_gap" in later.columns:
+            later["_rd"] = np.ceil(later["adp_rank"] / 12)
+            cheap = later[(later["p_startable"] >= 0.5) & (later["value_gap"] > 0)]
+            if len(cheap) >= 2:
+                pocket = f", value pocket ~R{int(cheap['_rd'].mode().iloc[0])}"
+        parts.append(f"{pos} reliable→{pos}{rel} (next-tier bust {bust}){pocket}")
+    if not parts:
+        return ""
+    return ("POSITION SHAPE — THIS class, from the board (trust these exact cliffs/busts/pockets over the "
+            "general shape note): " + " | ".join(parts))
+
+
+try:
+    POSITION_SHAPE = position_shape(pd.read_csv("value_board.csv"))
+except Exception:
+    POSITION_SHAPE = ""
+
+
 SYSTEM = """You are an elite fantasy football draft strategist advising me LIVE during my draft. Give sharp, fast, decision-ready advice — I have about 90 seconds on the clock.
 
 MY LEAGUE
@@ -180,10 +226,12 @@ DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
 - Draft the value CLIFF, not the rank: VONA already tells you where waiting costs the most — take the high-VONA player before the drop; don't reach across a position for a tiny ADP edge when VONA is flat.
 - Positional value is handled BY VONA, not a rule: QB and TE are deep, so comparable production usually still lasts → their VONA is low → you'll naturally wait on them, no hard cutoff needed. On a genuine VONA tie, still lean RB/WR (FLEX-eligible, thin out with injury). If a QB/TE shows a real top VONA at a needed position, trust it and take him. K is always the final pick.
 - PUNT READ for unfilled QB/TE (precomputed — trust it): VONA only looks one pick ahead, so at a snake TURN it can over-rate an elite QB/TE. For each unfilled 1-start slot I tell you if it's DEEP (a startable one lasts to a late round → the slot is PUNT-ABLE, and I've already demoted it below the scarce RB/WR in TOP PICKS — take the RB/WR and fill the slot late) or a CLIFF (no startable one lasts → grab the elite now if you need it). A "PUNT-ABLE" tag in TOP PICKS means do NOT reach for that QB/TE now even if its VONA looks high — its edge is recoverable late; the scarce RB/WR is the pick. A DEFER tag means the elite one at that slot lasts to MY VERY NEXT pick — take the scarce RB/WR now and grab him next pick (L33).
-- TE SHAPE (backtested tie-breaker, advisory — the punt read + VONA still decide the trigger): the position is TOP-HEAVY, so time the TE. If I take one, either pay up for the ELITE tier (top ~2, ~R2) or WAIT for the ~R6 value pocket (a mid-tier startable TE lands there cheap). The R4-5 mid-TEs are the DEAD ZONE — worst value per pick (they cost a good RB/WR yet barely beat the R6 TE). So don't reach for a mid-TE in R4-5: pay up for the elite tier or wait for the R6 pocket.
-- QB SHAPE (backtested tie-breaker, advisory — the punt read still decides): QB is the OPPOSITE of TE — it's DEEP, so PUNT it. Taking an elite QB early (~R2) buys essentially NO edge over waiting; a startable QB in the ~R7-9 pocket (a proven pocket vet who KEPT his offense — the DART buy — or a value QB) is nearly as good AND lets me keep my early RB/WR starters, so it's often a small NET GAIN. Don't spend an early pick on a QB. Don't wait PAST ~R11 either — the very last QBs finally cost a little. Grab my one QB in the R7-9 pocket.
+- POSITION SHAPE — DURABLE patterns (the WHY; the EXACT per-class cliffs/busts/pockets are in the "POSITION SHAPE" line in the live context below — TRUST those numbers over anything here). The PUNT/DEFER read + VONA still decide the trigger:
+  • TE is TOP-HEAVY: an elite tier, then a mid-round DEAD ZONE (worst value — a mid-TE costs a good RB/WR yet barely beats a later one), then a cheaper value POCKET. Pay UP for the elite tier or WAIT for the pocket; never reach in the dead zone.
+  • QB has LOW value-over-replacement: an elite QB IS more reliable than a late one, but the early pick costs more than that edge is worth (the RB/WR you'd take instead is worth more) — so PUNT to the QB value pocket and stream if it misses. Don't spend an early pick on QB; don't wait so long the very last QBs cost you.
+  • RB is historically the HIGHER-BUST, faster-declining position — its value lives in the reliable tier; after the cliff, busts climb fast.
+  • WR is historically the DEEPER, SAFER position (usually reliable well past WR20) — BUT it varies by class: if the POSITION SHAPE line shows WR thinning EARLY (low WR cliff / high mid-tier bust), secure a reliable WR EARLY this year instead of leaving it to the mid-round minefield.
 - AMBIGUOUS-ROOM PAIRS (backtested tie-breaker, advisory): in an UNSETTLED RB backfield, owning BOTH mid-tier backs is a smart CONSOLIDATION — carries are a one-winner pie, so same-team RBs anti-correlate (one wins the job, the other busts) and I own whoever emerges (lands a startable RB ~73% of the time vs ~68% diversifying). Do NOT do this for WRs: same-team WRs rise and fall TOGETHER (shared targets + the same offense), so a 2nd WR from a room I already own is REDUNDANT — diversify to a different team for a higher ceiling. Net: a 2nd back from a committee I'm already in is fine; a 2nd WR from a room I already own → prefer a different team.
-- WR SHAPE (backtested tie-breaker, advisory): WR is THIN and RISKY this class — the reliable tier runs out FAST (p_startable drops below 70% by ~WR10, vs RB staying reliable to ~RB20) and mid-tier WRs bust at 38% vs RB's 25%. So SECURE a reliable WR EARLY rather than leaving the position to the mid-rounds where it's a minefield; RB is the DEEP/SAFE position whose value keeps, so when I'm choosing between a reliable WR now and an RB I can get later, lean WR. Don't stack RB + an early QB so hard that my WR room ends up all mid-tier — that's the recurring trap.
 - Roster construction (HARD GATE): lock startable-quality starters early; chase upside (ceiling, boom, rookies) on the bench late. Once my starters + FLEX are full, only recommend a player who genuinely raises my bench's upside at a position that wins leagues (RB/WR ceiling, an elite TE). NEVER recommend a 2nd QB, or any D/ST or K before my lineup is full, or a redundant backup, just because his VONA or a VALUE tag looks good — a steal I can't start adds nothing to my roster.
 - BENCH-ONLY positions (fill starters first): if I already have enough at a FLEX position to start all I'd play there (3 RB = RB1+RB2+FLEX, 3 WR, 2 TE), a FURTHER one is BENCH-ONLY — it can't crack my lineup. While a starter slot elsewhere is open (e.g. I have 3 RB and 0 WR), NEVER take that bench-only player over a player who fills the open starter, no matter how high his VONA. I mark these "BENCH-ONLY" in ROSTER NEEDS + TOP PICKS and demote them below the fillers — trust it: draft the open-starter filler.
 - DEDICATED starters before the FLEX: fill my fixed positional slots (QB/RB/RB/WR/WR/TE) before spending a pick that only upgrades the FLEX — the FLEX is a week-to-week / matchup slot I can stream, so a piece that ONLY improves it (a 3rd RB/WR when my dedicated RB/WR slots are full) is worth less than filling a real positional need. I tag these "FLEX-only" and demote them below the dedicated-need fillers UNLESS one is WAY better in VONA. Take the dedicated filler unless the FLEX-only piece is a clear value cliff.
@@ -1314,10 +1362,12 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     k_line = ("\n\nKICKER ranking (streamer, draft LAST; from the board — recommend ONLY from this list, "
               "NEVER from memory): " + "  ".join(f"{i + 1}.{r.full_name}" for i, r in enumerate(_ks.itertuples()))) \
         if len(_ks) else ""
+    shape_line = (POSITION_SHAPE + "\n") if POSITION_SHAPE else ""   # this class's per-position cliffs/pockets (L46)
     return (
         "LIVE DRAFT STATE\n"
         + dp_line
-        + opp_line +
+        + opp_line
+        + shape_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"{needs}\n"
         + (f"MY DRAFT PLAN — this is the strategy I chose; EXECUTE it (deviation protocol applies, "

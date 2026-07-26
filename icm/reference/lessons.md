@@ -898,6 +898,28 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L46 — Position-shape advisory: HYBRID (durable prose + computed-from-board), validated (Jul 2026)
+- **Why:** the L44 backtests proved per-position *weights* don't help (within-position, ADP dominates —
+  `mc_research/19`), so the position-specific edge lives in the SHAPE (where each position's value cliffs
+  sit). The existing TE/QB/WR "SHAPE" advisories were hand-written prose — so I validated them
+  (`mc_research/20`, 13-season ADP-vs-finish + the 2026 board):
+  - **TE** top-heavy + ~R6 value pocket = REAL; but the dead zone is R5 (not "R4-5" — R4 was fine).
+  - **QB** "elite buys NO edge" = WRONG — elite QBs finish top-12 88% vs 46% for R7-9. The punt is right
+    but rests on OPPORTUNITY COST (low VOLS), not "no edge." Reworded.
+  - **WR** "thin/risky" = TRUE for 2026 (reliable ~WR7, mid-bust 38% vs RB 21%) but YEAR-SPECIFIC —
+    historically WR is the SAFER/deeper position. Static prose would go stale next year.
+- **Fix (hybrid):** (1) a DURABLE note in the system prompt = the WHY + historical patterns (corrected);
+  (2) `advisor.position_shape(board)` computes the CURRENT class's cliffs/next-tier-bust/value-pockets
+  from the board's MC `p_startable`/`p_bust` + `value_gap`, injected as a `POSITION SHAPE` context line
+  (`POSITION_SHAPE`, computed at import from value_board.csv). So the numbers are always this year's real
+  shape (self-updating each regen) — the L8 "facts in DATA, not the model's memory" pattern, same as the
+  K/D-ST rankings. `tests/test_shape.py` (11).
+- **Reusable method:** don't trust an advisory labeled "backtested" — re-derive it. Shape needs only ADP
+  + real finish (both obtainable), so it's cleanly testable even though the value weight isn't. And a
+  "this class" claim must be COMPUTED from the board, never frozen as prose. (Principles 3, 4, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.
