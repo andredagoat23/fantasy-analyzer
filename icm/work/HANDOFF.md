@@ -14,8 +14,16 @@ hedge/dart/handcuff/cohort_pull/cohort_skew/bridge/sleeper). **Second mock (slot
 fixed — **L38** (advisor recommended a kicker from memory — Jake Moody, whom we rank K19; now handed the
 board's top-8 K ranking in `build_context`, like D/ST) and a **WR-SHAPE advisory note** (WR validated
 thin+risky — reliable tier gone by ~WR10, bust 38% vs RB 25% — so secure reliable WRs early; NO board
-re-rank, the composite is already near-even). No open items. (Note: one class of bug — stale mover role — is patched in three layers now:
-composite role_pct L16, the alpha tag L34, the dart buy L37.)
+re-rank, the composite is already near-even). Then **L38b** (kicker ranking was inverted — good Ks trip
+proj_outlier and were dropped; now exempt K from that drop → recommends Aubrey, not Jake Moody) and
+**L39** (ascending same-team role — a promoted clear lead like Tuten now uses forward VOLS for role
+instead of stale rookie xppg; **BOARD REGENERATED**: value_board.csv/app_data + priors refreshed, Tuten
+88→59, nothing else moved >1). (Stale-mover-role class now patched in FOUR places: composite role_pct
+movers L16 + ascenders L39, alpha tag L34, dart buy L37.) ⚠️ **OPEN data flag (not a code bug):** FP
+projects rookie Jadarian Price as SEA RB1 over the proven Charbonnet — verify the depth chart before
+draft; see `memory/sea-backfield-projection-flag.md`. Projection-source research: no clearly-better FREE
+*forward* projection than FP (the strong ones — Fantasy Points/ETR/PFF/FTN — are paid); the realistic
+upgrade is a FP+ESPN consensus + grounding role in ff_opportunity (already ingested). No open CODE items.
 Draft day: **July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (The recent practice
 mocks were slot 5 — the real draft is slot 7.)
 

@@ -95,6 +95,17 @@ if "switched_team" in board.columns:
     vols_pct = board["vols"].where(_rec).groupby(board["position"]).rank(pct=True)
     switched = board["switched_team"].fillna(False).astype(bool) & vols_pct.notna()
     role_pct = role_pct.mask(switched, vols_pct)
+    # ASCENDING same-team role (L39): a NON-rookie who STAYED but is now his team's CLEAR projected
+    # lead (role_lead >= 15, the advisor's clear-alpha bar) while his DEMONSTRATED 2025 opportunity
+    # (xppg pct) sits well BELOW his projection (vols pct) had a role JUMP the stale small-sample xppg
+    # can't see (Tuten: rookie committee -> projected JAX lead). Use the forward VOLS role signal for
+    # him too. Tight by design: clear lead + above replacement + a real gap. Rookies are EXCLUDED (the
+    # ROOKIE_MKT anchor already handles their unproven role); movers handled above; proven & declining
+    # players untouched (only masks UP). Mirrors the team-changer override right above.
+    _rook = board["is_rookie"].fillna(False).astype(str).str.lower().isin(["true", "1"])
+    ascend = (_rec & ~switched & ~_rook & (board["vols"] > 0)
+              & (board["role_lead"] >= 15) & (vols_pct >= role_pct + 0.25))
+    role_pct = role_pct.mask(ascend, vols_pct)
 ceil_val_veg = ceil_val * board["team_env"]        # upside, boosted by the Vegas scoring environment
 
 BIG = len(board) + 1

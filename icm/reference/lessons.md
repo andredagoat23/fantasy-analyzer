@@ -710,6 +710,29 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L39 — Ascending same-team role: forward VOLS for a promoted lead (user catch, mock, Jul 2026)
+- **Context:** the user asked why the board buried Bhayshul Tuten (composite 88) vs D'Andre Swift (47) /
+  David Montgomery (53). vs Swift it's real value (VOLS 42 vs 21). vs Montgomery it was NOT — near-
+  identical total_points (229≈232), VOLS (21≈23), and the market has them ~4 ADP apart — yet the
+  composite spread them 35 spots. Driver: `role_pct` keys on `xppg` (demonstrated opportunity), and
+  Tuten's 2025 was a rookie committee (xppg 5.3) even though he's now JAX's projected clear lead.
+- **Root cause:** the SAME stale-role family as L16 — but for a player who STAYED and got PROMOTED.
+  The L16 mover-fix uses forward VOLS for team-CHANGERS; an ascending same-team lead wasn't covered, so
+  his role_pct rode a stale small-sample xppg.
+- **Fix (L39, value_board.py):** after the team-changer mask, add an ASCENDING mask — use forward
+  `vols_pct` for role when a player is his team's CLEAR projected lead (`role_lead >= 15`, the advisor's
+  clear-alpha bar) AND above replacement (vols>0) AND his projection sits >=0.25 pct above his
+  demonstrated role, EXCLUDING rookies (the ROOKIE_MKT anchor handles them) and movers (handled above),
+  only ever masking UP. **Tight by design:** a naive `vols_pct>xppg_pct` gate fired for 24 players
+  (mostly deep sub-replacement noise); `role_lead>=15` narrows it to genuine clear leads — Tuten only on
+  this board (88 -> 59, alongside Montgomery; nothing else moved >1). Verified: preflight OK, all suites
+  green.
+- **Teaches:** stale-role now patched in FOUR places (composite role_pct movers L16 + ascenders L39,
+  the alpha tag L34, the dart buy L37) — any signal built on last year's usage must have a forward
+  override for the players whose role changed. (Principles 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.
