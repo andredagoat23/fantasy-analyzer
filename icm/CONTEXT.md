@@ -1,10 +1,13 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
 > ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** It has the full current state: the deployed stack
-> (`main` = `835189e` — MC + cohort/coaching/SOS + the full advisor read-stack: PUNT/HEDGE/HANDCUFF/
-> DART/STREAMER reads, L27-L31), the two unmerged branches (opponent-aware survival — built, pending a
-> live rehearsal; yahoo-probe), the regeneration ritual (now incl. `role_priors.py`), the stress +
-> unit suites that must pass, and the ROADMAP. Draft day: July 31, 2026 (ESPN, slot 7).
+> (`main` = `fe94011` — MC + cohort/coaching/SOS + the full advisor read-stack: PUNT/DEFER/HEDGE/
+> HANDCUFF/DART/STREAMER reads + K/D-ST/shape advisories, through **L39**), the live-mock rehearsal arc
+> (L32-L39: stale-role fixes, board-driven K/D-ST rankings, shape notes; board regenerated), the one
+> open DATA flag (SEA backfield — `memory/sea-backfield-projection-flag.md`), the two unmerged branches
+> (opponent-aware survival — built, pending a live rehearsal; yahoo-probe), the regeneration ritual
+> (incl. `role_priors.py`), the suites that must pass (12 suites / 158 checks), and the ROADMAP. Draft
+> day: July 31, 2026 (ESPN, slot 7).
 
 This workspace applies **ICM (Interpretable Context Methodology)** to *how work gets done on this
 project*, so every change is explicit, staged, and verified instead of ad-hoc. Ad-hoc is what caused
