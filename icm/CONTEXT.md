@@ -7,7 +7,7 @@
 > open DATA flag (SEA backfield — `memory/sea-backfield-projection-flag.md`), the two unmerged branches
 > (opponent-aware survival — built, pending a live rehearsal; yahoo-probe), the regeneration ritual
 > (incl. `role_priors.py`), the suites that must pass (12 suites / 158 checks), and the ROADMAP. Draft
-> day: July 31, 2026 (ESPN, slot 7).
+> day: August 7, 2026 (ESPN, slot 7).
 
 This workspace applies **ICM (Interpretable Context Methodology)** to *how work gets done on this
 project*, so every change is explicit, staged, and verified instead of ad-hoc. Ad-hoc is what caused

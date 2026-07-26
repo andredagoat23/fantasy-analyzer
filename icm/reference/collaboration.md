@@ -35,7 +35,7 @@ right level. Both matter here.
    explicitly asked. See `pipeline.md` for what they do.
 
 ## Where this is heading (context, not a mandate)
-Right now it's a single-user tool for the user's own July 31, 2026 ESPN draft. The user has floated a
+Right now it's a single-user tool for the user's own August 7, 2026 ESPN draft. The user has floated a
 longer arc — family/friends test → eventually a public, ~$10/season product in a later season, with a
 parent + Stripe + LLC + a legal-first "own your data" path (licensed FantasyPros/Vegas data is the
 blocker). Treat that as background for why "make it feel like a real app" requests come up; it does

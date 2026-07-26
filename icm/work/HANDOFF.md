@@ -31,7 +31,7 @@ docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
   rosters of the teams picking before my wheel (per-position effective horizon). Additive: `opp=None` is
   byte-identical. Kill-switch = the "Opponent-aware survival" toggle in Draft settings (default on). Its
   one true rehearsal is a live-sync mock (opp-active only fires with live rosters) — see L40.
-- **Draft day: July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (Recent practice
+- **Draft day: August 7, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (Recent practice
   mocks ran at slots 5 and 1; the real draft is **slot 7** — don't hardcode a slot.)
 - ✅ **SEA/Charbonnet flag RESOLVED (Jul 25) — the board was RIGHT.** The board has Jadarian Price as
   SEA RB1 over Charbonnet; verified against real news that's correct — Walker signed with **KC** and
@@ -210,7 +210,7 @@ suites in `icm/work/mc_research/`.
    stress.py` are ~80% of it).
 6. Rest-of-draft lookahead · 7. August usage refresh · 8. ESPN-vs-consensus divergence ·
    9. Live draft grade · 10. "My guys" watchlist UI · 11. Home hub / Research landing page (deferred
-   until after the Jul 31 draft; see `memory/home-hub-idea.md`).
+   until after the Aug 7 draft; see `memory/home-hub-idea.md`).
 
 ## Where the knowledge lives
 - **Lessons L1–L39:** `icm/reference/lessons.md` (**check before diagnosing** — esp. L28: the Josh Allen

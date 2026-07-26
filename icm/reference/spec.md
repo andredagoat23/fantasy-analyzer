@@ -7,13 +7,13 @@ re-listed here on purpose — their one home is `architecture.md` (system map) a
 internals). The **collaboration rules** live in `collaboration.md`.
 
 ## What we're building
-A single-page Streamlit web app that runs my personal draft board during a live snake draft on ESPN. My draft is July 31, 2026. This is v1.0 (math-based recommender). v1.1 will add a Claude API advisor on top.
+A single-page Streamlit web app that runs my personal draft board during a live snake draft on ESPN. My draft is August 7, 2026. This is v1.0 (math-based recommender). v1.1 will add a Claude API advisor on top.
 
 ## Who uses it
 Just me. Single-user tool. No auth, no accounts, no multi-league support.
 
 ## When it gets used
-During a live ESPN snake draft on July 31. Snake draft in a 12-team custom-scoring PPR league. I have ~90 seconds between my picks. The app has to be fast to filter, fast to check off drafted players, and readable in a glance.
+During a live ESPN snake draft on August 7. Snake draft in a 12-team custom-scoring PPR league. I have ~90 seconds between my picks. The app has to be fast to filter, fast to check off drafted players, and readable in a glance.
 
 ## The data
 The board the app reads is `value_board.csv` (already built — don't rebuild it for the app). Its

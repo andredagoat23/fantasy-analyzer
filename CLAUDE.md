@@ -16,7 +16,7 @@ and how to explain) is `icm/reference/collaboration.md`; the non-negotiables are
 
 ## What this is (identity)
 A single-page **Streamlit** app (`app.py`) that runs the user's personal draft board during a live
-ESPN snake draft — 12-team, custom-scoring PPR, draft day **July 31, 2026**. Single user, no auth.
+ESPN snake draft — 12-team, custom-scoring PPR, draft day **August 7, 2026**. Single user, no auth.
 v1.0 = a math-based recommender reading `value_board.csv`; v1.1 added a Claude advisor on top, and a
 live-draft bridge now syncs ESPN picks. Deploys to Streamlit Community Cloud on push to `main`.
 

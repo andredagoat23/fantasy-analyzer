@@ -2,7 +2,7 @@
 
 ## What this is
 A single-page Streamlit app that runs a personal draft board during a live ESPN snake draft
-(July 31, 2026). v1.0 = math-based recommender; the AI advisor (v1.1) sits on top. Single user.
+(August 7, 2026). v1.0 = math-based recommender; the AI advisor (v1.1) sits on top. Single user.
 
 ## App files (edit these)
 - `app.py` — entry point: page config, shared CSS, login gate (`auth`), session-state defaults,
