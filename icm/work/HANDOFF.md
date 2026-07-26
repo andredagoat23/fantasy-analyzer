@@ -12,8 +12,11 @@ docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
   settings; diff found all values correct but 5 rules missing. Added (all in `apply_bonuses.py`): **QB
   sacks** (~−30 to −55/QB, the big one), 2pt conversions, PAT missed, return yds/TDs; fixed a
   tiered-vs-stacked big-game bug. Board re-scored + regenerated; top-12 unchanged, QBs re-ranked by
-  sack-proneness. Only remaining scoring gap = **Team D/ST** (rules known, no projection source). See
-  `memory/league-scoring.md`.
+  sack-proneness. See `memory/league-scoring.md`.
+- **Team D/ST now SCORED (L43) — last scoring gap closed.** `load_dst.py` scores every defense under the
+  real ESPN tiers from nflverse team-defense data (2024-25, shrunk + 2026-SOS-tilted) → `data/dst_
+  rankings.csv` (was a hand-typed FP list). Streamer layer only — stays OFF the cross-position board
+  (L9); grounds the advisor's D/ST ranking (now cites proj pts). Validated 12/15 vs FP consensus.
 - **Scoring is now a SINGLE SOURCE OF TRUTH — `scoring_config.py` (L42).** Edit scoring values THERE
   only; `custom_scoring.py` / `apply_bonuses.py` / `compute_outcomes.py` all import from it (previously
   the MC weekly proxy hardcoded the base values and could silently desync). `apply_bonuses` + `compute_
@@ -153,6 +156,8 @@ FP was right — so it's no longer the motivating example; the feature still has
 2. **Non-frozen priors** — rerun all three after a board rebuild:
    `cohort_priors.py`, `sos_priors.py`, `role_priors.py` (role_priors needs the local research panel
    `icm/work/mc_research/seasons_exp.parquet`, rebuildable via `01`+`02`). Commit the regenerated CSVs.
+2b. **D/ST ranking** (L43): `.venv/bin/python load_dst.py` → `data/dst_rankings.csv` (nflverse-slow,
+   standalone like the priors; refreshes the 2026-SOS tilt). Commit the CSV.
 3. **Verify**: `tools/preflight.py` (must say PREFLIGHT OK), then
    `icm/work/mc_research/11_stress_test.py` + `12_full_system_stress.py` (both ALL PASS), then the unit
    suites (below). Then `tools/name_audit.py` (network) + eyeball the app.

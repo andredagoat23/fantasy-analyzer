@@ -821,6 +821,31 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L43 — Team D/ST is now SCORED (last scoring gap closed; streamer layer, `load_dst.py`, Jul 2026)
+- **Context:** D/ST was the one position with no scoring — it lived as a hand-typed FantasyPros list in
+  `data/dst_rankings.csv`. The blocker was always "no defense projection source." Turns out **nflverse
+  `load_team_stats` (weekly) has everything**: `def_sacks`/`def_interceptions`/`fumble_recovery_opp`/
+  `def_safeties`/`def_tds`/`special_teams_tds`, and `opponent_team` per game → points allowed (opponent's
+  score, from `load_schedules`) + yards allowed (opponent's pass+rush yards). No download needed.
+- **Build (`load_dst.py`):** score each defense's 2024-25 GAMES under the real ESPN tiers (events + the
+  per-game PA and YA tiers, exactly how ESPN scores weekly), average per game (shrunk toward league mean,
+  PRIOR_W=8), ×17 for a season, then a MODEST (±8% cap) 2026-schedule SOS tilt (facing weaker offenses →
+  more D/ST points). Writes `data/dst_rankings.csv` (rank/team/tier/proj/sos). Tiers now in
+  `scoring_config.py` (DST_PA_TIERS/DST_YA_TIERS/event consts).
+- **Scope decision (user-approved):** STREAMER layer, NOT the cross-position board — D/ST stays off the
+  Everything board (L9): no MC/cohort risk metrics for DEF, VOLS replacement is dicey, and a streamer
+  shouldn't be over-drafted. It just grounds the advisor's D/ST ranking (L36) in real scoring; the
+  advisor line now cites projected pts ("1.DEN(T1, 132pts)").
+- **Validated vs consensus:** the scored top-15 overlaps the FantasyPros manual list **12/15** — strong
+  confirmation the method is right — with defensible data-driven differences (BUF/ATL/CHI in for
+  JAX/KC/NE). Backward-looking by nature (2024-25 defense); a defense with big offseason change is the
+  known weak spot — verify via news, like any projection.
+- **Wiring:** `load_dst.py` is standalone (nflverse-slow, like the priors) → part of the pre-draft regen
+  ritual, not `run_all.py`. The advisor reads the CSV at import; `dst_ranking_text` tolerates the old
+  format (getattr proj). (Principles 3, 4, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

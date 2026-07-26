@@ -112,10 +112,12 @@ real ESPN settings (L41); robustness-audited across scoring settings (`mc_resear
   lesson: don't put a 2nd assignment after `#` on one line — it's silently a comment (RETD40/RY100 were
   undefined). ESTIMATE, not exact; the big-game bonus is CONSERVATIVE (linear per-yard undercounts the
   boomiest players).
-- **Skip/not-projectable:** 2pt conv, QB sacks-taken, PAT missed, return yds. **Team DST:** elaborate
-  points/yards-allowed tiers — NO defense projections in the pipeline, entirely out of scope until a
-  DST projection source is added. (This is why D/ST isn't on the board and must be tracked separately —
-  lesson L9, `bridge.my_dst`.)
+- **Now ALSO scored (L41, in apply_bonuses):** QB sacks-taken (per-QB rate × proj ATT), 2pt conv, PAT
+  missed, return yds/TDs. (Formerly skipped; verified vs the real ESPN settings.)
+- **Team DST (L43): SCORED via `load_dst.py`** — every defense scored under the real ESPN PA/YA tiers +
+  events from nflverse team-defense (2024-25, shrunk + 2026-SOS-tilted) → `data/dst_rankings.csv`. It's a
+  STREAMER layer: D/ST still stays OFF the cross-position board (L9, `bridge.my_dst`) — the ranking just
+  feeds the advisor's D/ST rec. Standalone script (nflverse-slow), part of the regen ritual.
 
 ## `compute_metrics.py` — VOLS
 **VOLS (Value Over Last Starter)** = `total_points − positional replacement level`, using
@@ -200,7 +202,7 @@ chart role for the advisor, L16), DROPS no-team FAs, and gates the VALUE tag on 
 DROPS NaN-projection players (why Tyreek is absent — L6). Sorted by `rank_composite`.
 
 ## Still-pending pipeline items
-- **DST scoring** — no defense projection source yet (out of scope until one exists).
+- ~~**DST scoring**~~ — DONE (L43, `load_dst.py` scores defenses from nflverse team-defense; streamer layer).
 - **2026 rookie clean re-run** — swap Track B's name-match for an ID join once nflverse links the 2026
   class (see filter_active above).
 - A few stars can be missing from a FantasyPros projection download (→ NaN → dropped); re-download that

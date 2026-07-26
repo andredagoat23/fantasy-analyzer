@@ -40,3 +40,11 @@ KR25, PR10, RETTD = 1, 1, 6  # return: 1 per 25 KR yд, 1 per 10 PR yд, 6 per r
 # empirical-Bayes shrinkage for per-player rates. MUST be > 0 — at K=0 a player with no historical TDs
 # hits 0/0 and drops off the board. apply_bonuses.py clamps to >=1 defensively.
 K = 12
+
+# ---- Team D/ST scoring (ESPN) — used by load_dst.py to score defenses under the real tiers ----
+DST_SACK, DST_INT, DST_FR, DST_SAFETY = 1, 2, 2, 2   # per-event
+DST_DEF_TD, DST_RET_TD, DST_BLK = 6, 6, 2            # def (INT/FUM return) TD / return TD / blocked kick
+# per-GAME tiers as (inclusive upper bound, points) — a game's points/yards allowed scores the first
+# bucket it fits (ESPN scores PA/YA per game, so a season = the sum of each week's tier).
+DST_PA_TIERS = [(0, 5), (6, 4), (13, 3), (17, 1), (27, 0), (34, -1), (45, -3), (float("inf"), -5)]
+DST_YA_TIERS = [(99, 5), (199, 3), (299, 2), (349, 0), (399, -1), (449, -3), (499, -5), (549, -6), (float("inf"), -7)]

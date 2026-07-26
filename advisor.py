@@ -64,7 +64,10 @@ def dst_ranking_text(drafted_dsts=None):
         return ""
     gone = {_dst_code(n) for n in (drafted_dsts or ())} - {None}
     rows = [r for r in _DST_DF.itertuples() if r.team not in gone]
-    return "  ".join(f"{r.rank}.{r.team}(T{r.tier})" for r in rows)
+    def _fmt(r):
+        p = getattr(r, "proj", None)   # scored ranking (load_dst.py) carries projected pts; tolerate the old format
+        return f"{r.rank}.{r.team}(T{r.tier}{f', {p:.0f}pts' if p is not None and pd.notna(p) else ''})"
+    return "  ".join(_fmt(r) for r in rows)
 
 # Cohort priors (cohort_data.csv, built by cohort_priors.py): each player's 15 most-similar
 # historical player-seasons and how that archetype performed vs its price. Loaded once; the
