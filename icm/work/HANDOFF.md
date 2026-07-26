@@ -6,8 +6,12 @@ docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
 ## Where things stand right now
 - **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **`fe94011`**, working tree clean. Streamlit
   Cloud auto-deploys on push to `main`, so `main` == what's live.
-- **Health:** preflight **OK** (0 blocking, 0 warnings). **All 12 unit suites green — 158 checks.**
+- **Health:** preflight **OK** (0 blocking, 0 warnings). **All 13 unit suites green — 183 checks.**
   Board + all three priors regenerated this session (L39). No open CODE items, no open DATA flags.
+- **Opponent-aware survival is SHIPPED (L40, roadmap #1)** — survival/VONA/wheel now fold in the live
+  rosters of the teams picking before my wheel (per-position effective horizon). Additive: `opp=None` is
+  byte-identical. Kill-switch = the "Opponent-aware survival" toggle in Draft settings (default on). Its
+  one true rehearsal is a live-sync mock (opp-active only fires with live rosters) — see L40.
 - **Draft day: July 31, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (Recent practice
   mocks ran at slots 5 and 1; the real draft is **slot 7** — don't hardcode a slot.)
 - ✅ **SEA/Charbonnet flag RESOLVED (Jul 25) — the board was RIGHT.** The board has Jadarian Price as
@@ -119,16 +123,15 @@ FP was right — so it's no longer the motivating example; the feature still has
 ---
 
 ## Git / branch state (Jul 25)
-- **`main` = `origin/main` = `fe94011` — DEPLOYED.** Holds the entire advisor arc through L39.
-- **Two branches genuinely UNMERGED (both behind main → rebase before shipping):**
-  - `opponent-aware-survival` (`832cf38`): per-position effective-horizon survival folding in the live
-    rosters of teams before my wheel. `opp=None` is byte-identical (can't regress); the opp-active path
-    is unproven. **Gated on a live-sync rehearsal.** Touches `advisor.py` — rebase will conflict.
-    Design: `icm/work/plan.md` + `diagnosis.md`.
+- **`main` = `origin/main` — DEPLOYED.** Holds the entire advisor arc through L40 (incl. opponent-aware
+  survival, hand-reapplied — the old `opponent-aware-survival` branch had forked 20 commits back, so it
+  was reapplied onto current `advisor.py`, not rebased; design: `icm/work/plan.md` + `diagnosis.md`).
+- **One branch still genuinely UNMERGED:**
   - `yahoo-probe` (`b8cb697`): Yahoo probe tooling `tools/yahoo_probe/` — awaits the user's Yahoo
     dev-app + a mock. Doesn't touch `advisor.py`, rebases trivially. See `icm/work/yahoo-probe-scope.md`.
-- **Stale local branches already merged into main** (safe to delete anytime): `advisor-hedge-read`,
-  `cohort-mean-trimmed`, `fix-prelook-blocking`, `preflight-health-check`, `punt-read-metric-correct`.
+- **Stale local branches — work already in main, safe to delete:** `advisor-hedge-read`,
+  `cohort-mean-trimmed`, `fix-prelook-blocking`, `preflight-health-check`, `punt-read-metric-correct`,
+  and now `opponent-aware-survival` (its logic shipped via the L40 reapply).
 
 ---
 
@@ -146,25 +149,28 @@ FP was right — so it's no longer the motivating example; the feature still has
 > be regenerated and committed together.
 
 ## Tests (all plain-assert, run individually: `.venv/bin/python tests/<file>.py`)
-`tests/` — 12 suites, **158 checks, all green**:
+`tests/` — 13 suites, **183 checks, all green**:
 `test_bridge` (26), `test_sleeper` (13), `test_hedge` (8), `test_punt` (8, L28),
 `test_cohort_skew` (10, L29), `test_dart` (23, L31/L37), `test_handcuff` (16, L30/31),
 `test_cohort_pull` (19, L32), `test_defer` (8, L33), `test_role_alpha` (7, L34),
-`test_dst` (14, L36), `test_kicker` (6, L38b). Plus the two stress suites in `icm/work/mc_research/`.
+`test_dst` (14, L36), `test_kicker` (6, L38b), `test_opponent` (25, L40). Plus the two stress
+suites in `icm/work/mc_research/`.
 
 ## Verified vs pending
-- **Deployed + fully verified** (this session): 158 unit checks green, preflight clean, board+priors
-  regenerated, a full 192-pick live-mock bridge sync.
-- **Pending live verify:** the opp-active path of `opponent-aware-survival` (its merge gate is a live
-  rehearsal); a real **Sleeper** mock end-to-end; the **Yahoo** probe go/no-go.
+- **Deployed + fully verified** (this session): 183 unit checks green, preflight clean, board+priors
+  regenerated, a full 192-pick live-mock bridge sync. L40 opp-survival: both stress suites ALL PASS
+  (opp=None identity), opp-active proven on the real board, AppTest renders clean.
+- **Pending live verify:** the **opp-active path** of L40 in a live-sync mock (safe to run live — it
+  only fires with live rosters, opp=None can't regress); a real **Sleeper** mock end-to-end; the
+  **Yahoo** probe go/no-go.
 - **Pre-draft-day checklist:** run the regeneration ritual on fresh data; do one live ESPN mock at
-  **slot 7**; verify the SEA depth-chart flag above.
+  **slot 7** (doubles as the opp-survival rehearsal — watch the WHEEL WINDOW line).
 
 ---
 
 ## ROADMAP — next features (user-approved ordering)
-1. **Opponent-aware survival** — BUILT on `opponent-aware-survival`, pending the live rehearsal + a
-   rebase onto current main.
+1. ✅ **Opponent-aware survival** — SHIPPED (L40). Only a live-sync mock remains to exercise the
+   opp-active path end-to-end (the code is proven; the mock is the rehearsal, not a gate to shipping).
 2. **Positional-run detection** — "5 of last 8 picks were RBs → the cliff is NOW."
 3. **Projection-consensus layer** (NEW, from this session's research) — blend FP + ESPN forward
    projections + ground `role_lead` in ff_opportunity, to damp single-source misses. Scoped feature; the

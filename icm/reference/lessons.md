@@ -733,6 +733,33 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L40 — Opponent-aware survival shipped (roadmap #1; reapply, not rebase, Jul 2026)
+- **Context:** survival (the input to VONA, the wheel label, take-now-vs-wait) treated the picks between
+  me and my wheel as an anonymous ADP market — identical whether the 5 teams ahead all have their QB or
+  all still need one. The fix (built long ago on `opponent-aware-survival`) folds in the ACTUAL rosters
+  we already live-sync: a per-position EFFECTIVE HORIZON (a position no one left needs survives longer;
+  one everyone's chasing goes sooner). Purely additive — `opp=None` is byte-identical.
+- **Merge lesson:** the branch had forked **20 commits back**, before the whole L27-L39 arc, so a `git
+  rebase` would have thrown tangled conflicts in the rewritten `build_context`. **Hand-reapply beat
+  rebase:** `add_vona`'s body was never touched by L27-L39 (clean drop-in), `opponent_read`/`_opp_summary`
+  are new functions (no conflict), and the bridge helpers append at end-of-file. Verify the overlap
+  BEFORE choosing (diff the fork-point against both tips) rather than assuming a rebase.
+- **One real fix during reapply:** the ESPN-API sync path sets `team_name=""` (only `team_id` is
+  populated), so the original adapter's `team: p["team_name"]` made opp a silent no-op there. Keyed the
+  owner off `team_id` instead so that path is functional too. (The real draft uses the BRIDGE path, which
+  carries owner names — but don't ship a dead branch.)
+- **Kill-switch (user-requested):** the "Opponent-aware survival" toggle in Draft settings (default ON)
+  forces plain ADP when off — flip it instantly mid-mock if a read looks wrong. Added to the pre-read
+  fingerprint so flipping it invalidates a cached prelook (instant effect, not next-pick).
+- **Verified:** 25 opponent checks + all 13 suites (183) green, both stress suites ALL PASS (the
+  identity), and the opp-active path proven on the REAL board (Lamar VONA 2.5->1.3 when the wheel's QBs
+  are filled, RB/WR/TE tick up as the freed demand redistributes) + AppTest renders clean.
+- **Still gated for real reliance:** a live-sync MOCK is the true opp-active rehearsal — shipping it is
+  safe (opp=None can't regress; opp-active only fires with live rosters), so your next mock IS the
+  rehearsal. (Principles 3, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.
