@@ -1,8 +1,7 @@
 import nflreadpy as nfl
 import pandas as pd
-import glob
-import re
 from utils import normalize_name
+from projections import blended_components   # FP+ESPN consensus components (single projection source-of-truth)
 # Bucket-2 values live in scoring_config.py (single source of truth; see it for the tiered-vs-cumulative
 # note + the tier/threshold meaning of each constant). Edit values THERE, not here.
 from scoring_config import (PTD40, PTD50, RETD40, RETD50, RTD40, RTD50, P300, P400, RY100, RY200,
@@ -67,33 +66,14 @@ retg = wk.groupby("player_id").agg(kry=("kickoff_return_yards", "sum"),
                                    pry=("punt_return_yards", "sum"), rtd=("pt_return_tds", "sum"))
 ret_pts = (retg["kry"]/2/25*KR25 + retg["pry"]/2/10*PR10 + retg["rtd"]/2*RETTD)   # Series keyed by gsis
 
-# ============ 2. projected volumes from the projection files ============
-POS_MAP = {
-    "QB": {"pass_yds":"YDS","pass_td":"TDS","pass_att":"ATT","rush_yds":"YDS.1","rush_td":"TDS.1","rush_att":"ATT.1"},
-    "RB": {"rush_yds":"YDS","rush_td":"TDS","rush_att":"ATT","rec":"REC","rec_yds":"YDS.1","rec_td":"TDS.1"},
-    "WR": {"rec":"REC","rec_yds":"YDS","rec_td":"TDS","rush_yds":"YDS.1","rush_td":"TDS.1","rush_att":"ATT"},
-    "TE": {"rec":"REC","rec_yds":"YDS","rec_td":"TDS"},
-    "K":  {"fg_made":"FG","pat_made":"XPT"},
-}
+# ============ 2. projected volumes = the SAME FP+ESPN blended components custom_scoring uses ============
 VOL = ["pass_yds","pass_td","pass_att","rush_yds","rush_td","rush_att","rec","rec_yds","rec_td","fg_made","pat_made"]
-to_num = lambda s: pd.to_numeric(s.astype(str).str.replace(",", ""), errors="coerce").fillna(0)
-
-frames = []
-for f in sorted(glob.glob("data/FantasyPros_Fantasy_Football_Projections_*.csv")):
-    pos = re.search(r"_([A-Z]+)\.csv$", f).group(1)
-    df = pd.read_csv(f)
-    df = df[df["Player"].notna() & (df["Player"].str.strip() != "")].copy()
-    d = {v: (to_num(df[POS_MAP[pos][v]]) if v in POS_MAP[pos] else 0) for v in VOL}
-    d["name"] = df["Player"].values
-    d["position"] = pos
-    frames.append(pd.DataFrame(d))
-proj = pd.concat(frames, ignore_index=True)
-proj["norm_name"] = proj["name"].apply(normalize_name)
+proj = blended_components()   # single projection source-of-truth (projections.py)
 
 # ============ 3. attach volumes + each player's blended TD rates ============
 players = pd.read_csv("players_scored.csv", dtype={"player_id": str})
 players["norm_name"] = players["full_name"].apply(normalize_name)
-m = players.merge(proj[["norm_name", "position"] + VOL], on=["norm_name", "position"], how="left")
+m = players.merge(proj[["norm_name", "position"] + VOL + ["proj_divergence"]], on=["norm_name", "position"], how="left")
 
 g = m["gsis_id"]
 p40 = g.map(pass40).fillna(L_pass40); p50 = g.map(pass50).fillna(L_pass50)

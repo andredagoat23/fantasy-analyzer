@@ -41,6 +41,12 @@ KR25, PR10, RETTD = 1, 1, 6  # return: 1 per 25 KR yд, 1 per 10 PR yд, 6 per r
 # hits 0/0 and drops off the board. apply_bonuses.py clamps to >=1 defensively.
 K = 12
 
+# ---- Projection consensus (projections.py): FantasyPros + ESPN blend weights (should sum to 1) ----
+# The board is built on the BLENDED projection. Set PROJ_W_ESPN = 0 for FP-only (the pre-consensus board,
+# byte-identical). "Lean ESPN" — ESPN is the platform the draft actually runs on, so its projections match
+# the room's ADP.
+PROJ_W_FP, PROJ_W_ESPN = 0.35, 0.65
+
 # ---- Team D/ST scoring (ESPN) — used by load_dst.py to score defenses under the real tiers ----
 DST_SACK, DST_INT, DST_FR, DST_SAFETY = 1, 2, 2, 2   # per-event
 DST_DEF_TD, DST_RET_TD, DST_BLK = 6, 6, 2            # def (INT/FUM return) TD / return TD / blocked kick

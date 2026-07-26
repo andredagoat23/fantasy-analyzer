@@ -13,6 +13,11 @@ docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
   sacks** (~−30 to −55/QB, the big one), 2pt conversions, PAT missed, return yds/TDs; fixed a
   tiered-vs-stacked big-game bug. Board re-scored + regenerated; top-12 unchanged, QBs re-ranked by
   sack-proneness. See `memory/league-scoring.md`.
+- **Projections are now a FP+ESPN CONSENSUS (L44).** ESPN's own projections (free, same endpoint as ADP)
+  are blended with FantasyPros at the component level (`projections.py`, weights in scoring_config —
+  **0.35 FP / 0.65 ESPN**), and both scorers read the blend. `proj_divergence` (source disagreement) is on
+  the board. FP-only mode is byte-identical (proven); consensus keeps the top-24 stable, sharpens the deep
+  tier. New pipeline step `load_espn_projections.py` (in run_all).
 - **Team D/ST now SCORED (L43) — last scoring gap closed.** `load_dst.py` scores every defense under the
   real ESPN tiers from nflverse team-defense data (2024-25, shrunk + 2026-SOS-tilted) → `data/dst_
   rankings.csv` (was a hand-typed FP list). Streamer layer only — stays OFF the cross-position board

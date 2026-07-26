@@ -846,6 +846,30 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L44 — Multi-source projection consensus: FantasyPros + ESPN (`projections.py`, Jul 2026)
+- **Why:** projections were single-source (FantasyPros) — the biggest accuracy lever, since VOLS/MC/board
+  all inherit its error. Blending a second independent source cancels idiosyncratic error.
+- **Free 2nd source:** ESPN's OWN projections ride in the SAME `kona_player_info` payload we already pull
+  for ADP (`load_espn_projections.py`, statSourceId=1) — clean component stats (pass/rush/rec yds/TDs/rec,
+  att, K), no new auth. Stat ids mapped by value (3=passYds, 24=rushYds, 53=rec, 83=fgMade, …); fumbles
+  aren't cleanly IDed so they stay FP-only.
+- **Blend at the COMPONENT level (`projections.py`):** average FP + ESPN projected volumes (weights
+  `PROJ_W_FP`/`PROJ_W_ESPN` in scoring_config, user chose **0.35/0.65 lean-ESPN** — ESPN is the room the
+  draft runs in). Key math: the scoring is LINEAR in the volumes, so blend-then-score == score-then-avg —
+  either is correct. `custom_scoring` + `apply_bonuses` now BOTH read `blended_components()`, so there's
+  ONE projection definition (mirrors scoring_config for scoring). A stat only one source provides falls
+  back to that source; a player in one source uses it at full weight.
+- **Proven behavior-preserving:** FP-only mode (`PROJ_W_ESPN=0`) reproduces the committed board
+  byte-identical (max diff 0.0) — consensus is a controlled, reversible change.
+- **Board effect:** top-10 composite UNCHANGED, top-24 same set (FP+ESPN agree on studs); the blend
+  refines the DEEP tier (61 players moved ≥20 spots — backups/rookies where sources genuinely disagree,
+  e.g. a 3rd-string RB FP had at 68 pts / ESPN at 34). Exactly right: stable core, sharper fringe.
+- **Divergence flag:** `proj_divergence` (|FP−ESPN| point-proxy gap) now on the board — high = genuine
+  uncertainty (surfaced for the advisor). NOTE: consensus is still just two sources; verify big offseason
+  changes via news (it won't fix a stale role both sources share). (Principles 3, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

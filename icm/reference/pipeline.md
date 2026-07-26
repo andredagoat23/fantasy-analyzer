@@ -94,6 +94,14 @@ verified by reconstructing the standard formula (Gibbs 301.6 = computed 301.3). 
 `proj_points = FPTS + receptions` (RB/WR/TE have `REC`; QB/K don't — correct, PPR only adds
 1/reception). This bug was a USER catch — the kind of data-quality flag we never skip.
 
+## Projection source (L44): FP + ESPN CONSENSUS
+Projections are no longer single-source. `projections.py::blended_components()` is the ONE place the
+scorers read component stats — it blends FantasyPros (the 5 `data/FantasyPros_*.csv`) with ESPN
+(`load_espn_projections.py` → `data/espn_projections.csv`, same endpoint as ADP) at the COMPONENT level,
+weights `PROJ_W_FP`/`PROJ_W_ESPN` in scoring_config (0.35/0.65). Scoring is linear in volumes, so
+blend-then-score == score-then-avg. `PROJ_W_ESPN=0` ⇒ byte-identical to the old FP-only board.
+`proj_divergence` (source disagreement) rides through to the board.
+
 ## Scoring layers (the "custom" in custom-scoring)
 League = **ESPN**, full PPR + heavy big-play/boom bonuses + QB sacks + return scoring. **All scoring
 values live in `scoring_config.py` — the SINGLE SOURCE OF TRUTH (L42); edit there only.**
