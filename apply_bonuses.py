@@ -5,14 +5,21 @@ import re
 from utils import normalize_name
 
 # ============ your league's Bucket-2 bonus values (edit here) ============
-PTD40, PTD50 = 0.5, 1        # 40+/50+ passing TD
-RETD40, RETD50 = 1, 2        # 40+/50+ receiving TD
-RTD40, RTD50 = 2, 3          # 40+/50+ rushing TD
-P300, P400 = 3, 5            # 300/400 passing game
-RY100, RY200 = 3, 5          # 100/200 rushing game
-REY100, REY200 = 2, 4        # 100/200 receiving game
+# NOTE tiers are MUTUALLY EXCLUSIVE where ESPN uses a RANGE ("300-399" vs "400+"): a 420-yd game
+# scores P400 only, NOT P300+P400. The long-TD bonuses ARE cumulative (ESPN "40+"/"50+": a 55-yd TD
+# gets both). See the tiered vs stacked handling in section 4.
+PTD40, PTD50 = 0.5, 1        # 40+/50+ passing TD (cumulative)
+RETD40, RETD50 = 1, 2        # 40+/50+ receiving TD (cumulative)
+RTD40, RTD50 = 2, 3          # 40+/50+ rushing TD (cumulative)
+P300, P400 = 3, 5            # 300-399 / 400+ passing game (tiered)
+RY100, RY200 = 3, 5          # 100-199 / 200+ rushing game (tiered)
+REY100, REY200 = 2, 4        # 100-199 / 200+ receiving game (tiered)
 RFD = REFD = 0.5             # rushing / receiving first down
 FG0, FG40, FG50, FG60 = 3, 4, 6, 7   # FG made by distance bucket
+SACK = -1                    # QB sacked (estimated: not in FP projections)
+TWOPT = 2                    # 2pt conversion (pass / rush / rec)
+PATM = -1                    # PAT missed (estimated from league miss rate)
+KR25, PR10, RETTD = 1, 1, 6  # return: 1 per 25 KR yд, 1 per 10 PR yд, 6 per return TD (backward-looking)
 K = 12                       # shrinkage: higher = trust the league average more
 
 # ============ 1. league rates + per-player long-TD rates (2023-25) ============
@@ -36,24 +43,50 @@ md = pbp[pbp["field_goal_result"] == "made"]["kick_distance"].dropna()
 fg_ppm = ((md < 40).mean()*FG0 + ((md >= 40) & (md < 50)).mean()*FG40
           + ((md >= 50) & (md < 60)).mean()*FG50 + (md >= 60).mean()*FG60)
 
+# QB sack rate — sacks aren't in the FP projections, so estimate per-QB sacks/throw shrunk to league.
+# (throws = pass attempts that weren't sacks; projected sacks = proj pass ATT x this rate.)
+sk_by = pbp[pbp["sack"] == 1].dropna(subset=["passer_player_id"]).groupby("passer_player_id").size().rename("sacks")
+thr_by = (pbp[(pbp["pass_attempt"] == 1) & (pbp["sack"] == 0)].dropna(subset=["passer_player_id"])
+          .groupby("passer_player_id").size().rename("throws"))
+sdf = pd.concat([sk_by, thr_by], axis=1).fillna(0)
+L_sack = sdf["sacks"].sum() / sdf["throws"].sum()
+sack_rate = (sdf["sacks"] + K*L_sack) / (sdf["throws"] + K)
+
+# 2pt conversion league rates, tied to TD volume (too rare/situational for per-player shrinkage).
+# A successful 2pt PASS scores BOTH the passer and the receiver, so per-rec-TD rate ~= per-pass-TD rate.
+tp = pbp[(pbp["two_point_attempt"] == 1) & (pbp["two_point_conv_result"] == "success")]
+r_2pass = (tp["play_type"] == "pass").sum() / (pbp["pass_touchdown"] == 1).sum()   # per pass/rec TD
+r_2run = (tp["play_type"] == "run").sum() / (pbp["rush_touchdown"] == 1).sum()      # per rush TD
+
+# PAT miss rate (league) — projected PATs made come from the K file (XPT); missed ~= made x miss/(1-miss)
+xp = pbp[pbp["extra_point_attempt"] == 1]
+L_patmiss = (xp["extra_point_result"] != "good").mean()
+
 wk = nfl.load_player_stats(seasons=[2024, 2025]).to_pandas()
 wk = wk[wk["season_type"] == "REG"]
 rate = lambda col, thr: (wk[col] >= thr).sum() / wk[col].sum()
-r_rush100, r_rush200 = rate("rushing_yards", 100), rate("rushing_yards", 200)
-r_rec100, r_rec200 = rate("receiving_yards", 100), rate("receiving_yards", 200)
-r_pass300, r_pass400 = rate("passing_yards", 300), rate("passing_yards", 400)
+rate_bt = lambda col, lo, hi: ((wk[col] >= lo) & (wk[col] < hi)).sum() / wk[col].sum()   # tiered range
+r_rush100, r_rush200 = rate_bt("rushing_yards", 100, 200), rate("rushing_yards", 200)
+r_rec100, r_rec200 = rate_bt("receiving_yards", 100, 200), rate("receiving_yards", 200)
+r_pass300, r_pass400 = rate_bt("passing_yards", 300, 400), rate("passing_yards", 400)
 fd_carry = wk["rushing_first_downs"].sum() / wk["carries"].sum()
 fd_rec = wk["receiving_first_downs"].sum() / wk["receptions"].sum()
 
+# return production — no return projections exist, so estimate from 2024-25 actuals (/2 = per-season).
+# BACKWARD-LOOKING by nature: credits a past returner, misses a new/rookie one. Labeled as such.
+retg = wk.groupby("player_id").agg(kry=("kickoff_return_yards", "sum"),
+                                   pry=("punt_return_yards", "sum"), rtd=("pt_return_tds", "sum"))
+ret_pts = (retg["kry"]/2/25*KR25 + retg["pry"]/2/10*PR10 + retg["rtd"]/2*RETTD)   # Series keyed by gsis
+
 # ============ 2. projected volumes from the projection files ============
 POS_MAP = {
-    "QB": {"pass_yds":"YDS","pass_td":"TDS","rush_yds":"YDS.1","rush_td":"TDS.1","rush_att":"ATT.1"},
+    "QB": {"pass_yds":"YDS","pass_td":"TDS","pass_att":"ATT","rush_yds":"YDS.1","rush_td":"TDS.1","rush_att":"ATT.1"},
     "RB": {"rush_yds":"YDS","rush_td":"TDS","rush_att":"ATT","rec":"REC","rec_yds":"YDS.1","rec_td":"TDS.1"},
     "WR": {"rec":"REC","rec_yds":"YDS","rec_td":"TDS","rush_yds":"YDS.1","rush_td":"TDS.1","rush_att":"ATT"},
     "TE": {"rec":"REC","rec_yds":"YDS","rec_td":"TDS"},
-    "K":  {"fg_made":"FG"},
+    "K":  {"fg_made":"FG","pat_made":"XPT"},
 }
-VOL = ["pass_yds","pass_td","rush_yds","rush_td","rush_att","rec","rec_yds","rec_td","fg_made"]
+VOL = ["pass_yds","pass_td","pass_att","rush_yds","rush_td","rush_att","rec","rec_yds","rec_td","fg_made","pat_made"]
 to_num = lambda s: pd.to_numeric(s.astype(str).str.replace(",", ""), errors="coerce").fillna(0)
 
 frames = []
@@ -77,8 +110,12 @@ g = m["gsis_id"]
 p40 = g.map(pass40).fillna(L_pass40); p50 = g.map(pass50).fillna(L_pass50)
 e40 = g.map(rec40).fillna(L_pass40);  e50 = g.map(rec50).fillna(L_pass50)
 u40 = g.map(rush40).fillna(L_rush40); u50 = g.map(rush50).fillna(L_rush50)
+sr = g.map(sack_rate).fillna(L_sack)          # per-QB sacks/throw
+retp = g.map(ret_pts).fillna(0.0)             # backward-looking return points (0 for non-returners)
 
 # ============ 4. expected bonus = rate x projected volume ============
+# Long-TD bonuses are CUMULATIVE (40+ and 50+ both apply). Big-game bonuses are TIERED (r_*300/100/rec
+# are the 300-399/100-199 range rates, r_*400/200 the top tier) so a 400+/200+ game scores one tier only.
 m["bonus_points"] = (
     m["pass_td"] * (p40*PTD40 + p50*PTD50)
     + m["rec_td"] * (e40*RETD40 + e50*RETD50)
@@ -89,6 +126,10 @@ m["bonus_points"] = (
     + m["rush_att"] * fd_carry * RFD
     + m["rec"] * fd_rec * REFD
     + m["fg_made"] * fg_ppm
+    + m["pass_att"] * sr * SACK                                   # QB sacks (estimated)
+    + (m["pass_td"]*r_2pass + m["rush_td"]*r_2run + m["rec_td"]*r_2pass) * TWOPT   # 2pt conversions
+    + m["pat_made"] * (L_patmiss/(1-L_patmiss)) * PATM            # PAT missed
+    + retp                                                        # return yds + return TDs
 )
 m["total_points"] = m["custom_proj_points"] + m["bonus_points"]
 m = m.drop(columns=["norm_name"] + VOL)

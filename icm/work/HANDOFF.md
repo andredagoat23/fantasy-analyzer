@@ -4,10 +4,16 @@
 docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
 
 ## Where things stand right now
-- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **`fe94011`**, working tree clean. Streamlit
-  Cloud auto-deploys on push to `main`, so `main` == what's live.
+- **DEPLOYED & CLEAN.** Local `main` = `origin/main`, working tree clean. Streamlit Cloud auto-deploys
+  on push to `main`, so `main` == what's live.
 - **Health:** preflight **OK** (0 blocking, 0 warnings). **All 13 unit suites green — 183 checks.**
-  Board + all three priors regenerated this session (L39). No open CODE items, no open DATA flags.
+  Board + all three priors regenerated this session. No open CODE items, no open DATA flags.
+- **Custom scoring VERIFIED vs the real ESPN settings + completed (L41)** — user pasted the actual league
+  settings; diff found all values correct but 5 rules missing. Added (all in `apply_bonuses.py`): **QB
+  sacks** (~−30 to −55/QB, the big one), 2pt conversions, PAT missed, return yds/TDs; fixed a
+  tiered-vs-stacked big-game bug. Board re-scored + regenerated; top-12 unchanged, QBs re-ranked by
+  sack-proneness. Only remaining scoring gap = **Team D/ST** (rules known, no projection source). See
+  `memory/league-scoring.md`.
 - **Opponent-aware survival is SHIPPED (L40, roadmap #1)** — survival/VONA/wheel now fold in the live
   rosters of the teams picking before my wheel (per-position effective horizon). Additive: `opp=None` is
   byte-identical. Kill-switch = the "Opponent-aware survival" toggle in Draft settings (default on). Its

@@ -760,6 +760,40 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L41 — Custom scoring verified vs the REAL ESPN settings; 5 rules were missing (Jul 2026)
+- **Context:** user opened the frozen scoring layer and pasted the actual ESPN league settings. Diffing
+  every line against the code (`custom_scoring.py` Bucket 1 + `apply_bonuses.py` Bucket 2) — the first
+  time there was a source-of-truth to check against — found all VALUES correct but **5 rules missing**
+  plus one bug. All fixes landed in `apply_bonuses.py` ONLY (Bucket 2 = estimates not in the FP files);
+  Bucket 1 untouched.
+- **The tiered-vs-stacked gotcha (the bug):** ESPN long-TD bonuses say "40+ / 50+" → CUMULATIVE (a 55-yd
+  TD gets both) — the code was right. But big-game bonuses say "300-**399** / 400+" (a RANGE) → MUTUALLY
+  EXCLUSIVE; the code STACKED them (counted a 400+ game in both tiers). Fix: `rate_bt(col, lo, hi)` for
+  the lower tier. Impact tiny (top tiers rare) but it's real. **Lesson: read whether an ESPN line is a
+  threshold ("40+") or a range ("300-399") — they score differently.**
+- **The big miss: QB sacks (−1 each), not scored at all** → ~−30 to −55 pts/QB (Drake Maye −51, sack-
+  prone; Allen −22, elusive). Estimated per-QB (sacks/throw shrunk to league, pbp) × proj pass ATT.
+  Also added: 2pt conversions (league rate × proj TDs), PAT missed (league miss rate), and return
+  yds+TDs (BACKWARD-LOOKING from 2024-25 actuals — the roughest, flagged; no return projections exist).
+- **Design choice (user-approved):** the new rules feed `total_points` ONLY, NOT the MC's weekly
+  volatility proxy (`compute_outcomes.py` `wk["pts"]`) — which already omits bonuses/fumbles and exists
+  only for SHAPE; the MC mean re-centers on `total_points`, so sacks flow into every QB mean. Leaving
+  the proxy alone protects the 62.1% OOS calibration.
+- **Side-find: the committed board was STALE** — `players_final.csv` `total_points` had drifted from its
+  own `custom+bonus` (Bijan 407 vs correct ~442; RB/WR first-down bonuses weren't in the board totals).
+  The full regen fixed it. **When comparing before/after, don't trust a committed CSV as the baseline —
+  run the OLD code on the CURRENT input (git stash) for a clean diff.** (The stale baseline first showed
+  a fake "+35 Bijan / +11 RB" that evaporated under a clean baseline.)
+- **Net board effect:** top-12 composite UNCHANGED; QBs re-ranked by sack-proneness (Drake Maye the big
+  faller); only the deep tail (rank 180+) reshuffled (return men up, backup QBs down). Verified: preflight
+  OK, both stress suites ALL PASS, all 13 suites (183) green, MC bands sane, name_audit clean.
+- **Two players legitimately off the board (NOT bugs):** Tyreek Hill (out for the season, injured) and
+  Stefon Diggs (unsigned FA — the pipeline drops no-team FAs; he reappears the first regen AFTER he
+  signs). See [[sea-backfield-projection-flag]]-style "verify real news before calling it a bug."
+  (Principles 3, 4, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.
