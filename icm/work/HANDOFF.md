@@ -124,7 +124,9 @@ FP was right — so it's no longer the motivating example; the feature still has
    ready pre-read or falls straight to the fast ~4-5s live call.
 8. **Live sync**: ESPN + Sleeper (~81% coverage), FA bridge (userscript→Firebase→app; synced 192 picks
    cleanly this session). **Preflight** `tools/preflight.py` (validates every runtime CSV, NaN guards,
-   ADP freshness, priors/role staleness, cross-file consistency) + `tools/name_audit.py` (network).
+   ADP freshness, priors/role staleness, cross-file consistency) + `tools/name_audit.py` (network) +
+   `tools/fa_watch.py` (network — draftable-ADP players missing from the board + their Sleeper
+   signed/unsigned status; the first piece of roadmap #4, the live-news layer).
 
 ---
 
@@ -169,7 +171,9 @@ suites in `icm/work/mc_research/`.
 - **Pending live verify:** the **opp-active path** of L40 in a live-sync mock (safe to run live — it
   only fires with live rosters, opp=None can't regress); a real **Sleeper** mock end-to-end; the
   **Yahoo** probe go/no-go.
-- **Pre-draft-day checklist:** run the regeneration ritual on fresh data; do one live ESPN mock at
+- **Pre-draft-day checklist:** run the regeneration ritual on fresh data; run `tools/fa_watch.py` to
+  catch late FA signings (a notable unsigned FA lands on the board only after he signs + a regen — e.g.
+  **Stefon Diggs**, ADP ~164, a real late-round value IF he signs to a role); do one live ESPN mock at
   **slot 7** (doubles as the opp-survival rehearsal — watch the WHEEL WINDOW line).
 
 ---
@@ -182,8 +186,11 @@ suites in `icm/work/mc_research/`.
    projections + ground `role_lead` in ff_opportunity, to damp single-source misses. Scoped feature; the
    public-product path needs a licensed forward-projection API. (General merit; not urgent — the one case
    that prompted it, Price>Charbonnet, turned out to be FP being correct.)
-4. **Live news/injury layer** — the real July-31 difference-maker; needs a source decision. (~half the
-   handcuff edge and sharpest signals are in-season → a live layer + FAAB plan is the next real edge.)
+4. **Live news/injury layer** — the real July-31 difference-maker. **First piece SHIPPED:**
+   `tools/fa_watch.py` uses Sleeper's live feed (source decision = **Sleeper**, already integrated) to
+   flag draftable-ADP players missing from the board + their signed/unsigned status. Next: an in-app
+   signing/injury banner + in-season `nflverse load_injuries` + a FAAB plan. (~half the handcuff edge
+   and sharpest signals are in-season → this is where the next real edge is.)
 5. **Mock draft simulator** — rehearse slot 7 vs ADP-bots (`13_strategy_bakeoff.py` + `12_full_system_
    stress.py` are ~80% of it).
 6. Rest-of-draft lookahead · 7. August usage refresh · 8. ESPN-vs-consensus divergence ·
