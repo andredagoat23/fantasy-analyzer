@@ -2,6 +2,7 @@ import nflreadpy as nfl
 import pandas as pd
 import numpy as np
 from utils import normalize_name, startable_counts
+from scoring_config import SCORING as _S, FG0, FG40, FG50, FG60   # base scoring — same source as custom_scoring.py
 
 np.random.seed(0)
 
@@ -61,13 +62,15 @@ def draft_tilt(pick):
 wk = nfl.load_player_stats(seasons=[2024, 2025]).to_pandas()
 wk = wk[wk["season_type"] == "REG"].copy().fillna(0)
 col = lambda c: wk[c] if c in wk.columns else 0
+# base scoring only (from scoring_config, same as custom_scoring.py) — this is a VOLATILITY-SHAPE proxy,
+# so it deliberately omits Bucket-2 bonuses/sacks/fumbles; the season mean re-centers on total_points.
 wk["pts"] = (
-    wk["passing_yards"]*0.04 + wk["passing_tds"]*6 + wk["passing_interceptions"]*-2
-    + wk["rushing_yards"]*0.1 + wk["rushing_tds"]*6
-    + wk["receptions"]*1 + wk["receiving_yards"]*0.1 + wk["receiving_tds"]*6
-    + (col("fg_made_0_19")+col("fg_made_20_29")+col("fg_made_30_39"))*3
-    + col("fg_made_40_49")*4 + col("fg_made_50_59")*6 + col("fg_made_60_")*7
-    + col("pat_made")*1 - col("fg_missed")*1
+    wk["passing_yards"]*_S["pass_yds"] + wk["passing_tds"]*_S["pass_td"] + wk["passing_interceptions"]*_S["pass_int"]
+    + wk["rushing_yards"]*_S["rush_yds"] + wk["rushing_tds"]*_S["rush_td"]
+    + wk["receptions"]*_S["rec"] + wk["receiving_yards"]*_S["rec_yds"] + wk["receiving_tds"]*_S["rec_td"]
+    + (col("fg_made_0_19")+col("fg_made_20_29")+col("fg_made_30_39"))*FG0
+    + col("fg_made_40_49")*FG40 + col("fg_made_50_59")*FG50 + col("fg_made_60_")*FG60
+    + col("pat_made")*_S["pat_made"] + col("fg_missed")*_S["fg_missed"]
 )
 wk["is_boom"] = (wk["pts"] >= wk["position"].map(BOOM)).astype(float)
 wk["is_bust"] = (wk["pts"] <= wk["position"].map(BUST)).astype(float)

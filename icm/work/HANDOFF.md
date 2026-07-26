@@ -14,6 +14,11 @@ docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
   tiered-vs-stacked big-game bug. Board re-scored + regenerated; top-12 unchanged, QBs re-ranked by
   sack-proneness. Only remaining scoring gap = **Team D/ST** (rules known, no projection source). See
   `memory/league-scoring.md`.
+- **Scoring is now a SINGLE SOURCE OF TRUTH — `scoring_config.py` (L42).** Edit scoring values THERE
+  only; `custom_scoring.py` / `apply_bonuses.py` / `compute_outcomes.py` all import from it (previously
+  the MC weekly proxy hardcoded the base values and could silently desync). `apply_bonuses` + `compute_
+  metrics` audited robust across 6 scoring settings (`icm/work/mc_research/16_scoring_robustness.py`);
+  shrinkage `K` clamped to ≥1. Verified behavior-preserving (NEW==OLD byte-identical).
 - **Opponent-aware survival is SHIPPED (L40, roadmap #1)** — survival/VONA/wheel now fold in the live
   rosters of the teams picking before my wheel (per-position effective horizon). Additive: `opp=None` is
   byte-identical. Kill-switch = the "Opponent-aware survival" toggle in Draft settings (default on). Its

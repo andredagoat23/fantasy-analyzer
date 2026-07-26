@@ -794,6 +794,33 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L42 — Scoring is a SINGLE SOURCE OF TRUTH now (`scoring_config.py`); robustness audited (Jul 2026)
+- **Context:** user asked to verify `apply_bonuses.py` + `compute_metrics.py` work under DIFFERENT
+  scoring settings. Audited both under 6 settings (zero / doubled / standard-ish / no-shrinkage /
+  extreme-sack / baseline) via `icm/work/mc_research/16_scoring_robustness.py` — **both are robust**: no
+  crash, `total==custom+bonus`, finite VOLS, linear in the constants, replacement levels adapt (you can
+  read the scoring in the numbers — zero-bonus collapses K replacement to 36; extreme sack drops QB
+  replacement 70pts). `compute_metrics` is fully data-driven (replacement = `nlargest(n).min()` of the
+  actual `total_points`), so VOLS re-derives for any scoring.
+- **The real "different settings" risk was elsewhere:** scoring was defined in THREE places and
+  `compute_outcomes.py`'s weekly volatility proxy **hardcoded** the Bucket-1 values — change
+  `custom_scoring`'s `SCORING` and the MC boom/bust SHAPE would silently desync (subtle: the mean
+  re-centers, so totals look fine). **Fix: `scoring_config.py` is now the ONE source** imported by
+  `custom_scoring.py` (SCORING), `apply_bonuses.py` (bonus consts + K), and `compute_outcomes.py`
+  (SCORING + FG distance). Edit values THERE only. The MC proxy still uses base-only (no bonuses/sacks)
+  by design — protects the 62.1% calibration.
+- **Edge case found + guarded:** shrinkage `K` MUST be > 0 (`K=0` → `0/0` for players with no
+  historical TDs → silent drops). `apply_bonuses.py` now clamps `K = max(int(K), 1)`.
+- **Refactor discipline (worth repeating):** a "behavior-preserving refactor" must be PROVEN. Ran the
+  scoring chain, then `git stash`ed the refactor and ran the OLD literal code on the SAME live data →
+  `players_final`/`value_board` were **byte-identical (NEW==OLD)**. The diff-vs-committed was pure
+  nflverse DATA DRIFT (pbp refreshes intra-day), NOT the refactor — so I reverted the drifted CSVs and
+  committed CODE ONLY (kept the reviewed board). Also: `git checkout` of many files scrambles mtimes and
+  trips preflight's priors-staleness guard — `touch` the priors after the board to restore ordering (a
+  timestamp fix, contents already consistent). (Principles 3, 4, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

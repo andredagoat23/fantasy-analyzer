@@ -95,7 +95,11 @@ verified by reconstructing the standard formula (Gibbs 301.6 = computed 301.3). 
 1/reception). This bug was a USER catch — the kind of data-quality flag we never skip.
 
 ## Scoring layers (the "custom" in custom-scoring)
-League = **ESPN**, full PPR + heavy big-play/boom bonuses.
+League = **ESPN**, full PPR + heavy big-play/boom bonuses + QB sacks + return scoring. **All scoring
+values live in `scoring_config.py` — the SINGLE SOURCE OF TRUTH (L42); edit there only.**
+`custom_scoring.py` (SCORING), `apply_bonuses.py` (bonus consts + K), and `compute_outcomes.py`'s weekly
+proxy (SCORING + FG distance) all import from it, so the three can't drift. Verified line-by-line vs the
+real ESPN settings (L41); robustness-audited across scoring settings (`mc_research/16_scoring_robustness.py`).
 - **`custom_scoring.py` → `players_scored.csv` (Bucket 1, stat×value):** pass 0.04/yd, **6/pass TD**
   (not 4 — big QB boost), −2/INT; rush 0.1/yd, 6/TD; rec 0.1/yd, **1/rec**, 6/TD; −2/fumble lost;
   K +1 PAT, −1 missed FG. `POS_MAP` handles that files reuse col names (QB `YDS`=pass, RB=rush,

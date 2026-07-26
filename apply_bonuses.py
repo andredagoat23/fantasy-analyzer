@@ -3,24 +3,13 @@ import pandas as pd
 import glob
 import re
 from utils import normalize_name
+# Bucket-2 values live in scoring_config.py (single source of truth; see it for the tiered-vs-cumulative
+# note + the tier/threshold meaning of each constant). Edit values THERE, not here.
+from scoring_config import (PTD40, PTD50, RETD40, RETD50, RTD40, RTD50, P300, P400, RY100, RY200,
+                            REY100, REY200, RFD, REFD, FG0, FG40, FG50, FG60, SACK, TWOPT, PATM,
+                            KR25, PR10, RETTD, K)
 
-# ============ your league's Bucket-2 bonus values (edit here) ============
-# NOTE tiers are MUTUALLY EXCLUSIVE where ESPN uses a RANGE ("300-399" vs "400+"): a 420-yd game
-# scores P400 only, NOT P300+P400. The long-TD bonuses ARE cumulative (ESPN "40+"/"50+": a 55-yd TD
-# gets both). See the tiered vs stacked handling in section 4.
-PTD40, PTD50 = 0.5, 1        # 40+/50+ passing TD (cumulative)
-RETD40, RETD50 = 1, 2        # 40+/50+ receiving TD (cumulative)
-RTD40, RTD50 = 2, 3          # 40+/50+ rushing TD (cumulative)
-P300, P400 = 3, 5            # 300-399 / 400+ passing game (tiered)
-RY100, RY200 = 3, 5          # 100-199 / 200+ rushing game (tiered)
-REY100, REY200 = 2, 4        # 100-199 / 200+ receiving game (tiered)
-RFD = REFD = 0.5             # rushing / receiving first down
-FG0, FG40, FG50, FG60 = 3, 4, 6, 7   # FG made by distance bucket
-SACK = -1                    # QB sacked (estimated: not in FP projections)
-TWOPT = 2                    # 2pt conversion (pass / rush / rec)
-PATM = -1                    # PAT missed (estimated from league miss rate)
-KR25, PR10, RETTD = 1, 1, 6  # return: 1 per 25 KR yд, 1 per 10 PR yд, 6 per return TD (backward-looking)
-K = 12                       # shrinkage: higher = trust the league average more
+K = max(int(K), 1)           # shrinkage MUST be > 0 (K=0 -> 0/0 for players with no historical TDs)
 
 # ============ 1. league rates + per-player long-TD rates (2023-25) ============
 pbp = nfl.load_pbp(seasons=[2023, 2024, 2025]).to_pandas()

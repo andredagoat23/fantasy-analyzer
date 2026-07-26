@@ -2,15 +2,7 @@ import pandas as pd
 import glob
 import re
 from utils import normalize_name
-
-# --- your league's stat-based (Bucket 1) scoring — edit values here ---
-SCORING = {
-    "pass_yds": 0.04, "pass_td": 6, "pass_int": -2,
-    "rush_yds": 0.1,  "rush_td": 6,
-    "rec": 1, "rec_yds": 0.1, "rec_td": 6,
-    "fumbles_lost": -2,
-    "pat_made": 1, "fg_missed": -1,
-}
+from scoring_config import SCORING   # Bucket-1 values — single source of truth (also read by compute_outcomes.py)
 
 # per-position: canonical stat -> that file's raw column
 # (files reuse names — QB "YDS" is passing, RB "YDS" is rushing, etc.)
