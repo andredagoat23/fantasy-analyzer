@@ -6,6 +6,7 @@ testable and keeps the app free of modeling.
 """
 
 import os
+from collections import Counter
 
 import anthropic
 import numpy as np
@@ -705,7 +706,7 @@ def _survival_prob(adp_rank, horizon):
     return p.where(adp.notna(), 1.0)
 
 
-def add_vona(available, horizon):
+def add_vona(available, horizon, opp=None):
     """VONA — Value Over Next Available: the value you LOSE by waiting on a player's position.
 
     VONA = his VOLS minus `best_wait` for his position, where best_wait is the EXPECTED VOLS of the
@@ -716,12 +717,23 @@ def add_vona(available, horizon):
     weighted by how likely you actually lose him. Floored at replacement (0), cross-position
     comparable — the live, personalized version of a "tier drop" that replaced the stale ECR tiers.
     Shared by the advisor context and the board column so they always agree.
+
+    `opp` (optional) = {position: effective_horizon} from opponent_read: when the live-synced rosters
+    of the teams picking before my next turn are known, each position uses ITS OWN horizon instead of
+    the shared ADP one — a position nobody left needs gets an EARLIER horizon (higher survival), one
+    everybody's chasing gets a LATER one (lower). `opp=None` reproduces the plain single-horizon math
+    exactly (the identity the stress suites lock in).
     """
     av = available.copy()
     if not horizon or "vols" not in av.columns or "position" not in av.columns:
         av["vona"] = av.get("vols", 0.0)
         return av
-    av["_p"] = _survival_prob(av["adp_rank"], horizon)
+    if opp:                               # per-position effective horizon (opponent-aware)
+        av["_p"] = 1.0
+        for pos, g in av.groupby("position"):
+            av.loc[g.index, "_p"] = _survival_prob(g["adp_rank"], opp.get(pos, horizon))
+    else:                                 # plain ADP horizon — unchanged behavior
+        av["_p"] = _survival_prob(av["adp_rank"], horizon)
     best_wait = {}
     for pos, g in av.groupby("position"):
         g = g.sort_values("vols", ascending=False)     # NaN VOLS sort last -> treated as replacement
@@ -734,6 +746,85 @@ def add_vona(available, horizon):
         best_wait[pos] = exp_best
     av["vona"] = av["vols"] - av["position"].map(best_wait).fillna(0.0)
     return av.drop(columns="_p")
+
+
+# Opponent-aware survival. The picks between now and my next turn aren't an anonymous ADP market —
+# they're specific teams whose rosters we already live-sync. Baseline position demand = the mix of
+# the top-N-by-ADP players still on the board (who's realistically going next); a team that already
+# has its lone QB (or TE) almost never spends a pick on a second, so that demand gates and renormalizes
+# onto its OPEN positions. Purely additive: no known teams -> opponent_read returns None -> add_vona /
+# the wheel fall back to the plain ADP horizon.
+_OPP_POS = ("QB", "RB", "WR", "TE")
+_OPP_TOP_N = 12        # size of the "realistically drafted next" pool for the baseline position mix
+_OPP_FILLED_G = 0.1    # demand weight for a 1-start slot (QB/TE) a team has already filled
+
+
+def _opp_summary(horizon, window_owners, rosters, s, n_eff, N):
+    """The human-readable WHEEL WINDOW line the advisor reads (visibility per lesson L8): who picks
+    before my wheel and what they still need, plus each position's effective competitor count."""
+    cnt = Counter(o for o in window_owners if o)
+    unknown = sum(1 for o in window_owners if not o)
+    who = []
+    for owner, k in cnt.most_common():
+        ros = rosters.get(owner, {})
+        needs = [p for p in ("QB", "TE") if ros.get(p, 0) == 0]
+        who.append(f"{owner}×{k} ({'needs ' + '/'.join(needs) if needs else 'QB+TE set'})")
+    if unknown:
+        who.append(f"{unknown} unknown")
+    arrow = lambda p: "↑surv" if n_eff[p] < N - 1e-9 else ("↓surv" if n_eff[p] > N + 1e-9 else "·")
+    comp = ", ".join(f"{p} {n_eff[p]:.1f}/{N} {arrow(p)}" for p in _OPP_POS if s.get(p, 0) > 0)
+    return (f"WHEEL WINDOW to #{horizon} ({N} opponent picks): " + "; ".join(who)
+            + f" -> effective competitors {comp} (fewer -> more likely to reach you; already folded "
+              "into VONA + the wheel column)")
+
+
+def opponent_read(available, draft_pos, window_owners, rosters):
+    """Fold WHO picks before my next turn (and what they need) into a per-position effective horizon.
+
+    Returns {"eff": {pos: effective_horizon}, "summary": str}, or None when there isn't enough to add
+    over plain ADP (no window, no baseline pool, or not a single known team) — the caller then uses the
+    shared ADP horizon everywhere, exactly as before.
+
+    Model: over the N opponent picks in the window, each consumes one player. A team takes position P
+    with probability s_P·g_P / Σ_Q s_Q·g_Q, where s_P is the baseline top-N-ADP share and g_P gates a
+    filled 1-start slot (0.1) vs everything else (1.0). rel_P = that vs the ungated baseline s_P; summed
+    over the window it's n_eff_P "effective competitors", and eff_horizon_P = horizon − (N − n_eff_P).
+    A blocked team's pressure renormalizes onto its open positions automatically (no tuned "hole boost").
+    All-baseline (rel≡1, e.g. every seat unknown) gives eff_horizon_P = horizon → identity."""
+    horizon = _horizon(draft_pos)
+    N = len(window_owners)
+    if not horizon or N == 0:
+        return None
+    if "adp_rank" not in available.columns or "position" not in available.columns:
+        return None
+    pool = available.dropna(subset=["adp_rank"])
+    pool = pool[pool["position"].isin(_OPP_POS)].nsmallest(_OPP_TOP_N, "adp_rank")
+    if not len(pool):
+        return None
+    vc = pool["position"].value_counts()
+    s = {p: vc.get(p, 0) / len(pool) for p in _OPP_POS}    # baseline position shares (sum to 1)
+
+    n_eff = {p: 0.0 for p in _OPP_POS}
+    known = 0
+    for owner in window_owners:
+        ros = rosters.get(owner) if owner else None
+        if ros is None:                                     # unknown seat -> ADP baseline for this pick
+            for p in _OPP_POS:
+                n_eff[p] += 1.0
+            continue
+        known += 1
+        g = {"QB": _OPP_FILLED_G if ros.get("QB", 0) >= 1 else 1.0,
+             "TE": _OPP_FILLED_G if ros.get("TE", 0) >= 1 else 1.0, "RB": 1.0, "WR": 1.0}
+        denom = sum(s[p] * g[p] for p in _OPP_POS)
+        for p in _OPP_POS:
+            n_eff[p] += 1.0 if s[p] == 0 or denom == 0 else g[p] / denom   # rel vs ungated baseline
+    if not known:
+        return None
+    eff = {}
+    for p in _OPP_POS:
+        ne = min(max(n_eff[p], 0.0), 2 * N)                 # bound the shift to ~±one window
+        eff[p] = horizon - (N - ne)
+    return {"eff": eff, "summary": _opp_summary(horizon, window_owners, rosters, s, n_eff, N)}
 
 
 def _wheel_label(adp, horizon):
@@ -864,13 +955,15 @@ def _punt_read(available, open_1start, current_overall, teams, next_pick=None):
 
 
 def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst=None,
-                  strategy=None, drafted_dsts=None):
+                  strategy=None, drafted_dsts=None, opp=None):
     """Compact text snapshot of the live board for the current turn. `my_dst` = the D/ST you drafted
     (name) if any — defenses aren't on the board, so it's threaded in separately. `drafted_dsts` = the
-    D/STs already taken by ANY team, so the ranking never recommends a drafted defense (L36)."""
+    D/STs already taken by ANY team, so the ranking never recommends a drafted defense (L36). `opp` =
+    the opponent_read dict ({"eff", "summary"}) when live rosters make survival opponent-aware, else None."""
     horizon = _horizon(draft_pos)
+    eff = opp["eff"] if opp else {}          # per-position effective horizons (empty -> plain ADP)
     if "vona" not in available.columns:      # normally precomputed in draft.py; compute if standalone
-        available = add_vona(available, horizon)
+        available = add_vona(available, horizon, opp=eff or None)
     # Drop from EVERYTHING the advisor sees: (1) NO-TEAM players (unsigned FAs — no offense/role) and
     # (2) PROJECTION OUTLIERS our board over-rates but the market + experts have written off (John
     # Metchie: our proj 148 vs ECR 361 vs ESPN 589) — recommending them is the whole problem (L15/L17).
@@ -894,7 +987,9 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     # flip the direction). horizon = my next real chance to pick; "gone" = his average draft spot is
     # at/before it, "safe" = a full round of cushion past it, "risky" = within a round (toss-up).
     if horizon:
-        top["wheel"] = top["adp_rank"].map(lambda a: _wheel_label(a, horizon))
+        _wbase = top["pos_label"].str.replace(r"\d+$", "", regex=True)
+        top["wheel"] = [_wheel_label(a, eff.get(p, horizon))
+                        for a, p in zip(top["adp_rank"], _wbase)]
     top["market"] = top.get("market", "").fillna("")
     top["team"] = top.get("team", "FA").fillna("FA")
     # NaN-safe formatting: some available players have no ADP / role / outcome data
@@ -1077,7 +1172,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
             top_v = float(ok.iloc[0]["vona"])
             close = 4.0   # players within this many VONA of the top are a genuine tie -> profile decides
             def _pk(r):
-                w = f", {_wheel_label(r.adp_rank, horizon)}" if horizon else ""
+                w = f", {_wheel_label(r.adp_rank, eff.get(r.position, horizon))}" if horizon else ""
                 star = "*" if (top_v - float(r.vona)) <= close else ""
                 rl = getattr(r, "role_lead", 0.0)
                 rl = float(rl) if rl is not None and pd.notna(rl) else 0.0
@@ -1193,6 +1288,11 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     handcuff_line = _handcuff_read(mine_df, available, dedicated_open, current_round=current_round)
     dart_line = _dart_read(dart_buys, dart_fades, current_round)
 
+    # WHEEL WINDOW (opponent-aware survival): who actually picks before my next turn and what they
+    # need, so the model can explain a wheel/VONA read ("both QB-needy teams pick before you"). The
+    # numbers are already baked into the VONA + wheel columns; this line just makes the WHY legible.
+    opp_line = (opp["summary"] + "\n") if opp and opp.get("summary") else ""
+
     pc = _playcallers()
     pc_line = ""
     if pc:
@@ -1213,7 +1313,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         if len(_ks) else ""
     return (
         "LIVE DRAFT STATE\n"
-        + dp_line +
+        + dp_line
+        + opp_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"{needs}\n"
         + (f"MY DRAFT PLAN — this is the strategy I chose; EXECUTE it (deviation protocol applies, "

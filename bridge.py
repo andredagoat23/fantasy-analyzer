@@ -15,6 +15,7 @@ shape the userscript read from ESPN's API — team count, your seat, and your ex
 whatever draft order the league uses. app.py owns the URL (st.secrets); this is pure I/O.
 """
 import os
+from collections import Counter
 
 import requests
 
@@ -120,3 +121,63 @@ def resolve(raw_picks, by_name, my_team=None):
     # from the grid — and falls back to the count of real picks for sites without pick numbers.
     max_pick = max((_pick_no(p) or 0 for p in raw_picks), default=0)
     return drafted, mine, sorted(teams), max(counted, max_pick)
+
+
+# ---- Opponent-aware helpers (used by the advisor's effective-horizon survival read) -------------
+# These are PURE (picks in, structures out) and additive — resolve() above is untouched. Seat math
+# here is used ONLY to predict WHICH team picks next; it never assigns a player to anyone's roster
+# (that stays owner-name ground truth, per the seat-math misfire lesson).
+
+def seat_of(overall, teams):
+    """The snake seat (1..teams) that makes a given overall pick number, standard snake order.
+    Round 1 goes 1..teams, round 2 reverses, etc. Mirrors the my_picks formula in draft.py."""
+    if not teams or teams < 1 or overall is None or overall < 1:
+        return None
+    rnd, idx = divmod(overall - 1, teams)      # 0-based round, 0-based position within it
+    return idx + 1 if rnd % 2 == 0 else teams - idx
+
+
+def seat_owners(raw_picks, teams):
+    """Map each snake seat -> the fantasy-team name that owns it, by MAJORITY VOTE over the picks
+    we've actually seen that seat make (seat = seat_of(pick_no)). Evidence only: a seat with no
+    observed pick, or a genuine tie between two team names, is omitted so the caller treats it as
+    unknown and falls back to the plain ADP horizon there. This self-protects against a non-standard
+    draft order — if seat math disagreed with the site's own team labels, the seat just goes unknown."""
+    tally = {}
+    for p in raw_picks:
+        n, team = _pick_no(p), p.get("team")
+        if n is None or not team:
+            continue
+        seat = seat_of(n, teams)
+        if seat is None:
+            continue
+        tally.setdefault(seat, Counter())[team] += 1
+    owners = {}
+    for seat, c in tally.items():
+        top = c.most_common(2)
+        if len(top) == 1 or top[0][1] > top[1][1]:   # a clear plurality winner
+            owners[seat] = top[0][0]
+    return owners
+
+
+def rosters(raw_picks, name_to_pos):
+    """Position counts per fantasy team from the picks so far: {team_name: {pos: count}}. Player ->
+    position via name_to_pos (normalized-name -> board position); a D/ST-looking name counts as
+    'DST'. Owner is the pick's `team` field (draft-site ground truth). Unresolved names (not on our
+    board / no position) are skipped — they can't affect the QB/TE-fill gates the advisor reads."""
+    out = {}
+    for p in raw_picks:
+        team = p.get("team")
+        if not team:
+            continue
+        name = str(p.get("player", ""))
+        up = name.upper()
+        if "D/ST" in up or up.endswith(" DST") or "DEFENSE" in up:
+            pos = "DST"
+        else:
+            pos = name_to_pos.get(normalize_name(name))
+        if not pos:
+            continue
+        room = out.setdefault(team, {})
+        room[pos] = room.get(pos, 0) + 1
+    return out

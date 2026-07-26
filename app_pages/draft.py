@@ -173,6 +173,11 @@ def board_name_map(mtime):   # {normalized_name -> full_name} for the browser br
     return {normalize_name(n): n for n in board["full_name"]}
 
 
+@st.cache_data(show_spinner=False)
+def board_pos_map(mtime):    # {normalized_name -> position} for the opponent-aware survival read
+    return {normalize_name(n): p for n, p in zip(board["full_name"], board["position"])}
+
+
 def bump():
     st.session_state.version += 1
     st.rerun()
@@ -270,6 +275,10 @@ with st.container(horizontal=True):
             st.session_state["slot"] = _tm
         st.number_input("My draft slot", 1, _tm, key="slot")
         st.number_input("Teams in league", 2, 20, key="teams")
+        st.checkbox("Opponent-aware survival", value=True, key="use_opp",
+                    help="When live-synced, fold the actual rosters of the teams picking before your "
+                         "next turn into survival/VONA (a position no one left needs lasts longer). "
+                         "Off = plain ADP survival. Flip off instantly if a read looks wrong.")
     # Roster + Reset on the main page too — the sidebar auto-collapses on a phone, so this keeps
     # both one tap away during a live draft. The "· N" is a glanceable pick count.
     with st.popover(f"My roster · {len(st.session_state.mine)}", icon=":material/groups:"):
@@ -337,6 +346,7 @@ if sleeper_draft:
             drafted, mine, _teams, total = bridge.resolve(raw, by_name, my_team=None)
             my_dst = bridge.my_dst(raw)   # defenses aren't on the board — tracked via the mine flag
             drafted_dst = bridge.drafted_dsts(raw)   # all D/STs taken (any team) — filter the ranking (L36)
+            st.session_state.sync_picks = raw   # per-pick owners for opponent-aware survival
             if (drafted != st.session_state.drafted or mine != st.session_state.mine
                     or total != st.session_state.get("pick_count")
                     or my_dst != st.session_state.get("mine_dst")
@@ -404,6 +414,7 @@ elif bridge_url:
             drafted, mine, teams_seen, total = bridge.resolve(raw, by_name, my_team)
             my_dst = bridge.my_dst(raw, my_team)   # defenses aren't on the board — track separately
             drafted_dst = bridge.drafted_dsts(raw)   # all D/STs taken (any team) — filter the ranking (L36)
+            st.session_state.sync_picks = raw      # per-pick owners for opponent-aware survival
             teams_changed = teams_seen != st.session_state.get("bridge_teams", [])
             if teams_changed:
                 st.session_state.bridge_teams = teams_seen
@@ -454,6 +465,13 @@ elif espn_cfg.get("league_id"):
                     if p["name"] and p["team_id"] == st.session_state.get("my_team_id")}
             total = len(picks)   # ALL made picks incl. D/ST (which don't map to our board) — keeps
             #                      the on-the-clock count exact even when a pick isn't on our board
+            # Adapt to the mailbox shape (pick/player/team) for opponent-aware survival. team_name is
+            # blank from this API, so key the owner off team_id (consistent ground truth); player =
+            # our resolved name, falling back to ESPN's for the position lookup.
+            st.session_state.sync_picks = [
+                {"pick": p["overall"],
+                 "team": p["team_name"] or (f"team{p['team_id']}" if p.get("team_id") is not None else ""),
+                 "player": p["name"] or p.get("espn_name", "")} for p in picks]
             if (drafted != st.session_state.drafted or mine != st.session_state.mine
                     or total != st.session_state.get("pick_count")):
                 st.session_state.drafted, st.session_state.mine = drafted, mine
@@ -490,7 +508,22 @@ elif next_pick:
 # VONA — points you'd lose by waiting on a position until your next pick. Computed here on the WHOLE
 # available board so the AI advisor and the board's VONA column always agree (see advisor.add_vona).
 horizon = following if my_turn else next_pick   # my next real chance to pick
-available = advisor.add_vona(available, horizon)
+
+# Opponent-aware survival: when live-synced, fold the ACTUAL rosters of the teams picking before my
+# wheel into a per-position effective horizon (a position no one left needs survives longer; one
+# everyone's chasing goes sooner). Seat->owner is a majority vote over observed picks (bridge), never
+# used to assign a player to a roster. No sync / early draft / unknown seats -> opp None -> plain ADP.
+# Kill-switch: the "Opponent-aware survival" toggle in Draft settings (default on) forces plain ADP.
+opp = None
+if st.session_state.get("use_opp", True) and sync_active and st.session_state.get("sync_picks") and horizon:
+    _raw_picks = st.session_state.sync_picks
+    _seat_owners = bridge.seat_owners(_raw_picks, teams)
+    _rosters = bridge.rosters(_raw_picks, board_pos_map(os.path.getmtime("value_board.csv")))
+    _w_start = overall_now + 1 if my_turn else overall_now
+    _window_owners = [_seat_owners.get(bridge.seat_of(n, teams)) for n in range(_w_start, horizon)]
+    opp = advisor.opponent_read(available, draft_pos, _window_owners, _rosters)
+
+available = advisor.add_vona(available, horizon, opp=opp["eff"] if opp else None)
 
 # Manual pick tracking — only when NOT live-synced (during a live draft the poller owns this)
 if not sync_active:
@@ -555,14 +588,15 @@ with st.container(border=True):
         PRELOOK_WINDOW = 3
         cur_key = (frozenset(st.session_state.drafted), frozenset(st.session_state.mine),
                    st.session_state.get("mine_dst"),
-                   frozenset(st.session_state.get("drafted_dsts") or ()), _setup_note())
+                   frozenset(st.session_state.get("drafted_dsts") or ()),
+                   st.session_state.get("use_opp", True), _setup_note())
         pl = st.session_state.setdefault("prelook", {"key": None, "future": None, "text": None})
         near_turn = my_turn or (picks_away is not None and picks_away <= PRELOOK_WINDOW)
         if near_turn and pl["key"] != cur_key:
             ctx = advisor.build_context(available, mine_df, scarcity, draft_pos,
                                         my_dst=st.session_state.get("mine_dst"),
                                         drafted_dsts=st.session_state.get("drafted_dsts"),
-                                        strategy=st.session_state.get("strategy"))
+                                        strategy=st.session_state.get("strategy"), opp=opp)
             note = _setup_note()
             pre_ctx = (f"{note}\n\n{ctx}" if note else ctx) + f"\n\n{REC_PROMPT}"
             if pl["future"] is not None:
@@ -602,7 +636,7 @@ with st.container(border=True):
             context = advisor.build_context(available, mine_df, scarcity, draft_pos,
                                             my_dst=st.session_state.get("mine_dst"),
                                             drafted_dsts=st.session_state.get("drafted_dsts"),
-                                            strategy=st.session_state.get("strategy"))
+                                            strategy=st.session_state.get("strategy"), opp=opp)
             note = _setup_note()
             full_context = f"{note}\n\n{context}" if note else context
             api_messages = (st.session_state.chat[:-1]
