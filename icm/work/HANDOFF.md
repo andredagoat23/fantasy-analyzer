@@ -13,6 +13,11 @@ docs the task needs. Everything below is CURRENT as of **Jul 25, 2026**.
   sacks** (~−30 to −55/QB, the big one), 2pt conversions, PAT missed, return yds/TDs; fixed a
   tiered-vs-stacked big-game bug. Board re-scored + regenerated; top-12 unchanged, QBs re-ranked by
   sack-proneness. See `memory/league-scoring.md`.
+- **Composite weights RE-TUNED from a 13-season backtest (L45).** LOSO-cross-validated backtest
+  (`mc_research/17`+`18`, real FFC ADP + real finishes) showed the board under-weighted the outcome
+  distribution. Shifted market .36→.19 into ceiling .13→.25 + floor .09→.15 (halfway to the optimum;
+  +0.033 generalizable). VOLS kept full at .32 (the backtest's "value" proxy is backward — can't judge
+  the real forward VOLS). Board top-12 ~stable. New weights in `value_board.py`.
 - **Projections are now a FP+ESPN CONSENSUS (L44).** ESPN's own projections (free, same endpoint as ADP)
   are blended with FantasyPros at the component level (`projections.py`, weights in scoring_config —
   **0.35 FP / 0.65 ESPN**), and both scorers read the blend. `proj_divergence` (source disagreement) is on

@@ -152,3 +152,15 @@ print(f"  CURRENT composite weights    : {current:.3f}   weights value/market/ce
 print(f"  OPTIMIZED (random search)    : {best:.3f}   weights = {dict(zip(SIGS, best_w.round(2)))}")
 print(f"\n  lift of current over ADP-only : {current - adp_only:+.3f}")
 print(f"  lift of optimized over current: {best - current:+.3f}")
+
+# --- named candidate tweaks (value held ~constant; shift ceiling/role up, floor/market down) ---
+# 5-signal = [value, market(=ECR+ADP), ceiling, floor, role]
+CANDIDATES = {
+    "Current      (V.32 E.24 A.12 UP.13 DN.09 R.10)": [0.32, 0.36, 0.13, 0.09, 0.10],
+    "Tweak A cons (V.32 E.22 A.11 UP.16 DN.07 R.12)": [0.32, 0.33, 0.16, 0.07, 0.12],
+    "Tweak B aggr (V.30 E.20 A.10 UP.18 DN.07 R.15)": [0.30, 0.30, 0.18, 0.07, 0.15],
+}
+print("\n=== candidate tweaks (backtest score) ===")
+for name, w in CANDIDATES.items():
+    print(f"  {name}: {spearman_by_season(w):.3f}")
+bt.to_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "17_bt_cache.csv"), index=False)

@@ -870,6 +870,34 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L45 — Composite weights re-tuned from a real backtest (13-season LOSO-CV, Jul 2026)
+- **Backtest (`icm/work/mc_research/17`+`18`):** hybrid — REAL historical ADP (FantasyFootballCalculator,
+  2012-24) + REAL finishes (nflverse, scored under league scoring) + value signals PROXIED from prior-year
+  actuals (no historical ECR/projections exist). Metric: per-season Spearman(composite order, actual
+  finish), top-150 pool. 13 seasons, LEAVE-ONE-SEASON-OUT cross-validated so the result generalizes.
+- **Findings:** the composite beats ADP-only (0.430 vs 0.323, +0.107). A **stable, generalizable** signal:
+  the board UNDER-weighted the outcome distribution (ceiling+floor) and OVER-weighted the market — optimal
+  weights ceiling .44±.04 / floor .26±.05 / market .19±.03 / role .10±.05 / value .01±.01 across all 13
+  folds (low sd = signal, not noise).
+- **Change (L45, `value_board.py`):** shifted market **.36→.19** into ceiling **.13→.25** + floor
+  **.09→.15** (the "halfway" point between a clean-moderate and the aggressive optimum). New weights:
+  **V .32 / E .13 / A .06 / UP .25 / DN .15 / R .09**. +0.033 generalizable Spearman. Board effect: top-12
+  ~stable, draftable-tier shifts small (±7, higher-ceiling players up), no core distortion.
+- **Two things the backtest CANNOT judge (so we did NOT act on them):**
+  1. **"value → 0" is a PROXY artifact, not a reason to cut VOLS.** The backtest's "value" is prior-year
+     actual points — weakest predictor (0.26 vs ceiling 0.51) AND 0.54-0.63 redundant with the other
+     signals. But our real VOLS is a FORWARD projection (FP+ESPN) the backtest never had — it carries
+     info (role changes, rookies, new teams) the backward proxy can't. So VOLS kept FULL at .32.
+  2. **The backtest is blind to K/D-ST** (scores QB/RB/WR/TE only). It happily recommended gutting the
+     market weight — but the market was SUPPRESSING structurally-misvalued kickers/backup-TEs (cutting it
+     to .13 floated Jake Moody to composite 134). So we stopped at .19 (mild, kicker top 131→125, fine),
+     NOT the .13-.19 optimum. **Always sanity-check a backtest-optimal weight on the FULL board.**
+- **Caveats on the record:** proxied value/ceiling/floor (backward), no separate ECR, veterans only,
+  base scoring. A true test of the VOLS weight needs historical projections (still unobtainable).
+  (Principles 3, 4, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

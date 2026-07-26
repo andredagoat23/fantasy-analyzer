@@ -4,7 +4,11 @@ from utils import startable_counts
 DRAFTABLE = 180
 W_MODEL, W_EXPERT = 0.65, 0.35                         # rank_ecr blend
 # rank_composite ("Everything") blend: value / expert(ECR) / market(ADP) / upside(x Vegas) / floor / role
-W_V, W_E, W_A, W_UP, W_DN, W_R = 0.32, 0.24, 0.12, 0.13, 0.09, 0.10
+# Re-weighted L45 (13-season LOSO-cross-validated backtest, icm/work/mc_research/18): the board was
+# under-weighting the outcome distribution (ceiling+floor) and over-weighting the market. Shifted market
+# .36->.19 into ceiling .13->.25 + floor .09->.15 ("halfway" point; +0.033 generalizable Spearman). VOLS
+# kept full (the backtest can't judge it — its "value" proxy is backward, our VOLS is a forward projection).
+W_V, W_E, W_A, W_UP, W_DN, W_R = 0.32, 0.13, 0.06, 0.25, 0.15, 0.09
 ROOKIE_MKT = 0.5      # rookies: blend composite this much toward market consensus (unreliable proj)
 # consensus sanity: when our projection ranks a NON-rookie this many spots better than expert consensus
 # (ECR), the projection is a likely outlier — blend his composite this much toward ECR so he can't look
