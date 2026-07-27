@@ -920,6 +920,27 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L47 — Live-mock catches: K-on-filled-slot bug + a non-reproducible roster-state issue (Jul 2026)
+- **Context:** a full 192-pick live ESPN mock synced cleanly (the opponent-aware-survival rehearsal). Two
+  user catches:
+- **(a) FIXED — 2nd-kicker on the final pick.** The K (and D/ST) ranking was injected into `build_context`
+  EVERY turn regardless of whether that slot was filled, so on the last pick the AI latched onto the
+  ever-present kicker list and recommended a 2nd K (user already had Aubrey). Fix: gate `k_line`/`dst_line`
+  on `not have_k` / `not my_dst` (mirror the streamer-alert gate). `tests/test_kicker.py` now checks the
+  ranking DISAPPEARS once the slot is rostered.
+- **(b) A 4th RB recommended at R7 with WR2 open — could NOT be reproduced.** Rebuilt the exact roster
+  (3 RB incl. Swift-in-FLEX, WR2 open) and the TOP PICKS shortlist is ALL WRs — Warren correctly demoted
+  out (`_sink_rank` bench_sat=3 sinks below dedicated=0). So the gate logic is SOUND; the live failure
+  means the roster STATE the model saw differed from what's reconstructable (a sync/timing hiccup). **You
+  can't fix what you can't reproduce** — so instead of guessing, added **per-pick context logging**
+  (`st.session_state.pick_log` + a Draft-settings download button): captures the exact roster + full
+  context the advisor saw each Recommend, so the next occurrence is diagnosable from real data, not memory.
+- **Method note:** when a live recommendation doesn't reproduce offline, the bug is almost always in the
+  STATE fed to the model, not the model logic — instrument the state, don't patch the logic blind.
+  (Principles 3, 4, 5, 8)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

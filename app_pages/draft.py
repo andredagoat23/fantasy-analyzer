@@ -1,5 +1,6 @@
 import os
 import re
+import json
 
 import pandas as pd
 import streamlit as st
@@ -279,6 +280,11 @@ with st.container(horizontal=True):
                     help="When live-synced, fold the actual rosters of the teams picking before your "
                          "next turn into survival/VONA (a position no one left needs lasts longer). "
                          "Off = plain ADP survival. Flip off instantly if a read looks wrong.")
+        _plog = st.session_state.get("pick_log", [])
+        if _plog:   # L47: exactly what the advisor saw each pick — download to debug an odd recommendation
+            st.download_button(f"Download pick log ({len(_plog)})",
+                               json.dumps(_plog, indent=2, default=str), "pick_log.json", "application/json",
+                               help="The roster + full context the advisor saw on each Recommend — hand it over if a pick looks wrong.")
     # Roster + Reset on the main page too — the sidebar auto-collapses on a phone, so this keeps
     # both one tap away during a live draft. The "· N" is a glanceable pick count.
     with st.popover(f"My roster · {len(st.session_state.mine)}", icon=":material/groups:"):
@@ -639,6 +645,19 @@ with st.container(border=True):
                                             strategy=st.session_state.get("strategy"), opp=opp)
             note = _setup_note()
             full_context = f"{note}\n\n{context}" if note else context
+            # PICK-CONTEXT LOG (L47): capture EXACTLY what the advisor saw each turn — the roster it read
+            # + the full context (ROSTER NEEDS, TOP PICKS shortlist). A live-mock recommendation that
+            # can't be reproduced offline means the live roster STATE differed; this makes it diagnosable.
+            # In-memory (Streamlit Cloud's disk is ephemeral) + a Draft-settings download button.
+            try:
+                st.session_state.setdefault("pick_log", []).append({
+                    "overall": int(overall_now), "mode": mode, "my_turn": bool(my_turn),
+                    "roster": [f"{r.get('pos_label', '?')}={r.get('full_name', '?')}"
+                               for _, r in mine_df.iterrows()],
+                    "prompt": prompt, "context": full_context,
+                })
+            except Exception:
+                pass
             api_messages = (st.session_state.chat[:-1]
                             + [{"role": "user", "content": f"{full_context}\n\n{prompt}"}])
             # PICK button: serve the pre-read ONLY if it ALREADY finished for this exact board (the

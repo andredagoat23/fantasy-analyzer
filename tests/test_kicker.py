@@ -51,4 +51,11 @@ check("the board's best K is Brandon Aubrey (sanity)", true_best_k == "Brandon A
 check("Jake Moody is NOT recommended as a top K", "1.Jake Moody" not in ctx and "Best K available: Jake Moody" not in ctx)
 check("the good kicker survived the proj_outlier drop (it's in the ranking)", "Brandon Aubrey" in kline)
 
+# L47: once a K is on the roster, the kicker ranking must DISAPPEAR (else the advisor recommends a 2nd K
+# on the final pick — the live-mock catch). Same gate as the streamer alert.
+mine_with_k = pd.concat([mine, b[b.position == "K"].nsmallest(1, "rank_composite")])
+ctx_k = advisor.build_context(avail, mine_with_k, {"QB": 5, "RB": 20, "WR": 20, "TE": 8, "K": 10},
+                              dp, my_dst=None, drafted_dsts=set())
+check("KICKER ranking is HIDDEN once a K is rostered (no 2nd-K suggestion)", "KICKER ranking" not in ctx_k)
+
 print(f"\n{passed} checks passed ✅")

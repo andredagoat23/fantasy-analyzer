@@ -1352,13 +1352,17 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         if chg:
             pc_line = ("PLAYCALLER CHANGES 2026 (* = first-time caller; scheme uncertainty — see rules): "
                        + ", ".join(chg) + "\n")
-    _dst_txt = dst_ranking_text(drafted_dsts)
+    # Only surface the K / D-ST ranking while that streamer slot is still OPEN. Showing a FILLED slot's
+    # ranking led the advisor to recommend a 2nd kicker on the final pick (live-mock catch, L47) — a 2nd
+    # K/D-ST is worthless. Mirror the streamer-alert gate (have_k / my_dst).
+    have_k = any(str(p.get("pos_label", "")).startswith("K") for _, p in mine_df.iterrows())
+    _dst_txt = dst_ranking_text(drafted_dsts) if not my_dst else ""
     dst_line = (f"\n\nD/ST draft ranking (streamer, draft late; already-drafted defenses removed — "
                 f"recommend ONLY from this list): {_dst_txt}") if _dst_txt else ""
     # Kicker ranking straight from the board (L38): the model was recommending kickers from memory
     # (Jake Moody, a stale big name we rank K19) — hand it the board's actual top Ks so it can't guess.
     _ks = (available[available["position"] == "K"].nsmallest(8, "rank_composite")
-           if "position" in available.columns else available.iloc[0:0])
+           if (not have_k and "position" in available.columns) else available.iloc[0:0])
     k_line = ("\n\nKICKER ranking (streamer, draft LAST; from the board — recommend ONLY from this list, "
               "NEVER from memory): " + "  ".join(f"{i + 1}.{r.full_name}" for i, r in enumerate(_ks.itertuples()))) \
         if len(_ks) else ""
