@@ -1,14 +1,14 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
-> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** It has the full current state: the deployed stack
-> (`main` = `6eff5f9`, through **L47**) — MC + cohort/coaching/SOS + the FP+ESPN projection consensus
-> (L44) + scoring COMPLETE & verified vs real ESPN settings with a single source of truth
-> `scoring_config.py` (L41/L42) + D/ST scored (L43) + backtest-retuned composite weights (L45) + the
-> hybrid position-shape advisory (L46) + the full advisor read-stack; opponent-aware survival SHIPPED &
-> rehearsed (L40, 192-pick live mock). NO open code/data items — one open THREAD: a non-repro'd R7
-> roster-state issue, now diagnosable via the per-pick pick-log (L47). One unmerged branch (`yahoo-probe`).
-> Suites: 14 / 195 green. Draft day: **August 7, 2026** (ESPN, slot 7). See `memory/` for the resolved
-> SEA/Charbonnet flag.
+> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** It has the full current state: the stack through
+> **L48** (local `main` UNPUSHED past deployed `a08a2cd`/L47) — MC + cohort/coaching/SOS + the FP+ESPN
+> projection consensus (L44) + scoring COMPLETE & verified vs real ESPN settings with a single source of
+> truth `scoring_config.py` (L41/L42) + D/ST scored (L43) + backtest-retuned composite weights (L45) +
+> the hybrid position-shape advisory (L46) + the live positional-run read (L48, advisory) + the full
+> advisor read-stack; opponent-aware survival SHIPPED & rehearsed (L40, 192-pick live mock). NO open
+> code/data items — one open THREAD: a non-repro'd R7 roster-state issue, diagnosable via the per-pick
+> pick-log (L47). One unmerged branch (`yahoo-probe`). Suites: 15 / 215 green. Draft day: **August 7,
+> 2026** (ESPN, slot 7). See `memory/` for the resolved SEA/Charbonnet flag.
 
 This workspace applies **ICM (Interpretable Context Methodology)** to *how work gets done on this
 project*, so every change is explicit, staged, and verified instead of ad-hoc. Ad-hoc is what caused

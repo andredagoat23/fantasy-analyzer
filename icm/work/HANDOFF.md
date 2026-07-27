@@ -1,12 +1,13 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
 **How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
-docs the task needs. Everything below is CURRENT as of **Jul 26, 2026**.
+docs the task needs. Everything below is CURRENT as of **Jul 27, 2026**.
 
 ## Where things stand right now
-- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **`6eff5f9`**, tree clean. Streamlit Cloud
-  auto-deploys on push to `main`, so `main` == what's live.
-- **Health:** preflight **OK** (0 blocking, 0 warnings). **All 14 unit suites green — 195 checks.** Board
+- **Local `main` = `da8a695` (+ this docs commit) — UNPUSHED.** Deployed/`origin/main` = **`a08a2cd`**
+  (through L47). Streamlit Cloud auto-deploys on push to `main` — pushing = deploying, always the
+  user's call. Tree clean.
+- **Health:** preflight **OK** (0 blocking, 0 warnings). **All 15 unit suites green — 215 checks.** Board
   + all priors regenerated. **No open CODE items, no open DATA flags.**
 - **Draft day: August 7, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (Practice mocks ran at
   slots 1/5/10; the real draft is **slot 7** — never hardcode a slot.)
@@ -42,6 +43,11 @@ Scoring, projections, and the board are all substantially stronger than a few se
   not "no edge"; WR usually safe but check the board; TE dead-zone→pocket) + a COMPUTED `POSITION SHAPE`
   line (`advisor.position_shape`) that reads THIS class's cliffs/next-tier-bust/value-pockets from the
   live board — self-updating each regen. `tests/test_shape.py`.
+- **POSITION RUN read SHIPPED (L48) — live momentum, advisory-only.** `advisor._run_read` scans the
+  last 8 synced picks vs the ADP-expected mix (binomial surprise; the baseline is reconstructed as-of
+  the window start, so chalk never reads as a run). HOT at a needed position = act before the wheel;
+  COLD ≠ fade — the value falls TO you (a faller worth taking now already tops TOP PICKS, else collect
+  him on the wheel). Nothing feeds VONA/wheel/TOP PICKS; sync-only. Live-fire check: the next mock.
 - **Opponent-aware survival SHIPPED + REHEARSED (L40).** Survival/VONA/wheel fold in the live rosters of
   the teams before my wheel. `opp=None` byte-identical. Kill-switch = "Opponent-aware survival" toggle in
   Draft settings. **Its live-sync rehearsal is DONE** — the last mock synced all 192 picks cleanly.
@@ -77,7 +83,8 @@ and detailed in `lessons.md`.)*
 7. **The read stack** (Python-computed, enforced in TOP PICKS per L8 — the model can't ignore them):
    PUNT (L11/L28 — "Josh Allen at 29 is CORRECT, not a bug"), DEFER (L33), HEDGE (L27), HANDCUFF (L30/31),
    DART (L31/L37, R11+), STREAMER (L26). **K/D-ST rankings come from the board AND are now hidden once the
-   slot is filled** (L47 — was suggesting a 2nd kicker). **POSITION SHAPE** line (L46). Prompt-cached SYSTEM.
+   slot is filled** (L47 — was suggesting a 2nd kicker). **POSITION SHAPE** line (L46). **POSITION RUN** line (L48 — advisory momentum
+   read of the last 8 synced picks; never re-ranks TOP PICKS). Prompt-cached SYSTEM.
 8. **Speculative PRE-READ** (`draft.py`): background deep call within 3 picks; never BLOCKS the pick.
 9. **Live sync + logging:** ESPN + Sleeper + FA bridge (userscript→Firebase→app; synced 192 picks cleanly).
    **Per-pick context log** (L47, `session_state.pick_log` + Draft-settings download). Tools: `preflight.py`,
@@ -107,16 +114,18 @@ and detailed in `lessons.md`.)*
 > mtime so preflight's staleness guard stays happy.)
 
 ## Tests (plain-assert, run individually: `.venv/bin/python tests/<file>.py`)
-`tests/` — **14 suites, 195 checks, all green**: `test_bridge` (26), `test_sleeper` (13), `test_hedge`
+`tests/` — **15 suites, 215 checks, all green**: `test_bridge` (26), `test_sleeper` (13), `test_hedge`
 (8), `test_punt` (8), `test_cohort_skew` (10), `test_dart` (23), `test_handcuff` (16), `test_cohort_pull`
 (19), `test_defer` (8), `test_role_alpha` (7), `test_dst` (14), `test_kicker` (7, incl. the L47 filled-K
-gate), `test_opponent` (25, L40), `test_shape` (11, L46). Plus the two stress suites in `mc_research/`.
+gate), `test_opponent` (25, L40), `test_shape` (11, L46), `test_run` (20, L48). Plus the two stress
+suites in `mc_research/`.
 
 ## Verified vs pending
 - **Verified + deployed:** 195 unit checks, preflight clean, both stress suites ALL PASS, a full 192-pick
   live-mock (the opp-survival rehearsal — opp-active ran live and held).
-- **Pending:** the R7 roster-state mystery (diagnose from the next mock's **pick log**); a real **Sleeper**
-  mock; the **Yahoo** probe go/no-go.
+- **Pending:** the R7 roster-state mystery (diagnose from the next mock's **pick log**); the **POSITION
+  RUN** line's live firing (watch it in the next mock); a real **Sleeper** mock; the **Yahoo** probe
+  go/no-go; **push/deploy of L48** (user's call).
 - **Pre-draft checklist:** run the regen ritual on fresh data; run `tools/fa_watch.py` for late FA signings
   (watch **Stefon Diggs** — unsigned, ADP ~164, a real value IF he signs to a role); one live ESPN mock at
   **slot 7** (download the pick log if anything looks off).
@@ -126,8 +135,8 @@ gate), `test_opponent` (25, L40), `test_shape` (11, L46). Plus the two stress su
 ## ROADMAP — next features
 1. ✅ **Opponent-aware survival** — SHIPPED + rehearsed (L40).
 2. ✅ **Projection consensus** — SHIPPED (L44, FP+ESPN).
-3. **Positional-run detection** — "5 of the last 8 picks were RBs → the cliff is NOW." The clearest next
-   build (self-contained advisor logic).
+3. ✅ **Positional-run detection** — SHIPPED (L48: the advisory `POSITION RUN` line; live-fire check at
+   the next mock).
 4. **Live news/injury layer** — first piece SHIPPED (`fa_watch.py`, Sleeper). Next: an in-app signing/
    injury banner + in-season `nflverse load_injuries` + a FAAB plan (~half the edge is in-season).
 5. **"Upgrade a weak starter" read** (from the mock) — when the lineup is full but a dedicated starter is
