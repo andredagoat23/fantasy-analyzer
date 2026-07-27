@@ -1,0 +1,162 @@
+====================================================================================
+A. R4-6 IN CONTEXT — the worst value band on the board
+====================================================================================
+  R1     n=145  HIT 52.4%  BUST 18.6%  med mult 1.02
+  R2-3   n=243  HIT 60.1%  BUST 18.5%  med mult 1.07
+  R4-6   n=343  HIT 50.4%  BUST 23.0%  med mult 1.01
+  R7-10  n=482  HIT 53.5%  BUST 25.5%  med mult 1.03
+
+  R4-6 by position:
+    RB  n=113  HIT 50.4%  BUST 31.0%  med mult 1.02
+    WR  n=139  HIT 51.1%  BUST 20.1%  med mult 1.01
+    TE  n=41   HIT 48.8%  BUST 24.4%  med mult 1.00
+    QB  n=50   HIT 50.0%  BUST 12.0%  med mult 1.00
+
+====================================================================================
+B. CONDITIONS INSIDE R4-6, BY POSITION
+====================================================================================
+
+  ALL · n=343 · HIT 50.4%
+  condition            lift   P(>0)  note
+  capital_top32       -6.4    0.14  
+  proven_at_price    +10.4    0.98  STRONG
+  had_a_role          +6.7    0.86  
+  light_workload      -8.4    0.06  
+
+  RB · n=113 · HIT 50.4%
+  condition            lift   P(>0)  note
+  capital_top64       +6.9    0.75  
+  wopr_strong        +13.6    0.94  STRONG
+  proven_at_price    +19.0    0.98  STRONG
+  had_a_role         +10.4    0.86  
+  good_offense        -6.2    0.25  
+  light_workload     -17.0    0.04  STRONG
+
+  WR · n=139 · HIT 51.1%
+  condition            lift   P(>0)  note
+  earned_prod         -6.9    0.21  
+  capital_top32       -5.1    0.28  
+  wopr_strong         -7.9    0.16  
+  proven_at_price     +9.3    0.85  
+  had_a_role         +19.9    0.94  STRONG
+  durable_prev        +9.7    0.85  
+  good_offense       +21.0    0.99  STRONG
+  light_workload     -10.7    0.11  
+
+  TE: n=41 — too small to split
+
+====================================================================================
+C. INTERACTION SCAN inside R4-6
+====================================================================================
+  ran 42 condition x split tests; >=12pp gap AND bootstrap P>=0.85
+
+  condition         applies to                  there  elsewhere      P     n
+  proven_at_price   NOT healthy last yr        +30.0       +2.6   0.99   139
+  proven_at_price   NOT had a real role        +27.9       +4.8   0.98    88
+  light_workload    NOT had a real role        -22.2       -8.8   0.03    88
+  proven_at_price   is RB                      +19.0       +6.2   0.98   113
+  capital_top32     NOT experienced (3+ yr)    -17.6       -0.4   0.03   119
+  light_workload    age <=25                   -16.7       -3.8   0.02   125
+  capital_top32     age <=25                   -15.7       -0.6   0.05   125
+  durable_prev      NOT had a real role        +14.7       -0.3   0.91    88
+  wopr_strong       is RB                      +13.6       -4.7   0.91   113
+  had_a_role        NOT healthy last yr        +12.7       -2.2   0.92   139
+  capital_top32     NOT is RB                   -9.2       +3.3   0.10   230
+  wopr_strong       NOT healthy last yr         +8.7       -6.0   0.85   139
+  earned_prod       NOT age <=25                -8.2       +6.9   0.14   218
+  wopr_strong       experienced (3+ yr)         +7.6       -6.0   0.86   224
+  earned_prod       experienced (3+ yr)         -7.2       +6.9   0.15   224
+
+====================================================================================
+D. REPLICATION TEST — does 'capital matters only when there's no role' hold everywhere?
+====================================================================================
+  Found in R2-3 (+42.3pp among no-role players vs +0.6pp among those with a role, n=38).
+  A result that big on that sample is either a real mechanism or a fluke. Replication in
+  bands it was NOT found in is how we tell. Nothing below is tuned.
+
+  --- NFL draft capital top-32 ---
+  band      NO role: lift      P     n     HAS role: lift      P     n
+  R1            (too few)           12              +8.9   0.83   133
+  R2-3             +42.3   1.00    38              +0.6   0.53   205
+  R4-6             -14.0   0.17    88              -6.8   0.15   255
+  R7-10            +12.5   0.93   194              +3.1   0.68   288
+
+  --- NFL draft capital top-64 ---
+  band      NO role: lift      P     n     HAS role: lift      P     n
+  R1            (too few)           12              +6.2   0.75   133
+  R2-3             +33.9   0.99    38              +5.6   0.77   205
+  R4-6              +0.8   0.52    88              -2.1   0.37   255
+  R7-10             +0.5   0.52   194              -0.3   0.49   288
+
+  READ: the rule replicates if the NO-role column is consistently large and positive while
+  the HAS-role column sits near zero, across bands. Judge it on the pattern, not one cell.
+
+  VERDICT — IT DOES NOT REPLICATE.
+  top-32 NO-role goes +42.3 (R2-3, n=38) -> -14.0 (R4-6, n=88) -> +12.5 (R7-10, n=194):
+  it REVERSES in the band with more than twice the sample it was discovered in. And the
+  top-64 version — the same rule one notch wider — collapses to +0.8 and +0.5 outside
+  R2-3. A real mechanism does not evaporate when the cutoff moves from 32 to 64.
+  CONCLUSION: the +42.3pp was almost certainly a fluke of a 38-season cell. WITHDRAWN.
+
+  WHAT SURVIVES: the OTHER half. Capital is near-inert for a player who already HAS a
+  role — +8.9 / +0.6 / -6.8 / +3.1 across the four bands, never meaningful. So 'do not
+  fade an established-role player for a late draft slot' still stands; 'trust a no-role
+  player because of pedigree' does not.
+
+====================================================================================
+E. TE CROSS-CHECK — does the validated R4-5 'dead zone' show up here?
+====================================================================================
+  draft-strategy.md (from a per-slot backtest) says mid-TEs at ~R4-5 are the worst value
+  per pick and ~R6 is the best non-elite pocket. Independent test on this panel:
+    elite TE (ADP 1-25)    n=12   HIT 66.7%  BUST 33.3%  med mult 1.10
+    R3-4 TE (26-50)        n=19   HIT 63.2%  BUST 10.5%  med mult 1.18
+    R5-6 TE (51-75)        n=30   HIT 43.3%  BUST 26.7%  med mult 0.98
+    R7-9 TE (76-110)       n=37   HIT 54.1%  BUST 21.6%  med mult 1.05
+    late TE (111+)         n=79   HIT 46.8%  BUST 27.8%  med mult 1.00
+
+====================================================================================
+F. THE 2026 BOARD AT PICKS 42, 55, 66
+====================================================================================
+  (2025 lookups matched for 35 of 37 board players)
+  Band rule (28_): `proven at price` is INERT for healthy players and only carries signal
+  for someone coming off a missed-time season — buy if he STILL out-produced his price
+  (73% hit), fade if he didn't (43%). Plus the no-role capital rule where it applies.
+
+  player                  pos      ADP  2025            read
+  Javonte Williams        RB16    37.4  16g, RB12       healthy w/ a role → prereqs inert here; judge on VONA/board
+  DeVonta Smith           WR15    37.6  17g, WR19       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Lamar Jackson           QB2     39.5  13g, QB20       MISSED TIME + did NOT out-produce price → FADE profile (43%)
+  Kyren Williams          RB19    39.7  17g, RB9        healthy w/ a role → prereqs inert here; judge on VONA/board
+  Tetairoa McMillan       WR16    40.6  17g, WR15       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Malik Nabers            WR18    41.8  4g, WR99        no 2025 role — capital rule did NOT replicate in this band, so no prereq applies; judge on VONA/board
+  Emeka Egbuka            WR19    42.1  17g, WR24       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Zay Flowers             WR14    43.1  17g, WR7        healthy w/ a role → prereqs inert here; judge on VONA/board
+  Cam Skattebo            RB17    43.5  8g, RB37        MISSED TIME + did NOT out-produce price → FADE profile (43%)
+  Colston Loveland        TE4     45.1  16g, TE12       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Davante Adams           WR17    45.8  14g, WR9        healthy w/ a role → prereqs inert here; judge on VONA/board
+  Travis Etienne          RB18    46.6  17g, RB10       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Tyler Warren            TE3     46.8  17g, TE5        healthy w/ a role → prereqs inert here; judge on VONA/board
+  Drake Maye              QB8     48.2  17g, QB3        healthy w/ a role → prereqs inert here; judge on VONA/board
+  Jayden Daniels          QB5     52.0  7g, QB34        MISSED TIME + did NOT out-produce price → FADE profile (43%)
+  Quinshon Judkins        RB20    54.1  14g, RB27       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Tee Higgins             WR21    54.4  15g, WR17       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Jalen Hurts             QB3     54.9  16g, QB8        healthy w/ a role → prereqs inert here; judge on VONA/board
+  Bucky Irving            RB21    55.3  10g, RB34       MISSED TIME + did NOT out-produce price → FADE profile (43%)
+  Ladd McConkey           WR20    56.4  16g, WR29       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Terry McLaurin          WR22    58.4  10g, WR55       MISSED TIME + did NOT out-produce price → FADE profile (43%)
+  Joe Burrow              QB4     58.6  8g, QB28        MISSED TIME + did NOT out-produce price → FADE profile (43%)
+  Jaylen Waddle           WR25    59.7  16g, WR23       healthy w/ a role → prereqs inert here; judge on VONA/board
+  TreVeyon Henderson      RB24    64.9  17g, RB21       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Carnell Tate            WR31    66.0  rookie/none     no 2025 role — capital rule did NOT replicate in this band, so no prereq applies; judge on VONA/board
+  Kyle Pitts              TE6     66.3  17g, TE2        healthy w/ a role → prereqs inert here; judge on VONA/board
+  Jameson Williams        WR23    66.8  17g, WR12       healthy w/ a role → prereqs inert here; judge on VONA/board
+  DJ Moore                WR28    69.9  17g, WR31       healthy w/ a role → prereqs inert here; judge on VONA/board
+  D'Andre Swift           RB23    70.6  16g, RB14       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Sam LaPorta             TE7     71.1  9g, TE27        MISSED TIME + did NOT out-produce price → FADE profile (43%)
+  Rome Odunze             WR26    72.1  12g, WR41       MISSED TIME + did NOT out-produce price → FADE profile (43%)
+  David Montgomery        RB27    72.6  17g, RB26       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Jadarian Price          RB28    72.7  rookie/none     no 2025 role — capital rule did NOT replicate in this band, so no prereq applies; judge on VONA/board
+  Jaxson Dart             QB14    73.3  14g, QB17       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Harold Fannin           TE5     75.3  16g, TE6        healthy w/ a role → prereqs inert here; judge on VONA/board
+  Luther Burden           WR24    76.1  15g, WR48       healthy w/ a role → prereqs inert here; judge on VONA/board
+  Bhayshul Tuten          RB22    76.2  15g, RB53       healthy w/ a role → prereqs inert here; judge on VONA/board

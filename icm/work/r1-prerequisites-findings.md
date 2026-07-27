@@ -5,8 +5,10 @@ so the useful research is per-player — "what separated the boom seasons from t
 players *like him*." The cohort layer already gives marginal RATES + named comps; it cannot say what
 had to be TRUE.
 
-**Data:** `seasons_exp.parquet`, the project's own 2014-25 panel — 1,661 priced player-seasons from
-2015-2025. Outcome = `mult` (season finish ÷ preseason price): HIT ≥ 1.0, BUST ≤ 0.7. Every condition
+**Data:** `seasons_exp.parquet`, the project's own panel — 1,661 priced player-seasons. **Correction:
+these are 2015-**2024**, not 2015-25.** The 2025 rows carry outcomes but no preseason ADP (5 of 608),
+so they can never enter a price-based analysis; earlier drafts of this doc said 2025 and were wrong.
+2025 is still usable as a "what did he do last year" lookup, which is how the 2026 screens use it. Outcome = `mult` (season finish ÷ preseason price): HIT ≥ 1.0, BUST ≤ 0.7. Every condition
 is knowable ON DRAFT DAY (prior-season or static).
 
 **Rigor.** Findings are stress-tested, not asserted: a **bootstrap** (2,000 resamples, fixed seed) for
@@ -170,7 +172,34 @@ R11+ (0 league-winners in 47 cases). That is a different band and a different ou
 (league-winner, not mult ≥ 1.0). Finding 5 reconciles them: the discount is only worth buying when
 the player *still out-produced his price* despite missing time.
 
-## Finding 9 — the unifying rule: draft capital matters exactly when you can't judge the usage
+## Finding 9 — ❌ WITHDRAWN. The capital rule FAILED replication (`31_`)
+> **This was reported as the best result in the study. It does not hold. Retracted in full below;
+> the original text is kept underneath so the reasoning trail survives.**
+
+The rule was found in R2-3 on a 38-season cell. `31_` re-ran the identical split in every other band,
+untuned:
+
+| band | capital top-32, NO role | n | capital top-64, NO role | n |
+|---|---|---|---|---|
+| R2-3 (where it was found) | **+42.3pp** | 38 | **+33.9pp** | 38 |
+| R4-6 | **−14.0pp** | 88 | +0.8pp | 88 |
+| R7-10 | +12.5pp | 194 | +0.5pp | 194 |
+
+It **reverses** in R4-6 on more than twice the sample it was discovered in, and the top-64 version —
+the same rule one notch wider — collapses to nothing in both other bands. A real mechanism does not
+evaporate when the cutoff moves from 32 to 64. **The +42.3pp was a fluke of a small cell.**
+
+**What survives is the other half.** Capital is near-inert for a player who already has a role:
++8.9 / +0.6 / −6.8 / +3.1 across the four bands — never meaningful anywhere. So:
+- ✅ **"Don't fade an established-role player for a late draft slot"** still stands. Chase Brown
+  (#163), Kyren Williams (#164), Achane (#84) and Nico Collins (#89) should not be marked down for
+  draft capital — that conclusion is unchanged and is now supported in four bands instead of one.
+- ❌ **"Trust Jeremiyah Love because of his #3 pedigree"** is withdrawn. There is no validated
+  prerequisite for a no-role player; judge him on the board.
+
+*Original text, superseded:*
+
+### ~~The unifying rule: draft capital matters exactly when you can't judge the usage~~
 The interaction scan (35 tests, survivors listed with their sample sizes) produced one result far
 beyond what noise makes, plus a family of results telling the same story:
 
@@ -194,6 +223,49 @@ against them. Concretely: do **not** fade Chase Brown (#163), Kyren Williams (#1
 (#84) or Nico Collins (#89) for weak draft capital — all four carried genuine 2025 roles (69%, 63%,
 63%, 35% shares). A naive marginal capital screen would have wrongly faded all of them.
 
+## Finding 10 — rounds 4-6: the worst band, and it rewards the OPPOSITE of round 1 (`31_`)
+It is the weakest value band on the board — HIT 50.4%, and the highest bust rate at 23.0%. RBs are
+the danger: **31.0% bust rate**, the worst cell anywhere in the study.
+
+The conditions that work here are position-specific and, notably, several **invert** what worked in
+round 1:
+
+| position | condition | lift | P(>0) |
+|---|---|---|---|
+| RB | proven at price | **+19.0** | 0.98 |
+| RB | receiving involvement (WOPR) | +13.6 | 0.94 |
+| RB | **light prior workload** | **−17.0** | 0.04 |
+| WR | good offense (team implied total) | **+21.0** | 0.99 |
+| WR | had a real role last year (50%+ snaps) | +19.9 | 0.94 |
+
+Light workload *helped* availability in round 1 and actively **hurts** here — in the mid rounds a
+low-usage back is low-usage because he isn't the guy, not because he's being preserved. And offense
+quality, which was dead everywhere else, is the single strongest WR signal in this band.
+
+## Finding 11 — the conditional injury rule REPLICATED, and it's the real keeper (`31_`)
+Unlike Finding 9, this one held up. `28_` found `proven_at_price` is inert for healthy players and
+lives entirely in an interaction with missed time. `31_`'s independent scan over R4-6 found exactly
+that structure again: **+30.0pp for players who were NOT healthy last year (P=0.99, n=139) versus
++2.6pp for those who were.** Same shape, same band, found by an automated scan that wasn't looking
+for it.
+
+**The rule:** for a player coming off a season where he missed time, ask whether he *still*
+out-produced his current price. Yes → buy. No → fade. For healthy players it says nothing.
+
+Applied to the 2026 board at picks 42/55/66, the fade profile catches **Lamar Jackson** (13g, QB20,
+priced QB2), **Jayden Daniels** (7g, QB34, priced QB5), **Joe Burrow** (8g, QB28, priced QB4),
+**Terry McLaurin** (10g, WR55, priced WR22), **Bucky Irving** (10g, RB34, priced RB21) and **Cam
+Skattebo** (8g, RB37, priced RB17). Every one missed time in 2025 *and* finished below the price
+he's carrying now — the 43% profile, not the 73% one.
+
+## Finding 12 — TE cross-check: suggestive, not decisive
+`draft-strategy.md` says mid-TEs at ~R4-5 are a dead zone and ~R6 is the best non-elite pocket. By
+ADP bucket: TEs priced 26-50 hit 63.2% (median 1.18x, n=19) while TEs priced **51-75 hit just 43.3%
+(median 0.98x, n=30)** — the worst TE bucket on the board. That is broadly consistent with a
+mid-round TE dead zone, but my ADP buckets straddle the round boundaries the original claim used, and
+n is 19-30 per cell. **Neither confirms nor refutes it** — the existing per-slot backtest remains the
+better source.
+
 ---
 
 ## Honest limits
@@ -204,9 +276,12 @@ against them. Concretely: do **not** fade Chase Brown (#163), Kyren Williams (#1
   `25_` exists precisely because the first pass over-claimed.
 - The "missed time + proven" buy cell is n=22. Directionally strong, not precise.
 - Finding 1 (the failure-mode split) is a plain descriptive count and is the most robust thing here.
-- The interaction scan (Finding 9) ran 35 tests and ~15 cleared the bar, which is more than chance
-  would give but still means individual rows need re-checking. The capital × no-role row (+42.3pp,
-  P=1.00) is the one far enough outside noise to act on, and it has a clean mechanism.
+- **The interaction scan produces false positives, and we now have a measured example.** Its
+  headline row (capital × no-role, +42.3pp at P=1.00) failed replication outright. A bootstrap tells
+  you a result is stable *within the sample it was found in*; it cannot tell you the sample wasn't a
+  lucky slice. **Only replication in data the finding wasn't discovered in can do that.** Treat every
+  scan survivor as a hypothesis until it has been re-tested in another band — that is now the
+  standing rule for this research line.
 - Finding 8's negative conditions are about BEATING A PRICE, not about football quality. "Durable
   players are bad" would be a catastrophic misreading — the claim is that durability is already paid
   for at that price. Never carry these into a context where the outcome isn't value-over-price.
