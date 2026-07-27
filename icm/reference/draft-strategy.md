@@ -77,18 +77,26 @@ probability, a position where a comparable player lasts several rounds yields a 
 guys now, grab that position later); a real cliff yields a HIGH VONA. No separate "when does the next
 guy go" rule is needed — VONA is the point-maximizing signal for it.
 
-**POSITION RUN (L48, advisory) — the one timing signal VONA cannot carry: LIVE momentum.** ADP
-survival prices the market average and the opponent read (L40) prices roster needs — neither sees the
-room's observed rate. `advisor._run_read` scans the last 8 synced picks (live-sync only; manual mode
-keeps no order): each position's baseline share comes from the top-12-by-ADP pool AS OF the window
-start (the window's own picks are added back, so a chalk R1 RB streak is NOT a run), and surprise is
-the plain binomial tail. HOT (k≥3, P(X≥k)≤.05) at a needed position → act a pick early (treat 'risky'
-wheels there as gone); at an un-needed one → let it burn. COLD (P(X≤k)≤.10, needed positions only)
-≠ fade — the value is falling TO you: a faller worth taking NOW already tops TOP PICKS (COLD never
-demotes anyone); otherwise take the scarcer need first and collect the faller on the wheel — the
-market-evidence twin of the DEFER sequencing (L33). ADVISORY line only: nothing feeds
-VONA/wheel/TOP PICKS (no pick-by-pick corpus exists to validate a magnitude; the opp effective
-horizons are the v2 slot if mocks demand teeth). `tests/test_run.py`.
+**COLD POSITION (L48b, advisory) — the one timing signal VONA cannot carry: a room SKIPPING a
+position.** ADP survival prices the market average and the opponent read (L40) prices roster needs —
+neither sees the room's observed rate. `advisor._cold_read` scans the last 8 synced picks (live-sync
+only; manual mode keeps no order): the baseline share comes from the top-12-by-ADP pool AS OF the
+window start (the window's own picks are added back, so a drained board can't fake a cold read), and
+surprise is the binomial lower tail (P(X≤k)≤.10), fired only for a position that can still fill a
+starting slot and that ADP expected ≥1 pick from (which is why QB/TE never fire in a 1QB league —
+confirmed: 0 firings across 111 real 1QB drafts).
+
+COLD ≠ fade — the value is falling TO you: a faller worth taking NOW already tops TOP PICKS (this
+never demotes anyone); otherwise take the scarcer need first and collect the faller on the wheel, the
+market-evidence twin of the DEFER sequencing (L33). **Measured on 1,162 real 12-team drafts / 372,394
+Sleeper picks:** a skipped position keeps getting skipped — WR −11.5pp (1QB) / −7.7pp (superflex) vs
+a slot-matched baseline over the next 4 picks; RB −2.5/−3.5pp.
+
+**The mirror read — "a run is on, that position is draining, act early" — was TESTED on the same
+corpus and is FALSE** (RB runs: −2.9pp in 1QB, −1.0pp on 9,200 superflex windows; nulls at every run
+size). It was removed, and the SYSTEM prompt now tells the model so, because it will otherwise supply
+that folk belief from training. ADVISORY only: nothing feeds VONA/wheel/TOP PICKS — a ~7-12pp
+survival nudge is a tie-breaker. `tests/test_cold.py`. Evidence: `icm/work/run-dynamics-findings.md`.
 
 ## Why QB/TE fall on their own — VONA, augmented by the PUNT READ at turns
 QB and TE are deep, so comparable production usually still lasts to your next pick → their VONA is

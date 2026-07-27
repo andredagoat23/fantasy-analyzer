@@ -20,9 +20,10 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
   HEDGE READ (`_hedge_read`,
   L27 — risky filled 1-start); HANDCUFF READ (`_handcuff_read` + `_go_score`, L30/31 — GO-screened RB
   backups behind my starters); DART READ (`_dart_profiles`/`_dart_read`, L31 — R11+ BUY/FADE tiers);
-  ROSTER RISK (L23); STREAMER ALERT (L26); POSITION RUN (`_run_read`, L48 — ADVISORY-only
-  live-market read: HOT/COLD of the last 8 synced picks vs the ADP-expected mix, wired from
-  `sync_picks` via `recent_picks=`; never re-ranks TOP PICKS). Cohort block prints median +
+  ROSTER RISK (L23); STREAMER ALERT (L26); COLD POSITION (`_cold_read`, L48b — ADVISORY-only
+  live-market read: a position the room is SKIPPING vs the ADP-expected mix over the last 8 synced
+  picks, wired from `sync_picks` via `recent_picks=`; never re-ranks TOP PICKS. The mirror "run is
+  on" read was measured on 372k real picks and REMOVED as false). Cohort block prints median +
   trimmed-mean (L29).
   `stream_advice()` streams the pick/chat; `prelook()` is the deep BACKGROUND pre-read; `parse_scoring()`
   / `suggest_strategy()` are one-shot setup helpers. SYSTEM is prompt-cached (`_system_blocks`, ~90%
@@ -107,7 +108,7 @@ Plain-assert suites (no pytest dep), run each with `.venv/bin/python tests/<file
 `test_cohort_skew` (10, L29), `test_dart` (23, L31), `test_handcuff` (16, L30/31),
 `test_cohort_pull` (19, L32), `test_defer` (8, L33), `test_role_alpha` (7, L34), `test_dst`
 (14, L43), `test_kicker` (7, L38/47), `test_opponent` (25, L40), `test_shape` (11, L46),
-`test_run` (20, L48) — 15 suites, 215 checks.
+`test_cold` (21, L48b) — 15 suites, 216 checks.
 Plus the two stress suites: `icm/work/mc_research/11_stress_test.py` (component invariants + cohort
 LOSO) and `12_full_system_stress.py` (24 offline drafts). And `tools/preflight.py` (runtime CSV
 health) — run all after any board/priors regeneration.

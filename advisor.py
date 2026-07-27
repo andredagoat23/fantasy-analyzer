@@ -232,7 +232,7 @@ DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
   • QB has LOW value-over-replacement: an elite QB IS more reliable than a late one, but the early pick costs more than that edge is worth (the RB/WR you'd take instead is worth more) — so PUNT to the QB value pocket and stream if it misses. Don't spend an early pick on QB; don't wait so long the very last QBs cost you.
   • RB is historically the HIGHER-BUST, faster-declining position — its value lives in the reliable tier; after the cliff, busts climb fast.
   • WR is historically the DEEPER, SAFER position (usually reliable well past WR20) — BUT it varies by class: if the POSITION SHAPE line shows WR thinning EARLY (low WR cliff / high mid-tier bust), secure a reliable WR EARLY this year instead of leaving it to the mid-round minefield.
-- POSITION RUN (live, only when the line appears in the context): the room's last few picks ran HOT or COLD on a position vs the mix ADP expected — real-time herding that the VONA/wheel/survival math does NOT see (it prices ADP + opponent rosters, not the live rate). It is an advisory TIMING overlay: it never overrides a hard gate and never re-ranks TOP PICKS. HOT at a position I still NEED → act a pick early — treat that position's "risky" wheels as "gone" and don't plan a wheel-back there. HOT at a position I DON'T need → good news, let it burn: every pick spent there pushes value at my positions back to me. COLD at a position I need → its value is falling TO me, not away: a faller worth taking RIGHT NOW already tops TOP PICKS (take him — that IS the value pick; COLD never demotes anyone), otherwise take the scarcer need first and collect the faller on the wheel-back — the cold room makes that safer than the wheel column says, though it's odds, not a promise for one specific player.
+- COLD POSITION (live, only when the line appears in the context): the room has been SKIPPING a position I can still start. This is MEASURED on 1,162 real 12-team drafts (372,394 picks): a cold position KEEPS getting skipped — roughly 12 percentage points fewer WRs than baseline come off the board over the next four picks (smaller for RB). VONA/wheel do NOT see this; they price ADP + opponent rosters, not the room's live rate. Read it as the value FALLING TO ME: if a faller is worth taking right now he ALREADY tops TOP PICKS — take him, that IS the value pick — otherwise take the scarcer need first and collect the faller on the wheel-back, which is safer here than the wheel column says. Advisory TIMING overlay only: it never overrides a hard gate and never re-ranks TOP PICKS, and it's odds, not a promise for one specific player. IMPORTANT — the OPPOSITE read ("a run is on at a position, it's draining, act early / treat its wheels as gone") was tested on those same 372k picks and is FALSE: positional runs do NOT continue. So never infer urgency from a burst of picks at one position, and never tell me a position is "running" — if that mattered you would see a line about it, and you won't, because it doesn't.
 - AMBIGUOUS-ROOM PAIRS (backtested tie-breaker, advisory): in an UNSETTLED RB backfield, owning BOTH mid-tier backs is a smart CONSOLIDATION — carries are a one-winner pie, so same-team RBs anti-correlate (one wins the job, the other busts) and I own whoever emerges (lands a startable RB ~73% of the time vs ~68% diversifying). Do NOT do this for WRs: same-team WRs rise and fall TOGETHER (shared targets + the same offense), so a 2nd WR from a room I already own is REDUNDANT — diversify to a different team for a higher ceiling. Net: a 2nd back from a committee I'm already in is fine; a 2nd WR from a room I already own → prefer a different team.
 - Roster construction (HARD GATE): lock startable-quality starters early; chase upside (ceiling, boom, rookies) on the bench late. Once my starters + FLEX are full, only recommend a player who genuinely raises my bench's upside at a position that wins leagues (RB/WR ceiling, an elite TE). NEVER recommend a 2nd QB, or any D/ST or K before my lineup is full, or a redundant backup, just because his VONA or a VALUE tag looks good — a steal I can't start adds nothing to my roster.
 - BENCH-ONLY positions (fill starters first): if I already have enough at a FLEX position to start all I'd play there (3 RB = RB1+RB2+FLEX, 3 WR, 2 TE), a FURTHER one is BENCH-ONLY — it can't crack my lineup. While a starter slot elsewhere is open (e.g. I have 3 RB and 0 WR), NEVER take that bench-only player over a player who fills the open starter, no matter how high his VONA. I mark these "BENCH-ONLY" in ROSTER NEEDS + TOP PICKS and demote them below the fillers — trust it: draft the open-starter filler.
@@ -258,7 +258,7 @@ D/ST & KICKER (streamers — draft LAST)
 Never draft a D/ST or K before your starting lineup is full — they're last-2-3-rounds picks with tiny week-to-week edges. Defenses aren't in the main board data; when I ask about D/ST, recommend from the D/ST ranking I give you (Tier 1 are the best; a Tier 1-2 defense late is ideal, and don't reach — they're nearly interchangeable). For kickers, recommend ONLY from the KICKER ranking I give you (it's from the board — do NOT name a kicker from memory; last year's big names are often wrong now), and grab a top one in the final round.
 
 SCARCITY IS ALREADY IN VONA — don't reason about it separately
-Do not talk about "tiers" or scarcity as a separate factor: VONA already IS the scarcity-aware number (value lost by waiting, given who could still be left). A thin position shows up as a high VONA for its best remaining player; a deep one shows up as a low VONA. Just draft the highest VONA at a position I need — that IS getting ahead of a positional run, correctly and automatically. The one thing VONA cannot see is LIVE momentum — the POSITION RUN line, when present, covers exactly that; apply it as the timing overlay described in the toolkit.
+Do not talk about "tiers" or scarcity as a separate factor: VONA already IS the scarcity-aware number (value lost by waiting, given who could still be left). A thin position shows up as a high VONA for its best remaining player; a deep one shows up as a low VONA. Just draft the highest VONA at a position I need — that IS getting ahead of a positional run, correctly and automatically. (Real draft data confirms runs don't continue, so there is nothing extra to chase.) The one thing VONA cannot see is a room that is systematically SKIPPING a position — the COLD POSITION line, when present, covers exactly that; apply it as the timing overlay described in the toolkit.
 
 SURVIVAL / "will he wheel back to me?" REASONING — DO NOT DO THIS MATH YOURSELF
 Every number you need is precomputed and given to you; you must NEVER calculate pick numbers, picks-away, or wheel-back yourself (that arithmetic is where mistakes happen, and we can't afford them). Trust the given values verbatim:
@@ -880,33 +880,44 @@ def opponent_read(available, draft_pos, window_owners, rosters):
     return {"eff": eff, "summary": _opp_summary(horizon, window_owners, rosters, s, n_eff, N)}
 
 
-# Positional-run detection (roadmap #3). The live pick stream carries evidence ADP can't: ADP-based
-# survival assumes the room drafts at the market-average position mix, and the opponent read prices
-# roster NEED — neither sees the observed RATE. When 5 of the last 8 picks are RBs, the room is
-# draining RB ~2x faster than priced and every RB survival/wheel read is optimistic; the mirror
-# position is falling TO me. Detection is a plain binomial surprise test — observed count vs the
-# share ADP expected — significance levels, not fitted knobs (we hold no pick-by-pick draft corpus
-# to tune against). ADVISORY line only: VONA/wheel/horizons are untouched (an unvalidated magnitude
-# doesn't ship into the math); the v2 slot, if mocks demand teeth, is the opp `eff` horizons.
-_RUN_WINDOW = 8       # picks scanned for a run ("5 of the last 8")
-_RUN_MIN_N = 6        # don't call runs off a tiny early sample
-_RUN_MIN_K = 3        # a HOT run needs at least this many picks regardless of surprise
-_RUN_P = 0.05         # binomial upper-tail prob at/below which a position is HOT
-_COLD_P = 0.10        # lower-tail prob at/below which a still-needed position is COLD
+# COLD-POSITION detection (roadmap #3 — shipped as a run read, CORRECTED to cold-only by research).
+# The live pick stream carries evidence ADP can't: ADP survival assumes the room drafts at the
+# market-average position mix and the opponent read (L40) prices roster NEED — neither sees the
+# observed RATE at which the room is actually taking a position.
+#
+# MEASURED, not assumed — 1,162 completed 2026 12-team Sleeper drafts, 372,394 picks, segmented by
+# format (icm/work/run-dynamics-findings.md, mc_research/21_+22_):
+#   * A position the room SKIPS keeps getting skipped. Over the next 4 picks vs a slot-matched
+#     baseline: WR -11.5pp (1QB) / -7.7pp (superflex, n=15.6k windows); RB -2.5 / -3.5pp. REAL, and
+#     it replicates across both formats. So the value really does keep falling toward me.
+#   * The mirror belief — "a run is on, that position is draining, grab one early" — is FALSE. RB
+#     runs measure -2.9pp (1QB) and -1.0pp on 9,200 superflex windows; every HOT cell is a null at
+#     every run size. The original HOT branch shipped that advice and was CUT because of this.
+#   * 1-start depletion ("a QB run uses up the QB-needy teams") is real but far too small to act on:
+#     +2.5pp more already-have teams after a QB run. No position carve-out is needed — the `exp >= 1`
+#     gate below never fires for QB/TE in a 1QB league anyway (their expected share across 8 picks is
+#     under one pick), which is exactly what the corpus shows (QB COLD fired 0 times in 111 drafts).
+# Mechanism honesty: this likely measures room/settings PREFERENCE persisting rather than momentum —
+# a WR-light room stays WR-light. Equally predictive, so equally actionable.
+# ADVISORY only: VONA/wheel/TOP PICKS untouched. A ~7-12pp survival nudge is a tie-breaker, not a
+# re-rank — and per L48 the DIRECTION of advice needs validating, not just the size of a knob.
+_RUN_WINDOW = 8       # picks scanned
+_RUN_MIN_N = 6        # don't read the room off a tiny early sample
+_COLD_P = 0.10        # lower-tail prob at/below which a still-needed position reads COLD
 
 
-def _run_read(available, recent, needed=None):
-    """POSITION RUN — detect a live positional run (HOT) or freeze-out (COLD) in the last picks.
+def _cold_read(available, recent, needed=None):
+    """COLD POSITION — the room is SKIPPING a position I can still start, so its value falls to me.
 
     `recent` = ordered oldest->newest [(position, adp_rank) | None, ...] for every synced pick
     (None = a pick that didn't resolve to the board — a D/ST or unmatched name; it consumed a real
     pick, so it stays in the window diluting the counts). Baseline share per position = its slice of
-    the top-_OPP_TOP_N-by-ADP pool AS OF the window start — current `available` plus the window's
-    own picks added back, so a run can't drain its own baseline and overstate its surprise. Surprise
-    is the plain binomial tail (coin-flip math): HOT when P(X >= k) <= _RUN_P with k >= _RUN_MIN_K;
-    COLD when P(X <= k) <= _COLD_P, only for a position in `needed` (it can still fill a starting
-    slot — a cold position I can't use isn't actionable). A zero-share position (nobody near the top
-    of the board) that still draws _RUN_MIN_K+ picks IS a run — reaches ADP saw no reason for."""
+    the top-_OPP_TOP_N-by-ADP pool AS OF the window start — current `available` plus the window's own
+    picks added back, so a stretch of picks can't drain its own baseline and overstate the surprise.
+    Surprise is the plain binomial lower tail (coin-flip math): COLD when P(X <= k) <= _COLD_P, only
+    for a position in `needed` (one that can still fill a starting slot — a cold position I can't use
+    isn't actionable) and only when ADP expected at least one pick there (`exp >= 1`), which keeps
+    the read off positions too thin for the math to mean anything."""
     if not recent or len(recent) < _RUN_MIN_N:
         return ""
     if "adp_rank" not in available.columns or "position" not in available.columns:
@@ -927,26 +938,23 @@ def _run_read(available, recent, needed=None):
                                      for i in range(lo_i, hi_i + 1))
     bits = []
     for pos in _OPP_POS:
+        if pos not in needed:
+            continue
         s = float(share.get(pos, 0.0))
         k = sum(1 for e in win if e and e[0] == pos)
         exp = n * s
-        if k >= _RUN_MIN_K and tail(k, n, s) <= _RUN_P:
-            act = (f"you still need {pos} — act before your wheel; treat 'risky' {pos} wheels as gone"
-                   if pos in needed else
-                   f"you don't need {pos} — let it burn; every {pos} taken pushes value at your "
-                   f"positions back to you")
-            bits.append(f"{pos} HOT — {k} of the last {n} picks vs ~{exp:.1f} expected "
-                        f"(chance ≤{max(tail(k, n, s), 0.01):.0%}): {act}")
-        elif pos in needed and exp >= 1.0 and tail(0, k, s) <= _COLD_P:
-            bits.append(f"{pos} COLD — {k} of the last {n} picks vs ~{exp:.1f} expected "
+        if exp >= 1.0 and tail(0, k, s) <= _COLD_P:
+            bits.append(f"{pos} — only {k} of the last {n} picks vs ~{exp:.1f} expected "
                         f"(chance ≤{max(tail(0, k, s), 0.01):.0%}): {pos} value is falling TO you — "
-                        f"a faller worth taking NOW already tops TOP PICKS (COLD never demotes "
+                        f"a faller worth taking NOW already tops TOP PICKS (this never demotes "
                         f"anyone); otherwise take the scarcer need first and collect the faller on "
-                        f"the wheel — safer than the wheel column says")
+                        f"the wheel — the wheel-back here is safer than the wheel column says")
     if not bits:
         return ""
-    return ("POSITION RUN (live read of the room's recent picks; NOT baked into VONA/wheel — "
-            "apply as judgment): " + " | ".join(bits))
+    return ("COLD POSITION (live read of the room; measured on 1,162 real 12-team drafts / 372k "
+            "picks — a position the room skips KEEPS getting skipped, ~12pp fewer WR than baseline "
+            "over the next 4 picks, less for RB; NOT baked into VONA/wheel — apply as judgment): "
+            + " | ".join(bits))
 
 
 def _wheel_label(adp, horizon):
@@ -1083,7 +1091,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     D/STs already taken by ANY team, so the ranking never recommends a drafted defense (L36). `opp` =
     the opponent_read dict ({"eff", "summary"}) when live rosters make survival opponent-aware, else None.
     `recent_picks` = the ordered synced pick stream as [(position, adp_rank) | None, ...] for the
-    POSITION RUN read (roadmap #3); None (manual mode / offline callers) -> no run line."""
+    COLD POSITION read (roadmap #3); None (manual mode / offline callers) -> no cold line."""
     horizon = _horizon(draft_pos)
     eff = opp["eff"] if opp else {}          # per-position effective horizons (empty -> plain ADP)
     if "vona" not in available.columns:      # normally precomputed in draft.py; compute if standalone
@@ -1417,14 +1425,14 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     # numbers are already baked into the VONA + wheel columns; this line just makes the WHY legible.
     opp_line = (opp["summary"] + "\n") if opp and opp.get("summary") else ""
 
-    # POSITION RUN (roadmap #3): the room's recent picks vs the mix ADP expected. HOT = a position is
-    # draining faster than the survival math assumes (act early if I need it); COLD = a needed
-    # position's value is falling to me (the wheel-back there is safer than priced). Advisory only —
-    # nothing feeds back into VONA/wheel; needed = positions that can still fill a starting slot.
-    run_line = ""
+    # COLD POSITION (roadmap #3): a position the room keeps SKIPPING — its value is falling to me and
+    # the wheel-back there is safer than ADP prices it (measured; see _cold_read). The mirror "run is
+    # on" read was cut as unsupported. Advisory only — nothing feeds back into VONA/wheel; needed =
+    # positions that can still fill a starting slot.
+    cold_line = ""
     if recent_picks:
-        run_line = _run_read(available, recent_picks, set(dedicated_open) | set(flex_only))
-        run_line = run_line + "\n" if run_line else ""
+        cold_line = _cold_read(available, recent_picks, set(dedicated_open) | set(flex_only))
+        cold_line = cold_line + "\n" if cold_line else ""
 
     pc = _playcallers()
     pc_line = ""
@@ -1453,7 +1461,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         "LIVE DRAFT STATE\n"
         + dp_line
         + opp_line
-        + run_line
+        + cold_line
         + shape_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"{needs}\n"

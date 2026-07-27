@@ -535,8 +535,8 @@ if st.session_state.get("use_opp", True) and sync_active and st.session_state.ge
     _window_owners = [_seat_owners.get(bridge.seat_of(n, teams)) for n in range(_w_start, horizon)]
     opp = advisor.opponent_read(available, draft_pos, _window_owners, _rosters)
 
-# POSITION RUN (roadmap #3): the ordered live pick stream -> (position, adp) per pick for the
-# advisor's run read. Sync-only — manual mode keeps no pick order (`drafted` is a set). Unresolved
+# COLD POSITION (roadmap #3): the ordered live pick stream -> (position, adp) per pick for the
+# advisor's cold read. Sync-only — manual mode keeps no pick order (`drafted` is a set). Unresolved
 # picks (D/ST, unmatched names) map to None but still occupy window slots. Advisory context line
 # only; the VONA/wheel math is untouched.
 recent_picks = None

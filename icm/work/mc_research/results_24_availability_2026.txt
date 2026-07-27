@@ -1,0 +1,55 @@
+
+==============================================================================
+PART A — is R1 AVAILABILITY predictable?  n=145  base P(15+ games) = 58.6%
+==============================================================================
+claim                n_true   P15|T   P15|F   lift    ho_n   ho|T   ho|F ho_lift  verdict
+healthy_last_yr          76   56.6%   60.9%  -4.3      33  69.7%  73.3%   -3.6  no signal
+no_injury_hist          106   55.7%   66.7% -11.0      33  69.7%  73.3%   -3.6  no signal
+didnt_end_early         134   (too few either way)
+young                    58   62.1%   56.3%  +5.7      19  78.9%  65.5%  +13.4  no signal
+under_27                 75   56.0%   61.4%  -5.4      23  78.3%  64.0%  +14.3  no signal
+light_workload           69   66.7%   51.3% +15.4      24  75.0%  66.7%   +8.3  HOLDS
+is_wr                    60   66.7%   52.9% +13.7      23  73.9%  68.0%   +5.9  HOLDS
+big_back                 48   47.9%   63.9% -16.0      11  54.5%  75.7%  -21.1  no signal
+low_exp                  69   58.0%   59.2%  -1.2      19  78.9%  65.5%  +13.4  no signal
+
+prior-year games -> P(15+ games this year), by bucket:
+  prev <=10 (hurt badly)      n=14   P(15+) 57.1%  HIT(mult>=1) 50.0%
+  prev 11-14 (some missed)    n=24   P(15+) 62.5%  HIT(mult>=1) 50.0%
+  prev 15-16 (basically full) n=79   P(15+) 53.2%  HIT(mult>=1) 51.9%
+  prev 17+ (iron man)         n=22   P(15+) 68.2%  HIT(mult>=1) 54.5%
+
+  correlation prev_games vs games: +0.019  (0 = last year tells you nothing)
+  correlation age vs games:        -0.058
+  RB: P(15+ games) 51.9%   (n=81)
+  WR: P(15+ games) 66.7%   (n=60)
+
+==============================================================================
+PART B — the 2026 first round scored on the surviving prerequisites
+==============================================================================
+player                pos    ADP age  earned?  capital  role/proof   2025 g met
+Jahmyr Gibbs          RB1    1.7  24  earned ✓ #12 ✓    tgt 17% ✓    17g    3/3
+Bijan Robinson        RB2    2.5  24  earned ✓ #8 ✓     tgt 20% ✓    17g    3/3
+Puka Nacua            WR1    3.7  25  earned ✓ #177 ✗   fin WR1 ✓    16g    2/3
+Ja'Marr Chase         WR2    4.6  26  earned ✓ #5 ✓     fin WR4 ✗    16g    2/3
+Christian McCaffrey   RB3    6.0  30  earned ✓ #8 ✓     tgt 23% ✓    17g    3/3
+Jaxon Smith-Njigba    WR3    6.0  24  earned ✓ #20 ✓    fin WR2 ✓    17g    3/3
+Amon-Ra St. Brown     WR4    8.1  26  earned ✓ #112 ✗   fin WR3 ✓    17g    2/3
+Jonathan Taylor       RB4    8.2  27  earned ✓ #41 ✗    tgt 10% ✓    17g    2/3
+CeeDee Lamb           WR5   10.6  27  earned ✓ #17 ✓    fin WR21 ✗   13g    2/3
+Justin Jefferson      WR6   12.0  27  earned ✓ #22 ✓    fin WR20 ✗   17g    2/3
+De'Von Achane         RB5   12.8  24  earned ✓ #84 ✗    tgt 18% ✓    16g    2/3
+James Cook            RB8   14.1  26  earned ✓ #63 ✗    tgt 8% ✗     17g    1/3
+Saquon Barkley        RB7   16.6  29  earned ✓ #2 ✓     tgt 11% ✓    16g    3/3
+Ashton Jeanty         RB6   16.7  22  earned ✓ #6 ✓     tgt 15% ✓    17g    3/3
+Jeremiyah Love        RB12  17.6  21  earned ✓ #3 ✓     no tgt ✗     —      2/3
+
+cohort comps (already computed by cohort_priors.py) for the top 8:
+  Jahmyr Gibbs         boom 41% / bust 21% · med 1.45x · comps: Jahmyr Gibbs '25->RB3 (1.45x) | Ezekiel Elliott '19->RB3 (1.35x) | Bijan Robin
+  Bijan Robinson       boom 34% / bust 28% · med 1.02x · comps: Bijan Robinson '25->RB2 (1.47x) | Jonathan Taylor '22->RB31 (0.60x) | Christia
+  Puka Nacua           boom 22% / bust 16% · med 1.17x · comps: Tyreek Hill '19->WR33 (0.79x) | Amon-Ra St. Brown '24->WR2 (1.18x) | Odell Bec
+  Ja'Marr Chase        boom 22% / bust 16% · med 0.99x · comps: Julio Jones '16->WR6 (1.02x) | DeAndre Hopkins '18->WR1 (1.32x) | CeeDee Lamb 
+  Christian McCaffrey  boom 26% / bust 26% · med 0.99x · comps: Saquon Barkley '25->RB15 (0.94x) | Marshawn Lynch '15->RB60 (0.35x) | Derrick 
+  Jaxon Smith-Njigba   boom 27% / bust 19% · med 0.91x · comps: CeeDee Lamb '23->WR1 (1.60x) | Ja'Marr Chase '24->WR1 (1.53x) | Justin Jeffers
+  Amon-Ra St. Brown    boom 20% / bust 16% · med 1.03x · comps: Amon-Ra St. Brown '25->WR3 (1.26x) | Keenan Allen '18->WR12 (1.09x) | Amon-Ra 
+  Jonathan Taylor      boom 26% / bust 26% · med 0.99x · comps: Derrick Henry '21->RB22 (0.78x) | Joe Mixon '22->RB11 (1.04x) | Josh Jacobs '2

@@ -941,7 +941,44 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L48b — Positional runs DON'T continue: 372k real picks killed the feature's premise (Jul 2026)
+- **The correction to L48 below.** L48 shipped a HOT branch telling the model "a run is on at a
+  position you need — act before your wheel, treat its 'risky' wheels as gone." The user then
+  challenged the 1-start half ("a five-QB run should make the NEXT QB pick LESS likely — those teams
+  are done at QB"). Neither claim had evidence, so we went and got some.
+- **The corpus (new capability):** Sleeper's public API IS a pick-by-pick draft corpus. Crawled
+  **1,162 completed 2026 12-team snake drafts / 372,394 picks** (`mc_research/21_`, throttled ~6
+  req/s, no user ids stored) and measured run dynamics (`22_`). **Segmenting by format was
+  essential** — superflex drafts spend 29% of R1 on QB vs 4% in 1QB, and pooling them gave a
+  confidently WRONG answer on the first pass (it showed "QB HOT +3.6pp").
+- **RESULT — runs are folklore.** P(position taken in the next 4) vs a slot-matched baseline after a
+  HOT window: RB **−2.9pp** (1QB) and **−1.0pp** on **9,200** superflex windows; every position, every
+  run size, a null. The dose-response "positives" all sit in cells of n=38-199 while the n=6,799 cell
+  is negative. **A run does not predict more picks at that position.**
+- **RESULT — the COLD side is real and replicates.** A position the room SKIPS keeps getting skipped:
+  WR **−11.5pp** (1QB, n=1,253) / **−7.7pp** (superflex, n=15,628); RB −2.5/−3.5pp. Mechanism is
+  probably room/settings preference persisting rather than momentum — equally predictive either way.
+- **RESULT — 1-start depletion is real but negligible.** After a QB run the next four picking teams
+  already hold a QB 77.3% vs a 74.8% baseline: +2.5pp, far too small to act on. So the user's
+  hypothesis was directionally sound but the effect doesn't matter — and the proposed "restrict flags
+  to RB/WR" fix would have preserved a HOT branch that works for NO position.
+- **Shipped:** HOT deleted; the read is now `_cold_read` → a **COLD POSITION** line carrying its own
+  measured effect size, still advisory (never re-ranks TOP PICKS). `tests/test_cold.py` (21) includes
+  guards that no HOT/urgency phrasing can return. The SYSTEM prompt now actively inoculates the model
+  against the folk belief, since it will otherwise supply it from training.
+- **THE LESSON — validate the DIRECTION of advice, not just the size of a knob.** L48 was careful to
+  keep an unvalidated magnitude out of the math, and that discipline is the only reason this cost one
+  afternoon instead of a bad pick on draft day. But *advisory prose is still a claim*: "act early" is
+  an instruction, and it was backwards. Second lesson: **when a public API can settle an argument,
+  crawl it before theorizing** — and always check whether the corpus mixes formats/rulesets before
+  trusting a split. (Principles 1, 2, 4, 8, 9)
+
+---
+
 ## L48 — Positional-run read: live momentum is real signal, but ships ADVISORY-only (Jul 2026)
+> ⚠️ **SUPERSEDED BY L48b (above).** The HOT half of this was measured against 372k real picks and is
+> FALSE; it has been removed. The COLD half survived and is now the whole feature. Kept for the
+> reasoning trail — the design method was right, the untested premise was not.
 - **Context:** roadmap #3 ("5 of the last 8 picks were RBs → the cliff is NOW"). ADP survival prices
   the market AVERAGE and the opponent read (L40) prices roster NEEDS — neither sees the observed RATE
   of the live room. The data was already on hand: `sync_picks`, the ordered mailbox stream all three

@@ -1,4 +1,9 @@
-# Plan — Positional-run detection (roadmap #3) · Jul 27, 2026 · SHIPPED as L48 (user go'd; verified 15 suites/215 + preflight)
+# Plan — Positional-run detection (roadmap #3) · Jul 27, 2026
+> **STATUS: shipped as L48, then CORRECTED to L48b the same day.** A 1,162-draft / 372k-pick Sleeper
+> crawl (`mc_research/21_`+`22_`, `icm/work/run-dynamics-findings.md`) showed the HOT half of this
+> plan is FALSE — positional runs do not continue (RB −2.9pp in 1QB, −1.0pp on 9,200 superflex
+> windows). HOT was deleted; the validated COLD half is now the whole feature (`_cold_read` → the
+> COLD POSITION line, `tests/test_cold.py`). The plan below is kept as the reasoning trail.
 
 **One-line why:** ADP survival is a season average and the opponent read prices roster NEEDS — neither
 sees the live room's observed RATE; a run ("5 of the last 8 were RBs") means every survival read at
