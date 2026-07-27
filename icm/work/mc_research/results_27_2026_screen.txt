@@ -1,0 +1,147 @@
+SLOT 7 of 12 · picks: 7, 18, 31, 42, 55, 66, 79, 90, 103, 114, 127, 138, 151, 162, 175, 186
+Screened on the condition that is ROBUST for each pick's BAND (see 26_). PASS/FAIL is a
+tie-breaker among comparable players — it never outranks VONA, the board, or your plan.
+
+
+### Pick #7  (mostly R1)
+   PASS  Jahmyr Gibbs            RB1  ADP   1.7  [R1   ] recv role 17%
+   PASS  Bijan Robinson          RB2  ADP   2.5  [R1   ] recv role 20%
+   PASS  Puka Nacua              WR1  ADP   3.7  [R1   ] recv role 29%
+   PASS  Ja'Marr Chase           WR2  ADP   4.6  [R1   ] recv role 30%
+   PASS  Christian McCaffrey     RB3  ADP   6.0  [R1   ] recv role 23%
+   PASS  Jaxon Smith-Njigba      WR3  ADP   6.0  [R1   ] recv role 36%
+   PASS  Amon-Ra St. Brown       WR4  ADP   8.1  [R1   ] recv role 31%
+   PASS  Jonathan Taylor         RB4  ADP   8.2  [R1   ] recv role 10%
+   PASS  CeeDee Lamb             WR5  ADP  10.6  [R1   ] recv role 19%
+   PASS  Justin Jefferson        WR6  ADP  12.0  [R1   ] recv role 30%
+   PASS  De'Von Achane           RB5  ADP  12.8  [R1   ] recv role 18%
+
+### Pick #18  (mostly R2-3)
+   PASS  Justin Jefferson        WR6  ADP  12.0  [R1   ] recv role 30%
+   PASS  De'Von Achane           RB5  ADP  12.8  [R1   ] recv role 18%
+   PASS  James Cook              RB8  ADP  14.1  [R1   ] recv role 8%
+   PASS  Saquon Barkley          RB7  ADP  16.6  [R2-3 ] NFL #2
+   PASS  Ashton Jeanty           RB6  ADP  16.7  [R2-3 ] NFL #6
+   PASS  Jeremiyah Love          RB12 ADP  17.6  [R2-3 ] NFL #3
+   PASS  Trey McBride            TE1  ADP  19.1  [R2-3 ] NFL #55
+   PASS  Drake London            WR7  ADP  19.6  [R2-3 ] NFL #8
+   PASS  Derrick Henry           RB11 ADP  20.0  [R2-3 ] NFL #45
+   PASS  Omarion Hampton         RB9  ADP  20.6  [R2-3 ] NFL #22
+   PASS  Josh Allen              QB1  ADP  23.0  [R2-3 ] NFL #7
+   PASS  Brock Bowers            TE2  ADP  23.4  [R2-3 ] NFL #13
+   PASS  Rashee Rice             WR8  ADP  23.6  [R2-3 ] NFL #55
+
+### Pick #31  (mostly R2-3)
+   PASS  Josh Jacobs             RB13 ADP  26.2  [R2-3 ] NFL #24
+   fail  Nico Collins            WR11 ADP  26.5  [R2-3 ] NFL #89
+   PASS  A.J. Brown              WR10 ADP  26.6  [R2-3 ] NFL #51
+   fail  Chase Brown             RB10 ADP  26.7  [R2-3 ] NFL #163
+   PASS  George Pickens          WR13 ADP  27.7  [R2-3 ] NFL #52
+   PASS  Kenneth Walker          RB15 ADP  28.6  [R2-3 ] NFL #41
+   PASS  Breece Hall             RB14 ADP  32.6  [R2-3 ] NFL #36
+   PASS  Chris Olave             WR12 ADP  34.9  [R2-3 ] NFL #11
+   PASS  Garrett Wilson          WR9  ADP  35.3  [R2-3 ] NFL #10
+
+### Pick #42  (mostly R4-6)
+   PASS  Javonte Williams        RB16 ADP  37.4  [R2-3 ] NFL #35
+   PASS  DeVonta Smith           WR15 ADP  37.6  [R2-3 ] NFL #10
+   PASS  Lamar Jackson           QB2  ADP  39.5  [R2-3 ] NFL #32
+   fail  Kyren Williams          RB19 ADP  39.7  [R2-3 ] NFL #164
+   PASS  Tetairoa McMillan       WR16 ADP  40.6  [R4-6 ] 2025 WR15 vs priced WR15
+   fail  Malik Nabers            WR18 ADP  41.8  [R4-6 ] 2025 WR99 vs priced WR16
+   fail  Emeka Egbuka            WR19 ADP  42.1  [R4-6 ] 2025 WR24 vs priced WR17
+   PASS  Zay Flowers             WR14 ADP  43.1  [R4-6 ] 2025 WR7 vs priced WR18
+   fail  Cam Skattebo            RB17 ADP  43.5  [R4-6 ] 2025 RB37 vs priced RB18
+   fail  Colston Loveland        TE4  ADP  45.1  [R4-6 ] 2025 TE12 vs priced TE3
+   PASS  Davante Adams           WR17 ADP  45.8  [R4-6 ] 2025 WR9 vs priced WR19
+   PASS  Travis Etienne          RB18 ADP  46.6  [R4-6 ] 2025 RB10 vs priced RB19
+   fail  Tyler Warren            TE3  ADP  46.8  [R4-6 ] 2025 TE5 vs priced TE4
+
+### Pick #55  (mostly R4-6)
+   fail  Jayden Daniels          QB5  ADP  52.0  [R4-6 ] 2025 QB34 vs priced QB4
+   fail  Quinshon Judkins        RB20 ADP  54.1  [R4-6 ] 2025 RB27 vs priced RB20
+   PASS  Tee Higgins             WR21 ADP  54.4  [R4-6 ] 2025 WR17 vs priced WR20
+   fail  Jalen Hurts             QB3  ADP  54.9  [R4-6 ] 2025 QB8 vs priced QB5
+   fail  Bucky Irving            RB21 ADP  55.3  [R4-6 ] 2025 RB34 vs priced RB21
+   fail  Ladd McConkey           WR20 ADP  56.4  [R4-6 ] 2025 WR29 vs priced WR21
+   fail  Terry McLaurin          WR22 ADP  58.4  [R4-6 ] 2025 WR55 vs priced WR22
+   fail  Joe Burrow              QB4  ADP  58.6  [R4-6 ] 2025 QB28 vs priced QB6
+   PASS  Jaylen Waddle           WR25 ADP  59.7  [R4-6 ] 2025 WR23 vs priced WR23
+
+### Pick #66  (mostly R4-6)
+   PASS  TreVeyon Henderson      RB24 ADP  64.9  [R4-6 ] 2025 RB21 vs priced RB22
+   fail  Carnell Tate            WR31 ADP  66.0  [R4-6 ] no 2025 finish
+   PASS  Kyle Pitts              TE6  ADP  66.3  [R4-6 ] 2025 TE2 vs priced TE5
+   PASS  Jameson Williams        WR23 ADP  66.8  [R4-6 ] 2025 WR12 vs priced WR25
+   fail  DJ Moore                WR28 ADP  69.9  [R4-6 ] 2025 WR31 vs priced WR26
+   PASS  D'Andre Swift           RB23 ADP  70.6  [R4-6 ] 2025 RB14 vs priced RB23
+   fail  Sam LaPorta             TE7  ADP  71.1  [R4-6 ] 2025 TE27 vs priced TE6
+
+### Pick #79  (mostly R7-10)
+   fail  Jaxson Dart             QB14 ADP  73.3  [R4-6 ] 2025 QB17 vs priced QB7
+   PASS  Harold Fannin           TE5  ADP  75.3  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Luther Burden           WR24 ADP  76.1  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   fail  Bhayshul Tuten          RB22 ADP  76.2  [R7-10] cap✗ recv✗ dur✓ (1/3)
+   fail  George Kittle           TE8  ADP  82.9  [R7-10] cap✗ recv✓ dur✗ (1/3)
+   PASS  Marvin Harrison         WR34 ADP  83.0  [R7-10] cap✓ recv✓ dur✗ (2/3)
+   PASS  Matthew Stafford        QB6  ADP  84.2  [R7-10] cap✓ recv✓ dur✓ (3/3)
+   fail  Brandon Aubrey          K1   ADP  84.8  [R7-10] cap✗ recv✓ dur✗ (1/3)
+
+### Pick #90  (mostly R7-10)
+   PASS  Matthew Stafford        QB6  ADP  84.2  [R7-10] cap✓ recv✓ dur✓ (3/3)
+   fail  Brandon Aubrey          K1   ADP  84.8  [R7-10] cap✗ recv✓ dur✗ (1/3)
+   PASS  DK Metcalf              WR33 ADP  86.2  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Courtland Sutton        WR30 ADP  86.5  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Mike Evans              WR35 ADP  86.8  [R7-10] cap✓ recv✓ dur✗ (2/3)
+   PASS  Tony Pollard            RB26 ADP  87.8  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Michael Pittman         WR32 ADP  89.0  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Alec Pierce             WR29 ADP  92.2  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Dak Prescott            QB10 ADP  92.5  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Caleb Williams          QB13 ADP  93.0  [R7-10] cap✓ recv✓ dur✓ (3/3)
+   fail  Jordyn Tyson            WR39 ADP  95.5  [R7-10] cap✓ recv✗ dur✗ (1/3)
+
+### Pick #103  (mostly R7-10)
+   PASS  Travis Kelce            TE9  ADP  98.3  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Jaylen Warren           RB25 ADP  98.9  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Trevor Lawrence         QB12 ADP  99.2  [R7-10] cap✓ recv✓ dur✓ (3/3)
+   PASS  Chuba Hubbard           RB30 ADP 100.8  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Brian Thomas            WR44 ADP 101.0  [R7-10] cap✓ recv✓ dur✗ (2/3)
+   fail  Brock Purdy             QB9  ADP 101.5  [R7-10] cap✗ recv✓ dur✗ (1/3)
+   PASS  Dallas Goedert          TE10 ADP 101.7  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Parker Washington       WR27 ADP 102.1  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Bo Nix                  QB7  ADP 103.3  [R7-10] cap✓ recv✓ dur✓ (3/3)
+   PASS  Rico Dowdle             RB29 ADP 104.8  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Patrick Mahomes         QB11 ADP 105.2  [R7-10] cap✓ recv✓ dur✗ (2/3)
+   fail  Makai Lemon             WR50 ADP 107.3  [R7-10] cap✓ recv✗ dur✗ (1/3)
+   PASS  Matthew Golden          WR43 ADP 107.4  [R7-10] cap✓ recv✓ dur✗ (2/3)
+   fail  Tucker Kraft            TE13 ADP 108.5  [R7-10] cap✗ recv✓ dur✗ (1/3)
+   PASS  Jakobi Meyers           WR37 ADP 108.7  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Jake Ferguson           TE11 ADP 108.8  [R7-10] cap✗ recv✓ dur✓ (2/3)
+
+### Pick #114  (mostly R7-10)
+   fail  Tucker Kraft            TE13 ADP 108.5  [R7-10] cap✗ recv✓ dur✗ (1/3)
+   PASS  Jakobi Meyers           WR37 ADP 108.7  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Jake Ferguson           TE11 ADP 108.8  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   fail  Rhamondre Stevenson     RB31 ADP 109.2  [R7-10] cap✗ recv✓ dur✗ (1/3)
+   fail  Cameron Dicker          K2   ADP 110.0  [R7-10] cap✗ recv✓ dur✗ (1/3)
+   PASS  Justin Herbert          QB16 ADP 111.5  [R7-10] cap✓ recv✓ dur✓ (3/3)
+   PASS  Wan'Dale Robinson       WR38 ADP 112.3  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   fail  Aaron Jones             RB33 ADP 113.3  [R7-10] cap✗ recv✓ dur✗ (1/3)
+   PASS  Michael Wilson          WR48 ADP 114.8  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   fail  J.K. Dobbins            RB34 ADP 116.5  [R7-10] cap✗ recv✗ dur✗ (0/3)
+   PASS  Kenny Gainwell          RB32 ADP 118.1  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   fail  Travis Hunter           WR74 ADP 118.2  [R7-10] cap✗ recv✗ dur✗ (0/3)
+   PASS  Rachaad White           RB36 ADP 118.6  [R7-10] cap✗ recv✓ dur✓ (2/3)
+   PASS  Ricky Pearsall          WR51 ADP 119.9  [R7-10] cap✓ recv✓ dur✗ (2/3)
+
+### Pick #127 — beyond ADP 125: the validated DART READ playbook owns this range
+
+### Pick #138 — beyond ADP 125: the validated DART READ playbook owns this range
+
+### Pick #151 — beyond ADP 125: the validated DART READ playbook owns this range
+
+### Pick #162 — beyond ADP 125: the validated DART READ playbook owns this range
+
+### Pick #175 — beyond ADP 125: the validated DART READ playbook owns this range
+
+### Pick #186 — beyond ADP 125: the validated DART READ playbook owns this range

@@ -1,0 +1,62 @@
+panel: 1661 priced seasons 2015-2025 · bands by ADP
+
+====================================================================================
+A. BUST TAXONOMY — HOW picks fail, by round band
+====================================================================================
+  R1 (ADP 1-15): 27 busts of 145 (19%)  ->  INJURY 81% · ROLE LOSS 0% · INEFFICIENT 19%
+  R2-3 (ADP 16-40): 45 busts of 243 (19%)  ->  INJURY 82% · ROLE LOSS 11% · INEFFICIENT 4% · unknown usage 2%
+  R4-6 (ADP 41-75): 79 busts of 343 (23%)  ->  INJURY 85% · ROLE LOSS 8% · INEFFICIENT 5% · unknown usage 3%
+  R7-10 (ADP 76-125): 123 busts of 482 (26%)  ->  INJURY 73% · ROLE LOSS 16% · INEFFICIENT 6% · unknown usage 5%
+
+by position (all bands):
+  RB : 160 busts of 584 (27%)  ->  INJURY 80% · ROLE LOSS 13% · INEFFICIENT 3% · unknown usage 4%
+  WR : 150 busts of 656 (23%)  ->  INJURY 73% · ROLE LOSS 13% · INEFFICIENT 9% · unknown usage 5%
+  TE : 47 busts of 185 (25%)  ->  INJURY 77% · ROLE LOSS 11% · INEFFICIENT 13%
+  QB : 35 busts of 236 (15%)  ->  INJURY 97% · ROLE LOSS 0% · INEFFICIENT 3%
+
+====================================================================================
+B. WHAT THE WINNERS DID — usage growth in boom seasons (mult >= 1.3)
+====================================================================================
+  R1 (ADP 1-15): 34 boom seasons -> usage GREW 25%+ in 15% (median usage ratio 1.08x)
+  R2-3 (ADP 16-40): 45 boom seasons -> usage GREW 25%+ in 20% (median usage ratio 1.10x)
+  R4-6 (ADP 41-75): 70 boom seasons -> usage GREW 25%+ in 27% (median usage ratio 1.10x)
+  R7-10 (ADP 76-125): 103 boom seasons -> usage GREW 25%+ in 42% (median usage ratio 1.20x)
+
+====================================================================================
+C. PREREQUISITES BY BAND (stress-tested: bootstrap P + 9-setting grid)
+====================================================================================
+
+--- R1 (ADP 1-15) · n=145 · HIT 52.4% ---
+condition            lift   P(>0)   grid  verdict
+earned_prod        +11.4    0.90    7/9  shaky
+capital             +8.2    0.84    7/9  shaky
+capital_top64       +3.5    0.64    7/9  shaky
+wopr_strong        +11.9    0.93    9/9  ROBUST
+good_offense        +6.5    0.80    6/9  shaky
+light_workload     +10.6    0.89    5/9  shaky
+  (only non-DEAD conditions listed)
+
+--- R2-3 (ADP 16-40) · n=243 · HIT 60.1% ---
+condition            lift   P(>0)   grid  verdict
+capital             +6.3    0.84    6/9  shaky
+capital_top64       +9.1    0.93    7/9  ROBUST
+young_capital       +6.9    0.84    6/9  shaky
+  (only non-DEAD conditions listed)
+
+--- R4-6 (ADP 41-75) · n=343 · HIT 50.4% ---
+condition            lift   P(>0)   grid  verdict
+wopr_strong         +1.4    0.60    5/9  shaky
+proven_at_price    +10.4    0.97    9/9  ROBUST
+had_a_role          +6.7    0.86    7/9  shaky
+durable_prev        +5.0    0.81    5/9  shaky
+young_capital       +1.1    0.55    6/9  shaky
+  (only non-DEAD conditions listed)
+
+--- R7-10 (ADP 76-125) · n=482 · HIT 53.5% ---
+condition            lift   P(>0)   grid  verdict
+capital             +6.9    0.91    8/9  ROBUST
+wopr_strong        +12.2    0.99    7/9  ROBUST
+proven_at_price     +4.0    0.82    5/9  shaky
+had_a_role          +4.2    0.81    4/9  shaky
+durable_prev        +8.7    0.97    8/9  ROBUST
+  (only non-DEAD conditions listed)

@@ -1,0 +1,62 @@
+Question: does `proven_at_price` still predict once we hold LAST-YEAR HEALTH fixed?
+panel n=1661 priced seasons 2015-2025 · bootstrap 2000 (seed 0)
+
+============================================================================
+R4-6 (ADP 41-75) — where proven_at_price was ROBUST · n=343
+============================================================================
+whole band          : lift +10.4pp  P(>0) 0.97   (n proven 157 / not 186)
+  HEALTHY last yr   : lift +2.6pp  P(>0) 0.65   (n proven 135 / not 69)
+  MISSED time       : lift +30.0pp  P(>0) 0.99   (n proven 22 / not 117)
+
+  2x2 HIT rate:
+                            proven   not proven
+  healthy last yr         53% (n=135)   51% (n=69)
+  missed time              73% (n=22)  43% (n=117)
+
+  health alone      : healthy 52.5% vs missed 47.5% = +5.0pp
+  verdict           : CONDITIONAL — inert among healthy players, strong ONLY for players coming off a missed-time season (a prerequisite that applies to one profile, not everyone)
+
+============================================================================
+R7-10 (ADP 76-125) · n=482
+============================================================================
+whole band          : lift +4.0pp  P(>0) 0.79   (n proven 219 / not 263)
+  HEALTHY last yr   : lift -7.6pp  P(>0) 0.16   (n proven 179 / not 50)
+  MISSED time       : lift +3.7pp  P(>0) 0.69   (n proven 40 / not 213)
+
+  2x2 HIT rate:
+                            proven   not proven
+  healthy last yr         56% (n=179)   64% (n=50)
+  missed time              52% (n=40)  49% (n=213)
+
+  health alone      : healthy 58.1% vs missed 49.4% = +8.7pp
+  verdict           : NOISE/PROXY — nothing survives once health is held fixed
+
+============================================================================
+R2-3 (ADP 16-40) · n=243
+============================================================================
+whole band          : lift -1.5pp  P(>0) 0.40   (n proven 108 / not 135)
+  HEALTHY last yr   : lift +7.3pp  P(>0) 0.80   (n proven 94 / not 55)
+  MISSED time       : lift +9.8pp  P(>0) 0.78   (n proven 14 / not 80)
+
+  2x2 HIT rate:
+                            proven   not proven
+  healthy last yr          56% (n=94)   49% (n=55)
+  missed time              79% (n=14)   69% (n=80)
+
+  health alone      : healthy 53.7% vs missed 70.2% = -16.5pp
+  verdict           : NOISE/PROXY — nothing survives once health is held fixed
+
+============================================================================
+R1 (ADP 1-15) — where it was DEAD · n=145
+============================================================================
+whole band          : lift +5.2pp  P(>0) 0.74   (n proven 67 / not 78)
+  HEALTHY last yr   : lift +4.0pp  P(>0) 0.66   (n proven 63 / not 38)
+  MISSED time       : too few
+
+  2x2 HIT rate:
+                            proven   not proven
+  healthy last yr          54% (n=63)   50% (n=38)
+  missed time                       —   50% (n=40)
+
+  health alone      : healthy 52.5% vs missed 52.3% = +0.2pp
+  verdict           : NOISE/PROXY — nothing survives once health is held fixed
