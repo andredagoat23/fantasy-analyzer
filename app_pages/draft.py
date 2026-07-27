@@ -590,15 +590,93 @@ def _setup_note():
     return "MY LEAGUE SETUP — " + "; ".join(bits) if bits else ""
 
 
+# ---- the computed READ STACK, rendered for the HUMAN (not just the model) ----
+# Every number that decides a pick is computed in Python before the model is ever called: the TOP
+# PICKS ranking, and the punt/defer/hedge/handcuff/dart/cold/streamer reads. Until now all of it went
+# ONLY into the prompt, so an API failure — or missing secrets on Streamlit Cloud — left you with no
+# pick at all, even though a fully ranked answer already existed a millisecond earlier. This surfaces
+# it, and it sits OUTSIDE the api_key gate on purpose so it works when the advisor is unavailable.
+READ_PREFIXES = ("ROSTER NEEDS", "POSITION SHAPE", "WHEEL WINDOW", "COLD POSITION", "ROSTER RISK",
+                 "HEDGE READ", "HANDCUFF READ", "DART READ", "PUNT READ", "STREAMER ALERT")
+
+
+def _read_lines(ctx):
+    """{prefix: line} for whichever precomputed reads are live in this context."""
+    out = {}
+    for line in (ctx or "").splitlines():
+        for p in READ_PREFIXES:
+            if line.startswith(p) and p not in out:
+                out[p] = line
+                break
+    return out
+
+
+def _top_picks(ctx):
+    """The Python-ranked shortlist as ['1. Name (RB1, VONA 42, safe)', ...].
+
+    The TOP PICKS line is a long prose preamble followed by ' | '-joined entries, so each chunk is
+    cut at its LAST 'N. ' marker — that strips the preamble off the first entry without assuming the
+    preamble is free of digits.
+    """
+    for line in (ctx or "").splitlines():
+        if not line.startswith("TOP PICKS NOW"):
+            continue
+        out = []
+        for chunk in line.split(" | "):
+            marks = list(re.finditer(r"\d+\.\s", chunk))
+            if marks:
+                out.append(chunk[marks[-1].start():].strip())
+        return out
+    return []
+
+
+def _pick_name(entry):
+    """'1. *Bijan Robinson (RB2, VONA 42, safe)' -> 'Bijan Robinson'."""
+    name = re.sub(r"^\d+\.\s*\*?", "", entry or "").strip()
+    return name.split(" (")[0].strip()
+
+
+def render_computed_reads(ctx, failed=False):
+    """Show the Python-computed answer. Returns the top entry (or None). Never raises."""
+    picks, reads = _top_picks(ctx), _read_lines(ctx)
+    if not picks and not reads:
+        return None
+    label = ("🧮 The AI is unavailable — here is the computed pick" if failed else
+             "🧮 What the math says — computed in Python, works without the AI")
+    with st.expander(label, expanded=failed):
+        if picks:
+            st.markdown("**TOP PICKS NOW** — ranked by VONA + roster/lineup gates, "
+                        "before the AI sees anything.")
+            for p in picks[:6]:
+                st.markdown(f"- {p}")
+        if reads:
+            st.markdown("**The reads behind it**")
+            for line in reads.values():
+                st.caption(line)
+    return picks[0] if picks else None
+
+
 with st.container(border=True):
     st.subheader(":material/smart_toy: AI draft advisor")
+    # Build the context ONCE and reuse it for the panel, the pre-read, and the live call — so what
+    # you see can never drift from what the model was actually told. ~25ms on the full board.
+    try:
+        ctx_now = advisor.build_context(available, mine_df, scarcity, draft_pos,
+                                        my_dst=st.session_state.get("mine_dst"),
+                                        drafted_dsts=st.session_state.get("drafted_dsts"),
+                                        strategy=st.session_state.get("strategy"), opp=opp,
+                                        recent_picks=recent_picks)
+    except Exception:
+        ctx_now = None          # a display failure must never take down the draft page
+    render_computed_reads(ctx_now)
+
     try:
         api_key = st.secrets.get("ANTHROPIC_API_KEY")
     except Exception:   # no secrets.toml file at all -> treat as "no key"
         api_key = None
     if not api_key:
         st.caption("Add `ANTHROPIC_API_KEY` to `.streamlit/secrets.toml` (and Streamlit Cloud "
-                   "secrets) to enable the advisor.")
+                   "secrets) to enable the AI. The computed pick above still works without it.")
     else:
         client = get_advisor_client(api_key)
 
@@ -614,12 +692,8 @@ with st.container(border=True):
                    st.session_state.get("use_opp", True), _setup_note())
         pl = st.session_state.setdefault("prelook", {"key": None, "future": None, "text": None})
         near_turn = my_turn or (picks_away is not None and picks_away <= PRELOOK_WINDOW)
-        if near_turn and pl["key"] != cur_key:
-            ctx = advisor.build_context(available, mine_df, scarcity, draft_pos,
-                                        my_dst=st.session_state.get("mine_dst"),
-                                        drafted_dsts=st.session_state.get("drafted_dsts"),
-                                        strategy=st.session_state.get("strategy"), opp=opp,
-                                        recent_picks=recent_picks)
+        if near_turn and pl["key"] != cur_key and ctx_now:
+            ctx = ctx_now                       # same string the panel above renders
             note = _setup_note()
             pre_ctx = (f"{note}\n\n{ctx}" if note else ctx) + f"\n\n{REC_PROMPT}"
             if pl["future"] is not None:
@@ -656,11 +730,12 @@ with st.container(border=True):
 
         if prompt:
             st.session_state.chat.append({"role": "user", "content": prompt})
-            context = advisor.build_context(available, mine_df, scarcity, draft_pos,
-                                            my_dst=st.session_state.get("mine_dst"),
-                                            drafted_dsts=st.session_state.get("drafted_dsts"),
-                                            strategy=st.session_state.get("strategy"), opp=opp,
-                                            recent_picks=recent_picks)
+            # reuse the hoisted context; rebuild only if that call failed (keeps old behavior)
+            context = ctx_now if ctx_now else advisor.build_context(
+                available, mine_df, scarcity, draft_pos,
+                my_dst=st.session_state.get("mine_dst"),
+                drafted_dsts=st.session_state.get("drafted_dsts"),
+                strategy=st.session_state.get("strategy"), opp=opp, recent_picks=recent_picks)
             note = _setup_note()
             full_context = f"{note}\n\n{context}" if note else context
             # PICK-CONTEXT LOG (L47): capture EXACTLY what the advisor saw each turn — the roster it read
@@ -697,8 +772,21 @@ with st.container(border=True):
                         try:
                             reply = st.write_stream(advisor.stream_advice(client, api_messages, mode))
                         except Exception as e:
-                            reply = f"⚠️ Advisor error: {e}"
-                            st.error(reply)
+                            # The API is down, but the Python answer already exists — serve THAT
+                            # rather than leaving me with nothing on a 90-second clock.
+                            top = _top_picks(context)
+                            if top:
+                                reply = (f"⚠️ AI unavailable ({type(e).__name__}) — the computed "
+                                         f"pick is **{_pick_name(top[0])}**.\n\n"
+                                         f"Ranked shortlist: "
+                                         + " · ".join(_pick_name(t) for t in top[:4])
+                                         + "\n\n*(VONA + roster gates, no AI involved. Open "
+                                           "“The AI is unavailable” below for the full reads.)*")
+                                st.markdown(reply)
+                                render_computed_reads(context, failed=True)
+                            else:
+                                reply = f"⚠️ Advisor error: {e}"
+                                st.error(reply)
             # the advisor can set the risk dial + my draft slot/teams from chat via [[tags]]
             rtag = re.search(r"\[\[risk:\s*([^\]]+)\]\]", reply, re.I)
             if rtag:
