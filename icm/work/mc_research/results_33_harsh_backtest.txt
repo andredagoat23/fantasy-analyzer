@@ -1,0 +1,41 @@
+HARSH BACKTEST — do the surviving rules actually score more points?
+  12-team snake, 16 rounds, my seat 7 · 250 PAIRED drafts/season
+  scored on ACTUAL season points, optimal 1QB/2RB/2WR/1TE/1FLEX lineup
+  rules applied: the replicated injury conditional (ADP 16-75) + late durability (ADP 126+)
+  NOTE: rules were selected using these same seasons — this is the FRIENDLIEST possible
+  test. Failing here is fatal; passing is necessary but not sufficient.
+
+  season       n  baseline    prereq     diff    win%
+  2015       165      1587      1532    -55.4    38%
+  2016       158      1558      1527    -30.8    42%
+  2017       156      1440      1507    +66.7    69%
+  2018       164      1665      1733    +67.8    67%
+  2019       165      1590      1600    +10.7    52%
+  2020       170      1646      1568    -77.8    30%
+  2021       179      1684      1674     -9.9    48%
+  2022       146      1573      1589    +15.4    54%
+  2023       177      1646      1683    +36.9    58%
+  2024       176      1709      1738    +28.7    57%
+
+  POOLED over 2500 paired drafts:
+    mean difference   +5.2 pts   (median +6.5)
+    rules WIN         51.5% of drafts
+    rules LOSE        48.0% of drafts
+    identical         0.5%
+    95% of drafts land between -318 and +319 pts
+    seasons where the rules helped: 6 of 10
+
+  VERDICT: NO RELIABLE GAIN. ~+5 pts per draft, helping in only 6/10 seasons. On a roster scoring ~1500+ points that is noise, not an edge.
+
+========================================================================
+SENSITIVITY — does a BIGGER nudge help? (if the curve is flat, the null is real)
+========================================================================
+    scale   mean diff    win%   (100 paired drafts/season)
+      0.0        +0.0      0%  <- sanity: must be exactly 0
+      0.5        +8.8     51%
+      1.0        -0.7     51%
+      2.0       -21.0     45%
+      4.0       -59.5     38%
+
+  A monotonic rise would mean real signal being under-applied. Flat or random means the
+  rules carry no drafting edge at ANY magnitude — the null is about the rules, not the knob.

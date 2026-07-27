@@ -1,0 +1,60 @@
+panel: 1661 priced player-seasons, 2015-2024 (2025 rows carry outcomes but no preseason ADP, so they cannot enter a price analysis)
+
+============================================================================================
+A. THE WHOLE BOARD — base rates by band
+============================================================================================
+  band         n     HIT    BUST  med mult   note
+  R1         145   52.4%   18.6%      1.02   
+  R2-3       243   60.1%   18.5%      1.07   best value band
+  R4-6       343   50.4%   23.0%      1.01   worst; RB bust 31%
+  R7-10      482   53.5%   25.5%      1.03   
+  R11+       412   50.7%   27.4%      1.00   mult inflates here — everyone is cheap
+
+  R7-10 and R11+ by position:
+    R7-10  RB n=167  HIT 53%   WR n=180  HIT 50%   TE n=52   HIT 52%   QB n=83   HIT 64%   
+    R11+   RB n=117  HIT 48%   WR n=152  HIT 52%   TE n=65   HIT 46%   QB n=78   HIT 56%   
+
+============================================================================================
+B. THE MATRIX — every condition, every band. Lift in pp; (P) = bootstrap P(lift>0).
+============================================================================================
+  A finding that is REAL should hold its sign across bands. One big number surrounded by
+  noise is what the withdrawn capital rule looked like — that shape is now visible here.
+
+  condition                        R1           R2-3           R4-6          R7-10           R11+  consistent
+  -----------------------------------------------------------------------------------------------------------
+  earned_prod             +11.4(0.90)    -10.4(0.06)     -2.5(0.32)     -3.9(0.21)     +1.7(0.60)      1/2  ✗
+  capital_top32            +8.2(0.84)     +6.3(0.82)     -6.4(0.16)     +6.9(0.93)     +2.6(0.67)      3/4  ✗
+  capital_top64            +3.5(0.65)     +9.1(0.93)     -0.9(0.46)     +0.6(0.53)     +2.3(0.67)      1/1  ✗
+  wopr_strong             +11.9(0.92)     -1.8(0.40)     +1.4(0.61)    +12.2(1.00)     +3.9(0.78)     2/2  ⚠️
+  proven_at_price          +5.2(0.75)     -1.5(0.43)    +10.4(0.97)     +4.0(0.81)     +3.1(0.72)     2/2  ⚠️
+  had_a_role               -6.5(0.34)    -13.0(0.06)     +6.7(0.87)     +4.2(0.80)     +6.8(0.89)      2/4  ✗
+  durable_prev             +0.2(0.50)    -16.5(0.00)     +5.0(0.82)     +8.7(0.97)    +15.8(1.00)      2/3  ✗
+  young                    -6.4(0.21)     +7.4(0.87)     +6.9(0.90)     +0.1(0.50)     +0.9(0.58)      2/3  ✗
+  good_offense             +6.5(0.81)     -2.8(0.33)     +2.7(0.69)     -3.5(0.24)     -2.2(0.34)      1/1  ✗
+  light_workload          +10.6(0.90)    -12.1(0.02)     -8.4(0.06)     -2.2(0.32)     +1.8(0.64)      2/3  ✗
+  consistent               -6.0(0.23)     -4.8(0.23)     +2.7(0.69)     -4.0(0.18)     +5.4(0.86)      1/2  ✗
+  proven_AND_missed                 —    +19.6(0.95)    +23.8(0.99)     -1.1(0.46)    -16.4(0.02)      2/3  ✗
+
+  ✅ = same direction in 3+ bands (believable) · ⚠️ = only 2 · ✗ = flips sign somewhere
+  'flat' = never reaches 5pp anywhere, i.e. no effect worth discussing.
+
+============================================================================================
+C. LATE ROUNDS (R11+) — cross-check against the VALIDATED DART playbook
+============================================================================================
+  late-round-strategy.md is the source of truth here (a purpose-built per-profile analysis).
+  This is only a consistency check; where they disagree, trust the playbook.
+
+  R11+ n=412 · HIT 50.7% · BUST 27.4% · med mult 1.00
+  NOTE the inflation: 51% 'hit' rate at a price this low means the
+  metric is nearly meaningless late — a 14th-rounder who plays at all beats his price.
+  This is exactly why the DART READ uses PROFILES rather than value math after R11.
+
+  condition               lift   P(>0)
+  had_a_role             +6.8    0.92
+  durable_prev          +15.8    1.00
+  consistent             +5.4    0.85
+  proven_AND_missed     -16.4    0.01
+
+  Read these as descriptive only. The validated late-round rules (post-hype target share,
+  RB-only handcuffs, the injury-discount vet fade) came from analyses built for the
+  question; a generic hit-rate lift on an inflated metric cannot overturn them.

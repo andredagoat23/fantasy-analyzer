@@ -266,6 +266,83 @@ mid-round TE dead zone, but my ADP buckets straddle the round boundaries the ori
 n is 19-30 per cell. **Neither confirms nor refutes it** — the existing per-slot backtest remains the
 better source.
 
+## Finding 13 — the matrix: nothing is universally true (`32_`)
+Every condition, every band, in one table (lift pp, bootstrap P). Presented this way because the
+capital rule died from being read one band at a time:
+
+| condition | R1 | R2-3 | R4-6 | R7-10 | R11+ |
+|---|---|---|---|---|---|
+| earned production | +11.4 | −10.4 | −2.5 | −3.9 | +1.7 |
+| capital top-32 | +8.2 | +6.3 | −6.4 | +6.9 | +2.6 |
+| receiving involvement | +11.9 | −1.8 | +1.4 | +12.2 | +3.9 |
+| proven at price | +5.2 | −1.5 | +10.4 | +4.0 | +3.1 |
+| **durable last year** | **+0.2** | **−16.5** | **+5.0** | **+8.7** | **+15.8** |
+| light workload | +10.6 | −12.1 | −8.4 | −2.2 | +1.8 |
+| **proven AND missed time** | — | **+19.6** | **+23.8** | −1.1 | **−16.4** |
+
+**Not one condition holds the same direction across three or more bands.** Two patterns are real
+structure rather than noise, though:
+
+- **Durability is a clean monotonic gradient** — worthless in round 1, strongly *negative* in rounds
+  2-3, then rising to **+15.8pp (P=1.00)** in the last rounds. The market pays for health early and
+  stops paying for it late, so it only becomes an edge once nobody is charging for it.
+- **The injury conditional is real but bounded** — strong in the middle rounds (+19.6, +23.8) and it
+  **reverses late (−16.4, P=0.01)**. That reversal independently corroborates the validated
+  late-round rule that the injury-discount vet is a fade. Two different populations, one coherent
+  story.
+
+## Finding 14 — ⛔ THE BACKTEST: the rules do not win drafts (`33_`)
+Everything above measured *lift* — whether a condition raises the share of players who beat their
+price. That is not the question. The question is whether drafting on them scores more points.
+
+Setup, designed to fail if the rules are noise: 12-team snake, 16 rounds, seat 7, **250 paired
+drafts per season** (baseline and rules run on the *same* seed, so only my decisions differ), scored
+on **actual season points** with an optimal lineup — not on `mult`, the metric the rules came from.
+
+| | result |
+|---|---|
+| mean difference | **+5.2 pts** on a ~1,600-point roster |
+| rules win | 51.5% of drafts |
+| rules lose | 48.0% of drafts |
+| seasons helped | **6 of 10** |
+| 95% of drafts | between −318 and +319 pts |
+
+A coin flip. Draft variance is roughly sixty times the effect.
+
+**And the sensitivity sweep is worse than a null.** Scaling the nudge up should help if the signal is
+merely under-applied. Instead:
+
+| nudge scale | mean diff | win% |
+|---|---|---|
+| 0.0 *(sanity)* | +0.0 | — |
+| 0.5 | +8.8 | 51% |
+| 1.0 | −0.7 | 51% |
+| 2.0 | **−21.0** | 45% |
+| 4.0 | **−59.5** | 38% |
+
+**The harder you apply these rules, the more points you lose.** Deviating from ADP on a weak signal
+costs more than the signal gains.
+
+**This was the friendliest possible test** — the rules were selected using these very seasons, so it
+is not even out-of-sample. Failing here is fatal.
+
+**Conclusion: do NOT wire any of this into the advisor or the board.** The prerequisite research does
+not produce a drafting edge.
+
+## What this whole line of work actually bought
+Not a rule. Three other things:
+
+1. **Knowledge that validates existing design.** Availability drives 73-85% of busts and is
+   near-unforecastable (r=+0.019), which is exactly why the Monte Carlo uses a *position-level*
+   injury prior instead of player-specific history. RB fragility (52% vs 67% full seasons) is already
+   priced in `p_startable`.
+2. **Negative results that prevent mistakes** — don't fade an established-role player for weak draft
+   capital, don't treat last year's durability as safety, don't reach on a positional run, don't
+   trust career mileage. Each of these is a real error not made.
+3. **The method.** Bootstrap → sensitivity grid → replication in fresh bands → paired backtest on the
+   outcome you actually care about. That pipeline caught two of my own false findings today. It is
+   the asset that transfers to the waiver, trade, and start/sit tools.
+
 ---
 
 ## Honest limits
