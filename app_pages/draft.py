@@ -11,7 +11,7 @@ import bridge
 import cohort_pull
 import config_store
 import sleeper_sync
-from utils import normalize_name
+from utils import injury_severity, normalize_name
 
 try:
     import espn_sync
@@ -39,7 +39,7 @@ RISK_DESC = {
     "Cautious": "Fade risky players noticeably — favor safer floors.",
     "Safe": "Prioritize durable, high-floor players — fade all injury and boom/bust risk hard.",
 }
-BASE_COLS = ["full_name", "pos_label", "vona", "vols", "adp_rank", "ecr_rank",
+BASE_COLS = ["full_name", "pos_label", "injury_status", "vona", "vols", "adp_rank", "ecr_rank",
              "value_gap", "market", "risk_tier", "xppg", "regression",
              "floor", "ceiling", "p_startable"]
 
@@ -69,6 +69,11 @@ COLUMN_CONFIG = {
     "floor":     st.column_config.NumberColumn("Floor", format="%.0f"),
     "ceiling":   st.column_config.NumberColumn("Ceiling", format="%.0f"),
     "p_startable": st.column_config.ProgressColumn("P(start)", format="percent", min_value=0, max_value=1),
+    "injury_status": st.column_config.TextColumn("Inj", width="small",
+                                                 help="Live Sleeper injury status. The board has NO "
+                                                      "health input, so this is a fact it can't see. "
+                                                      "NOT a gate — a PUP player can still be value "
+                                                      "at a discount."),
 }
 
 RISK_BG = {"Safe": "rgba(46,160,67,.20)", "Boom/Bust": "rgba(210,153,34,.20)",
@@ -129,8 +134,39 @@ def style_board(df):
     return css
 
 
+@st.cache_data(ttl=900, show_spinner=False)
+def injury_map():
+    """{normalized_name: (status, note)} from Sleeper's public player feed.
+
+    Kept OUT of load_board on purpose: that cache is keyed on file mtime, so folding injuries into
+    it would pin them until the next board regen. This has its own 15-minute TTL (~4 fetches across
+    a 2-hour draft) and FAILS OPEN — any network trouble returns {} and the app behaves exactly as
+    it did before. The board itself has no health input, so these flags are facts it can't know.
+    """
+    try:
+        import requests
+        sl = requests.get("https://api.sleeper.app/v1/players/nfl", timeout=10).json()
+    except Exception:
+        return {}
+    out = {}
+    for p in sl.values():
+        nm, status = p.get("full_name"), (p.get("injury_status") or "").strip()
+        if nm and status:
+            out[normalize_name(nm)] = (status, p.get("injury_notes") or "")
+    return out
+
+
 _cohort_mt = os.path.getmtime("cohort_data.csv") if os.path.exists("cohort_data.csv") else 0
 board = load_board(os.path.getmtime("value_board.csv"), _cohort_mt)
+# Attach live health flags. NOT a gate — a player on PUP can still be real value at a discount
+# (user's call, Jul 27), so this only labels. Joined after load_board so the mtime cache stays clean.
+_inj = injury_map()
+if _inj:
+    _st = board["full_name"].map(lambda n: _inj.get(normalize_name(n), ("", ""))[0])
+    _nt = board["full_name"].map(lambda n: _inj.get(normalize_name(n), ("", ""))[1])
+    board["injury_status"] = _st
+    board["injury_note"] = _nt
+    board["injury_sev"] = [injury_severity(s, n) for s, n in zip(_st, _nt)]
 
 # Auto-play the fanfare once every time the draft page is OPENED (via the "Enter the draft"
 # button or the top nav) — never on in-page reruns. The audio player is hidden via CSS in app.py,

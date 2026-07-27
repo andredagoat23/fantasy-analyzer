@@ -27,7 +27,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import pandas as pd
 import requests
 
-from utils import normalize_name
+from utils import INJURY_HARD as HARD, injury_serious as serious, normalize_name
 
 TOP_N = 200              # draftable range to watch
 TEAMS = 12
@@ -37,17 +37,8 @@ SLEEPER = "https://api.sleeper.app/v1/players/nfl"
 # Flags ordered by how much they should scare you. PUP/IR/Out/Doubtful are roster-status facts;
 # Questionable in the OFFSEASON is softer than in-season (it often just means a minor camp issue),
 # so it is reported but ranked below the hard ones.
-HARD = {"IR", "PUP", "Out", "Doubtful", "NFI", "Sus", "COV", "DNR"}
-
-# `injury_notes` carries real signal that the status field flattens: a Questionable with "Surgery"
-# is a different animal from Dak Prescott's "Soreness". Verified live Jul 27, 2026 — of 18
-# Questionable players in the top 200, 8 had a surgery/procedure note. Those get their own tier.
-SERIOUS_NOTE = ("surgery", "procedure", "tear", "torn", "acl", "achilles", "fracture", "broken")
-
-
-def serious(notes):
-    n = (notes or "").lower()
-    return any(k in n for k in SERIOUS_NOTE)
+# HARD / serious() now live in utils.py so this tool and the live draft page (which shows the same
+# flags on the board and in the advisor's HEALTH FLAGS line) can never drift apart.
 
 
 def rnd(adp):

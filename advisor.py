@@ -232,6 +232,7 @@ DRAFT STRATEGY TOOLKIT (apply whichever fits my stated strategy + the board)
   • QB has LOW value-over-replacement: an elite QB IS more reliable than a late one, but the early pick costs more than that edge is worth (the RB/WR you'd take instead is worth more) — so PUNT to the QB value pocket and stream if it misses. Don't spend an early pick on QB; don't wait so long the very last QBs cost you.
   • RB is historically the HIGHER-BUST, faster-declining position — its value lives in the reliable tier; after the cliff, busts climb fast.
   • WR is historically the DEEPER, SAFER position (usually reliable well past WR20) — BUT it varies by class: if the POSITION SHAPE line shows WR thinning EARLY (low WR cliff / high mid-tier bust), secure a reliable WR EARLY this year instead of leaving it to the mid-round minefield.
+- HEALTH FLAGS (only when the line appears): live injury status pulled from Sleeper. The BOARD CANNOT SEE THIS — value_board.py has no health input and projections lag an injury by days, so a hurt player still carries his full projection, VOLS, VONA and ceiling. These are FACTS about right now, not predictions (whether a player gets hurt is essentially unforecastable, but whether he IS hurt is simply known). Treat it as: PUP/IR/Out = a real absence of unknown length; "procedure" = a genuine recovery timeline; plain Questionable in the offseason is usually minor. It is NOT a gate and must never silently remove anyone — a discounted player who returns by week 1-4 can be excellent value, which is exactly why he is cheap. But if you recommend a flagged player, SAY THE FLAG OUT LOUD in your answer so I can make the call with my eyes open.
 - COLD POSITION (live, only when the line appears in the context): the room has been SKIPPING a position I can still start. This is MEASURED on 1,162 real 12-team drafts (372,394 picks): a cold position KEEPS getting skipped — roughly 12 percentage points fewer WRs than baseline come off the board over the next four picks (smaller for RB). VONA/wheel do NOT see this; they price ADP + opponent rosters, not the room's live rate. Read it as the value FALLING TO ME: if a faller is worth taking right now he ALREADY tops TOP PICKS — take him, that IS the value pick — otherwise take the scarcer need first and collect the faller on the wheel-back, which is safer here than the wheel column says. Advisory TIMING overlay only: it never overrides a hard gate and never re-ranks TOP PICKS, and it's odds, not a promise for one specific player. IMPORTANT — the OPPOSITE read ("a run is on at a position, it's draining, act early / treat its wheels as gone") was tested on those same 372k picks and is FALSE: positional runs do NOT continue. So never infer urgency from a burst of picks at one position, and never tell me a position is "running" — if that mattered you would see a line about it, and you won't, because it doesn't.
 - AMBIGUOUS-ROOM PAIRS (backtested tie-breaker, advisory): in an UNSETTLED RB backfield, owning BOTH mid-tier backs is a smart CONSOLIDATION — carries are a one-winner pie, so same-team RBs anti-correlate (one wins the job, the other busts) and I own whoever emerges (lands a startable RB ~73% of the time vs ~68% diversifying). Do NOT do this for WRs: same-team WRs rise and fall TOGETHER (shared targets + the same offense), so a 2nd WR from a room I already own is REDUNDANT — diversify to a different team for a higher ceiling. Net: a 2nd back from a committee I'm already in is fine; a 2nd WR from a room I already own → prefer a different team.
 - Roster construction (HARD GATE): lock startable-quality starters early; chase upside (ceiling, boom, rookies) on the bench late. Once my starters + FLEX are full, only recommend a player who genuinely raises my bench's upside at a position that wins leagues (RB/WR ceiling, an elite TE). NEVER recommend a 2nd QB, or any D/ST or K before my lineup is full, or a redundant backup, just because his VONA or a VALUE tag looks good — a steal I can't start adds nothing to my roster.
@@ -1112,7 +1113,11 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     cols = ["full_name", "pos_label", "team", "team_role", "team_implied_total", "vols", "vona",
             "adp_rank", "market", "risk_tier", "target_share_2025", "snap_share_2025", "age",
             "is_rookie", "draft_pick", "floor", "ceiling", "p_startable", "p_bust", "xppg",
-            "regression", "switched_team"]
+            "regression", "switched_team",
+            # pulled in to BUILD the HEALTH FLAGS line below; deliberately NOT added to the rendered
+            # `order` list — the named line covers the same top-N players more explicitly than a
+            # column would (L8), and the table is already wide.
+            "injury_status", "injury_sev"]
     cols = [c for c in cols if c in available.columns]   # tolerate an older board
     top = available.sort_values("rank_composite").head(top_n)[cols].copy()
     # Wheel-back computed in PYTHON so the model never does the ADP-vs-next-pick arithmetic (LLMs
@@ -1122,6 +1127,27 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         _wbase = top["pos_label"].str.replace(r"\d+$", "", regex=True)
         top["wheel"] = [_wheel_label(a, eff.get(p, horizon))
                         for a, p in zip(top["adp_rank"], _wbase)]
+    # HEALTH FLAGS — live injury status the BOARD CANNOT KNOW (value_board.py has no health input,
+    # and projections lag an injury by days). Rendered as a NAMED line, not just a table column,
+    # because a column in a 35-row table is easy to skim past (lesson L8: make it explicit).
+    # NOT a gate: a player on PUP in preseason often returns by week 1-4 and can still be real value
+    # at his discounted price, so this informs the pick rather than blocking it (user's call).
+    health_line = ""
+    if "injury_status" in top.columns:
+        _f = top[top["injury_status"].astype(str).str.strip() != ""]
+        if len(_f):
+            _rank = {"hard": 0, "procedure": 1, "soft": 2}
+            _bits = sorted(
+                ((_rank.get(str(getattr(r, "injury_sev", "") or "soft"), 2), r.adp_rank,
+                  f"{r.full_name} ({r.pos_label}, {r.injury_status}"
+                  + (" — procedure" if str(getattr(r, "injury_sev", "")) == "procedure" else "") + ")")
+                 for r in _f.itertuples()))
+            health_line = ("HEALTH FLAGS (live status the board CANNOT see — it has no health input, "
+                           "and projections lag an injury by days). These are FACTS, not forecasts. "
+                           "NOT a gate: a discounted player who returns early can still be the right "
+                           "pick — but say the flag out loud if you recommend one: "
+                           + " | ".join(b for _, _, b in _bits) + "\n")
+    top = top.drop(columns=[c for c in ("injury_sev",) if c in top.columns])
     top["market"] = top.get("market", "").fillna("")
     top["team"] = top.get("team", "FA").fillna("FA")
     # NaN-safe formatting: some available players have no ADP / role / outcome data
@@ -1462,6 +1488,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         + dp_line
         + opp_line
         + cold_line
+        + health_line
         + shape_line +
         f"My roster (projected {proj:.0f} pts): {roster}\n"
         f"{needs}\n"
