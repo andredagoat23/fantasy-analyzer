@@ -4,11 +4,15 @@
 docs the task needs. Everything below is CURRENT as of **Jul 27, 2026**.
 
 ## Where things stand right now
-- **Local `main` = `da8a695` (+ this docs commit) — UNPUSHED.** Deployed/`origin/main` = **`a08a2cd`**
-  (through L47). Streamlit Cloud auto-deploys on push to `main` — pushing = deploying, always the
-  user's call. Tree clean.
-- **Health:** preflight **OK** (0 blocking, 0 warnings). **All 15 unit suites green — 215 checks.** Board
+- **Local `main` = `1c7c1b6` (+ this docs commit) — UNPUSHED, 3-4 ahead.** Deployed/`origin/main` =
+  **`a08a2cd`** (through L47). Streamlit Cloud auto-deploys on push to `main` — pushing = deploying,
+  always the user's call. Tree clean.
+- **Health:** preflight **OK** (0 blocking, 0 warnings). **All 15 unit suites green — 216 checks.** Board
   + all priors regenerated. **No open CODE items, no open DATA flags.**
+- **⛔ CODE FREEZE Aug 3 (user-approved).** Last advisor-logic change Aug 3; Aug 4-6 = fresh regen +
+  a full slot-7 ESPN mock, fixing only what the mock catches; Aug 7 = regen + preflight, no code.
+  Rationale: this project's real bugs are caught by live mocks, not tests (L47 passed 195 checks and
+  died in a mock), so a rehearsal window is non-negotiable.
 - **Draft day: August 7, 2026** — ESPN, 12-team, **slot 7**, custom PPR, 16 rounds. (Practice mocks ran at
   slots 1/5/10; the real draft is **slot 7** — never hardcode a slot.)
 - **⚠️ One open THREAD (not a repro'd bug):** in the last mock the advisor recommended a 4th RB at R7 with
@@ -43,11 +47,14 @@ Scoring, projections, and the board are all substantially stronger than a few se
   not "no edge"; WR usually safe but check the board; TE dead-zone→pocket) + a COMPUTED `POSITION SHAPE`
   line (`advisor.position_shape`) that reads THIS class's cliffs/next-tier-bust/value-pockets from the
   live board — self-updating each regen. `tests/test_shape.py`.
-- **POSITION RUN read SHIPPED (L48) — live momentum, advisory-only.** `advisor._run_read` scans the
-  last 8 synced picks vs the ADP-expected mix (binomial surprise; the baseline is reconstructed as-of
-  the window start, so chalk never reads as a run). HOT at a needed position = act before the wheel;
-  COLD ≠ fade — the value falls TO you (a faller worth taking now already tops TOP PICKS, else collect
-  him on the wheel). Nothing feeds VONA/wheel/TOP PICKS; sync-only. Live-fire check: the next mock.
+- **COLD POSITION read SHIPPED (L48 → corrected to L48b same day).** `advisor._cold_read` scans the
+  last 8 synced picks vs the ADP-expected mix (binomial lower tail; baseline reconstructed as-of the
+  window start). Fires when the room is SKIPPING a position I can still start: the value is falling TO
+  me — a faller worth taking now already tops TOP PICKS, else collect him on the wheel. Advisory only;
+  sync-only. **The HOT/"a run is on, act early" half was DELETED** after a 1,162-draft / 372k-pick
+  Sleeper crawl showed runs don't continue (RB −2.9pp 1QB, −1.0pp on 9,200 superflex windows). COLD
+  replicates (WR −11.5pp / −7.7pp). Evidence: `icm/work/run-dynamics-findings.md`, `mc_research/21_`+
+  `22_`. Live-fire check: the next mock.
 - **Opponent-aware survival SHIPPED + REHEARSED (L40).** Survival/VONA/wheel fold in the live rosters of
   the teams before my wheel. `opp=None` byte-identical. Kill-switch = "Opponent-aware survival" toggle in
   Draft settings. **Its live-sync rehearsal is DONE** — the last mock synced all 192 picks cleanly.
@@ -83,8 +90,8 @@ and detailed in `lessons.md`.)*
 7. **The read stack** (Python-computed, enforced in TOP PICKS per L8 — the model can't ignore them):
    PUNT (L11/L28 — "Josh Allen at 29 is CORRECT, not a bug"), DEFER (L33), HEDGE (L27), HANDCUFF (L30/31),
    DART (L31/L37, R11+), STREAMER (L26). **K/D-ST rankings come from the board AND are now hidden once the
-   slot is filled** (L47 — was suggesting a 2nd kicker). **POSITION SHAPE** line (L46). **POSITION RUN** line (L48 — advisory momentum
-   read of the last 8 synced picks; never re-ranks TOP PICKS). Prompt-cached SYSTEM.
+   slot is filled** (L47 — was suggesting a 2nd kicker). **POSITION SHAPE** line (L46). **COLD POSITION** line (L48b — advisory read of a
+   position the room is skipping; never re-ranks TOP PICKS). Prompt-cached SYSTEM.
 8. **Speculative PRE-READ** (`draft.py`): background deep call within 3 picks; never BLOCKS the pick.
 9. **Live sync + logging:** ESPN + Sleeper + FA bridge (userscript→Firebase→app; synced 192 picks cleanly).
    **Per-pick context log** (L47, `session_state.pick_log` + Draft-settings download). Tools: `preflight.py`,
@@ -117,7 +124,7 @@ and detailed in `lessons.md`.)*
 `tests/` — **15 suites, 215 checks, all green**: `test_bridge` (26), `test_sleeper` (13), `test_hedge`
 (8), `test_punt` (8), `test_cohort_skew` (10), `test_dart` (23), `test_handcuff` (16), `test_cohort_pull`
 (19), `test_defer` (8), `test_role_alpha` (7), `test_dst` (14), `test_kicker` (7, incl. the L47 filled-K
-gate), `test_opponent` (25, L40), `test_shape` (11, L46), `test_run` (20, L48). Plus the two stress
+gate), `test_opponent` (25, L40), `test_shape` (11, L46), `test_cold` (21, L48b). Plus the two stress
 suites in `mc_research/`.
 
 ## Verified vs pending
@@ -135,8 +142,17 @@ suites in `mc_research/`.
 ## ROADMAP — next features
 1. ✅ **Opponent-aware survival** — SHIPPED + rehearsed (L40).
 2. ✅ **Projection consensus** — SHIPPED (L44, FP+ESPN).
-3. ✅ **Positional-run detection** — SHIPPED (L48: the advisory `POSITION RUN` line; live-fire check at
-   the next mock).
+3. ✅ **Positional-run detection** — SHIPPED as the advisory `COLD POSITION` line (L48b; the run/HOT
+   half was measured and cut). Live-fire check at the next mock.
+3b. **Per-player PREREQUISITE research — findings written, NOT wired in** (`icm/work/r1-prerequisites-
+   findings.md`, `mc_research/23_`+`24_`). Headline: 81.5% of R1 busts are injury-driven vs 7.4% who
+   played and underperformed; prior-year games predicts this year's at r=+0.019 (i.e. nothing), so
+   availability is close to a lottery — only cumulative workload and position (RB 52% vs WR 67% play
+   15+) survive. What predicts HITTING is position-specific and does NOT cross over: RB = NFL draft
+   capital + receiving role; WR = earned production + proven at price. 2026 flags: James Cook fails
+   both RB tests; Chase/Lamb/Jefferson are priced for a bounce-back. **User is reading + stress-testing
+   these before deciding usage** (options: a top-40 study sheet, extend to R2-5, or an advisory PREREQ
+   context line). Do NOT wire anything in without that call.
 4. **Live news/injury layer** — first piece SHIPPED (`fa_watch.py`, Sleeper). Next: an in-app signing/
    injury banner + in-season `nflverse load_injuries` + a FAAB plan (~half the edge is in-season).
 5. **"Upgrade a weak starter" read** (from the mock) — when the lineup is full but a dedicated starter is
