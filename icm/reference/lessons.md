@@ -941,6 +941,32 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L48 — Positional-run read: live momentum is real signal, but ships ADVISORY-only (Jul 2026)
+- **Context:** roadmap #3 ("5 of the last 8 picks were RBs → the cliff is NOW"). ADP survival prices
+  the market AVERAGE and the opponent read (L40) prices roster NEEDS — neither sees the observed RATE
+  of the live room. The data was already on hand: `sync_picks`, the ordered mailbox stream all three
+  sync paths populate.
+- **The read (`advisor._run_read` → a POSITION RUN context line):** over the last 8 synced picks,
+  baseline share = each position's slice of the top-12-by-ADP pool AS OF the window start — the
+  window's own picks are ADDED BACK so a run can't drain its own baseline (else a chalk R1 RB streak
+  reads as a "run" after it empties the board's top). Surprise = the plain binomial tail (`math.comb`,
+  no scipy dep): HOT needs k≥3 AND P(X≥k)≤.05; COLD needs P(X≤k)≤.10 and fires only for a position
+  that can still fill a starting slot. A zero-share position drawing 3+ picks IS a run (reaches ADP
+  saw no reason for).
+- **COLD ≠ fade (user design review, Jul 27):** a frozen-out position's value is falling TO you. The
+  take-him-NOW case is already the value engine's job (a genuine faller spikes VONA → TOP PICKS #1);
+  COLD only upgrades the TIMING leg — take the scarcer need first and collect the faller on the
+  wheel-back (the live market-evidence twin of the L33 DEFER sequencing). Phrase reads so they can't
+  be misheard as "avoid the position."
+- **Why ADVISORY-only (the lesson):** we hold no pick-by-pick draft corpus, so a run-continuation
+  magnitude can't be validated — and unvalidated knobs don't ship into the math (the L28/L45 rhythm).
+  The line says "NOT baked into VONA/wheel" out loud, and `tests/test_run.py` locks TOP PICKS
+  byte-identical with and without it. If mocks show it needs teeth, the opp per-position `eff`
+  horizons (L40) are the ready v2 slot. Live-sync only — manual mode keeps no pick order (`drafted`
+  is a set). (Principles 3, 6, 10)
+
+---
+
 ## How to add a lesson
 When a fix corrects a wrong assumption or a class of bug, append here in the same format during
 Stage 05. Keep it short and concrete — the goal is that the next agent doesn't repeat it.

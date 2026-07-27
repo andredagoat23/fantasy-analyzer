@@ -77,6 +77,19 @@ probability, a position where a comparable player lasts several rounds yields a 
 guys now, grab that position later); a real cliff yields a HIGH VONA. No separate "when does the next
 guy go" rule is needed — VONA is the point-maximizing signal for it.
 
+**POSITION RUN (L48, advisory) — the one timing signal VONA cannot carry: LIVE momentum.** ADP
+survival prices the market average and the opponent read (L40) prices roster needs — neither sees the
+room's observed rate. `advisor._run_read` scans the last 8 synced picks (live-sync only; manual mode
+keeps no order): each position's baseline share comes from the top-12-by-ADP pool AS OF the window
+start (the window's own picks are added back, so a chalk R1 RB streak is NOT a run), and surprise is
+the plain binomial tail. HOT (k≥3, P(X≥k)≤.05) at a needed position → act a pick early (treat 'risky'
+wheels there as gone); at an un-needed one → let it burn. COLD (P(X≤k)≤.10, needed positions only)
+≠ fade — the value is falling TO you: a faller worth taking NOW already tops TOP PICKS (COLD never
+demotes anyone); otherwise take the scarcer need first and collect the faller on the wheel — the
+market-evidence twin of the DEFER sequencing (L33). ADVISORY line only: nothing feeds
+VONA/wheel/TOP PICKS (no pick-by-pick corpus exists to validate a magnitude; the opp effective
+horizons are the v2 slot if mocks demand teeth). `tests/test_run.py`.
+
 ## Why QB/TE fall on their own — VONA, augmented by the PUNT READ at turns
 QB and TE are deep, so comparable production usually still lasts to your next pick → their VONA is
 low → you naturally wait, with no "don't draft QB before round 5" rule. If a QB/TE ever shows a

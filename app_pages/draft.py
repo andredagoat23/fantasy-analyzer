@@ -179,6 +179,12 @@ def board_pos_map(mtime):    # {normalized_name -> position} for the opponent-aw
     return {normalize_name(n): p for n, p in zip(board["full_name"], board["position"])}
 
 
+@st.cache_data(show_spinner=False)
+def board_run_map(mtime):    # {normalized_name -> (position, adp_rank)} for the POSITION RUN read
+    return {normalize_name(n): (p, a) for n, p, a in
+            zip(board["full_name"], board["position"], board["adp_rank"])}
+
+
 def bump():
     st.session_state.version += 1
     st.rerun()
@@ -529,6 +535,16 @@ if st.session_state.get("use_opp", True) and sync_active and st.session_state.ge
     _window_owners = [_seat_owners.get(bridge.seat_of(n, teams)) for n in range(_w_start, horizon)]
     opp = advisor.opponent_read(available, draft_pos, _window_owners, _rosters)
 
+# POSITION RUN (roadmap #3): the ordered live pick stream -> (position, adp) per pick for the
+# advisor's run read. Sync-only — manual mode keeps no pick order (`drafted` is a set). Unresolved
+# picks (D/ST, unmatched names) map to None but still occupy window slots. Advisory context line
+# only; the VONA/wheel math is untouched.
+recent_picks = None
+if sync_active and st.session_state.get("sync_picks"):
+    _rmap = board_run_map(os.path.getmtime("value_board.csv"))
+    recent_picks = [_rmap.get(normalize_name(str(p.get("player") or "")))
+                    for p in sorted(st.session_state.sync_picks, key=lambda p: p.get("pick") or 0)]
+
 available = advisor.add_vona(available, horizon, opp=opp["eff"] if opp else None)
 
 # Manual pick tracking — only when NOT live-synced (during a live draft the poller owns this)
@@ -602,7 +618,8 @@ with st.container(border=True):
             ctx = advisor.build_context(available, mine_df, scarcity, draft_pos,
                                         my_dst=st.session_state.get("mine_dst"),
                                         drafted_dsts=st.session_state.get("drafted_dsts"),
-                                        strategy=st.session_state.get("strategy"), opp=opp)
+                                        strategy=st.session_state.get("strategy"), opp=opp,
+                                        recent_picks=recent_picks)
             note = _setup_note()
             pre_ctx = (f"{note}\n\n{ctx}" if note else ctx) + f"\n\n{REC_PROMPT}"
             if pl["future"] is not None:
@@ -642,7 +659,8 @@ with st.container(border=True):
             context = advisor.build_context(available, mine_df, scarcity, draft_pos,
                                             my_dst=st.session_state.get("mine_dst"),
                                             drafted_dsts=st.session_state.get("drafted_dsts"),
-                                            strategy=st.session_state.get("strategy"), opp=opp)
+                                            strategy=st.session_state.get("strategy"), opp=opp,
+                                            recent_picks=recent_picks)
             note = _setup_note()
             full_context = f"{note}\n\n{context}" if note else context
             # PICK-CONTEXT LOG (L47): capture EXACTLY what the advisor saw each turn — the roster it read
