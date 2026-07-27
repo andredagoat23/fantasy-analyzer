@@ -121,6 +121,79 @@ production survived the injury.
 a player's profile, not a universal checklist. It also means the earlier
 Chase/Lamb/Jefferson "priced for a bounce-back" flag was over-stated: at R1 the condition is DEAD.
 
+## Finding 6 — "wear" is mostly a myth; the RB age decline is real but gradual (`29_`)
+Since being unavailable causes most busts, we attacked it with career mileage accumulated across the
+panel. (The literal "curse of 370" is untestable — only **2** seasons in 12 years reach 370 carries —
+so it was tested on total touches, the better wear proxy anyway.)
+
+- **Career mileage does NOT predict breakdown.** Holding *price* fixed — essential, since only good
+  backs survive long enough to accumulate touches and still get drafted — high-mileage RBs did
+  slightly **better**: ADP 1-40 → 58.3% hit (high mileage) vs 54.4% (low); ADP 41-90 → 55.6% vs 47.8%.
+  P(low better) = 0.31 / 0.23. The wear story collapses once you control for survivorship.
+- **One real signal at the extreme:** a back coming off a **350+ touch** season hit only **22.2%**
+  (n=18) vs 53.9% for everyone else, with availability −8.9pp. Small sample, big gap — the damage
+  shows up more in missing his (elevated) price than in missing games.
+- **The RB age curve is a slope, not a cliff.** Availability by age: 24 → 56.8%, 25 → 42.2%,
+  26 → 50.0%, 27 → 46.3%, 28 → 37.2%, 29+ → 38.5% (median mult 0.92). Availability sags from ~28 and
+  value from ~29. **It's RB-specific:** WRs hold 52-62% availability at *every* age, including 29+.
+
+## Finding 7 — rounds 2-3 are the best value band on the board (`30_`)
+| band | HIT | BUST | median mult | median finish vs price |
+|---|---|---|---|---|
+| R1 (1-15) | 52.4% | 18.6% | 1.02 | finishes 9th, priced 4th |
+| **R2-3 (16-40)** | **60.1%** | 18.5% | **1.07** | finishes 15th, priced 12th |
+| R4-6 (41-75) | 50.4% | 23.0% | 1.01 | finishes 25th, priced 23rd |
+
+R2-3 has the highest hit rate and the *same* bust rate as round 1. Round 1 also carries the worst
+price-to-finish slippage — you pay for the 4th-best player at the position and get the 9th. This is a
+value story, not a talent story: you aren't buying better players in round 2, you're buying a cheaper
+promise, and the cheaper promise is met more often.
+
+## Finding 8 — in rounds 2-3 the market OVER-prices visible health and production
+Inside R2-3, several "good" traits are strongly **negative** predictors of beating price:
+
+| condition | lift | P(lift>0) |
+|---|---|---|
+| played 15+ games last year | **−16.5pp** | 0.01 |
+| had a real role last year (50%+ snaps) | −13.0pp | 0.06 |
+| light prior workload | −12.1pp | 0.03 |
+| earned production (not TD-lucky) | −10.4pp | 0.07 |
+
+For RBs specifically, prior durability is **−23.6pp** (P=0.01). The mechanism is pricing, not
+football: a player who was healthy and productive last year is priced *at* that, so there is no room
+left in his cost. The discounted player in the same band has room. This is the same structure as
+Finding 5 and it explains why `durable_prev` was DEAD in round 1 yet ROBUST at R7-10 — by the late
+rounds the market stops paying for health.
+
+**Tension to respect:** `late-round-strategy.md` validated that the "injury-discount vet" is a FADE at
+R11+ (0 league-winners in 47 cases). That is a different band and a different outcome metric
+(league-winner, not mult ≥ 1.0). Finding 5 reconciles them: the discount is only worth buying when
+the player *still out-produced his price* despite missing time.
+
+## Finding 9 — the unifying rule: draft capital matters exactly when you can't judge the usage
+The interaction scan (35 tests, survivors listed with their sample sizes) produced one result far
+beyond what noise makes, plus a family of results telling the same story:
+
+| condition | applies to | lift there | lift elsewhere | P | n |
+|---|---|---|---|---|---|
+| **capital top-32** | **no real role last year** | **+42.3pp** | +0.6 | 1.00 | 38 |
+| capital top-64 | no real role last year | +33.9pp | +5.6 | 0.99 | 38 |
+| capital top-32 | missed time last year | +22.1pp | +0.7 | 0.99 | 94 |
+| capital top-32 | age ≤25 | +16.7pp | +0.3 | 0.94 | 80 |
+| proven at price | inexperienced (<3 yr) | +22.3pp | −8.3 | 0.98 | 79 |
+
+Every one points the same way: **NFL draft capital is a powerful signal precisely when recent usage
+data is missing or unreliable — no role, injured, or too young to have a book — and is worth nothing
+when you can already judge him on an established role.** That is a mechanism, not a curve fit, which
+is why it's believable at n=38.
+
+**Applied to your 2026 board at picks 18 and 31**, exactly one player in the band has no 2025 role:
+**Jeremiyah Love** (rookie, NFL #3) — capital-backed, so the rule says trust the pedigree. Everyone
+else has a real 2025 role, which means their draft capital is **irrelevant** and should not be used
+against them. Concretely: do **not** fade Chase Brown (#163), Kyren Williams (#164), De'Von Achane
+(#84) or Nico Collins (#89) for weak draft capital — all four carried genuine 2025 roles (69%, 63%,
+63%, 35% shares). A naive marginal capital screen would have wrongly faded all of them.
+
 ---
 
 ## Honest limits
@@ -131,6 +204,13 @@ Chase/Lamb/Jefferson "priced for a bounce-back" flag was over-stated: at R1 the 
   `25_` exists precisely because the first pass over-claimed.
 - The "missed time + proven" buy cell is n=22. Directionally strong, not precise.
 - Finding 1 (the failure-mode split) is a plain descriptive count and is the most robust thing here.
+- The interaction scan (Finding 9) ran 35 tests and ~15 cleared the bar, which is more than chance
+  would give but still means individual rows need re-checking. The capital × no-role row (+42.3pp,
+  P=1.00) is the one far enough outside noise to act on, and it has a clean mechanism.
+- Finding 8's negative conditions are about BEATING A PRICE, not about football quality. "Durable
+  players are bad" would be a catastrophic misreading — the claim is that durability is already paid
+  for at that price. Never carry these into a context where the outcome isn't value-over-price.
+- The 350+ touch finding is n=18.
 
 ## Usage — proposed, NOT built. Awaiting the user's call.
 1. **Pre-draft study sheet** — `27_` already generates a per-pick screen for slot 7

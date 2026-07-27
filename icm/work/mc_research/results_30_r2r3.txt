@@ -1,0 +1,98 @@
+==================================================================================
+A. WHY IS R2-3 A BETTER BAND THAN R1?
+==================================================================================
+  R1   (ADP 1-15): n=145  HIT 52.4%  BUST 18.6%  median mult 1.02  ·  median FINISH rank 9 vs median PRICE rank 4
+  R2-3 (ADP 16-40): n=243  HIT 60.1%  BUST 18.5%  median mult 1.07  ·  median FINISH rank 15 vs median PRICE rank 12
+  R4-6 (ADP 41-75): n=343  HIT 50.4%  BUST 23.0%  median mult 1.01  ·  median FINISH rank 25 vs median PRICE rank 23
+
+  Read: if R2-3's edge is just a lower bar, its median FINISH will be worse than R1's while
+  its median mult is better — i.e. you are not buying better players, you are buying a
+  cheaper promise. Compare the last two columns above.
+
+==================================================================================
+B. CONDITIONS INSIDE R2-3, BY POSITION (pooling hides position-specific effects)
+==================================================================================
+
+  ALL · n=243 · HIT 60.1%
+  condition            lift   P(>0)  note
+  earned_prod        -10.4    0.07  STRONG
+  capital_top32       +6.3    0.84  
+  capital_top64       +9.1    0.92  
+  had_a_role         -13.0    0.06  STRONG
+  durable_prev       -16.5    0.01  STRONG
+  light_workload     -12.1    0.03  STRONG
+
+  RB · n=91 · HIT 63.7%
+  condition            lift   P(>0)  note
+  earned_prod        -16.2    0.08  STRONG
+  capital_top32      +13.1    0.88  
+  capital_top64      +15.0    0.92  STRONG
+  had_a_role          -7.7    0.24  
+  durable_prev       -23.6    0.01  STRONG
+  good_offense        -8.3    0.21  
+
+  WR · n=110 · HIT 56.4%
+  condition            lift   P(>0)  note
+  capital_top64       -5.1    0.28  
+  durable_prev       -11.4    0.13  
+  good_offense       -10.0    0.15  
+  light_workload      +6.2    0.74  
+
+==================================================================================
+C. INTERACTION SCAN — where is a condition CONDITIONAL on the player's profile?
+==================================================================================
+  ran 35 condition x split tests; reporting those with a >=12pp subgroup gap AND bootstrap P>=0.85
+
+  condition         applies to               lift there  elsewhere      P     n
+  capital_top32     NOT had a real role          +42.3       +0.6   1.00    38
+  capital_top64     NOT had a real role          +33.9       +5.6   0.99    38
+  light_workload    NOT healthy last yr          -25.1       -2.0   0.00    94
+  durable_prev      is RB                        -23.6      -10.9   0.01    91
+  proven_at_price   NOT experienced (3+ yr)      +22.3       -8.3   0.98    79
+  earned_prod       NOT had a real role          -22.1       -4.2   0.06    38
+  capital_top32     NOT healthy last yr          +22.1       +0.7   0.99    94
+  durable_prev      experienced (3+ yr)          -21.7       -5.4   0.00   164
+  had_a_role        NOT experienced (3+ yr)      -21.0       +0.9   0.04    79
+  durable_prev      NOT age <=25                 -21.0       -6.5   0.01   163
+  light_workload    age <=25                     -20.4       -8.0   0.04    80
+  proven_at_price   age <=25                     +16.9       -6.4   0.94    80
+  capital_top32     age <=25                     +16.7       +0.3   0.94    80
+  wopr_strong       NOT healthy last yr          -13.4       +9.2   0.07    94
+  capital_top64     experienced (3+ yr)          +12.4       +0.4   0.94   164
+
+  These are HYPOTHESES, not conclusions: with this many tests some will be chance.
+  Treat any survivor as something to re-check, the way 28_ re-checked proven_at_price.
+
+==================================================================================
+D. THE 2026 BOARD AT PICKS 18 AND 31 (band's robust condition: NFL draft capital top-64)
+==================================================================================
+  Applying the CONDITIONAL rule from C: capital is the signal ONLY where last-year usage
+  can't be judged (no real role). Players with an established 2025 role are judged on that.
+
+  player                  pos      ADP  2025 role        capital  read
+  Justin Jefferson        WR6     12.0  48% / 17wk       NFL #22  judge on role (capital n/a)
+  De'Von Achane           RB5     12.8  63% / 16wk       NFL #84  judge on role (capital n/a)
+  James Cook              RB8     14.1  74% / 17wk       NFL #63  judge on role (capital n/a)
+  Saquon Barkley          RB7     16.6  77% / 16wk       NFL #2   judge on role (capital n/a)
+  Ashton Jeanty           RB6     16.7  87% / 17wk       NFL #6   judge on role (capital n/a)
+  Jeremiyah Love          RB12    17.6  none/rookie      NFL #3   CAPITAL-BACKED ✓
+  Trey McBride            TE1     19.1  78% / 17wk       NFL #55  judge on role (capital n/a)
+  Drake London            WR7     19.6  41% / 12wk       NFL #8   judge on role (capital n/a)
+  Derrick Henry           RB11    20.0  78% / 17wk       NFL #45  judge on role (capital n/a)
+  Omarion Hampton         RB9     20.6  35% / 9wk        NFL #22  judge on role (capital n/a)
+  Josh Allen              QB1     23.0  93% / 16wk       NFL #7   judge on role (capital n/a)
+  Brock Bowers            TE2     23.4  55% / 12wk       NFL #13  judge on role (capital n/a)
+  Rashee Rice             WR8     23.6  25% / 8wk        NFL #55  judge on role (capital n/a)
+  Josh Jacobs             RB13    26.2  61% / 15wk       NFL #24  judge on role (capital n/a)
+  Nico Collins            WR11    26.5  35% / 15wk       NFL #89  judge on role (capital n/a)
+  A.J. Brown              WR10    26.6  42% / 15wk       NFL #51  judge on role (capital n/a)
+  Chase Brown             RB10    26.7  69% / 17wk       NFL #163 judge on role (capital n/a)
+  George Pickens          WR13    27.7  35% / 17wk       NFL #52  judge on role (capital n/a)
+  Kenneth Walker          RB15    28.6  51% / 17wk       NFL #41  judge on role (capital n/a)
+  Breece Hall             RB14    32.6  73% / 16wk       NFL #36  judge on role (capital n/a)
+  Chris Olave             WR12    34.9  45% / 16wk       NFL #11  judge on role (capital n/a)
+  Garrett Wilson          WR9     35.3  22% / 7wk        NFL #10  judge on role (capital n/a)
+  Javonte Williams        RB16    37.4  66% / 16wk       NFL #35  judge on role (capital n/a)
+  DeVonta Smith           WR15    37.6  39% / 17wk       NFL #10  judge on role (capital n/a)
+  Lamar Jackson           QB2     39.5  71% / 13wk       NFL #32  judge on role (capital n/a)
+  Kyren Williams          RB19    39.7  63% / 17wk       NFL #164 judge on role (capital n/a)

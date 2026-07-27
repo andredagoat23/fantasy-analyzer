@@ -1,0 +1,83 @@
+panel 6974 player-seasons · RB 1809 · drafted (has ADP) 1820
+clean-career subset (entered 2015+): 4551 seasons
+
+====================================================================================
+H1 — THE CURSE OF 370: does a monster carry season break a back the NEXT year?
+====================================================================================
+  (tested on prev-season TOUCHES — only 2 seasons in the panel reach 370 carries)
+  prev touches >= 250: n=129  P(15+ g) 51.9% vs 45.9% for the rest (+6.1pp) · HIT 54.3% vs 52.2% · P(rest more available) 0.11
+  prev touches >= 300: n=56   P(15+ g) 42.9% vs 48.1% for the rest (-5.2pp) · HIT 48.2% vs 53.3% · P(rest more available) 0.77
+  prev touches >= 350: n=18   P(15+ g) 38.9% vs 47.8% for the rest (-8.9pp) · HIT 22.2% vs 53.9% · P(rest more available) 0.77
+
+====================================================================================
+H2 — CAREER MILEAGE: do cumulative touches predict breakdown? (RB, drafted seasons)
+====================================================================================
+
+ALL RBs with an ADP:
+  bucket                     n  P(15+ g)     HIT  med mult
+  <250 career              303     46.5%   54.8%      1.07
+  250-749                  223     44.4%   44.8%      0.94
+  750-1249                  78     46.2%   59.0%      1.07
+  1250-1749                 28     50.0%   64.3%      1.05
+  1750+                      9   (too few)
+
+CLEAN subset (entered 2015+, career total complete):
+  bucket                     n  P(15+ g)     HIT  med mult
+  <250 career              188     46.8%   58.0%      1.12
+  250-749                  144     49.3%   48.6%      0.99
+  750-1249                  54     42.6%   53.7%      1.02
+  1250-1749                 21     61.9%   66.7%      1.18
+  1750+                      9   (too few)
+
+====================================================================================
+H3 — THE RB AGE CLIFF: where does it actually happen?
+====================================================================================
+
+RB by age (drafted seasons):
+  bucket                     n  P(15+ g)     HIT  med mult
+  <=23                     204     46.6%   55.4%      1.07
+  24                        95     56.8%   58.9%      1.07
+  25                        83     42.2%   47.0%      1.00
+  26                        66     50.0%   53.0%      1.01
+  27                        54     46.3%   48.1%      0.99
+  28                        43     37.2%   51.2%      1.02
+  29+                       96     38.5%   44.8%      0.92
+
+  same for WR (contrast — is the cliff RB-specific?):
+
+WR by age:
+  bucket                     n  P(15+ g)     HIT  med mult
+  <=23                     196     61.7%   54.1%      1.04
+  24                        88     59.1%   50.0%      1.00
+  25                        77     62.3%   53.2%      1.05
+  26                        80     57.5%   48.8%      1.00
+  27                        71     60.6%   63.4%      1.10
+  28                        60     56.7%   50.0%      1.02
+  29+                      147     52.4%   49.0%      0.99
+
+====================================================================================
+H4 — AGE x MILEAGE: do young legs absorb a heavy load that old legs can't?
+====================================================================================
+                      low mileage (<750)   high mileage (750+)
+  age <=25              50% avail, n=292                     —
+  age 26-27              48% avail, n=44       55% avail, n=22
+                                           P(low-mileage more available) = 0.27
+  age 28+                35% avail, n=91       44% avail, n=48
+                                           P(low-mileage more available) = 0.16
+
+====================================================================================
+SURVIVORSHIP CONTROL — hold PRICE fixed, then vary mileage
+====================================================================================
+  Raw mileage buckets are badly confounded: only good backs survive long enough to
+  accumulate touches AND still get drafted, so high mileage self-selects for quality.
+  ADP already encodes that quality — so compare high vs low mileage WITHIN a price band.
+  ADP 1-40: HIT 54.4% (low mi, n=136) vs 58.3% (high mi, n=60) = -3.9pp · avail 54% vs 52% · P(low better) 0.31
+  ADP 41-90: HIT 47.8% (low mi, n=157) vs 55.6% (high mi, n=27) = -7.8pp · avail 40% vs 44% · P(low better) 0.23
+  ADP 91-200: HIT 50.2% (low mi, n=229) vs 61.5% (high mi, n=26) = -11.3pp · avail 45% vs 46% · P(low better) 0.15
+
+====================================================================================
+CONTROL — is mileage just a stand-in for AGE? (RB, holding age band fixed)
+====================================================================================
+  age <=25: too few to split
+  age 26-27: HIT 47.7% (low mi, n=44) vs 63.6% (high mi, n=22) = -15.9pp · P(low better) 0.08
+  age 28+: HIT 40.7% (low mi, n=91) vs 58.3% (high mi, n=48) = -17.7pp · P(low better) 0.03
