@@ -1,0 +1,66 @@
+PROJECTION CALIBRATION — sources scored under the league's own scoring_config (base bucket)
+seasons: 2023, 2024, 2025
+
+  2023: 79 ESPN players · Sleeper proj 65 · ADP 33 · ECR 68
+  2024: 383 ESPN players · Sleeper proj 352 · ADP 257 · ECR 368
+  2025: 315 ESPN players · Sleeper proj 307 · ADP 245 · ECR 311
+
+====================================================================================
+A. RANK ACCURACY — Spearman vs actual finish (drafted players only, ADP<=200)
+====================================================================================
+  Rank sources (ADP/ECR) can only be judged here; point sources are judged in B too.
+  source               2023     2024     2025      all   n(all)
+  ESPN proj               —   +0.656   +0.668   +0.647      376
+  Sleeper proj            —   +0.744   +0.654   +0.717      373
+  panel exp_pts           —   +0.655   +0.665   +0.655      372
+  ESPN ADP                —   +0.430   +0.454   +0.450      376
+  FP ECR                  —   +0.508   +0.489   +0.514      372
+
+====================================================================================
+B. POSITIONAL CALIBRATION — the one that corrupts VONA
+====================================================================================
+  ratio = mean(projected) / mean(actual) among drafted players at that position.
+  1.00 = calibrated. The DANGER is the SPREAD between positions: if RB reads 1.20 and WR
+  1.05, every RB-vs-WR VONA comparison on the board is skewed by ~15% even when the
+  within-position ordering is perfect.
+
+  ESPN projection:
+    pos       n  mean proj  mean actual   ratio     MAE
+    QB       50        328          287    1.15      99
+    RB      124        179          153    1.17      64
+    WR      155        195          157    1.24      62
+    TE       47        156          139    1.13      43
+    -> cross-position SPREAD 0.12 (WR most over-projected at 1.24, TE least at 1.13)  ⚠️ material distortion
+
+  Sleeper projection:
+    pos       n  mean proj  mean actual   ratio     MAE
+    QB       49        340          292    1.16      87
+    RB      123        171          154    1.11      56
+    WR      154        194          157    1.23      55
+    TE       47        156          139    1.12      41
+    -> cross-position SPREAD 0.12 (WR most over-projected at 1.23, RB least at 1.11)  ⚠️ material distortion
+
+  panel exp_pts:
+    pos       n  mean proj  mean actual   ratio     MAE
+    QB       50        298          287    1.04      90
+    RB      124        151          153    0.99      64
+    WR      151        165          159    1.04      51
+    TE       47        138          139    0.99      40
+    -> cross-position SPREAD 0.05 (WR most over-projected at 1.04, TE least at 0.99)  ✅ tight
+
+====================================================================================
+C. DOES A BLEND BEAT EITHER SOURCE ALONE?
+====================================================================================
+  n=373 players with both sources
+  weighting               Spearman      MAE
+  0% ESPN / 100% Slp        +0.717       58
+  25% ESPN / 75% Slp        +0.713       59
+  50% ESPN / 50% Slp        +0.703       60
+  65% ESPN / 35% Slp        +0.694       61
+  75% ESPN / 25% Slp        +0.685       61
+  100% ESPN / 0% Slp        +0.662       64
+
+  NOTE: this is ESPN-vs-SLEEPER, NOT the live board's ESPN-vs-FantasyPros blend.
+  Historical FantasyPros projections are proprietary and not retrievable, so the
+  shipped 0.35/0.65 FP/ESPN weight still cannot be validated directly. What this DOES
+  show is whether blending two independent sources beats either alone in principle.
