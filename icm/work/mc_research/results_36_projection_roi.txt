@@ -1,0 +1,49 @@
+WHAT IS PROJECTION ACCURACY WORTH? (roster points per point of Spearman)
+  12-team snake, seat 7 · 250 PAIRED drafts per season per accuracy level
+  synth = (1-w)*projection + w*actual — an IDEALISED, unbiased sharpening, so the numbers
+  below are an OPTIMISTIC bound on what a real projection improvement would buy.
+
+  === 2024 (n=189 players) ===
+       w   Spearman  roster pts  vs today
+    0.00      0.664        1754      +0.0   <- today's projection
+    0.05      0.704        1844     +90.0
+    0.10      0.734        1916    +162.1
+    0.15      0.767        2039    +285.4
+    0.20      0.797        2159    +405.9
+    0.30      0.855        2209    +455.1
+    0.50      0.938        2193    +439.0
+    0.75      0.989        2202    +448.1
+    1.00      1.000        2168    +414.1   <- perfect foresight
+
+  === 2025 (n=184 players) ===
+       w   Spearman  roster pts  vs today
+    0.00      0.674        1709      +0.0   <- today's projection
+    0.05      0.704        1901    +192.0
+    0.10      0.734        1983    +273.5
+    0.15      0.764        2021    +311.6
+    0.20      0.790        2051    +342.0
+    0.30      0.845        2197    +488.1
+    0.50      0.924        2296    +586.5
+    0.75      0.984        2254    +544.7
+    1.00      1.000        2278    +568.7   <- perfect foresight
+
+========================================================================
+THE EXCHANGE RATE — points gained per +0.05 Spearman (pooled across seasons)
+========================================================================
+  accuracy band                 Δ Spearman   Δ points  pts per +0.05
+  0.669 -> 0.704                    +0.035     +141.0         +201.6
+  0.704 -> 0.734                    +0.030      +76.8         +128.3
+  0.734 -> 0.765                    +0.031      +80.7         +129.3
+  0.765 -> 0.793                    +0.028      +75.4         +134.1
+  0.793 -> 0.850                    +0.057      +97.7          +86.1
+  0.850 -> 0.931                    +0.081      +41.1          +25.4
+  0.931 -> 0.986                    +0.055      -16.3          -14.8
+  0.986 -> 1.000                    +0.014       -5.0          -18.1
+
+  Today's projection sits at Spearman 0.669.
+  The FIRST real step (w=0.05) buys +0.035 Spearman for +141.0 pts, i.e. ~+202 pts per +0.05.
+  PERFECT foresight is worth +491 pts — the absolute ceiling on all projection work.
+
+  Compare: 33_'s prereq rules were +5.2 pts and 35_'s calibration fix -8.2 pts. If a
+  realistic +0.05 in accuracy is worth many times that, projections are a genuinely
+  different lever and worth pushing on; if not, the same ceiling applies.
