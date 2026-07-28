@@ -1,0 +1,66 @@
+THREE SOURCES ON THE REAL 2026 BOARD — does the mix actually change anything?
+  live weights: FP 0.35, ESPN 0.65, Sleeper 0.00 (not a source yet)
+  all scored under scoring_config (base bucket), so these are the board's own units.
+
+  top-180 by ADP: 180 players · with ALL THREE sources: 179
+    missing FP: 0
+    missing ESPN: 1
+    missing Sleeper: 0
+
+============================================================================
+A. HOW MUCH DO THE THREE AGREE ON 2026? (Spearman among top-180 by ADP)
+============================================================================
+  FP       vs ESPN       +0.987
+  FP       vs Sleeper    +0.970
+  ESPN     vs Sleeper    +0.964
+  High agreement => the weight barely matters. Low => it matters a lot.
+
+============================================================================
+B. WHAT EACH MIX DOES TO THE BOARD (vs today's FP.35/ESPN.65)
+============================================================================
+  mix                           mean |rank shift|  moved 10+  top-40 out
+  TODAY  FP.35/ESPN.65/SL.00        — (reference)                       
+  equal thirds                                3.9         14           1
+  FP.33/ESPN.33/SL.34                         4.0         14           1
+  FP.25/ESPN.25/SL.50                         5.5         33           1
+  FP.40/ESPN.20/SL.40                         4.9         26           1
+  FP.50/ESPN.00/SL.50                         6.1         44           2
+  FP.35/ESPN.40/SL.25                         3.2         10           1
+  FP.00/ESPN.00/SL1.0                         9.6         74           2
+
+============================================================================
+C. WHO MOVES MOST under an equal-thirds mix (the 39_-informed direction)
+============================================================================
+  player                  pos      ADP  today   new   move   FP / ESPN / SL pts
+  Chris Godwin            WR52   131.2    128   111    +17     181 /  158 /  174
+  Tucker Kraft            TE13   108.5    130   117    +13     168 /  163 /  173
+  Oronde Gadsden          TE28   168.2    165   152    +13     122 /  116 /  151
+  Mike Evans              WR35    86.8     96    85    +11     196 /  185 /  204
+  Brian Thomas            WR44   101.0    110    99    +11     175 /  177 /  195
+  Jayden Higgins          WR62   158.9    147   137    +10     138 /  142 /  164
+  Jonathon Brooks         RB41   130.8    144   169    -25     134 /  146 /   26
+  Rachaad White           RB36   118.6    113   132    -19     170 /  175 /  125
+  Dallas Goedert          TE10   101.7    109   125    -16     179 /  177 /  142
+  Calvin Ridley           WR58   167.0    140   156    -16     152 /  145 /   77
+  Alvin Kamara            RB45   153.6    157   170    -13     124 /  125 /   48
+  Matthew Golden          WR43   107.4    111   121    -10     156 /  186 /  159
+
+============================================================================
+D. WHERE THE SOURCES DISAGREE MOST ON 2026 (max minus min, rescaled pts)
+============================================================================
+  player                  pos      ADP  spread   FP / ESPN / SL pts
+  Jonathon Brooks         RB41   130.8     117     134 /  146 /   26
+  Chris Rodriguez         RB56   167.9      73      95 /   71 /  134
+  Alvin Kamara            RB45   153.6      73     124 /  125 /   48
+  Calvin Ridley           WR58   167.0      70     152 /  145 /   77
+  Isiah Pacheco           RB46   154.8      64     116 /  124 /   56
+  Zach Charbonnet         RB43   151.1      59     123 /  134 /   69
+  Josh Jacobs             RB13    26.2      55     257 /  276 /  205
+  Terrance Ferguson       TE23   167.3      53     109 /  136 /   77
+  Fernando Mendoza        QB30   166.0      48     213 /  220 /  243
+  Oronde Gadsden          TE28   168.2      46     122 /  116 /  151
+  Jahmyr Gibbs            RB1      1.7      43     372 /  367 /  308
+  Tyrone Tracy            RB52   167.5      41     118 /   81 /  113
+
+  median spread across the top-180: 18 pts · 90th pct: 38 pts
+  These are the players whose board position actually depends on the weighting.
