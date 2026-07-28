@@ -1,0 +1,55 @@
+BLEND SEARCH ON SIX SEASONS — is one source CONSISTENTLY better, or does the winner flip?
+  w = weight on ESPN; remainder to Sleeper. Live board is 65% ESPN (against FantasyPros).
+
+  EXCLUDED [2019, 2020] — Sleeper's projections there are backfilled, not
+  forecasts (injured players projected ~= what they actually scored; see header).
+  2021: n=193
+  2022: n=183
+  2024: n=191
+  2025: n=184
+
+============================================================================
+A. WHICH SOURCE IS BETTER, SEASON BY SEASON? (Spearman vs actual finish)
+============================================================================
+  season        ESPN   Sleeper    winner      gap
+  2021         0.656     0.695   Sleeper    0.038
+  2022         0.695     0.787   Sleeper    0.092
+  2024         0.673     0.749   Sleeper    0.076
+  2025         0.674     0.663      ESPN    0.011
+
+  Excluding the small 2023 sample: ESPN wins 1, Sleeper wins 3.
+  If this splits roughly evenly, NO fixed weight is defensible — that is the whole question.
+
+============================================================================
+B. ACCURACY BY WEIGHT, PER SEASON (Spearman)
+============================================================================
+  season       0.0    0.1    0.2    0.3    0.4    0.5    0.6    0.7    0.8    0.9    1.0   best w
+  2021       0.695  0.693  0.691  0.688  0.684  0.681  0.678  0.674  0.669  0.664  0.656      0.0
+  2022       0.787  0.790  0.788  0.785  0.778  0.767  0.755  0.743  0.731  0.712  0.695      0.1
+  2024       0.749  0.748  0.743  0.741  0.735  0.725  0.718  0.709  0.701  0.689  0.673      0.0
+  2025       0.663  0.668  0.672  0.673  0.676  0.676  0.677  0.676  0.676  0.675  0.674      0.6
+
+  best weight per season: 2021:0.0, 2022:0.1, 2024:0.0, 2025:0.6
+  spread across seasons: 0.6  -> unstable; a fixed weight is fitting noise
+
+============================================================================
+C. DRAFT BACKTEST BY WEIGHT (roster points, actual season scoring)
+============================================================================
+  season        0.00     0.25     0.50     0.75     1.00    best
+  2021          1854     1895     1944     1767     1726    0.50
+  2022          2038     2027     2026     1887     1722    0.00
+  2024          2056     2026     1906     1820     1717    0.00
+  2025          1630     1654     1673     1703     1682    0.75
+
+============================================================================
+D. LEAVE-ONE-SEASON-OUT — fit the weight elsewhere, apply it to the held-out season
+============================================================================
+  held out    fitted w  pts at w  pts at 0.75    gain
+  2021            0.00      1854         1767     +87
+  2022            0.25      2027         1887    +141
+  2024            0.50      1906         1820     +86
+  2025            0.00      1630         1703     -73
+
+  mean out-of-sample gain vs our current weighting: +60 pts (helped in 3/4 seasons)
+
+  VERDICT: a reweighting generalises — +60 pts held out, 3/4 seasons.
