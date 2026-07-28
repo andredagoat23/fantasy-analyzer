@@ -1,6 +1,6 @@
 """34 — PROJECTION CALIBRATION: how good are our projection sources, and are they biased BY POSITION?
 
-Why this matters more than ranking accuracy (the user's point, Jul 27): the board is built on POINTS,
+Why this matters more than ranking accuracy (the user's point, Jul 28): the board is built on POINTS,
 not ranks. projections -> custom_scoring -> total_points -> VOLS (points over replacement) -> VONA
 (a difference of VOLS). Two players one rank apart can project 70 points apart, and VONA is a
 difference of differences, so projection error compounds. ECR/rank enters only as a display column

@@ -1,14 +1,14 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
 **How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
-docs the task needs. Everything below is CURRENT as of **Jul 27, 2026**.
+docs the task needs. Everything below is CURRENT as of **Jul 28, 2026**.
 
 ## Where things stand right now
 - **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **`7bc24fd`** (+ this docs commit), tree clean.
   Streamlit Cloud auto-deploys on push — pushing = deploying, always the user's call.
 - **Health:** preflight **OK** (0 blocking, 0 warnings). **All 16 unit suites green — 238 checks.** Board
   + all priors regenerated. **No open CODE items, no open DATA flags.**
-- **Shipped Jul 27 (this session), all live:**
+- **Shipped Jul 28 (this session), all live:**
   - **L48b COLD POSITION** read (the "a run is on" half was measured on 372k real Sleeper picks and CUT).
   - **Draft-day resilience** — a "What the math says" panel renders TOP PICKS + the read stack, and an
     API failure now serves the computed pick by name instead of an error. Sits OUTSIDE the api_key

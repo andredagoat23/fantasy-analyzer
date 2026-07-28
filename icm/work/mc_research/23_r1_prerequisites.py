@@ -1,6 +1,6 @@
 """23 — What has to be TRUE for a first-round pick to hit? (player-prerequisite research)
 
-User hypothesis (Jul 27): every player carries a specific set of make-or-break PREREQUISITES, and
+User hypothesis (Jul 28): every player carries a specific set of make-or-break PREREQUISITES, and
 the useful research is per-player — "what conditions separate the boom seasons from the bust seasons
 for players LIKE him." The cohort layer already gives marginal RATES + named comps; it cannot say
 what had to be true. This script tests the conditions directly on the 2014-25 panel.

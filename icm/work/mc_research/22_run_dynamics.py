@@ -1,6 +1,6 @@
 """22 — What ACTUALLY happens after a positional run? (L48 design check on real Sleeper drafts)
 
-Question (user's design review, Jul 27): does a run make the position MORE likely to keep going
+Question (user's design review, Jul 28): does a run make the position MORE likely to keep going
 (momentum / room preference) or LESS (a 1-start run consumes its own demand — each QB taker is done
 at QB)? The shipped L48 read assumed momentum for every position; the proposed refinement restricts
 flags to RB/WR. This script measures the real dynamics on the corpus from 21_.

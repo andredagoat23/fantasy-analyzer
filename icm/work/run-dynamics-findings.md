@@ -1,4 +1,4 @@
-# Positional-run dynamics — what REALLY happens after a run (Jul 27, 2026)
+# Positional-run dynamics — what REALLY happens after a run (Jul 28, 2026)
 
 **Why:** L48 shipped the POSITION RUN read on an assumption ("a run means the position is draining —
 act early"), and the user then challenged the 1-start half of it ("if there's a five-QB run doesn't

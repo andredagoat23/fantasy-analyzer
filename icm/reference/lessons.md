@@ -1024,7 +1024,7 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
   no scipy dep): HOT needs k≥3 AND P(X≥k)≤.05; COLD needs P(X≤k)≤.10 and fires only for a position
   that can still fill a starting slot. A zero-share position drawing 3+ picks IS a run (reaches ADP
   saw no reason for).
-- **COLD ≠ fade (user design review, Jul 27):** a frozen-out position's value is falling TO you. The
+- **COLD ≠ fade (user design review, Jul 28):** a frozen-out position's value is falling TO you. The
   take-him-NOW case is already the value engine's job (a genuine faller spikes VONA → TOP PICKS #1);
   COLD only upgrades the TIMING leg — take the scarcer need first and collect the faller on the
   wheel-back (the live market-evidence twin of the L33 DEFER sequencing). Phrase reads so they can't

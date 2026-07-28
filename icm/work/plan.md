@@ -1,4 +1,4 @@
-# Plan — Positional-run detection (roadmap #3) · Jul 27, 2026
+# Plan — Positional-run detection (roadmap #3) · Jul 28, 2026
 > **STATUS: shipped as L48, then CORRECTED to L48b the same day.** A 1,162-draft / 372k-pick Sleeper
 > crawl (`mc_research/21_`+`22_`, `icm/work/run-dynamics-findings.md`) showed the HOT half of this
 > plan is FALSE — positional runs do not continue (RB −2.9pp in 1QB, −1.0pp on 9,200 superflex
@@ -36,7 +36,7 @@ values fitted to data we don't have.
    scarcer need first and collect the faller on the wheel — safer than the wheel column says.`
    (HOT at an un-needed position → "let it burn — every {pos} taken pushes value at your positions
    back to you.")
-   **COLD ≠ fade (user design review, Jul 27):** the take-the-value-now case is the value engine's
+   **COLD ≠ fade (user design review, Jul 28):** the take-the-value-now case is the value engine's
    existing job — a genuine faller spikes VONA / tags VALUE → TOP PICKS #1 → you take him now; COLD
    only upgrades the TIMING leg (the wheel-back at that position is more trustworthy than ADP
    implies — the live market-evidence twin of the validated L33 DEFER sequencing). Caveat kept in

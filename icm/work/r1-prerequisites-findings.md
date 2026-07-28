@@ -1,4 +1,4 @@
-# Draft PREREQUISITES — what has to be true for a pick to hit (Jul 27, 2026)
+# Draft PREREQUISITES — what has to be true for a pick to hit (Jul 28, 2026)
 
 **The question (user hypothesis):** every player carries a specific set of make-or-break conditions,
 so the useful research is per-player — "what separated the boom seasons from the bust seasons for

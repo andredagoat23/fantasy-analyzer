@@ -1,4 +1,4 @@
-# Diagnosis — Positional-run detection (roadmap #3) · Jul 27, 2026
+# Diagnosis — Positional-run detection (roadmap #3) · Jul 28, 2026
 
 ## The ask (restated)
 Build roadmap #3: detect a positional RUN in the live pick stream — "5 of the last 8 picks were
