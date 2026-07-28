@@ -1,0 +1,38 @@
+DOES CORRECTING THE PER-POSITION PROJECTION BIAS WIN POINTS?
+  12-team snake, seat 7, 16 rounds · 300 PAIRED drafts/season
+  both arms draft by VOLS (projection - positional replacement); only the calibration differs
+  opponents draft by ADP+noise · scored on ACTUAL season points, optimal lineup
+
+  2024: 256 players with projection + actual + ADP
+  2025: 245 players with projection + actual + ADP
+
+==============================================================================
+ARE THE CALIBRATION FACTORS STABLE SEASON TO SEASON?
+==============================================================================
+  season         QB      RB      WR      TE  WR-TE gap
+  2024         1.02    1.08    1.16    1.09       0.07
+  2025         1.26    1.21    1.36    1.14       0.22
+  A correction is only applicable if you can PREDICT the factor. Watch both the levels and
+  the WR-TE gap: if they move a lot, last season's factor is the wrong number to apply.
+
+==============================================================================
+OUT-OF-SAMPLE — correction factors derived from the OTHER season (the honest test)
+==============================================================================
+
+  season         raw  corrected     diff    win%   ratios used
+  2024          1769       1761     -8.2     8%   QB1.26 RB1.21 WR1.36 TE1.14
+  2025          1706       1698     -8.2    20%   QB1.02 RB1.08 WR1.16 TE1.09
+  POOLED n=600: mean -8.2 pts · corrected wins 14.0% · loses 14.5%
+
+==============================================================================
+IN-SAMPLE — factors from the season being tested (the ceiling; not achievable live)
+==============================================================================
+
+  season         raw  corrected     diff    win%   ratios used
+  2024          1769       1750    -19.5     3%   QB1.02 RB1.08 WR1.16 TE1.09
+  2025          1706       1687    -19.5    27%   QB1.26 RB1.21 WR1.36 TE1.14
+  POOLED n=600: mean -19.5 pts · corrected wins 15.0% · loses 21.0%
+
+VERDICT: correcting the bias is worth ~-8 pts out-of-sample (14% win rate). Too small to justify touching a frozen pipeline file.
+  (in-sample ceiling was -19.5 pts — if OOS is far below this, the per-position
+   ratios are not stable enough season to season to be worth applying.)
