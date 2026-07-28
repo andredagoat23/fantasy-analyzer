@@ -1,0 +1,56 @@
+BLEND, RESTRICTED TO WHERE PICKS HAPPEN — 2026 board, ranked by VOLS
+  198 of 200 top-ADP players carry all three sources
+
+==========================================================================
+A. AGREEMENT BY DEPTH — the pooled number was an artifact
+==========================================================================
+  range           n   FP~ESPN   FP~Slp  ESPN~Slp
+  top 50         45    +0.929   +0.919    +0.879
+  top 100        84    +0.972   +0.950    +0.941
+  top 150       130    +0.975   +0.956    +0.950
+  101-200       113    +0.969   +0.921    +0.901
+  Agreement is LOWEST in the top 50. Sources diverge most exactly where picks matter.
+
+==========================================================================
+B. TOP 12 BY VOLS UNDER EACH MIX (raw points would wrongly put QBs on top)
+==========================================================================
+    #  TODAY FP.35/ESPN.65       equal thirds              FP.25/ESPN.25/SL.50       all Sleeper               
+    1  Jahmyr Gibbs (RB1)        Bijan Robinson (RB2)      Bijan Robinson (RB2)      Bijan Robinson (RB2)      
+    2  Bijan Robinson (RB2)      Jahmyr Gibbs (RB1)        Jahmyr Gibbs (RB1)        Jahmyr Gibbs (RB1)        
+    3  Puka Nacua (WR1)          Puka Nacua (WR1)          Puka Nacua (WR1)          Christian McCaffrey (RB3) 
+    4  Christian McCaffrey (RB3) Christian McCaffrey (RB3) Christian McCaffrey (RB3) Puka Nacua (WR1)          
+    5  Ja'Marr Chase (WR2)       Ja'Marr Chase (WR2)       Ja'Marr Chase (WR2)       Ja'Marr Chase (WR2)       
+    6  Jaxon Smith-Njigba (WR3)  Jaxon Smith-Njigba (WR3)  Jaxon Smith-Njigba (WR3)  Jonathan Taylor (RB4)     
+    7  Amon-Ra St. Brown (WR4)   Amon-Ra St. Brown (WR4)   Jonathan Taylor (RB4)     Trey McBride (TE1)        
+    8  Jonathan Taylor (RB4)     Jonathan Taylor (RB4)     Amon-Ra St. Brown (WR4)   Ashton Jeanty (RB6)       
+    9  De'Von Achane (RB5)       De'Von Achane (RB5)       Trey McBride (TE1)        Jaxon Smith-Njigba (WR3)  
+   10  Trey McBride (TE1)        Trey McBride (TE1)        De'Von Achane (RB5)       James Cook (RB8)          
+   11  Josh Allen (QB1)          Ashton Jeanty (RB6)       Ashton Jeanty (RB6)       Amon-Ra St. Brown (WR4)   
+   12  CeeDee Lamb (WR5)         James Cook (RB8)          Brock Bowers (TE2)        Chase Brown (RB10)        
+
+  TODAY FP.35/ESPN.65   5 RB / 5 WR / 1 TE / 1 QB   · changed vs today: 0
+  equal thirds          7 RB / 4 WR / 1 TE / 0 QB   · changed vs today: 2
+  FP.25/ESPN.25/SL.50   6 RB / 4 WR / 2 TE / 0 QB   · changed vs today: 2
+  all Sleeper           7 RB / 4 WR / 1 TE / 0 QB   · changed vs today: 3
+
+  NOTE the direction is the OPPOSITE of what raw points suggest. Sleeper projects elite
+  RBs LOWER in absolute points, but it also projects replacement-level RBs lower still, so
+  the RB curve is STEEPER and elite-RB VOLS goes UP. Level differences are irrelevant to a
+  board built on value over replacement — only the within-position SHAPE matters.
+
+==========================================================================
+C. BIGGEST 3-SOURCE DISAGREEMENTS INSIDE THE TOP 100
+==========================================================================
+  player                  pos      ADP  spread   FP / ESPN / SL
+  Josh Jacobs             RB13    26.2      56     257 /  276 /  205
+  Jahmyr Gibbs            RB1      1.7      43     372 /  367 /  308
+  De'Von Achane           RB5     12.8      39     310 /  294 /  254
+  Breece Hall             RB14    32.6      39     253 /  273 /  219
+  Caleb Williams          QB13    93.0      38     345 /  336 /  349
+  Javonte Williams        RB16    37.4      36     229 /  260 /  209
+  Christian McCaffrey     RB3      6.0      35     343 /  351 /  295
+  Mike Evans              WR35    86.8      34     196 /  185 /  204
+  Davante Adams           WR17    45.8      33     222 /  233 /  186
+  Jaxon Smith-Njigba      WR3      6.0      33     337 /  328 /  285
+
+  median spread in the top 100: 16 pts · 90th pct 33
