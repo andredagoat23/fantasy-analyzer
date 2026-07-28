@@ -941,6 +941,40 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L49 — LIFT IS NOT POINTS: a full research line died in the backtest (Jul 2026)
+- **The arc.** A day of per-player "prerequisite" research (`mc_research/23_`-`33_`) produced real,
+  bootstrap-validated lifts: conditions that raised the share of players who beat their draft price
+  by 10-25pp. Every one of them was measured honestly. **None of it wins drafts.**
+- **The harsh backtest (`33_`)** simulated 12-team snake drafts at seat 7, **250 PAIRED drafts per
+  season** (baseline and rules on the same seed, so only my decisions differ), scored on **actual
+  season points** with an optimal lineup — NOT on `mult`, the metric the rules came from. Result:
+  **+5.2 pts on a ~1,600-pt roster, winning 51.5% and losing 48.0%, helping in 6 of 10 seasons.** A
+  coin flip; draft variance (±318) is ~60x the effect.
+- **The sensitivity sweep was worse than null.** Scaling the nudge 0.5/1/2/4x gave +8.8/−0.7/−21.0/
+  **−59.5**. The harder the rules were applied, the more points they LOST — deviating from ADP on a
+  weak signal costs more than the signal gains. That is the strongest possible confirmation: the
+  null is about the RULES, not about a badly-chosen knob.
+- **This was the friendliest possible test** (the rules were selected using those same seasons, so
+  not even out-of-sample). Failing there is fatal.
+- **Two false findings died the same day, in two different ways.** The capital×no-role rule
+  (+42.3pp, bootstrap P=1.00, n=38) failed REPLICATION — it reversed to −14.0 on a bigger sample in
+  another band, and vanished when the cutoff moved from top-32 to top-64 (`31_`). A bootstrap proves
+  a result is stable *within the sample it was found in*; it cannot tell you the sample was a lucky
+  slice. **Only replication in fresh data can.**
+- **THE LESSON, in three parts.** (1) **Validate on the outcome you actually care about**, not the
+  metric you derived the rule from — grading on the derivation metric is circular. (2) **Replicate
+  in data the finding wasn't discovered in** before believing any subgroup result. (3) **ADP is a
+  strong baseline**; a tie-breaker-sized edge does not survive contact with draft variance. What the
+  work bought instead: knowledge that VALIDATED existing design (position-level injury priors are
+  right, given r=+0.019 between last year's games and this year's), negative results that prevent
+  real mistakes, and a reusable method for the in-season tools.
+- **What DID ship from it:** only the thing that was never a prediction — live injury FLAGS
+  (`utils.injury_severity`, the board's `Inj` column, the advisor's HEALTH FLAGS line). You cannot
+  forecast who gets hurt; you can simply know who IS hurt. Facts need no backtest. (Principles 1, 2,
+  8, 9, 10)
+
+---
+
 ## L48b — Positional runs DON'T continue: 372k real picks killed the feature's premise (Jul 2026)
 - **The correction to L48 below.** L48 shipped a HOT branch telling the model "a run is on at a
   position you need — act before your wheel, treat its 'risky' wheels as gone." The user then

@@ -4,11 +4,19 @@
 docs the task needs. Everything below is CURRENT as of **Jul 27, 2026**.
 
 ## Where things stand right now
-- **Local `main` = `1c7c1b6` (+ this docs commit) — UNPUSHED, 3-4 ahead.** Deployed/`origin/main` =
-  **`a08a2cd`** (through L47). Streamlit Cloud auto-deploys on push to `main` — pushing = deploying,
-  always the user's call. Tree clean.
-- **Health:** preflight **OK** (0 blocking, 0 warnings). **All 15 unit suites green — 216 checks.** Board
+- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **`7bc24fd`** (+ this docs commit), tree clean.
+  Streamlit Cloud auto-deploys on push — pushing = deploying, always the user's call.
+- **Health:** preflight **OK** (0 blocking, 0 warnings). **All 16 unit suites green — 238 checks.** Board
   + all priors regenerated. **No open CODE items, no open DATA flags.**
+- **Shipped Jul 27 (this session), all live:**
+  - **L48b COLD POSITION** read (the "a run is on" half was measured on 372k real Sleeper picks and CUT).
+  - **Draft-day resilience** — a "What the math says" panel renders TOP PICKS + the read stack, and an
+    API failure now serves the computed pick by name instead of an error. Sits OUTSIDE the api_key
+    gate, so it works with no key at all.
+  - **Health flags** — live Sleeper injury status on the board (`Inj` column) + a named HEALTH FLAGS
+    line for the advisor. **NOT a gate** (user's call: a PUP player can still be value at a discount);
+    `tests/test_injury.py` locks that in. Severity logic in `utils.injury_severity`.
+  - **L49 — a whole research line died in the backtest.** See below.
 - **⛔ CODE FREEZE Aug 3 (user-approved).** Last advisor-logic change Aug 3; Aug 4-6 = fresh regen +
   a full slot-7 ESPN mock, fixing only what the mock catches; Aug 7 = regen + preflight, no code.
   Rationale: this project's real bugs are caught by live mocks, not tests (L47 passed 195 checks and
@@ -124,8 +132,8 @@ and detailed in `lessons.md`.)*
 `tests/` — **15 suites, 215 checks, all green**: `test_bridge` (26), `test_sleeper` (13), `test_hedge`
 (8), `test_punt` (8), `test_cohort_skew` (10), `test_dart` (23), `test_handcuff` (16), `test_cohort_pull`
 (19), `test_defer` (8), `test_role_alpha` (7), `test_dst` (14), `test_kicker` (7, incl. the L47 filled-K
-gate), `test_opponent` (25, L40), `test_shape` (11, L46), `test_cold` (21, L48b). Plus the two stress
-suites in `mc_research/`.
+gate), `test_opponent` (25, L40), `test_shape` (11, L46), `test_cold` (21, L48b), `test_injury`
+(22, L49). Plus the two stress suites in `mc_research/`.
 
 ## Verified vs pending
 - **Verified + deployed:** 195 unit checks, preflight clean, both stress suites ALL PASS, a full 192-pick
@@ -144,15 +152,19 @@ suites in `mc_research/`.
 2. ✅ **Projection consensus** — SHIPPED (L44, FP+ESPN).
 3. ✅ **Positional-run detection** — SHIPPED as the advisory `COLD POSITION` line (L48b; the run/HOT
    half was measured and cut). Live-fire check at the next mock.
-3b. **Per-player PREREQUISITE research — findings written, NOT wired in** (`icm/work/r1-prerequisites-
-   findings.md`, `mc_research/23_`+`24_`). Headline: 81.5% of R1 busts are injury-driven vs 7.4% who
-   played and underperformed; prior-year games predicts this year's at r=+0.019 (i.e. nothing), so
-   availability is close to a lottery — only cumulative workload and position (RB 52% vs WR 67% play
-   15+) survive. What predicts HITTING is position-specific and does NOT cross over: RB = NFL draft
-   capital + receiving role; WR = earned production + proven at price. 2026 flags: James Cook fails
-   both RB tests; Chase/Lamb/Jefferson are priced for a bounce-back. **User is reading + stress-testing
-   these before deciding usage** (options: a top-40 study sheet, extend to R2-5, or an advisory PREREQ
-   context line). Do NOT wire anything in without that call.
+3b. ⛔ **Per-player PREREQUISITE research — COMPLETE and CLOSED. Do NOT wire any of it in.**
+   (`icm/work/r1-prerequisites-findings.md`, `mc_research/23_`-`33_`, lesson **L49**.) It ran the full
+   board (R1 → R11+), stress-tested with bootstraps and sensitivity grids, and then **failed a harsh
+   paired backtest**: +5.2 pts on a ~1,600-pt roster, winning 51.5% of 2,500 drafts, and the harder
+   the rules were applied the MORE points they lost (−59.5 at 4x). One headline finding (capital ×
+   no-role, +42.3pp, P=1.00) also failed REPLICATION and was withdrawn.
+   **What survives is knowledge, not rules:** availability drives 73-85% of busts everywhere and is
+   near-unforecastable (r=+0.019) — which VALIDATES the MC's position-level injury prior; RB is
+   structurally fragile (52% vs WR 67% play 15+); R2-3 is the best value band and R4-6 the worst
+   (RB bust 31%); durability is over-priced early and under-priced late (+15.8pp, P=1.00 at R11+).
+   The only thing that shipped from it is live injury FLAGS — facts, not forecasts.
+   **Untested loose end:** late-round durability was never backtested in ISOLATION (it was bundled),
+   so its individual contribution is unknown. Cheap to settle if anyone wants to revisit.
 4. **Live news/injury layer** — first piece SHIPPED (`fa_watch.py`, Sleeper). Next: an in-app signing/
    injury banner + in-season `nflverse load_injuries` + a FAAB plan (~half the edge is in-season).
 5. **"Upgrade a weak starter" read** (from the mock) — when the lineup is full but a dedicated starter is

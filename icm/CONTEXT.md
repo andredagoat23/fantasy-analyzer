@@ -1,16 +1,18 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
 > ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** It has the full current state: the stack through
-> **L48b** (local `main` UNPUSHED past deployed `a08a2cd`/L47) — MC + cohort/coaching/SOS + the FP+ESPN
+> **L49**, DEPLOYED at `7bc24fd` — MC + cohort/coaching/SOS + the FP+ESPN
 > projection consensus (L44) + scoring COMPLETE & verified vs real ESPN settings with a single source of
 > truth `scoring_config.py` (L41/L42) + D/ST scored (L43) + backtest-retuned composite weights (L45) +
 > the hybrid position-shape advisory (L46) + the COLD POSITION read (L48b, advisory — its "run is on"
 > half was measured against 372k real Sleeper picks and CUT) + the full advisor read-stack;
 > opponent-aware survival SHIPPED & rehearsed (L40, 192-pick live mock). NO open code/data items — one
-> open THREAD: a non-repro'd R7 roster-state issue, diagnosable via the per-pick pick-log (L47). Plus
-> per-player R1 prerequisite research awaiting the user's usage call (`work/r1-prerequisites-findings.md`).
-> One unmerged branch (`yahoo-probe`). Suites: 15 / 216 green. **⛔ CODE FREEZE Aug 3.** Draft day:
-> **August 7, 2026** (ESPN, slot 7). See `memory/` for the resolved SEA/Charbonnet flag.
+> open THREAD: a non-repro'd R7 roster-state issue, diagnosable via the per-pick pick-log (L47). Also
+> live: draft-day RESILIENCE (the computed pick survives an API outage) + HEALTH FLAGS (live injury
+> status; facts, never a gate). The per-player prerequisite research is **CLOSED — it failed a harsh
+> backtest (L49); do not wire it in.** One unmerged branch (`yahoo-probe`). Suites: 16 / 238 green.
+> **⛔ CODE FREEZE Aug 3.** Draft day: **August 7, 2026** (ESPN, slot 7). See `memory/` for the
+> resolved SEA/Charbonnet flag.
 
 This workspace applies **ICM (Interpretable Context Methodology)** to *how work gets done on this
 project*, so every change is explicit, staged, and verified instead of ad-hoc. Ad-hoc is what caused
