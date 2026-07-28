@@ -1,0 +1,65 @@
+BLEND SEARCH — every ESPN/Sleeper weighting, scored AND backtested
+  12-team snake, seat 7 · 200 drafts per weight per season · common seeds throughout
+  w = weight on ESPN; the remainder goes to Sleeper. Our live board is 65% ESPN (vs FP).
+
+  2024: 188 players with ESPN + Sleeper + ADP + actual
+  2025: 184 players with ESPN + Sleeper + ADP + actual
+
+  === 2024 ===
+    w(ESPN)   Spearman  roster pts  vs 65% ESPN
+        0.0      0.746        2005         +202
+        0.1      0.745        1978         +175
+        0.2      0.740        1978         +174
+        0.3      0.738        1961         +157
+        0.4      0.732        1930         +127
+        0.5      0.723        1887          +83
+        0.6      0.716        1845          +41
+        0.7      0.706        1803           +0  <- ~our live weight
+        0.8      0.698        1804           +1
+        0.9      0.686        1757          -46
+        1.0      0.670        1749          -54
+
+  === 2025 ===
+    w(ESPN)   Spearman  roster pts  vs 65% ESPN
+        0.0      0.663        1626          -73
+        0.1      0.668        1650          -48
+        0.2      0.672        1674          -24
+        0.3      0.673        1680          -18
+        0.4      0.676        1675          -24
+        0.5      0.676        1680          -19
+        0.6      0.677        1677          -21
+        0.7      0.676        1698           +0  <- ~our live weight
+        0.8      0.676        1706           +8
+        0.9      0.675        1699           +0
+        1.0      0.674        1694           -4
+
+==============================================================================
+RELIABILITY — does one weight win in BOTH seasons, and is the curve flat there?
+==============================================================================
+    w(ESPN)   rho 2024   rho 2025   pts 2024   pts 2025  both>ref?
+        0.0      0.746      0.663       2005       1626          -
+        0.1      0.745      0.668       1978       1650          -
+        0.2      0.740      0.672       1978       1674          -
+        0.3      0.738      0.673       1961       1680          -
+        0.4      0.732      0.676       1930       1675          -
+        0.5      0.723      0.676       1887       1680          -
+        0.6      0.716      0.677       1845       1677          -
+        0.7      0.706      0.676       1803       1698          -
+        0.8      0.698      0.676       1804       1706        YES
+        0.9      0.686      0.675       1757       1699          -
+        1.0      0.670      0.674       1749       1694          -
+
+  OUT-OF-SAMPLE — pick the best weight on one season, apply it to the other:
+    fit on 2024 -> w=0.0 -> on 2025: -73 pts vs our ~65% ESPN weight
+    fit on 2025 -> w=0.8 -> on 2024: +1 pts vs our ~65% ESPN weight
+
+  best weight in 2024: w=0.0 · best weight in 2025: w=0.8 (disagreement: 0.8)
+  ⚠️ NO RELIABLE WEIGHT. Exactly ONE grid point (w=0.8) beat our current setting in
+     both seasons, by +4 pts on average — a knife edge, and well inside noise.
+     The two seasons pick OPPOSITE ends of the range, so any weight fitted here is
+     fitting a 2-season sample. DO NOT change scoring_config on this evidence.
+
+  CAVEAT: this is ESPN-vs-SLEEPER. The live board blends ESPN with FantasyPros, which
+  cannot be tested historically. Read this as evidence about the PRINCIPLE (lean toward the
+  more accurate source, and away from a 65% weight on the weakest one), not as a drop-in
+  number for scoring_config.
