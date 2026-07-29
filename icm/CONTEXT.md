@@ -1,18 +1,30 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
-> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** It has the full current state: the stack through
-> **L49**, DEPLOYED at `7bc24fd` — MC + cohort/coaching/SOS + the FP+ESPN
-> projection consensus (L44) + scoring COMPLETE & verified vs real ESPN settings with a single source of
-> truth `scoring_config.py` (L41/L42) + D/ST scored (L43) + backtest-retuned composite weights (L45) +
-> the hybrid position-shape advisory (L46) + the COLD POSITION read (L48b, advisory — its "run is on"
-> half was measured against 372k real Sleeper picks and CUT) + the full advisor read-stack;
-> opponent-aware survival SHIPPED & rehearsed (L40, 192-pick live mock). NO open code/data items — one
-> open THREAD: a non-repro'd R7 roster-state issue, diagnosable via the per-pick pick-log (L47). Also
-> live: draft-day RESILIENCE (the computed pick survives an API outage) + HEALTH FLAGS (live injury
-> status; facts, never a gate). The per-player prerequisite research is **CLOSED — it failed a harsh
-> backtest (L49); do not wire it in.** One unmerged branch (`yahoo-probe`). Suites: 16 / 238 green.
-> **⛔ CODE FREEZE Aug 3.** Draft day: **August 7, 2026** (ESPN, slot 7). See `memory/` for the
-> resolved SEA/Charbonnet flag.
+> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Jul 29, 2026**: the stack through
+> **L51**, DEPLOYED at `6cb7300`, tree clean, board + priors regenerated Jul 28.
+> Suites **16 / 238 green**, both stress suites pass, preflight OK, **no open code or data items**.
+>
+> **⛔ CODE FREEZE Aug 3 (5 days). Draft Aug 7 (9 days).** The remaining work is OPERATIONAL, not
+> features: a live mock at the real slot on Aug 3, injury/FA watches Aug 5-6, a final regen Aug 7.
+>
+> **⚠️ THE DRAFT SLOT IS NOT SETTLED** — older docs said 7, the user says it could be anywhere, the app
+> is currently set to 12. Every pick number and every VONA depends on it. Confirm before Aug 7; never
+> hardcode.
+>
+> Live: MC + cohort/coaching/SOS · FP+ESPN projection consensus (L44) · custom scoring verified vs the
+> real ESPN settings with `scoring_config.py` as the single source of truth (L41/L42) · D/ST scored
+> (L43) · backtest-retuned composite weights (L45) · hybrid position-shape (L46) · opponent-aware
+> survival rehearsed on a 192-pick mock (L40) · **COLD POSITION** (L48b — the "a run is on" half was
+> measured against 372k real Sleeper picks and CUT) · **draft-day RESILIENCE** (the computed pick
+> survives an API outage) · **HEALTH FLAGS** (live injury status; facts, never a gate) ·
+> **L51 per-player ADP survival curve** (one constant scale was ~4x too wide at the top; fixed from
+> 19,300 measured picks, behind `USE_MEASURED_SCALE`).
+>
+> **One open THREAD:** a non-repro'd R7 roster-state issue — diagnosable only from the next mock's
+> pick log (L47); don't patch the gate blind. **Two research lines are CLOSED** (per-player
+> prerequisites L49, upgrade-a-weak-starter L50) — do NOT re-open or rebuild. One unmerged branch
+> (`yahoo-probe`). See `work/HANDOFF.md` "Open questions" before changing anything, and `memory/` for
+> the resolved SEA/Charbonnet flag.
 
 This workspace applies **ICM (Interpretable Context Methodology)** to *how work gets done on this
 project*, so every change is explicit, staged, and verified instead of ad-hoc. Ad-hoc is what caused
@@ -61,9 +73,20 @@ session.
   scoring buckets, VOLS/Monte-Carlo/xPPG knobs, value board). Read before touching or debugging data.
 - `reference/bridge.md` — live-draft sync (userscript ↔ Firebase ↔ app).
 
-## Working artifacts (Layer 4)
-`work/` holds scratch for the CURRENT task — a diagnosis note, a plan, verification output. It's
-ephemeral; clear or overwrite freely. Durable knowledge belongs in `reference/`, not here.
+**Research findings (Layer 3 in practice — durable, in `work/`):** `work/mc-research-findings.md`
+(MC + cohorts), `work/run-dynamics-findings.md` (positional runs don't continue — 372k picks),
+`work/r1-prerequisites-findings.md` (the prerequisite line that failed its backtest, L49). Their
+scripts + saved output live in `work/mc_research/`.
+
+## Working artifacts (Layer 4) — NOT all ephemeral, read this before deleting anything
+`work/` mixes three kinds of file. Only the third is safe to clear:
+- **`work/HANDOFF.md` — the live state doc.** Read every session, updated at the end of every
+  session. Never "clear" it.
+- **`work/mc_research/` + the findings docs** (`mc-research-findings.md`, `run-dynamics-findings.md`,
+  `r1-prerequisites-findings.md`) — **DURABLE evidence.** Numbered scripts `00_`-`44_` each with a
+  `results_*.txt`. They are why several plausible features were killed, and re-deriving them costs
+  hours. Large data (`*.parquet`, the Sleeper corpus, caches) is gitignored and regenerable.
+- **`work/diagnosis.md` + `work/plan.md`** — genuine scratch for the CURRENT task; overwrite freely.
 
 ## Ground rules that outrank convenience (from CLAUDE.md + hard experience)
 1. Walk through code before writing it; pause for the user's "go" (rule #1).

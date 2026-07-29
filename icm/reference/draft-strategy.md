@@ -16,8 +16,13 @@ I could realistically still get at my next pick. That is **VONA — Value Over N
 **VONA(player) = his VOLS − `best_wait[his position]`, where `best_wait` is the EXPECTED VOLS of the
 best player still on the board at your NEXT pick** — each candidate weighted by the probability he's
 the top survivor (he survives AND everyone better at his position is gone). Survival is a softened
-**logistic of ADP vs your next pick** (`_survival_prob`, scale `_ADP_SCALE`≈7), not a hard cutoff —
-a player drafted right at your next pick is ~50/50, a round later ~88%. Floored at replacement (0).
+**logistic of ADP vs your next pick** (`_survival_prob`) whose scale is now **PER-PLAYER and
+MEASURED** (`_adp_scale`, L51): real ADP dispersion runs ~1.8 picks at the top of the board to ~17.9
+late, from 19,300 real picks. The old single scale of 7 was ~4x too wide at the top and made VONA go
+negative on players who were certainly gone. It is a soft curve, not a hard cutoff: a player whose ADP
+sits exactly on your next pick is ~50/50 either way. How fast it falls off from there now depends on
+WHERE he is — an elite ADP-2 player is ~certain to be gone 20 picks later, while an ADP-150 player
+routinely swings 30 picks in both directions. Floored at replacement (0).
 
 This works out to **VONA ≈ P(he's gone) × (his VOLS − the next-best you'd expect)** — the drop-off
 behind him, weighted by how likely you actually lose him.

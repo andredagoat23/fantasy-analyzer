@@ -12,9 +12,20 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
 - `app_pages/draft.py` — the draft board: sidebar (scarcity, roster, reset), main strip (exit,
   draft settings, roster popover, compact toggle), scarcity readout, **live sync**, on-the-clock +
   cliff watch, **AI advisor**, filters, the `st.data_editor` board, undo drawer.
+  **Added Jul 2026:** `injury_map()` — a cached (15-min TTL), FAIL-OPEN Sleeper pull that attaches
+  live `injury_status` to the board as an `Inj` column; and the **"What the math says" panel**, which
+  renders TOP PICKS + the whole read stack and sits OUTSIDE the api_key gate, so an API failure or a
+  missing key still yields a named computed pick instead of an error. `build_context` is now built
+  ONCE per render and reused by the panel, the speculative pre-read and the live call, so what you
+  see can never drift from what the model was told.
 - `advisor.py` — the Claude advisor. `build_context()` turns the live board into the prompt context:
   the Python-computed `wheel` column, roster-needs, and a stack of **precomputed READ lines all
-  enforced in the TOP PICKS ranking (L8 — the model can't ignore them):** VONA (`add_vona`); PUNT READ
+  enforced in the TOP PICKS ranking (L8 — the model can't ignore them):** VONA (`add_vona` — its
+  `_survival_prob` now uses a **PER-PLAYER ADP scale**, `_adp_scale`, interpolating measured
+  dispersion from 1.8 at the top of the board to 17.9 late over 19,300 real picks. The old single
+  7.0 was ~4x too wide at the top and made VONA go negative on players who were certainly gone —
+  L51. Behind `USE_MEASURED_SCALE`, a one-line revert; backtested at −3.0 pts and shipped for
+  correctness/trust, not points); PUNT READ
   (`_punt_read`, L28 — risk-symmetric, depth-aware, no positional margin; + L33 NEXT-PICK DEFER: also
   demotes a 1-start QB/TE whose elite one lasts to my next pick, so I take the scarcer RB/WR at a turn);
   HEDGE READ (`_hedge_read`,
@@ -61,7 +72,7 @@ A single-page Streamlit app that runs a personal draft board during a live ESPN 
   rerun with cohort_priors/sos_priors after a board rebuild. Full playbook: `late-round-strategy.md`.
 - `bridge.py` — reads the live-draft Firebase mailbox and resolves picks to board players. See
   `bridge.md`.
-- `auth.py`, `config_store.py`, `utils.py` (`normalize_name`), `espn_sync.py` (ESPN-API fallback).
+- `auth.py`, `config_store.py`, `utils.py` (`normalize_name`, `injury_severity`), `espn_sync.py` (ESPN-API fallback).
 - `sleeper_sync.py` — Sleeper live sync via Sleeper's PUBLIC API (no userscript/Firebase); normalizes to
   the bridge's `{meta,picks}` shape so `bridge.resolve` is reused. See `bridge.md`.
 
@@ -108,7 +119,7 @@ Plain-assert suites (no pytest dep), run each with `.venv/bin/python tests/<file
 `test_cohort_skew` (10, L29), `test_dart` (23, L31), `test_handcuff` (16, L30/31),
 `test_cohort_pull` (19, L32), `test_defer` (8, L33), `test_role_alpha` (7, L34), `test_dst`
 (14, L43), `test_kicker` (7, L38/47), `test_opponent` (25, L40), `test_shape` (11, L46),
-`test_cold` (21, L48b) — 15 suites, 216 checks.
+`test_cold` (21, L48b), `test_injury` (22, L49) — **16 suites, 238 checks**.
 Plus the two stress suites: `icm/work/mc_research/11_stress_test.py` (component invariants + cohort
 LOSO) and `12_full_system_stress.py` (24 offline drafts). And `tools/preflight.py` (runtime CSV
 health) — run all after any board/priors regeneration.
