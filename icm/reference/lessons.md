@@ -941,6 +941,33 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L50 — CHECK THE SITUATION CAN ARISE before building the feature for it (Jul 2026)
+- **Roadmap #5, "upgrade a weak starter", is CLOSED — built, measured, reverted unshipped.** The
+  premise: `_lineup_gaps` treats a slot as binary filled-or-open, so a starter who is a coin flip
+  still reads "filled" and a further pick at his position gets no credit for REPLACING him. Once the
+  whole lineup incl. FLEX is set, `bench_sat` empties too, so a 4th RB competes with a real starter
+  upgrade purely on VONA. All of that is TRUE.
+- **The asymmetry is even arithmetic, not statistical** — a bench pick adds 0 to this week's starting
+  lineup, a starter upgrade adds (new − old) straight into it — which is exactly why it seemed worth
+  encoding when the prerequisite rules (L49) were not.
+- **But the situation cannot arise.** Measured across 552 post-lineup decision points: the best
+  AVAILABLE player at a filled position beat my weakest starter there by a maximum of **−0.4 VOLS**
+  (median −25.4). It never once reached the +10 threshold. **When you draft by VALUE, your starter is
+  by construction the best you could have taken at that position**, so "someone better is still
+  available" is structurally prevented by the advisor's own logic.
+- **The number that fooled me:** an earlier scan said the opportunity existed 8.1% of the time — but
+  that sim had ME drafting by ADP. Under ADP drafting your starters aren't value-optimal, so better
+  players remain. The advisor doesn't draft by ADP. **A prevalence measured under the wrong policy is
+  worse than no measurement**, because it looks like evidence.
+- **The tell was there earlier and I nearly talked past it:** two attempts to reproduce the bug by
+  hand both ended with the advisor making a defensible pick. When a repro keeps failing, that is data.
+- **THE LESSON.** Before building, ask not just "is the gap real?" but **"can the state this feature
+  fires on actually occur, given how the system already behaves?"** A feature guarding an unreachable
+  state is dead code with a maintenance cost and a false sense of coverage. Also: measure prevalence
+  under the ACTUAL decision policy, never a proxy one. (Principles 1, 9, 10)
+
+---
+
 ## L49 — LIFT IS NOT POINTS: a full research line died in the backtest (Jul 2026)
 - **The arc.** A day of per-player "prerequisite" research (`mc_research/23_`-`33_`) produced real,
   bootstrap-validated lifts: conditions that raised the share of players who beat their draft price

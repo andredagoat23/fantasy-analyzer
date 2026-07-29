@@ -167,8 +167,13 @@ gate), `test_opponent` (25, L40), `test_shape` (11, L46), `test_cold` (21, L48b)
    so its individual contribution is unknown. Cheap to settle if anyone wants to revisit.
 4. **Live news/injury layer** — first piece SHIPPED (`fa_watch.py`, Sleeper). Next: an in-app signing/
    injury banner + in-season `nflverse load_injuries` + a FAAB plan (~half the edge is in-season).
-5. **"Upgrade a weak starter" read** (from the mock) — when the lineup is full but a dedicated starter is
-   weak (low p_startable / high bust), surface upgrading it over redundant bench depth. NOT yet built.
+5. ⛔ **"Upgrade a weak starter" read — CLOSED, built and reverted unshipped (L50).** The gap in
+   `_lineup_gaps` is real (a slot reads binary filled/open) but the STATE CANNOT ARISE: measured over
+   552 post-lineup decision points, the best available player at a filled position beat my weakest
+   starter there by at most **−0.4 VOLS** (median −25.4) — never once reaching the threshold. Drafting
+   by VALUE means your starter is by construction the best you could have taken there. An earlier
+   "8.1% of the time" scan was measured with ME drafting by ADP, which is not the advisor's policy.
+   Evidence: `mc_research/42_upgrade_backtest.py`. Do NOT rebuild.
 6. **Mock draft simulator** (`13`+`12` are ~80% of it) · 7. Rest-of-draft lookahead · 8. Live draft grade
    · 9. Home hub / Research landing page (deferred until after Aug 7; `memory/home-hub-idea.md`).
 

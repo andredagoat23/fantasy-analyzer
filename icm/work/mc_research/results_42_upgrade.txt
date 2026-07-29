@@ -1,0 +1,15 @@
+UPGRADE READ — does it win points? (paired drafts, actual season scoring)
+  seat 7 of 12, 16 rounds · 300 PAIRED drafts/season
+  knobs: min gain 10.0 VOLS · nudge 0.5x gain · cap 12.0
+
+  season     baseline   upgrade     diff    win%      n
+  2021           1906      1906     +0.0      0%    193
+  2022           1992      1992     +0.0      0%    183
+  2024           1947      1947     +0.0      0%    191
+  2025           1662      1662     +0.0      0%    184
+
+  POOLED n=1200: mean +0.0 pts · 95% CI [+0.0, +0.0] · P(>0) 0.00
+  wins 0.0% · loses 0.0% · identical 100.0%
+  helped in 0/4 seasons
+
+  VERDICT: DO NOT SHIP — +0 pts, helping in only 0/4 seasons (P(>0)=0.00). Same bar that killed 33_ and 35_.
