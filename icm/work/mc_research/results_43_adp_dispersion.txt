@@ -1,0 +1,35 @@
+ADP DISPERSION on 22189 real picks from up to 111 one-QB 12-team drafts
+
+The model assumes ONE logistic scale of 7.0 picks everywhere. A logistic's scale s relates
+to its standard deviation by sd = s*pi/sqrt(3) ~= 1.81*s, so s=7 implies sd ~= 12.7 picks
+at EVERY point on the board. Measured instead:
+
+  ADP bucket          n  mean err      sd  implied s   vs model s=7.0
+  1-6               555      +0.0     3.3        1.8  <-- model FAR too wide
+  7-12              444      +1.0     5.1        2.8  <-- model FAR too wide
+  13-24            1435      +1.1     8.3        4.6
+  25-40            1443      +3.5    12.5        6.9
+  41-60            2109      +1.4    15.9        8.7
+  61-90            3409      +0.8    18.8       10.4  <-- model too narrow
+  91-130           3962      +7.6    27.3       15.0  <-- model too narrow
+  131-200          5966      -0.4    32.5       17.9  <-- model too narrow
+
+WHAT THIS MEANS FOR THE TOP OF THE BOARD:
+  players with ADP <= 6 went at pick <= 12 in 99.3% of drafts
+  they lasted to pick 24 or later in 0.5%
+  the model claims an ADP-2 player lasts to 24 with p=4.1%; measured 0.5%
+  measured scale up there is ~1.8, not 7.0
+
+PROPOSED SHAPE (fitted, not intuited):
+  scale grows roughly with log(ADP):  s(adp) ~= 4.15*ln(adp) + -5.99
+     ADP    2 -> s ~= 0.5   (model currently uses 7.0 everywhere)
+     ADP    6 -> s ~= 1.4   (model currently uses 7.0 everywhere)
+     ADP   12 -> s ~= 4.3   (model currently uses 7.0 everywhere)
+     ADP   24 -> s ~= 7.2   (model currently uses 7.0 everywhere)
+     ADP   50 -> s ~= 10.2   (model currently uses 7.0 everywhere)
+     ADP  100 -> s ~= 13.1   (model currently uses 7.0 everywhere)
+     ADP  180 -> s ~= 15.6   (model currently uses 7.0 everywhere)
+
+NOTE: changing _ADP_SCALE moves EVERY VONA on the board — it is the most load-bearing knob
+in the advisor. Any change needs the paired-draft backtest before it ships, and the code
+freeze is Aug 3.
