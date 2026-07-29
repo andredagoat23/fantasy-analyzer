@@ -744,7 +744,29 @@ def _horizon(draft_pos):
 
 # Logistic scale for "is he still on the board at my next pick?" — ADP is ~a round noisy, so a player
 # `_ADP_SCALE` picks past my next pick is ~73% likely to still be there, ~a round past ~88%. Tunable.
-_ADP_SCALE = 7.0
+_ADP_SCALE = 7.0        # legacy single scale — kept as the fallback and for the A/B in mc_research/44_
+
+# MEASURED ADP dispersion (mc_research/43_): 19,300 real picks from 111 one-QB 12-team Sleeper
+# drafts, joined to Sleeper ADP. How far a player's ACTUAL slot strays from his ADP is NOT constant —
+# the consensus #1 goes 1-3 essentially every time, while an ADP-150 player swings 30+ picks. Values
+# are the logistic scale implied by each bucket's observed sd (s = sd*sqrt(3)/pi).
+#
+# The old single 7.0 is only right around ADP 25-40. It is ~4x too WIDE at the top, which is the bug
+# the user caught: it gave an ADP-2 player a 4.1% chance of lasting to pick 24 (measured: 0.5%),
+# inflating `best_wait` and pushing VONA negative at ~ADP 12 when the next pick was #24.
+#
+# Interpolated rather than curve-fitted on purpose: a log fit goes NEGATIVE at the top of the board,
+# and np.interp clamps outside the measured range instead of extrapolating a shape we never observed.
+_SCALE_ADP = [3.5, 9.5, 18.5, 32.5, 50.5, 75.5, 110.5, 165.5]
+_SCALE_S = [1.8, 2.8, 4.6, 6.9, 8.7, 10.4, 15.0, 17.9]
+USE_MEASURED_SCALE = True     # flip to False to restore the single-scale behavior (A/B in 44_)
+
+
+def _adp_scale(adp):
+    """Per-player logistic scale from the measured dispersion; clamped at both ends."""
+    if not USE_MEASURED_SCALE:
+        return _ADP_SCALE
+    return np.interp(adp, _SCALE_ADP, _SCALE_S)
 
 
 def _survival_prob(adp_rank, horizon):
@@ -755,7 +777,11 @@ def _survival_prob(adp_rank, horizon):
     Cloud's Python 3.14) `np.exp(a_Series)` returns a bare ndarray, and ndarray has no `.where` — which
     crashed the whole board. Computing on numpy then re-wrapping in a Series keeps it version-proof."""
     adp = adp_rank if isinstance(adp_rank, pd.Series) else pd.Series(adp_rank)
-    z = (adp.astype("float64") - horizon) / _ADP_SCALE
+    a = adp.astype("float64")
+    # scale is a property of the PLAYER's ADP (how uncertain HIS slot is), not of the horizon:
+    # P(available at H) = P(actual_pick > H) = P(err > H - adp), err ~ logistic(0, s(adp)).
+    s = pd.Series(_adp_scale(a.fillna(_SCALE_ADP[-1]).to_numpy()), index=adp.index)
+    z = (a - horizon) / s
     p = pd.Series(1.0 / (1.0 + np.exp(-z.to_numpy())), index=adp.index)
     return p.where(adp.notna(), 1.0)
 

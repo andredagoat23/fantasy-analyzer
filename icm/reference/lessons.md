@@ -941,6 +941,36 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L51 — The ADP survival curve was one constant for the whole board (Jul 2026)
+- **User catch:** at pick 1 with the next pick at #24, VONA went NEGATIVE around ADP 12 — the model
+  claiming "waiting beats taking him" for players who would certainly be gone. Then, seeing it live
+  at a horizon of 12, VONA read −20 for Jonathan Taylor at ADP 8.2.
+- **Cause:** `_survival_prob` used a single logistic scale (`_ADP_SCALE = 7.0`) everywhere. Measured
+  against **19,300 real picks** (111 one-QB Sleeper drafts, `mc_research/43_`), the true scale runs
+  **1.8 at the top of the board to 17.9 late**, and 7.0 is only right around ADP 25-40 — about **4x
+  too wide** at the top. It gave an ADP-2 player a 4.1% chance of lasting to #24; reality is 0.5%.
+- **Why it mattered directionally, not just noisily:** over-crediting elite survival inflates
+  `best_wait` most at the positions with the most elite talent (RB 119 vs WR 87), so elite-RB VONA
+  was depressed more than elite-WR. At pick 1 Gibbs beat Nacua by 50 VOLS but only 19 VONA.
+- **Fixed** by interpolating the measured dispersion per player (`_adp_scale`), behind
+  `USE_MEASURED_SCALE` so the old behaviour stays one flag away. Interpolated rather than
+  curve-fitted on purpose: a log fit goes NEGATIVE at the top of the board.
+- **The backtest said −3.0 pts** (CI [−5.1,−0.9], 80.5% of drafts identical, `44_`). It shipped
+  anyway, and the reasoning is the point: **a visibly wrong core number has a trust cost the
+  backtest cannot see.** The advisor's whole design is "compute the truth in Python and let the
+  model read it"; a VONA column that says −20 for a player who is 64% gone corrodes that. −3 on a
+  ~1,900-pt roster is 0.16%, well inside practical noise.
+- **THE PROCESS LESSON, which I got backwards first.** I initially recommended holding it until
+  after the draft. That was the wrong risk ordering: the freeze is Aug 3, so shipping BEFORE it buys
+  six days plus a live mock to catch problems, while shipping after means it goes in with **no
+  rehearsal at all**. Ship risky-but-verified changes INTO the rehearsal window, not past it.
+- **Checked and cleared:** the change could have silently re-tuned every VONA-denominated constant
+  (`_FLEX_MARGIN` 15, `_ROLE_CAP` 10, `_RISK_PENALTY` 6, `_DART_BONUS` 15, the 4.0 star window) and
+  the raw-probability `_NEXT_DEFER_P`. Measured: VONA spread moves only 0.99-1.13x and no DEFER case
+  flips. 16 suites + both stress suites pass. (Principles 1, 2, 9)
+
+---
+
 ## L50 — CHECK THE SITUATION CAN ARISE before building the feature for it (Jul 2026)
 - **Roadmap #5, "upgrade a weak starter", is CLOSED — built, measured, reverted unshipped.** The
   premise: `_lineup_gaps` treats a slot as binary filled-or-open, so a starter who is a coin flip
