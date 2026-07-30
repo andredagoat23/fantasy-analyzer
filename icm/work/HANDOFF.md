@@ -4,11 +4,12 @@
 docs the task needs. Everything below is CURRENT as of **Jul 29, 2026**.
 
 ## Where things stand right now
-- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **`6cb7300`**, tree clean. Streamlit Cloud
-  auto-deploys on push — **pushing = deploying, always the user's call.**
-- **Health:** preflight **OK** (0 blocking, 0 warnings). **16 unit suites green — 238 checks.** Both
-  stress suites ALL PASS. Board + all priors regenerated **Jul 28**. **No open CODE items, no open
-  DATA flags.**
+- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = the **L52**
+  wheel-referent fix; `git log -3` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
+  deploying, always the user's call.**
+- **Health:** preflight **OK** (0 blocking, 0 warnings). **17 unit suites green — 264 checks.** Both
+  stress suites ALL PASS. Board + all priors regenerated **Jul 28**. **No open DATA flags. Two open
+  CODE items, both deliberate — L52 Tier 2 + Tier 3 (see Open questions).**
 - **⛔ CODE FREEZE Aug 3 — 5 days away. Draft Aug 7 — 9 days.** Last advisor-logic change Aug 3;
   Aug 4-6 = a full live mock, fixing only what the mock catches; Aug 7 = regen + preflight, no code.
   Rationale: this project's real bugs are caught by live mocks, not tests (L47 passed 195 checks and
@@ -19,6 +20,17 @@ docs the task needs. Everything below is CURRENT as of **Jul 29, 2026**.
   never hardcode one. Practice mocks have run at slots 1/5/10.
 
 ## Shipped this session (Jul 28-29) — all live
+- **L52 WHEEL REFERENT (Jul 29).** The advisor told the user an ADP-14.3 RB was "safe to #23" at
+  ~75% when true survival to #23 is **9.0%**. `_horizon()` returns `next_pick` (not `following`) when
+  it is **NOT my turn**, so pre-draft the label was computed to the ON-DECK pick while the DRAFT
+  POSITION line named two picks and the cell was a bare word. Fixed DISPLAY-ONLY: `_wheel_cell`
+  renders `safe→#2`, the not-my-turn line binds the column, the prompt quotes the cell instead of
+  inferring `#X`. **No math touched.** `tests/test_wheel.py` (26) — and it is the FIRST suite to
+  exercise `my_turn: False`; every prior suite and mock set it True.
+- **Research `45_` (Jul 29).** 100 mocks × 12 slots = 1,200 drafts / 19,200 advised picks. Roster
+  shape is near slot-invariant (1.0 QB / 6.4-6.7 RB / 6.2-6.5 WR / 1.0-1.1 TE / 1.0 K at EVERY seat)
+  — the slot changes who and when, not what. QB timing bifurcates at the midpoint (Allen R2: 64% at
+  slot 5, <2% at slots 11-12 which punt to R8); TE mirrors it; R1 flips RB→WR moving back.
 - **L48b COLD POSITION read.** Fires when the room is SKIPPING a position I can still start. The
   HOT/"a run is on, act early" half was **measured on 372k real Sleeper picks and CUT** — runs do not
   continue. `tests/test_cold.py` (21).
@@ -90,15 +102,34 @@ docs the task needs. Everything below is CURRENT as of **Jul 29, 2026**.
 5. **Commit the regenerated CSVs together** — the deployed app reads board + priors from the repo.
 
 ## Tests (plain-assert, run individually: `.venv/bin/python tests/<file>.py`)
-**16 suites, 238 checks, all green:** `test_bridge` (26), `test_opponent` (25), `test_dart` (23),
-`test_injury` (22), `test_cold` (21), `test_cohort_pull` (19), `test_handcuff` (16), `test_dst` (14),
-`test_sleeper` (13), `test_shape` (11), `test_cohort_skew` (10), `test_hedge` (8), `test_punt` (8),
-`test_defer` (8), `test_kicker` (7), `test_role_alpha` (7). Plus the two stress suites in
-`mc_research/` (`11_` invariants + cohort LOSO, `12_` 24 offline drafts).
+**17 suites, 264 checks, all green:** `test_bridge` (26), **`test_wheel` (26)**, `test_opponent` (25),
+`test_dart` (23), `test_injury` (22), `test_cold` (21), `test_cohort_pull` (19), `test_handcuff` (16),
+`test_dst` (14), `test_sleeper` (13), `test_shape` (11), `test_cohort_skew` (10), `test_hedge` (8),
+`test_punt` (8), `test_defer` (8), `test_kicker` (7), `test_role_alpha` (7). Plus the two stress
+suites in `mc_research/` (`11_` invariants + cohort LOSO, `12_` 24 offline drafts).
+
+⚠️ **COVERAGE HOLE, now half-closed (L52).** Every suite and every offline mock (`12_`/`13_`/`14_`/
+`45_`) sets `my_turn: True`. `test_wheel` is the only one that exercises `my_turn: False` — the branch
+used for PRE-DRAFT STRATEGY CHAT, where a whole conversational mode of the product ran untested. When
+adding a suite, ask which turn state it covers.
 
 ---
 
 ## ⚠️ OPEN QUESTIONS / KNOWN IMPERFECTIONS (read before "fixing" anything)
+- **L52 TIER 2 — `_horizon()` + `_wheel_label`, the one real open code item.** Two halves, one root
+  cause. (a) `_horizon()` returns `next_pick` when it is NOT my turn, so pre-draft VONA and the wheel
+  label answer "what's left when I'm first on the clock" instead of "what's left at the pick AFTER the
+  one I'm deciding" — that is ALSO the source of the pre-draft VONA complaint (`best_wait[WR]` = 130.5
+  exceeding Amon-Ra St. Brown's 128.5, i.e. implying an elite WR falls to you; true at a next-pick of
+  ~6, false at any round-2 pick). (b) `_wheel_label` still buckets on raw ADP arithmetic with a flat
+  12-pick cushion while `_survival_prob` got L51's measured curve — measured across the board, `gone`
+  spans **0.0%-50.0%** true survival and `safe` spans **67.5%-100%** (Josh Allen at #23 is 49.5% and
+  labeled `gone`). Re-base the label on `_survival_prob`. **Group D of `test_wheel.py` pins the
+  current rule on purpose — those 6 checks MUST go red when you do this.** Behavior change to what
+  the model reads on every pick: needs both stress suites AND the Aug 3 mock.
+- **L52 TIER 3 — put the probability in the cell** (`gone→#23 (9%)`). Tier 1 anchored the label; only
+  a number kills the fabrication (the advisor invented "~75%" because the context contains no
+  probability anywhere and the prompt forbids computing one).
 - **The R7 roster-state thread** (L47) — a 4th RB recommended at R7 with WR2 open, never reproduced
   offline. Per-pick logging is in place: after a weird pick, **Draft settings → "Download pick log"**.
   **Don't patch the gate blind.** This is the main thing the Aug 3 mock is for.

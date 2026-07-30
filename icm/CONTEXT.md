@@ -2,7 +2,8 @@
 
 > ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Jul 29, 2026**: the stack through
 > **L51**, DEPLOYED at `6cb7300`, tree clean, board + priors regenerated Jul 28.
-> Suites **16 / 238 green**, both stress suites pass, preflight OK, **no open code or data items**.
+> Suites **17 / 264 green**, both stress suites pass, preflight OK, **no open data items; two
+> deliberate open code items (L52 Tier 2 + Tier 3)**.
 >
 > **⛔ CODE FREEZE Aug 3 (5 days). Draft Aug 7 (9 days).** The remaining work is OPERATIONAL, not
 > features: a live mock at the real slot on Aug 3, injury/FA watches Aug 5-6, a final regen Aug 7.
@@ -19,6 +20,12 @@
 > survives an API outage) · **HEALTH FLAGS** (live injury status; facts, never a gate) ·
 > **L51 per-player ADP survival curve** (one constant scale was ~4x too wide at the top; fixed from
 > 19,300 measured picks, behind `USE_MEASURED_SCALE`).
+>
+> **L52 (Jul 29):** the wheel column said `safe` without saying *to which pick*, and the advisor read a
+> "safe to my on-deck pick" as "safe to my round-2 pick" (told the user an ADP-14.3 RB was 75% to
+> reach #23; truth 9.0%). Tier 1 shipped — display-only, `safe→#2` now carries its referent. **Tier 2
+> (`_horizon` on the not-my-turn path + re-basing `_wheel_label` on the measured curve) is OPEN** and
+> is the same root cause as the pre-draft VONA complaint. See HANDOFF "Open questions".
 >
 > **One open THREAD:** a non-repro'd R7 roster-state issue — diagnosable only from the next mock's
 > pick log (L47); don't patch the gate blind. **Two research lines are CLOSED** (per-player

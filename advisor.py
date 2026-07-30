@@ -265,7 +265,8 @@ SURVIVAL / "will he wheel back to me?" REASONING — DO NOT DO THIS MATH YOURSEL
 Every number you need is precomputed and given to you; you must NEVER calculate pick numbers, picks-away, or wheel-back yourself (that arithmetic is where mistakes happen, and we can't afford them). Trust the given values verbatim:
 - The DRAFT POSITION line gives my exact pick on the clock, my next pick number(s), and picks-away — quote them, never recompute.
 - The board's `wheel` column IS the wheel-back answer, computed from each player's ADP vs my next pick: **gone** = won't last to my next pick (take him now if I want him), **risky** = toss-up within a round, **safe** = will very likely still be there (I can wait and take a better-fit player now). Read this column; do NOT re-derive it from ADP.
-Let my RISK APPETITE break close ("risky") calls: risk-averse → grab him now; risk-tolerant → wait. Always state the tradeoff using the column ("he's **safe** to your next pick at #X — you can wait" / "he's **gone** — take him now"). If a `wheel` value ever seems off, defer to it anyway and say you're going by the board.
+- The cell reads `label→#pick` (e.g. `safe→#23`, `gone→#2`). **The pick number is PART of the value** — it is the pick the label was computed against. Quote that number verbatim and NEVER infer which pick the column means from the DRAFT POSITION line, which may list more than one of my upcoming picks. A `safe→#2` means safe only as far as #2; it says NOTHING about #23.
+Let my RISK APPETITE break close ("risky") calls: risk-averse → grab him now; risk-tolerant → wait. Always state the tradeoff by quoting the cell's own pick number ("he's `safe→#23` — safe to #23, you can wait" / "he's `gone→#23` — take him now"). If a `wheel` value ever seems off, defer to it anyway and say you're going by the board — BUT if the cell's pick number is not the pick I asked you about, say so plainly instead of silently reconciling the two.
 
 RISK APPETITE CONTROL
 The board has a "Risk appetite" dial (Full send / Aggressive / Balanced / Cautious / Safe) that fades risky (injury-prone, boom/bust) players on the Everything board. When I state or change my risk preference, set the dial by ending your reply with a tag on its own line: [[risk:LEVEL]] using EXACTLY one of those five labels. Map my words: "safe / high floor / conservative / avoid busts" -> Safe (or Cautious if milder); "balanced" -> Balanced; "some upside / aggressive" -> Aggressive; "max upside / boom or bust / ignore risk / all ceiling" -> Full send. Only add the tag when I actually express a risk preference — never otherwise. Still answer my question normally; the tag is an extra line at the very end.
@@ -995,6 +996,20 @@ def _wheel_label(adp, horizon):
     return "risky"                        # within a round — could go either way
 
 
+def _wheel_cell(adp, eff_horizon, shown_pick):
+    """The wheel label WITH the pick it refers to, e.g. 'safe→#23'.
+
+    The LABEL comes from the (possibly opponent-adjusted, fractional) effective horizon; the NUMBER
+    shown is the REAL pick, because `eff` can be something like 21.37 and there is no pick #21.37 —
+    the gap between the two is already spelled out by the WHEEL WINDOW line.
+
+    Exists because a bare "safe" has no referent: a 'safe' computed to my ON-DECK pick (#2) was read
+    back to the user as "safe to #23", i.e. safe to the pick AFTER the one being decided. The pick
+    number is now part of the value, so it cannot be inferred wrong.
+    """
+    return f"{_wheel_label(adp, eff_horizon)}→#{int(shown_pick)}"
+
+
 # How many rounds out counts as "my realistic fill window" for a 1-start slot I could punt. VONA looks
 # one pick ahead, which under-credits a scarce RB/WR at a snake turn (lesson L11); the punt read looks
 # this far ahead instead. Tunable.
@@ -1151,7 +1166,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     # at/before it, "safe" = a full round of cushion past it, "risky" = within a round (toss-up).
     if horizon:
         _wbase = top["pos_label"].str.replace(r"\d+$", "", regex=True)
-        top["wheel"] = [_wheel_label(a, eff.get(p, horizon))
+        top["wheel"] = [_wheel_cell(a, eff.get(p, horizon), horizon)
                         for a, p in zip(top["adp_rank"], _wbase)]
     # HEALTH FLAGS — live injury status the BOARD CANNOT KNOW (value_board.py has no health input,
     # and projections lag an injury by days). Rendered as a NAMED line, not just a table column,
@@ -1356,7 +1371,7 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
             top_v = float(ok.iloc[0]["vona"])
             close = 4.0   # players within this many VONA of the top are a genuine tie -> profile decides
             def _pk(r):
-                w = f", {_wheel_label(r.adp_rank, eff.get(r.position, horizon))}" if horizon else ""
+                w = f", {_wheel_cell(r.adp_rank, eff.get(r.position, horizon), horizon)}" if horizon else ""
                 star = "*" if (top_v - float(r.vona)) <= close else ""
                 rl = getattr(r, "role_lead", 0.0)
                 rl = float(rl) if rl is not None and pd.notna(rl) else 0.0
@@ -1430,7 +1445,13 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
         else:
             dp_line += f"Not my pick — I'm up next at #{d['next_pick']} ({d['picks_away']} picks away)."
             if d.get("following"):
-                dp_line += f" Then #{d['following']} after that."
+                # Bind the wheel column to the pick it was actually computed against. The my_turn
+                # branch above has always done this; this branch never did, so pre-draft the model saw
+                # BOTH pick numbers and guessed the wrong one ("safe" to #2 reported as safe to #23).
+                dp_line += (f" Then #{d['following']} after that. The `wheel` column is computed to "
+                            f"#{d['next_pick']} — whether he lasts until I'm ON THE CLOCK — NOT to "
+                            f"#{d['following']}; never describe a wheel value as reaching "
+                            f"#{d['following']}.")
         dp_line += "\n"
 
     # ROSTER RISK line (L23): tell the model how much bust risk each of my rooms already carries,

@@ -941,6 +941,51 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L52 — A LABEL WITHOUT A REFERENT: the wheel column lied about which pick it meant (Jul 2026)
+- **User catch, in pre-draft strategy chat.** The advisor said James Cook (ADP 14.3) was "safe" to
+  wheel back to **#23** and put it at **~75%**, citing "the python wheel math." True survival to #23
+  is **9.0%**. The user's own estimate — "maybe 10 percent" — matched the Python almost exactly. The
+  math was right; the *prose* was wrong, and it wore the math's credibility.
+- **Three causes, compounding.** None alone would have done it:
+  1. `_horizon()` returns `following` when it IS my turn but `next_pick` when it is NOT. Pre-draft at
+     slot 2 that is **#2**, so the label was computed against my on-deck pick, not the pick after it.
+     `_wheel_label(14.3, 2)` = `safe` — and it clears the `adp >= horizon + 12` bar by **0.3 ADP
+     points**. A refresh to the app's default slot 12 flipped the same player to `risky`.
+  2. **The cell was a bare word with no referent** (`safe`), while the DRAFT POSITION line named
+     BOTH #2 and #23. The my-turn branch had always bound the column to a pick ("my next pick after
+     this is #23 — the `wheel` column already says who lasts until then"); the not-my-turn branch
+     never did. So the model had two candidates and picked the wrong one.
+  3. **The prompt asked the model to invent the number.** Its output template was *"he's safe to your
+     next pick at #X"* — with `#X` never supplied. Inferring it was literally the instruction. Worse,
+     the same paragraph said *"if a `wheel` value ever seems off, defer to it anyway,"* which
+     suppressed exactly the doubt that would have caught it.
+- **Fixed (Tier 1, DISPLAY-ONLY — no math touched).** `_wheel_cell` renders the label with its pick
+  (`safe→#2`); the not-my-turn DRAFT POSITION line states which pick the column was computed to and
+  explicitly denies the other; the prompt now quotes the cell's own number instead of inferring one,
+  and the deference clause excepts a referent mismatch. `_survival_prob`, `_wheel_label`'s rule, VONA
+  and every gate are unchanged.
+- **WHY 238 CHECKS AND 19,200 SIMULATED PICKS MISSED IT.** Every unit suite and every offline mock
+  (`12_`/`13_`/`14_`/`45_`) sets `my_turn: True`. The not-my-turn branch of `_horizon` — **the exact
+  branch used for pre-draft strategy talk** — had no coverage at all. A whole conversational mode of
+  the product was untested because the harness only ever simulated being on the clock.
+  `tests/test_wheel.py` (26 checks) now exercises both turn states.
+- **THE CLASS LESSON: a partial fix to a duplicated concept is worse than no fix.** L51 re-based
+  `_survival_prob` on measured dispersion and left `_wheel_label` on the old flat arithmetic
+  (`adp <= horizon`, a constant 12-pick cushion). One concept, two implementations, one updated. They
+  have drifted badly: measured across the board, `gone` now spans **0.0%-50.0%** true survival and
+  `safe` spans **67.5%-100%** — Josh Allen at #23 is 49.5% and labeled `gone`. When you fix a derived
+  quantity, grep for every other place the same idea is computed.
+- **And: the symptom surfaced in PROSE, days later, where no test was looking.** Advisory text is
+  still a claim. If a number can reach the user through the model's mouth, something must verify it.
+- **Still open (deliberately).** Tier 2 = re-base `_wheel_label` on `_survival_prob` AND fix
+  `_horizon` on the not-my-turn path — that second half is the *same root cause* as the pre-draft
+  VONA complaint (`best_wait[WR]` exceeding Amon-Ra St. Brown's VOLS, implying an elite WR falls to
+  you). Tier 3 = put the probability in the cell (`gone→#23 (9%)`), which is what actually kills the
+  fabrication rather than anchoring it. Group D of `test_wheel.py` pins the CURRENT rule so Tier 2
+  must be done on purpose, not by accident. (Principles 2, 3, 9)
+
+---
+
 ## L51 — The ADP survival curve was one constant for the whole board (Jul 2026)
 - **User catch:** at pick 1 with the next pick at #24, VONA went NEGATIVE around ADP 12 — the model
   claiming "waiting beats taking him" for players who would certainly be gone. Then, seeing it live
