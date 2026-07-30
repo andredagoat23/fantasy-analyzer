@@ -1,0 +1,490 @@
+
+==============================================================================
+SLOT PICK DISTRIBUTION — real advisor, 100 mocks/slot, 1200 drafts total
+opponents: sticky-ADP (sigma 1.5+0.1*adp) · seeds 1-100 identical at every slot · L51 measured survival curve LIVE
+==============================================================================
+
+=== POSITION % BY ROUND, PER SLOT ===
+
+--- SLOT 1 ---
+ rd     QB     RB     WR     TE      K
+  1      -   100%      -      -      -
+  2    13%    66%    13%     8%      -
+  3     9%    28%    41%    22%      -
+  4      -     4%    86%    10%      -
+  5      -    46%    54%      -      -
+  6      -    16%    40%    44%      -
+  7     1%    26%    57%    16%      -
+  8    26%    66%     8%      -      -
+  9    11%    75%    14%      -      -
+ 10    33%    13%    54%      -      -
+ 11     6%     4%    90%      -      -
+ 12      -    29%    71%      -      -
+ 13      -    57%    43%      -      -
+ 14      -    40%    60%      -      -
+ 15      -    72%    22%     5%     1%
+ 16     1%      -      -      -    99%
+
+--- SLOT 2 ---
+ rd     QB     RB     WR     TE      K
+  1      -   100%      -      -      -
+  2    39%    50%     8%     3%      -
+  3      -    47%    50%     3%      -
+  4      -     1%    84%    15%      -
+  5      -    50%    50%      -      -
+  6      -    18%    30%    52%      -
+  7     1%    14%    58%    27%      -
+  8    24%    69%     7%      -      -
+  9    12%    69%    19%      -      -
+ 10    19%    21%    60%      -      -
+ 11     5%     5%    90%      -      -
+ 12      -    36%    64%      -      -
+ 13      -    52%    48%      -      -
+ 14      -    46%    54%      -      -
+ 15      -    74%    24%     2%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 3 ---
+ rd     QB     RB     WR     TE      K
+  1      -    61%    39%      -      -
+  2    47%    39%    11%     3%      -
+  3      -    61%    30%     9%      -
+  4      -    21%    67%    12%      -
+  5      -    52%    48%      -      -
+  6    14%    19%    26%    41%      -
+  7      -    17%    48%    35%      -
+  8    18%    66%    16%      -      -
+  9     3%    75%    22%      -      -
+ 10    15%    22%    63%      -      -
+ 11     3%     7%    90%      -      -
+ 12      -    35%    65%      -      -
+ 13      -    56%    44%      -      -
+ 14      -    49%    51%      -      -
+ 15      -    63%    32%     5%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 4 ---
+ rd     QB     RB     WR     TE      K
+  1      -    28%    72%      -      -
+  2    51%    34%    14%     1%      -
+  3      -    68%    29%     3%      -
+  4      -    41%    51%     8%      -
+  5      -    65%    35%      -      -
+  6     6%    20%    17%    57%      -
+  7      -    13%    56%    31%      -
+  8    29%    62%     9%      -      -
+  9     1%    71%    28%      -      -
+ 10    11%    34%    55%      -      -
+ 11     2%     9%    89%      -      -
+ 12      -    28%    72%      -      -
+ 13      -    50%    50%      -      -
+ 14      -    57%    43%      -      -
+ 15      -    72%    25%     3%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 5 ---
+ rd     QB     RB     WR     TE      K
+  1      -    43%    57%      -      -
+  2    64%    15%    13%     8%      -
+  3      -    76%    24%      -      -
+  4      -    44%    54%     2%      -
+  5      -    47%    53%      -      -
+  6     7%    35%    12%    46%      -
+  7      -     5%    51%    44%      -
+  8    20%    71%     9%      -      -
+  9     3%    64%    33%      -      -
+ 10     6%    52%    42%      -      -
+ 11      -     4%    96%      -      -
+ 12      -    37%    63%      -      -
+ 13      -    44%    56%      -      -
+ 14      -    53%    47%      -      -
+ 15      -    61%    34%     5%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 6 ---
+ rd     QB     RB     WR     TE      K
+  1      -    51%    49%      -      -
+  2    56%     4%    19%    21%      -
+  3      -    67%    33%      -      -
+  4      -    52%    47%     1%      -
+  5      -    45%    55%      -      -
+  6     8%    35%     3%    54%      -
+  7      -     7%    69%    24%      -
+  8    26%    63%    11%      -      -
+  9     2%    78%    20%      -      -
+ 10     8%    44%    48%      -      -
+ 11      -    10%    90%      -      -
+ 12      -    36%    64%      -      -
+ 13      -    46%    54%      -      -
+ 14      -    57%    43%      -      -
+ 15      -    66%    26%     8%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 7 ---
+ rd     QB     RB     WR     TE      K
+  1      -    27%    73%      -      -
+  2    48%    14%    17%    21%      -
+  3      -    86%    14%      -      -
+  4      -    37%    63%      -      -
+  5      -    63%    37%      -      -
+  6     9%    38%     2%    51%      -
+  7      -     8%    64%    28%      -
+  8    21%    58%    21%      -      -
+  9     5%    76%    19%      -      -
+ 10    16%    47%    37%      -      -
+ 11     1%     6%    93%      -      -
+ 12      -    40%    60%      -      -
+ 13      -    46%    54%      -      -
+ 14      -    58%    42%      -      -
+ 15      -    62%    33%     5%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 8 ---
+ rd     QB     RB     WR     TE      K
+  1      -    46%    54%      -      -
+  2    34%     9%    22%    35%      -
+  3      -    82%    18%      -      -
+  4      -    34%    66%      -      -
+  5      -    59%    41%      -      -
+  6    11%    41%      -    48%      -
+  7      -     9%    74%    17%      -
+  8    37%    49%    14%      -      -
+  9     5%    74%    21%      -      -
+ 10     8%    53%    39%      -      -
+ 11     5%    12%    83%      -      -
+ 12      -    48%    52%      -      -
+ 13      -    33%    67%      -      -
+ 14      -    69%    31%      -      -
+ 15      -    49%    42%     9%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 9 ---
+ rd     QB     RB     WR     TE      K
+  1      -    30%    70%      -      -
+  2    14%     9%    24%    53%      -
+  3      -    80%    20%      -      -
+  4      -    51%    49%      -      -
+  5      -    63%    37%      -      -
+  6     7%    53%      -    40%      -
+  7      -    14%    79%     7%      -
+  8    63%    27%    10%      -      -
+  9     6%    74%    20%      -      -
+ 10     9%    57%    34%      -      -
+ 11     1%     9%    90%      -      -
+ 12      -    50%    50%      -      -
+ 13      -    31%    69%      -      -
+ 14      -    62%    38%      -      -
+ 15      -    58%    36%     6%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 10 ---
+ rd     QB     RB     WR     TE      K
+  1      -    11%    89%      -      -
+  2     7%     9%    25%    59%      -
+  3      -    85%    15%      -      -
+  4      -    53%    47%      -      -
+  5      -    76%    24%      -      -
+  6     7%    58%      -    35%      -
+  7      -    16%    78%     6%      -
+  8    63%    19%    18%      -      -
+  9    12%    71%    17%      -      -
+ 10    11%    54%    35%      -      -
+ 11      -     4%    96%      -      -
+ 12      -    39%    61%      -      -
+ 13      -    44%    56%      -      -
+ 14      -    55%    45%      -      -
+ 15      -    65%    32%     3%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 11 ---
+ rd     QB     RB     WR     TE      K
+  1      -     4%    96%      -      -
+  2     1%    33%     9%    57%      -
+  3      -    82%    18%      -      -
+  4      -    47%    53%      -      -
+  5      -    76%    24%      -      -
+  6     2%    55%      -    43%      -
+  7      -    17%    83%      -      -
+  8    69%    11%    20%      -      -
+  9    15%    66%    19%      -      -
+ 10    10%    64%    26%      -      -
+ 11     3%     7%    90%      -      -
+ 12      -    37%    63%      -      -
+ 13      -    38%    62%      -      -
+ 14      -    59%    41%      -      -
+ 15      -    58%    41%     1%      -
+ 16      -      -      -      -   100%
+
+--- SLOT 12 ---
+ rd     QB     RB     WR     TE      K
+  1      -     5%    95%      -      -
+  2      -    52%      -    48%      -
+  3      -    69%    31%      -      -
+  4      -    36%    64%      -      -
+  5      -    90%    10%      -      -
+  6     5%    43%      -    52%      -
+  7      -    19%    81%      -      -
+  8    72%    10%    18%      -      -
+  9    16%    62%    22%      -      -
+ 10     7%    71%    22%      -      -
+ 11      -    10%    90%      -      -
+ 12      -    48%    52%      -      -
+ 13      -    31%    69%      -      -
+ 14      -    64%    36%      -      -
+ 15      -    54%    41%     5%      -
+ 16      -      -      -      -   100%
+
+
+=== POSITION % BY ROUND, POOLED over all 12 slots (1200 drafts) ===
+ rd     QB     RB     WR     TE      K
+  1      -    42%    58%      -      -
+  2    31%    28%    15%    26%      -
+  3     1%    69%    27%     3%      -
+  4      -    35%    61%     4%      -
+  5      -    61%    39%      -      -
+  6     6%    36%    11%    47%      -
+  7     0%    14%    66%    20%      -
+  8    39%    48%    13%      -      -
+  9     8%    71%    21%      -      -
+ 10    13%    44%    43%      -      -
+ 11     2%     7%    91%      -      -
+ 12      -    39%    61%      -      -
+ 13      -    44%    56%      -      -
+ 14      -    56%    44%      -      -
+ 15      -    63%    32%     5%     0%
+ 16     0%      -      -      -   100%
+
+
+=== AVG ROSTER SHAPE PER SLOT (positions per 16-round draft) ===
+slot     QB     RB     WR     TE      K
+   1   1.00   6.42   6.53   1.05   1.00
+   2   1.00   6.52   6.46   1.02   1.00
+   3   1.00   6.43   6.52   1.05   1.00
+   4   1.00   6.52   6.45   1.03   1.00
+   5   1.00   6.51   6.44   1.05   1.00
+   6   1.00   6.61   6.31   1.08   1.00
+   7   1.00   6.66   6.29   1.05   1.00
+   8   1.00   6.67   6.24   1.09   1.00
+   9   1.00   6.68   6.26   1.06   1.00
+  10   1.00   6.59   6.38   1.03   1.00
+  11   1.00   6.54   6.45   1.01   1.00
+  12   1.00   6.64   6.31   1.05   1.00
+
+
+=== PLAYERS TAKEN PER ROUND, PER SLOT (>=2% shown, rest rolled up) ===
+
+--- SLOT 1 ---
+ R1  Jahmyr Gibbs 100%
+ R2  Chase Brown 61% | Josh Allen 13% | Brock Bowers 8% | A.J. Brown 6% | Rashee Rice 5% | Omarion Hampton 3% | Drake London 2% | Derrick Henry 2%
+ R3  A.J. Brown 25% | Brock Bowers 22% | Josh Jacobs 19% | Nico Collins 13% | Josh Allen 9% | Kenneth Walker 5% | Chase Brown 3% | Rashee Rice 2% | +2 others 2%
+ R4  Ladd McConkey 55% | Terry McLaurin 21% | Malik Nabers 8% | Tyler Warren 6% | Colston Loveland 4% | Bucky Irving 3% | +3 others 3%
+ R5  Bucky Irving 35% | Terry McLaurin 29% | Ladd McConkey 12% | Parker Washington 11% | Travis Etienne 5% | Quinshon Judkins 3% | Cam Skattebo 2% | +3 others 3%
+ R6  Travis Kelce 44% | Parker Washington 39% | Tony Pollard 9% | Bhayshul Tuten 6% | +2 others 2%
+ R7  Parker Washington 37% | Tony Pollard 20% | Travis Kelce 16% | Alec Pierce 12% | Bhayshul Tuten 5% | Luther Burden 5% | Mike Evans 3% | +2 others 2%
+ R8  Rico Dowdle 28% | Chuba Hubbard 18% | Brock Purdy 12% | Jaylen Warren 11% | Aaron Jones 9% | Patrick Mahomes 7% | Bo Nix 6% | Josh Downs 6% | Alec Pierce 2% | +1 others 1%
+ R9  Aaron Jones 37% | Chuba Hubbard 15% | Rico Dowdle 14% | Josh Downs 13% | Jared Goff 8% | Kenny Gainwell 5% | Patrick Mahomes 3% | J.K. Dobbins 2% | Jaylen Warren 2% | +1 others 1%
+ R10 Josh Downs 32% | Jared Goff 28% | Rashid Shaheed 22% | Kenny Gainwell 6% | J.K. Dobbins 5% | Jordan Love 5% | +2 others 2%
+ R11 Khalil Shakir 51% | Quentin Johnston 30% | Jordan Love 6% | Josh Downs 4% | Xavier Worthy 3% | Jacory Croskey-Merritt 2% | +4 others 4%
+ R12 Quentin Johnston 41% | Jacory Croskey-Merritt 17% | Tre Tucker 15% | Xavier Worthy 12% | Blake Corum 9% | Josh Downs 2% | +4 others 4%
+ R13 Jordan Mason 26% | Tre Tucker 24% | Zach Charbonnet 14% | Jacory Croskey-Merritt 13% | Xavier Worthy 13% | Josh Downs 3% | Jerry Jeudy 3% | Blake Corum 3% | +1 others 1%
+ R14 Tre Tucker 49% | Zach Charbonnet 20% | Jordan Mason 11% | Jerry Jeudy 8% | Alvin Kamara 6% | Xavier Worthy 3% | +3 others 3%
+ R15 Zach Charbonnet 32% | Jerry Jeudy 21% | Alvin Kamara 18% | Isiah Pacheco 12% | Jordan Mason 8% | Brenton Strange 4% | Chris Rodriguez 2% | +3 others 3%
+ R16 Harrison Butker 27% | Eddy Pineiro 27% | Jake Bates 20% | Tyler Loop 17% | Cairo Santos 5% | Chase McLaughlin 2% | +2 others 2%
+
+--- SLOT 2 ---
+ R1  Bijan Robinson 61% | Jahmyr Gibbs 39%
+ R2  Chase Brown 44% | Josh Allen 39% | Rashee Rice 5% | Brock Bowers 3% | Derrick Henry 3% | Omarion Hampton 3% | Drake London 3%
+ R3  A.J. Brown 25% | Chase Brown 24% | Nico Collins 19% | Josh Jacobs 15% | Kenneth Walker 8% | Chris Olave 5% | Brock Bowers 3% | +1 others 1%
+ R4  Ladd McConkey 49% | Terry McLaurin 16% | Malik Nabers 15% | Tyler Warren 8% | Colston Loveland 7% | Zay Flowers 2% | Parker Washington 2% | +1 others 1%
+ R5  Terry McLaurin 33% | Bucky Irving 26% | Ladd McConkey 11% | Travis Etienne 9% | D'Andre Swift 8% | Quinshon Judkins 7% | Parker Washington 5% | +1 others 1%
+ R6  Travis Kelce 50% | Parker Washington 28% | Bhayshul Tuten 10% | David Montgomery 5% | Tony Pollard 2% | Luther Burden 2% | +3 others 3%
+ R7  Parker Washington 49% | Travis Kelce 26% | Tony Pollard 8% | Alec Pierce 6% | David Montgomery 3% | Bhayshul Tuten 3% | Luther Burden 2% | +3 others 3%
+ R8  Rico Dowdle 28% | Jaylen Warren 21% | Brock Purdy 13% | Chuba Hubbard 11% | Aaron Jones 9% | Bo Nix 6% | Patrick Mahomes 5% | Alec Pierce 3% | Josh Downs 2% | Parker Washington 2%
+ R9  Aaron Jones 27% | Chuba Hubbard 19% | Josh Downs 19% | Rico Dowdle 13% | Jared Goff 8% | Kenny Gainwell 7% | Patrick Mahomes 4% | Jaylen Warren 3%
+ R10 Josh Downs 36% | Rashid Shaheed 23% | Jared Goff 18% | Kenny Gainwell 9% | RJ Harvey 5% | J.K. Dobbins 4% | Aaron Jones 3% | +2 others 2%
+ R11 Khalil Shakir 48% | Quentin Johnston 38% | Jordan Love 5% | Josh Downs 2% | Rachaad White 2% | Jacory Croskey-Merritt 2% | +3 others 3%
+ R12 Quentin Johnston 29% | Jacory Croskey-Merritt 23% | Tre Tucker 15% | Xavier Worthy 12% | Blake Corum 11% | Josh Downs 8% | +2 others 2%
+ R13 Tre Tucker 31% | Jordan Mason 18% | Xavier Worthy 14% | Zach Charbonnet 14% | Jacory Croskey-Merritt 9% | Blake Corum 8% | Josh Downs 2% | Alvin Kamara 2% | +2 others 2%
+ R14 Tre Tucker 50% | Zach Charbonnet 23% | Alvin Kamara 11% | Jordan Mason 11% | Xavier Worthy 2% | Jerry Jeudy 2% | +1 others 1%
+ R15 Alvin Kamara 25% | Jerry Jeudy 24% | Zach Charbonnet 20% | Jordan Mason 15% | Isiah Pacheco 10% | Chris Rodriguez 4% | +2 others 2%
+ R16 Jake Bates 33% | Harrison Butker 28% | Tyler Loop 14% | Eddy Pineiro 13% | Cairo Santos 10% | Chase McLaughlin 2%
+
+--- SLOT 3 ---
+ R1  Bijan Robinson 44% | Puka Nacua 39% | Jahmyr Gibbs 17%
+ R2  Josh Allen 47% | Chase Brown 27% | Omarion Hampton 10% | Drake London 9% | Rashee Rice 2% | Brock Bowers 2% | +3 others 3%
+ R3  Kenneth Walker 29% | Chase Brown 19% | Josh Jacobs 13% | A.J. Brown 12% | Chris Olave 9% | Brock Bowers 9% | Nico Collins 9%
+ R4  Ladd McConkey 45% | Malik Nabers 14% | Travis Etienne 11% | Tyler Warren 7% | Terry McLaurin 6% | Colston Loveland 5% | Cam Skattebo 5% | Bucky Irving 4% | Zay Flowers 2% | +1 others 1%
+ R5  Terry McLaurin 26% | Bucky Irving 25% | D'Andre Swift 15% | Ladd McConkey 14% | Quinshon Judkins 10% | Parker Washington 7% | Travis Etienne 2% | +1 others 1%
+ R6  Travis Kelce 37% | Parker Washington 22% | Matthew Stafford 14% | Bhayshul Tuten 8% | D'Andre Swift 4% | David Montgomery 3% | Luther Burden 2% | Alec Pierce 2% | Tony Pollard 2% | George Kittle 2% | +4 others 4%
+ R7  Parker Washington 41% | Travis Kelce 34% | Tony Pollard 11% | Bhayshul Tuten 4% | Alec Pierce 4% | Mike Evans 3% | David Montgomery 2% | +1 others 1%
+ R8  Rico Dowdle 31% | Jaylen Warren 19% | Brock Purdy 11% | Chuba Hubbard 11% | Parker Washington 9% | Bo Nix 5% | Alec Pierce 4% | Aaron Jones 4% | Josh Downs 3% | +3 others 3%
+ R9  Aaron Jones 31% | Josh Downs 22% | Chuba Hubbard 21% | Rico Dowdle 10% | Kenny Gainwell 9% | Jaylen Warren 3% | Jared Goff 2% | +2 others 2%
+ R10 Josh Downs 38% | Rashid Shaheed 25% | Kenny Gainwell 14% | Jared Goff 13% | J.K. Dobbins 4% | RJ Harvey 3% | Jordan Love 2% | +1 others 1%
+ R11 Khalil Shakir 53% | Quentin Johnston 33% | Jordan Love 3% | Jacory Croskey-Merritt 3% | Josh Downs 3% | RJ Harvey 2% | +3 others 3%
+ R12 Jacory Croskey-Merritt 29% | Quentin Johnston 28% | Tre Tucker 18% | Xavier Worthy 16% | Blake Corum 4% | Josh Downs 2% | +3 others 3%
+ R13 Tre Tucker 29% | Jordan Mason 22% | Zach Charbonnet 17% | Xavier Worthy 11% | Jacory Croskey-Merritt 10% | Blake Corum 4% | Alvin Kamara 3% | Jerry Jeudy 2% | Josh Downs 2%
+ R14 Tre Tucker 44% | Zach Charbonnet 22% | Alvin Kamara 12% | Jordan Mason 11% | Jerry Jeudy 7% | Blake Corum 2% | +2 others 2%
+ R15 Jerry Jeudy 31% | Alvin Kamara 21% | Zach Charbonnet 17% | Jordan Mason 10% | Isiah Pacheco 9% | Chris Rodriguez 5% | Brenton Strange 5% | +2 others 2%
+ R16 Jake Bates 28% | Harrison Butker 28% | Eddy Pineiro 19% | Tyler Loop 15% | Cairo Santos 5% | Chase McLaughlin 3% | +2 others 2%
+
+--- SLOT 4 ---
+ R1  Ja'Marr Chase 37% | Puka Nacua 35% | Bijan Robinson 24% | Jahmyr Gibbs 4%
+ R2  Josh Allen 51% | Omarion Hampton 16% | Drake London 11% | Chase Brown 11% | Ashton Jeanty 7% | Rashee Rice 3% | +1 others 1%
+ R3  Kenneth Walker 31% | Nico Collins 17% | Chase Brown 15% | Javonte Williams 12% | Josh Jacobs 10% | A.J. Brown 9% | Brock Bowers 3% | Zay Flowers 2% | +1 others 1%
+ R4  Ladd McConkey 28% | Travis Etienne 20% | Malik Nabers 16% | Bucky Irving 13% | Cam Skattebo 6% | Terry McLaurin 4% | Colston Loveland 4% | Tyler Warren 4% | Zay Flowers 3% | +2 others 2%
+ R5  Bucky Irving 29% | D'Andre Swift 28% | Terry McLaurin 18% | Ladd McConkey 10% | Parker Washington 7% | Quinshon Judkins 6% | +2 others 2%
+ R6  Travis Kelce 55% | Parker Washington 17% | Bhayshul Tuten 10% | D'Andre Swift 7% | Matthew Stafford 6% | David Montgomery 2% | Harold Fannin 2% | +1 others 1%
+ R7  Parker Washington 48% | Travis Kelce 28% | Tony Pollard 9% | Alec Pierce 6% | Bhayshul Tuten 4% | George Kittle 3% | Mike Evans 2%
+ R8  Rico Dowdle 28% | Jaylen Warren 20% | Brock Purdy 16% | Bo Nix 12% | Chuba Hubbard 11% | Parker Washington 4% | Aaron Jones 2% | Alec Pierce 2% | Josh Downs 2% | +3 others 3%
+ R9  Aaron Jones 27% | Josh Downs 26% | Rico Dowdle 19% | Chuba Hubbard 16% | Kenny Gainwell 5% | J.K. Dobbins 2% | Jaylen Warren 2% | Christian Watson 2% | +1 others 1%
+ R10 Josh Downs 36% | Rashid Shaheed 19% | Kenny Gainwell 17% | Jared Goff 11% | J.K. Dobbins 6% | Aaron Jones 6% | RJ Harvey 5%
+ R11 Quentin Johnston 43% | Khalil Shakir 42% | Jacory Croskey-Merritt 6% | Josh Downs 3% | Jordan Love 2% | Rachaad White 2% | +2 others 2%
+ R12 Quentin Johnston 24% | Jacory Croskey-Merritt 21% | Xavier Worthy 21% | Tre Tucker 20% | Blake Corum 7% | Josh Downs 5% | Khalil Shakir 2%
+ R13 Tre Tucker 37% | Jordan Mason 23% | Zach Charbonnet 13% | Xavier Worthy 10% | Blake Corum 5% | Jacory Croskey-Merritt 5% | Alvin Kamara 4% | Josh Downs 2% | +1 others 1%
+ R14 Tre Tucker 35% | Zach Charbonnet 21% | Jordan Mason 20% | Alvin Kamara 15% | Jerry Jeudy 7% | +2 others 2%
+ R15 Alvin Kamara 26% | Zach Charbonnet 26% | Jerry Jeudy 25% | Isiah Pacheco 8% | Jordan Mason 6% | Chris Rodriguez 5% | Brenton Strange 2% | +2 others 2%
+ R16 Eddy Pineiro 29% | Jake Bates 29% | Tyler Loop 21% | Harrison Butker 15% | Cairo Santos 5% | +1 others 1%
+
+--- SLOT 5 ---
+ R1  Ja'Marr Chase 42% | Christian McCaffrey 39% | Puka Nacua 15% | Bijan Robinson 4%
+ R2  Josh Allen 64% | Trey McBride 8% | Drake London 8% | Ashton Jeanty 7% | Omarion Hampton 6% | Rashee Rice 5% | Chase Brown 2%
+ R3  Javonte Williams 44% | Kenneth Walker 18% | Chase Brown 11% | Nico Collins 11% | A.J. Brown 7% | Chris Olave 6% | Josh Jacobs 3%
+ R4  Ladd McConkey 30% | Travis Etienne 27% | Malik Nabers 19% | Bucky Irving 7% | Cam Skattebo 7% | Zay Flowers 5% | Kyren Williams 3% | +2 others 2%
+ R5  D'Andre Swift 28% | Terry McLaurin 27% | Parker Washington 17% | Bucky Irving 14% | Ladd McConkey 9% | Quinshon Judkins 4% | +1 others 1%
+ R6  Travis Kelce 44% | Bhayshul Tuten 17% | Parker Washington 11% | D'Andre Swift 8% | David Montgomery 8% | Matthew Stafford 7% | +5 others 5%
+ R7  Parker Washington 44% | Travis Kelce 38% | Tony Pollard 4% | Alec Pierce 4% | Tucker Kraft 3% | George Kittle 3% | Mike Evans 2% | +2 others 2%
+ R8  Rico Dowdle 30% | Jaylen Warren 23% | Chuba Hubbard 16% | Brock Purdy 14% | Alec Pierce 5% | Bo Nix 4% | Parker Washington 4% | Patrick Mahomes 2% | Aaron Jones 2%
+ R9  Josh Downs 33% | Chuba Hubbard 26% | Aaron Jones 24% | Kenny Gainwell 8% | Rico Dowdle 6% | Jared Goff 3%
+ R10 Josh Downs 24% | Rashid Shaheed 18% | Kenny Gainwell 18% | RJ Harvey 14% | J.K. Dobbins 12% | Aaron Jones 7% | Jared Goff 6% | +1 others 1%
+ R11 Khalil Shakir 47% | Quentin Johnston 46% | Xavier Worthy 3% | +4 others 4%
+ R12 Quentin Johnston 32% | Jacory Croskey-Merritt 23% | Tre Tucker 14% | Blake Corum 12% | Xavier Worthy 10% | Josh Downs 7% | +2 others 2%
+ R13 Tre Tucker 41% | Jordan Mason 15% | Zach Charbonnet 12% | Xavier Worthy 11% | Blake Corum 9% | Jacory Croskey-Merritt 8% | Josh Downs 3% | +1 others 1%
+ R14 Tre Tucker 38% | Zach Charbonnet 22% | Jordan Mason 16% | Alvin Kamara 14% | Jerry Jeudy 6% | Xavier Worthy 3% | +1 others 1%
+ R15 Jerry Jeudy 32% | Zach Charbonnet 26% | Alvin Kamara 17% | Jordan Mason 9% | Isiah Pacheco 6% | Brenton Strange 4% | Tre Tucker 2% | Chris Rodriguez 2% | +2 others 2%
+ R16 Jake Bates 27% | Harrison Butker 26% | Eddy Pineiro 24% | Tyler Loop 18% | Cairo Santos 5%
+
+--- SLOT 6 ---
+ R1  Christian McCaffrey 51% | Amon-Ra St. Brown 21% | Ja'Marr Chase 21% | Puka Nacua 7%
+ R2  Josh Allen 56% | Trey McBride 21% | Drake London 15% | Ashton Jeanty 4% | Rashee Rice 4%
+ R3  Javonte Williams 49% | Chris Olave 27% | Kenneth Walker 11% | Chase Brown 4% | Breece Hall 3% | Nico Collins 3% | A.J. Brown 3%
+ R4  Malik Nabers 22% | Travis Etienne 19% | Cam Skattebo 18% | Ladd McConkey 15% | Zay Flowers 9% | Bucky Irving 9% | Kyren Williams 6% | +2 others 2%
+ R5  D'Andre Swift 30% | Parker Washington 24% | Terry McLaurin 20% | Ladd McConkey 11% | Bucky Irving 11% | Quinshon Judkins 3% | +1 others 1%
+ R6  Travis Kelce 44% | D'Andre Swift 14% | Bhayshul Tuten 13% | Sam LaPorta 8% | Matthew Stafford 8% | TreVeyon Henderson 5% | David Montgomery 3% | Parker Washington 3% | Harold Fannin 2%
+ R7  Parker Washington 51% | Travis Kelce 20% | Alec Pierce 10% | Mike Evans 8% | Tony Pollard 5% | Tucker Kraft 2% | George Kittle 2% | +2 others 2%
+ R8  Jaylen Warren 29% | Rico Dowdle 26% | Brock Purdy 13% | Bo Nix 11% | Parker Washington 7% | Chuba Hubbard 6% | Aaron Jones 2% | Alec Pierce 2% | +4 others 4%
+ R9  Aaron Jones 46% | Josh Downs 19% | Chuba Hubbard 13% | Kenny Gainwell 10% | Rico Dowdle 7% | Jared Goff 2% | +3 others 3%
+ R10 Josh Downs 43% | Kenny Gainwell 18% | J.K. Dobbins 17% | Jared Goff 8% | Rashid Shaheed 5% | RJ Harvey 5% | Aaron Jones 3% | +1 others 1%
+ R11 Quentin Johnston 42% | Khalil Shakir 42% | Jacory Croskey-Merritt 7% | Xavier Worthy 5% | +4 others 4%
+ R12 Quentin Johnston 27% | Tre Tucker 19% | Jacory Croskey-Merritt 18% | Blake Corum 16% | Xavier Worthy 8% | Josh Downs 6% | Khalil Shakir 4% | +2 others 2%
+ R13 Tre Tucker 40% | Jordan Mason 16% | Zach Charbonnet 13% | Xavier Worthy 9% | Jacory Croskey-Merritt 9% | Alvin Kamara 6% | Josh Downs 3% | Jerry Jeudy 2% | Blake Corum 2%
+ R14 Tre Tucker 32% | Zach Charbonnet 27% | Jordan Mason 18% | Alvin Kamara 9% | Jerry Jeudy 7% | Xavier Worthy 3% | +4 others 4%
+ R15 Zach Charbonnet 26% | Jerry Jeudy 24% | Alvin Kamara 19% | Isiah Pacheco 14% | Brenton Strange 7% | Jordan Mason 4% | Chris Rodriguez 3% | Tre Tucker 2% | +1 others 1%
+ R16 Eddy Pineiro 32% | Harrison Butker 24% | Tyler Loop 18% | Jake Bates 16% | Cairo Santos 7% | Chase McLaughlin 3%
+
+--- SLOT 7 ---
+ R1  Amon-Ra St. Brown 64% | Christian McCaffrey 27% | Ja'Marr Chase 5% | Jaxon Smith-Njigba 4%
+ R2  Josh Allen 48% | Trey McBride 21% | Drake London 17% | Ashton Jeanty 14%
+ R3  Javonte Williams 70% | Chris Olave 11% | Kyren Williams 8% | Breece Hall 5% | Kenneth Walker 3% | Zay Flowers 2% | +1 others 1%
+ R4  Malik Nabers 31% | Zay Flowers 19% | Travis Etienne 14% | Cam Skattebo 13% | Ladd McConkey 11% | Kyren Williams 5% | Bucky Irving 5% | +2 others 2%
+ R5  D'Andre Swift 47% | Parker Washington 20% | Bucky Irving 11% | Terry McLaurin 10% | Ladd McConkey 7% | TreVeyon Henderson 4% | +1 others 1%
+ R6  Travis Kelce 40% | Bhayshul Tuten 18% | D'Andre Swift 13% | Matthew Stafford 9% | Sam LaPorta 9% | TreVeyon Henderson 5% | Parker Washington 2% | Kyle Pitts 2% | David Montgomery 2%
+ R7  Parker Washington 52% | Travis Kelce 24% | Alec Pierce 8% | Tony Pollard 5% | Mike Evans 4% | Tucker Kraft 3% | Bhayshul Tuten 2% | +2 others 2%
+ R8  Jaylen Warren 31% | Rico Dowdle 25% | Brock Purdy 13% | Alec Pierce 11% | Parker Washington 8% | Bo Nix 6% | Patrick Mahomes 2% | +4 others 4%
+ R9  Aaron Jones 40% | Kenny Gainwell 19% | Josh Downs 18% | Rico Dowdle 8% | Chuba Hubbard 8% | Jared Goff 5% | +2 others 2%
+ R10 Josh Downs 33% | J.K. Dobbins 16% | Kenny Gainwell 15% | Jared Goff 14% | RJ Harvey 11% | Aaron Jones 5% | Rashid Shaheed 4% | +2 others 2%
+ R11 Quentin Johnston 44% | Khalil Shakir 38% | Jacory Croskey-Merritt 5% | Josh Downs 4% | Tre Tucker 3% | Xavier Worthy 3% | +3 others 3%
+ R12 Jacory Croskey-Merritt 27% | Quentin Johnston 25% | Tre Tucker 17% | Xavier Worthy 12% | Blake Corum 11% | Josh Downs 6% | +2 others 2%
+ R13 Tre Tucker 40% | Jordan Mason 21% | Zach Charbonnet 13% | Xavier Worthy 9% | Blake Corum 5% | Jacory Croskey-Merritt 5% | Josh Downs 3% | Alvin Kamara 2% | Jerry Jeudy 2%
+ R14 Tre Tucker 34% | Zach Charbonnet 30% | Jordan Mason 18% | Alvin Kamara 9% | Jerry Jeudy 6% | Xavier Worthy 2% | +1 others 1%
+ R15 Jerry Jeudy 31% | Zach Charbonnet 23% | Alvin Kamara 20% | Jordan Mason 9% | Isiah Pacheco 5% | Brenton Strange 5% | Chris Rodriguez 4% | +3 others 3%
+ R16 Eddy Pineiro 30% | Jake Bates 26% | Harrison Butker 22% | Tyler Loop 14% | Cairo Santos 5% | Harrison Mevis 2% | +1 others 1%
+
+--- SLOT 8 ---
+ R1  Amon-Ra St. Brown 50% | Jonathan Taylor 36% | Christian McCaffrey 10% | Jaxon Smith-Njigba 3% | +1 others 1%
+ R2  Trey McBride 35% | Josh Allen 34% | Drake London 22% | James Cook 5% | Ashton Jeanty 4%
+ R3  Javonte Williams 59% | Kyren Williams 16% | Chris Olave 13% | Breece Hall 6% | Zay Flowers 5% | +1 others 1%
+ R4  Malik Nabers 30% | Zay Flowers 26% | Cam Skattebo 15% | Travis Etienne 13% | Ladd McConkey 5% | Kyren Williams 4% | DeVonta Smith 4% | Bucky Irving 2% | +1 others 1%
+ R5  D'Andre Swift 49% | Parker Washington 24% | Terry McLaurin 14% | Bucky Irving 6% | TreVeyon Henderson 4% | Ladd McConkey 3%
+ R6  Travis Kelce 37% | Bhayshul Tuten 20% | D'Andre Swift 17% | Matthew Stafford 11% | Sam LaPorta 9% | TreVeyon Henderson 3% | Kyle Pitts 2% | +1 others 1%
+ R7  Parker Washington 52% | Alec Pierce 18% | Travis Kelce 14% | Mike Evans 4% | Jaylen Warren 3% | Tony Pollard 3% | Tucker Kraft 2% | Bhayshul Tuten 2% | +2 others 2%
+ R8  Jaylen Warren 24% | Brock Purdy 22% | Rico Dowdle 21% | Bo Nix 15% | Alec Pierce 9% | Chuba Hubbard 4% | Parker Washington 2% | +3 others 3%
+ R9  Aaron Jones 44% | Josh Downs 19% | Kenny Gainwell 19% | Chuba Hubbard 6% | Jared Goff 5% | J.K. Dobbins 3% | Jakobi Meyers 2% | Rico Dowdle 2%
+ R10 Josh Downs 34% | J.K. Dobbins 18% | Kenny Gainwell 17% | Aaron Jones 9% | RJ Harvey 8% | Jared Goff 8% | Rashid Shaheed 5% | +1 others 1%
+ R11 Quentin Johnston 45% | Khalil Shakir 27% | Jacory Croskey-Merritt 8% | Xavier Worthy 6% | Tre Tucker 4% | Jordan Love 4% | +6 others 6%
+ R12 Jacory Croskey-Merritt 29% | Quentin Johnston 17% | Blake Corum 17% | Tre Tucker 11% | Xavier Worthy 10% | Josh Downs 10% | Khalil Shakir 4% | +2 others 2%
+ R13 Tre Tucker 53% | Jordan Mason 12% | Zach Charbonnet 9% | Xavier Worthy 8% | Blake Corum 6% | Jacory Croskey-Merritt 5% | Jerry Jeudy 4% | +3 others 3%
+ R14 Zach Charbonnet 29% | Tre Tucker 26% | Jordan Mason 22% | Alvin Kamara 12% | Blake Corum 3% | Jerry Jeudy 3% | Xavier Worthy 2% | Isiah Pacheco 2% | +1 others 1%
+ R15 Jerry Jeudy 37% | Zach Charbonnet 25% | Alvin Kamara 19% | Brenton Strange 9% | Rashid Shaheed 3% | Tre Tucker 2% | Tyrone Tracy 2% | +3 others 3%
+ R16 Eddy Pineiro 43% | Harrison Butker 22% | Tyler Loop 16% | Jake Bates 15% | Cairo Santos 3% | +1 others 1%
+
+--- SLOT 9 ---
+ R1  CeeDee Lamb 48% | Jonathan Taylor 27% | Amon-Ra St. Brown 22% | Christian McCaffrey 3%
+ R2  Trey McBride 53% | Drake London 24% | Josh Allen 14% | James Cook 5% | Ashton Jeanty 3% | +1 others 1%
+ R3  Javonte Williams 51% | Kyren Williams 21% | Chris Olave 14% | Zay Flowers 5% | Breece Hall 5% | Cam Skattebo 3% | +1 others 1%
+ R4  Zay Flowers 29% | Cam Skattebo 28% | Malik Nabers 15% | Kyren Williams 14% | Travis Etienne 7% | DeVonta Smith 3% | Ladd McConkey 2% | +2 others 2%
+ R5  D'Andre Swift 52% | Parker Washington 31% | TreVeyon Henderson 7% | Terry McLaurin 6% | Bucky Irving 2% | Bhayshul Tuten 2%
+ R6  Travis Kelce 27% | Bhayshul Tuten 20% | D'Andre Swift 20% | TreVeyon Henderson 11% | Sam LaPorta 8% | Matthew Stafford 7% | Kyle Pitts 5% | +2 others 2%
+ R7  Parker Washington 56% | Alec Pierce 15% | Mike Evans 8% | Jaylen Warren 8% | Travis Kelce 6% | Tony Pollard 4% | Rico Dowdle 2% | +1 others 1%
+ R8  Bo Nix 35% | Brock Purdy 26% | Jaylen Warren 17% | Alec Pierce 8% | Rico Dowdle 7% | Dak Prescott 2% | Chuba Hubbard 2% | +3 others 3%
+ R9  Aaron Jones 39% | Josh Downs 20% | Kenny Gainwell 16% | Chuba Hubbard 8% | Rico Dowdle 6% | Jared Goff 6% | J.K. Dobbins 4% | +1 others 1%
+ R10 Josh Downs 30% | Kenny Gainwell 23% | J.K. Dobbins 21% | Jared Goff 9% | Aaron Jones 8% | RJ Harvey 5% | Rashid Shaheed 4%
+ R11 Quentin Johnston 48% | Khalil Shakir 27% | Jacory Croskey-Merritt 7% | Xavier Worthy 7% | Tre Tucker 4% | Josh Downs 3% | Blake Corum 2% | +2 others 2%
+ R12 Jacory Croskey-Merritt 34% | Quentin Johnston 17% | Blake Corum 15% | Xavier Worthy 12% | Josh Downs 12% | Tre Tucker 9% | +1 others 1%
+ R13 Tre Tucker 52% | Xavier Worthy 11% | Jordan Mason 10% | Zach Charbonnet 7% | Blake Corum 7% | Jacory Croskey-Merritt 5% | Jerry Jeudy 5% | Alvin Kamara 2% | +1 others 1%
+ R14 Tre Tucker 29% | Jordan Mason 26% | Zach Charbonnet 22% | Alvin Kamara 11% | Jerry Jeudy 7% | Xavier Worthy 2% | +3 others 3%
+ R15 Jerry Jeudy 33% | Zach Charbonnet 20% | Alvin Kamara 19% | Isiah Pacheco 10% | Jordan Mason 5% | Brenton Strange 5% | Tyrone Tracy 2% | Rashid Shaheed 2% | Chris Rodriguez 2% | +2 others 2%
+ R16 Eddy Pineiro 35% | Harrison Butker 29% | Jake Bates 20% | Tyler Loop 8% | Cairo Santos 6% | Ka'imi Fairbairn 2%
+
+--- SLOT 10 ---
+ R1  Justin Jefferson 45% | CeeDee Lamb 38% | Jonathan Taylor 11% | Amon-Ra St. Brown 6%
+ R2  Trey McBride 59% | Drake London 25% | James Cook 8% | Josh Allen 7% | +1 others 1%
+ R3  Javonte Williams 47% | Kyren Williams 32% | Chris Olave 12% | Breece Hall 3% | Zay Flowers 3% | Cam Skattebo 3%
+ R4  Zay Flowers 36% | Cam Skattebo 24% | Kyren Williams 16% | Travis Etienne 10% | DeVonta Smith 5% | Malik Nabers 3% | Bucky Irving 2% | +4 others 4%
+ R5  D'Andre Swift 64% | Parker Washington 19% | Bhayshul Tuten 6% | Terry McLaurin 5% | TreVeyon Henderson 5% | +1 others 1%
+ R6  Bhayshul Tuten 28% | Travis Kelce 17% | TreVeyon Henderson 15% | D'Andre Swift 14% | Sam LaPorta 12% | Matthew Stafford 7% | Kyle Pitts 6% | +1 others 1%
+ R7  Parker Washington 56% | Alec Pierce 18% | Tony Pollard 7% | Jaylen Warren 7% | Travis Kelce 5% | Mike Evans 4% | Rico Dowdle 2% | +1 others 1%
+ R8  Bo Nix 36% | Brock Purdy 25% | Alec Pierce 9% | Jaylen Warren 8% | Parker Washington 5% | Tony Pollard 5% | Rico Dowdle 4% | Mike Evans 3% | Dak Prescott 2% | +3 others 3%
+ R9  Aaron Jones 36% | Kenny Gainwell 19% | Josh Downs 16% | Jared Goff 12% | Rico Dowdle 6% | J.K. Dobbins 5% | Chuba Hubbard 4% | +2 others 2%
+ R10 Josh Downs 29% | J.K. Dobbins 21% | Kenny Gainwell 16% | Jared Goff 11% | Aaron Jones 10% | Rashid Shaheed 6% | RJ Harvey 5% | Rhamondre Stevenson 2%
+ R11 Quentin Johnston 47% | Khalil Shakir 39% | Xavier Worthy 4% | Josh Downs 3% | Kyle Monangai 2% | Tre Tucker 2% | Blake Corum 2% | +1 others 1%
+ R12 Jacory Croskey-Merritt 26% | Quentin Johnston 24% | Josh Downs 14% | Tre Tucker 13% | Blake Corum 12% | Xavier Worthy 9% | +2 others 2%
+ R13 Tre Tucker 38% | Zach Charbonnet 18% | Jordan Mason 16% | Xavier Worthy 12% | Jacory Croskey-Merritt 6% | Jerry Jeudy 5% | Alvin Kamara 2% | +3 others 3%
+ R14 Tre Tucker 35% | Zach Charbonnet 29% | Jordan Mason 17% | Alvin Kamara 8% | Xavier Worthy 5% | Jerry Jeudy 5% | +1 others 1%
+ R15 Jerry Jeudy 28% | Zach Charbonnet 27% | Alvin Kamara 23% | Isiah Pacheco 6% | Jordan Mason 5% | Rashid Shaheed 3% | Chris Rodriguez 3% | Brenton Strange 3% | +2 others 2%
+ R16 Eddy Pineiro 44% | Jake Bates 23% | Harrison Butker 15% | Tyler Loop 11% | Cairo Santos 3% | Ka'imi Fairbairn 2% | +2 others 2%
+
+--- SLOT 11 ---
+ R1  Justin Jefferson 43% | Drake London 33% | CeeDee Lamb 19% | Jonathan Taylor 4% | +1 others 1%
+ R2  Trey McBride 57% | James Cook 33% | Drake London 8% | +2 others 2%
+ R3  Kyren Williams 41% | Javonte Williams 38% | Chris Olave 10% | Zay Flowers 6% | DeVonta Smith 2% | Cam Skattebo 2% | +1 others 1%
+ R4  Zay Flowers 43% | Kyren Williams 19% | Cam Skattebo 18% | Travis Etienne 8% | Malik Nabers 6% | Chris Olave 2% | DeVonta Smith 2% | Javonte Williams 2%
+ R5  D'Andre Swift 64% | Parker Washington 21% | TreVeyon Henderson 7% | Bhayshul Tuten 4% | Terry McLaurin 3% | +1 others 1%
+ R6  Bhayshul Tuten 30% | Travis Kelce 20% | Sam LaPorta 16% | D'Andre Swift 14% | TreVeyon Henderson 10% | Kyle Pitts 7% | Matthew Stafford 2% | +1 others 1%
+ R7  Parker Washington 62% | Alec Pierce 14% | Jaylen Warren 11% | Mike Evans 7% | Tony Pollard 5% | +1 others 1%
+ R8  Bo Nix 42% | Brock Purdy 26% | Alec Pierce 15% | Jaylen Warren 8% | Mike Evans 5% | Rico Dowdle 2% | +2 others 2%
+ R9  Aaron Jones 34% | Josh Downs 18% | Kenny Gainwell 15% | Jared Goff 15% | J.K. Dobbins 7% | Chuba Hubbard 5% | Rico Dowdle 4% | +2 others 2%
+ R10 Josh Downs 25% | J.K. Dobbins 23% | Kenny Gainwell 23% | Jared Goff 10% | Aaron Jones 10% | RJ Harvey 7% | +2 others 2%
+ R11 Quentin Johnston 43% | Khalil Shakir 35% | Xavier Worthy 4% | Jacory Croskey-Merritt 4% | Josh Downs 4% | Tre Tucker 3% | Blake Corum 2% | Jordan Love 2% | +3 others 3%
+ R12 Quentin Johnston 24% | Jacory Croskey-Merritt 21% | Josh Downs 15% | Blake Corum 11% | Tre Tucker 10% | Xavier Worthy 10% | Jordan Addison 2% | Khalil Shakir 2% | RJ Harvey 2% | Kyle Monangai 2% | +1 others 1%
+ R13 Tre Tucker 48% | Jordan Mason 12% | Xavier Worthy 11% | Zach Charbonnet 10% | Jacory Croskey-Merritt 9% | Blake Corum 4% | Alvin Kamara 2% | Jerry Jeudy 2% | +2 others 2%
+ R14 Tre Tucker 32% | Zach Charbonnet 29% | Jordan Mason 17% | Alvin Kamara 11% | Xavier Worthy 5% | Jerry Jeudy 4% | Blake Corum 2%
+ R15 Jerry Jeudy 31% | Zach Charbonnet 25% | Alvin Kamara 20% | Isiah Pacheco 7% | Rashid Shaheed 4% | Chris Rodriguez 3% | Tre Tucker 3% | Jordan Mason 3% | +4 others 4%
+ R16 Eddy Pineiro 33% | Harrison Butker 26% | Jake Bates 20% | Tyler Loop 12% | Cairo Santos 6% | +3 others 3%
+
+--- SLOT 12 ---
+ R1  Drake London 70% | Justin Jefferson 18% | CeeDee Lamb 6% | James Cook 4% | +2 others 2%
+ R2  James Cook 52% | Trey McBride 48%
+ R3  Kyren Williams 40% | Javonte Williams 27% | Zay Flowers 18% | Chris Olave 10% | DeVonta Smith 3% | +2 others 2%
+ R4  Zay Flowers 45% | Cam Skattebo 19% | Kyren Williams 11% | DeVonta Smith 8% | Chris Olave 5% | Malik Nabers 4% | Javonte Williams 3% | Travis Etienne 3% | Garrett Wilson 2%
+ R5  D'Andre Swift 67% | TreVeyon Henderson 11% | Bhayshul Tuten 11% | Parker Washington 9% | +2 others 2%
+ R6  Bhayshul Tuten 25% | Sam LaPorta 21% | Travis Kelce 19% | Kyle Pitts 12% | TreVeyon Henderson 11% | D'Andre Swift 7% | Matthew Stafford 5%
+ R7  Parker Washington 62% | Alec Pierce 13% | Jaylen Warren 10% | Mike Evans 6% | Tony Pollard 6% | Rico Dowdle 3%
+ R8  Bo Nix 51% | Brock Purdy 19% | Alec Pierce 11% | Mike Evans 6% | Jaylen Warren 4% | Tony Pollard 3% | Rico Dowdle 3% | +3 others 3%
+ R9  Kenny Gainwell 24% | Aaron Jones 24% | Josh Downs 22% | Jared Goff 15% | J.K. Dobbins 8% | Chuba Hubbard 5% | +2 others 2%
+ R10 J.K. Dobbins 27% | Kenny Gainwell 25% | Josh Downs 20% | Aaron Jones 11% | Jared Goff 7% | Rhamondre Stevenson 4% | RJ Harvey 4% | Jakobi Meyers 2%
+ R11 Quentin Johnston 42% | Khalil Shakir 27% | Josh Downs 10% | Xavier Worthy 7% | Jacory Croskey-Merritt 5% | Blake Corum 4% | Tre Tucker 3% | +2 others 2%
+ R12 Jacory Croskey-Merritt 31% | Quentin Johnston 21% | Josh Downs 16% | Blake Corum 10% | Tre Tucker 9% | Xavier Worthy 6% | Rachaad White 3% | RJ Harvey 2% | +2 others 2%
+ R13 Tre Tucker 50% | Xavier Worthy 15% | Zach Charbonnet 10% | Jordan Mason 10% | Jacory Croskey-Merritt 6% | Blake Corum 5% | Jerry Jeudy 3% | +1 others 1%
+ R14 Tre Tucker 31% | Zach Charbonnet 30% | Jordan Mason 18% | Alvin Kamara 13% | Blake Corum 3% | Jerry Jeudy 3% | Xavier Worthy 2%
+ R15 Jerry Jeudy 32% | Zach Charbonnet 20% | Alvin Kamara 18% | Isiah Pacheco 11% | Rashid Shaheed 5% | Brenton Strange 4% | Jordan Mason 4% | +6 others 6%
+ R16 Eddy Pineiro 41% | Harrison Butker 22% | Jake Bates 22% | Tyler Loop 8% | Cairo Santos 3% | Harrison Mevis 3% | +1 others 1%
