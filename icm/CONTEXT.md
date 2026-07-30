@@ -1,9 +1,9 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
 > ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Jul 30, 2026**: the stack through
-> **L53**, DEPLOYED at HEAD, tree clean, board + priors regenerated Jul 28.
-> Suites **18 / 312 green**, both stress suites pass, preflight OK, **no open data items; one
-> deliberate open code item (re-basing `_wheel_label` on the measured curve)**.
+> **L54**, DEPLOYED at HEAD, tree clean, board + priors regenerated Jul 28.
+> Suites **18 / 320 green**, both stress suites pass, preflight OK, **NO open code or data items** —
+> what remains before Aug 7 is operational only.
 >
 > **⛔ CODE FREEZE Aug 3 (4 days). Draft Aug 7 (8 days).** The remaining work is OPERATIONAL, not
 > features: a live mock at the real slot on Aug 3, injury/FA watches Aug 5-6, a final regen Aug 7.
@@ -28,7 +28,9 @@
 > numbers in 12,746 chars and invented the rest); and the PUNT READ's "lasts ~R7" — which was
 > `floor(ADP/teams)`, the round the MARKET takes him in, and fired at `my_turn: True` — now measures
 > survival at MY pick and shows the number. `my_pick_schedule()` and `_horizon()` are single sources of
-> truth. **Still open: re-basing `_wheel_label` on the measured curve.** See HANDOFF "Open questions".
+> truth. **L54** then re-based the wheel bands on measured survival (`gone <20%` / `safe >=70%`,
+> replacing `adp<=horizon` = a flat 50% and `adp>=horizon+12` = anywhere from 66% to 99.9%) and put the
+> probability in the cell: `risky→#13 (59%)`. See HANDOFF "Open questions" for what is still judgment.
 >
 > **One open THREAD:** a non-repro'd R7 roster-state issue — diagnosable only from the next mock's
 > pick log (L47); don't patch the gate blind. **Two research lines are CLOSED** (per-player

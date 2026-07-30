@@ -4,12 +4,13 @@
 docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
 
 ## Where things stand right now
-- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = **L53**, the
-  horizon + schedule fix; `git log -4` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
+- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = **L54**, the wheel
+  re-base; `git log -5` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
   deploying, always the user's call.**
-- **Health:** preflight **OK** (0 blocking, 0 warnings). **18 unit suites green — 312 checks.** Both
-  stress suites ALL PASS. Board + all priors regenerated **Jul 28**. **No open DATA flags. ONE open
-  CODE item, deliberate — the `_wheel_label` re-base (see Open questions). L52 Tier 2 SHIPPED in L53.**
+- **Health:** preflight **OK** (0 blocking, 0 warnings). **18 unit suites green — 320 checks.** Both
+  stress suites ALL PASS. Board + all priors regenerated **Jul 28**. **No open DATA flags. NO open
+  CODE items** — L52 Tier 2 shipped in L53, Tier 3 + the `_wheel_label` re-base in L54. What remains
+  before Aug 7 is OPERATIONAL only.
 - **⛔ CODE FREEZE Aug 3 — 4 days away. Draft Aug 7 — 8 days.** Last advisor-logic change Aug 3;
   Aug 4-6 = a full live mock, fixing only what the mock catches; Aug 7 = regen + preflight, no code.
   Rationale: this project's real bugs are caught by live mocks, not tests (L47 passed 195 checks and
@@ -20,6 +21,14 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
   never hardcode one. Practice mocks have run at slots 1/5/10.
 
 ## Shipped this session (Jul 28-30) — all live
+- **L54 (Jul 30) — wheel bands re-based on measured survival + the probability now rides in the cell.**
+  The old rule failed at each boundary for a DIFFERENT reason: `adp <= horizon` is exactly p=50% at
+  every board position (scale-invariant but misplaced — it called Josh Allen at **49.5%** "gone"),
+  while `adp >= horizon+12` meant **99.9% at the top and 66.2% late** (L51's orphan). Now thresholded
+  on `_survival_prob`: `gone <20%`, `safe >=70%`, risky between, from `_wheel_odds()` so the word and
+  the number come from one call. Cells read `risky→#13 (59%)`. **2.7% of cells change**; the `risky`
+  band (what the RISK APPETITE dial breaks) grows 105 → 182 cells. Thresholds are a judgment call, NOT
+  backtested — the direction and magnitude are measured. `test_wheel` 32 → 40.
 - **L53 (Jul 30) — the HORIZON was the wrong pick, and nothing computed the schedule.** Three user
   catches, one root. (a) `MY PICKS` line: the context had **3 pick numbers in 12,746 chars** and the
   model invented "rounds 3-7 = picks 25-35" (slot 10's real R3-R7 are #34/#39/#58/#63/#82) — now 17
@@ -114,7 +123,7 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
 5. **Commit the regenerated CSVs together** — the deployed app reads board + priors from the repo.
 
 ## Tests (plain-assert, run individually: `.venv/bin/python tests/<file>.py`)
-**18 suites, 312 checks, all green:** `test_schedule` (38), **`test_wheel` (32)**, `test_bridge` (26), `test_opponent` (25),
+**18 suites, 320 checks, all green:** `test_schedule` (38), **`test_wheel` (40)**, `test_bridge` (26), `test_opponent` (25),
 `test_dart` (23), `test_injury` (22), `test_cold` (21), `test_cohort_pull` (19), `test_handcuff` (16),
 `test_dst` (14), `test_sleeper` (13), `test_shape` (11), `test_cohort_skew` (10), `test_hedge` (8),
 `test_punt` (12), `test_defer` (8), `test_kicker` (7), `test_role_alpha` (7). Plus the two stress
@@ -128,14 +137,12 @@ adding a suite, ask which turn state it covers.
 ---
 
 ## ⚠️ OPEN QUESTIONS / KNOWN IMPERFECTIONS (read before "fixing" anything)
-- **L52 TIER 2 is SHIPPED (L53).** What REMAINS of it: `_wheel_label` still buckets on raw ADP
-  arithmetic with a flat 12-pick cushion while `_survival_prob` has L51's measured curve — `gone` spans
-  **0.0%-50.0%** true survival, `safe` spans **67.5%-100%** (Josh Allen at #23 is 49.5%, labeled
-  `gone`). Re-basing the label on `_survival_prob` is the last piece. **Group D of `test_wheel.py` pins
-  the current rule on purpose — those 6 checks MUST go red when you do it.**
-- **L52 TIER 3 — put the probability in the cell** (`gone→#23 (9%)`). Tier 1 anchored the label; only
-  a number kills the fabrication (the advisor invented "~75%" because the context contains no
-  probability anywhere and the prompt forbids computing one).
+- **The wheel BAND THRESHOLDS (`_WHEEL_GONE_P` 0.20 / `_WHEEL_SAFE_P` 0.70) are a JUDGMENT CALL, not
+  backtested.** What IS measured: the direction (a 49.5% player must not read "gone") and the
+  magnitude (2.7% of cells move; a 0.15/0.60 → 0.30/0.80 sweep all landed at 3-4%, so the rule is
+  insensitive to the exact numbers). The probability now prints beside the label, so a borderline band
+  is self-correcting for the reader. Don't retune these on a hunch — if they ever get revisited, it
+  should be a paired backtest like `mc_research/18_`, after Aug 7.
 - **The R7 roster-state thread** (L47) — a 4th RB recommended at R7 with WR2 open, never reproduced
   offline. Per-pick logging is in place: after a weird pick, **Draft settings → "Download pick log"**.
   **Don't patch the gate blind.** This is the main thing the Aug 3 mock is for.

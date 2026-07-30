@@ -266,9 +266,9 @@ Every number you need is precomputed and given to you; you must NEVER calculate 
 - The DRAFT POSITION line gives my exact pick on the clock, my next pick number(s), and picks-away — quote them, never recompute.
 - **The MY PICKS line lists EVERY pick I still own as `R<round> #<pick>`. ALL round↔pick conversion is READ from it — never computed, never estimated.** If you say anything about "rounds 3-5" or "by round 7", the pick numbers MUST come from MY PICKS. The snake means my picks are NOT evenly spaced and they differ completely by slot — deriving them yourself produces answers off by 40+ picks.
 - **Any claim of the form "X lasts to round N" needs a survival number for round N's pick.** You have exactly two such numbers: the `wheel` cell (ONE pick, and it names which) and the PUNT READ's `lasts ~R<n> (<p>%)`. If a question needs survival at some other pick, say the exact odds aren't in your context — do NOT estimate one.
-- The board's `wheel` column IS the wheel-back answer, computed from each player's ADP vs my next pick: **gone** = won't last to my next pick (take him now if I want him), **risky** = toss-up within a round, **safe** = will very likely still be there (I can wait and take a better-fit player now). Read this column; do NOT re-derive it from ADP.
-- The cell reads `label→#pick` (e.g. `safe→#23`, `gone→#2`). **The pick number is PART of the value** — it is the pick the label was computed against. Quote that number verbatim and NEVER infer which pick the column means from the DRAFT POSITION line, which may list more than one of my upcoming picks. A `safe→#2` means safe only as far as #2; it says NOTHING about #23.
-Let my RISK APPETITE break close ("risky") calls: risk-averse → grab him now; risk-tolerant → wait. Always state the tradeoff by quoting the cell's own pick number ("he's `safe→#23` — safe to #23, you can wait" / "he's `gone→#23` — take him now"). If a `wheel` value ever seems off, defer to it anyway and say you're going by the board — BUT if the cell's pick number is not the pick I asked you about, say so plainly instead of silently reconciling the two.
+- The board's `wheel` column IS the wheel-back answer — a MEASURED probability that he is still on the board at that pick, banded: **gone** = under 20% (don't count on him; take him now if I want him), **risky** = 20-70% (genuinely uncertain — this is the band my RISK APPETITE breaks), **safe** = 70%+ (I can wait and take a better-fit player now). Read this column; do NOT re-derive it from ADP.
+- The cell reads `label→#pick (probability)` — e.g. `safe→#23 (81%)`, `gone→#10 (<1%)`. **Both the pick number and the percentage are PART of the value.** The pick is what the label was computed against: quote it verbatim and NEVER infer which pick the column means from the DRAFT POSITION line, which may list more than one of my upcoming picks — a `safe→#2` means safe only as far as #2 and says NOTHING about #23. The percentage is the ONLY survival number you have for that player: quote it, never round it into a different claim, and never state a survival figure that is not printed somewhere in this context.
+Let my RISK APPETITE break close ("risky") calls: risk-averse → grab him now; risk-tolerant → wait. Always state the tradeoff by quoting the cell's own pick number AND its percentage ("he's `safe→#23 (81%)` — 81% to reach #23, you can wait" / "he's `risky→#23 (45%)` — a coin flip, and you're risk-averse, so take him now"). If a `wheel` value ever seems off, defer to it anyway and say you're going by the board — BUT if the cell's pick number is not the pick I asked you about, say so plainly instead of silently reconciling the two.
 
 RISK APPETITE CONTROL
 The board has a "Risk appetite" dial (Full send / Aggressive / Balanced / Cautious / Safe) that fades risky (injury-prone, boom/bust) players on the Everything board. When I state or change my risk preference, set the dial by ending your reply with a tag on its own line: [[risk:LEVEL]] using EXACTLY one of those five labels. Map my words: "safe / high floor / conservative / avoid busts" -> Safe (or Cautious if milder); "balanced" -> Balanced; "some upside / aggressive" -> Aggressive; "max upside / boom or bust / ignore risk / all ceiling" -> Full send. Only add the tag when I actually express a risk preference — never otherwise. Still answer my question normally; the tag is an extra line at the very end.
@@ -1012,15 +1012,35 @@ def _cold_read(available, recent, needed=None):
             + " | ".join(bits))
 
 
+# Wheel bands, thresholded on the MEASURED survival probability rather than on raw ADP arithmetic.
+# The UNCERTAIN band is deliberately wide and skewed LOW (20-70%, midpoint 45%): a player has to be
+# genuinely hopeless to be written off, and genuinely likely to be waited on. Everything in between is
+# "risky", which is the band my RISK APPETITE is supposed to break — under the old rule that band was
+# 2% of the board, so the dial almost never had anything to decide.
+#
+# What the OLD rule actually meant, measured across the board at 10 horizons:
+#   gone  = `adp <= horizon`      -> z = 0 -> p = 50.0% EXACTLY, everywhere. Consistent, but it called
+#           a coin flip "gone" (Josh Allen 49.5% at #23; Bowers 46.8%; McBride 45.6%).
+#   safe  = `adp >= horizon + 12` -> p = 1/(1+exp(-12/s)), and s runs 1.8 -> 17.9, so "safe" meant
+#           99.9% at the top of the board and 66.2% late. THAT half was L51's orphan: the survival
+#           curve got the measured per-player scale and this label never did.
+# Re-basing on the probability fixes both and moves only ~3% of cells.
+_WHEEL_GONE_P, _WHEEL_SAFE_P = 0.20, 0.70
+
+
+def _wheel_odds(adp, horizon):
+    """(label, probability) from ONE survival call, so the word and the number can never disagree."""
+    p = float(_survival_prob(pd.Series([adp]), horizon).iloc[0])   # NaN ADP -> 1.0 -> safe
+    if p < _WHEEL_GONE_P:
+        return "gone", p
+    if p >= _WHEEL_SAFE_P:
+        return "safe", p
+    return "risky", p
+
+
 def _wheel_label(adp, horizon):
     """gone / risky / safe — will he last to your next pick? (per-player read; VONA is the decision)."""
-    if pd.isna(adp):
-        return "safe"                     # UD / no ADP -> very likely still there later
-    if adp <= horizon:
-        return "gone"                     # typically drafted before your next pick
-    if adp >= horizon + 12:
-        return "safe"                     # ~a full round of cushion
-    return "risky"                        # within a round — could go either way
+    return _wheel_odds(adp, horizon)[0]
 
 
 def _wheel_cell(adp, eff_horizon, shown_pick):
@@ -1033,8 +1053,23 @@ def _wheel_cell(adp, eff_horizon, shown_pick):
     Exists because a bare "safe" has no referent: a 'safe' computed to my ON-DECK pick (#2) was read
     back to the user as "safe to #23", i.e. safe to the pick AFTER the one being decided. The pick
     number is now part of the value, so it cannot be inferred wrong.
+
+    The PROBABILITY rides along too (Tier 3). Without it the model had no survival number anywhere in
+    its context and invented one — it told the user an ADP-14.3 RB was "~75%" to reach #23 when the
+    truth was 9%. It also makes the band thresholds self-correcting: a borderline label is harmless
+    when the reader can see 45%. "<1%" rather than "0%" because the curve slightly over-states
+    certainty at the very top of the board (L51) and 0% would read as impossible.
+
+    Both the label AND the percentage come from `eff_horizon`, while the PICK shown is the real one.
+    That is deliberate, not a mismatch: when the opponent read is live, `eff` is a modelling device
+    that yields a BETTER estimate of reaching the real pick (it prices who actually drafts in between
+    and what they still need), so the number genuinely is "odds he reaches #<shown_pick>". The WHEEL
+    WINDOW line spells out the adjustment. Keeping both off one horizon is also what guarantees the
+    word and the number can never contradict each other.
     """
-    return f"{_wheel_label(adp, eff_horizon)}→#{int(shown_pick)}"
+    label, p = _wheel_odds(adp, eff_horizon)
+    pct = "<1%" if p < 0.005 else f"{p:.0%}"
+    return f"{label}→#{int(shown_pick)} ({pct})"
 
 
 # How many rounds out counts as "my realistic fill window" for a 1-start slot I could punt. VONA looks

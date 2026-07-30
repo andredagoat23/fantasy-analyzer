@@ -941,6 +941,43 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L54 — Two boundaries of one rule failed in OPPOSITE ways; ship the measurement before the judgment call (Jul 2026)
+- **Closes L52 Tier 3 + the `_wheel_label` re-base — the last open code item before the freeze.**
+- **The finding worth keeping: a single 3-band rule was broken at each boundary for a DIFFERENT
+  reason,** and only measuring in probability space showed it. Old rule, across 5,330 (player, horizon)
+  cells at 10 horizons:
+  - `gone = adp <= horizon` is `z = 0`, i.e. **p = 50.0% EXACTLY, at every point on the board.** That
+    boundary was perfectly scale-invariant — L51 never touched it. It was *consistent* and *misplaced*:
+    it called a coin flip "gone" (Josh Allen **49.5%** at #23, Bowers 46.8%, McBride 45.6%). Told
+    you to reach for players who were even money to come back.
+  - `safe = adp >= horizon + 12` is `p = 1/(1+exp(-12/s))`, and the measured scale runs **1.8 → 17.9**,
+    so "safe" meant **99.9% at the top of the board and 66.2% late**. THAT half was L51's orphan.
+  - I had been calling this one bug for two days. It is two, with opposite characters.
+- **Fixed** by thresholding on `_survival_prob` directly — `gone < 20%`, `safe ≥ 70%`, risky between.
+  The uncertain band is deliberately wide and skewed LOW (midpoint 45%): a player must be genuinely
+  hopeless to be written off and genuinely likely to be waited on. `_wheel_odds()` returns
+  `(label, p)` from ONE survival call so the word and the number cannot contradict each other.
+- **Measured impact: 2.7% of cells change.** `gone` 0-50% → 0-20%, `safe` 68-100% → 70-100%, and the
+  `risky` band — the one the RISK APPETITE dial is supposed to break — grows from 105 cells to 182.
+  A threshold sweep from 0.15/0.60 to 0.30/0.80 all moved 3-4%, so the exact numbers barely matter;
+  that insensitivity is the argument that this is a surgical correction, not a retune.
+- **THE SEQUENCING LESSON: put the measurement in front of the reader BEFORE you tune the judgment
+  call.** Tier 3 (the probability in the cell — `risky→#13 (59%)`) shipped in the same change, and it
+  is what makes the band thresholds low-stakes: a borderline label is harmless when the reader can see
+  59%. The thresholds are still a judgment call and are NOT backtested — what is defensible from
+  measurement is the DIRECTION (a 49.5% player must not read "gone") and the MAGNITUDE (2.7%). Say
+  which parts are measured and which are judgment; don't dress one as the other.
+- **Where the numbers land in the running app** (slot 12, pre-draft, real board): Lamb
+  `risky→#13 (30%)`, Jefferson `risky→#13 (42%)`, **James Cook `risky→#13 (59%)`** — all three read
+  bare "gone" before. Cook is the player the advisor once claimed was "~75%" to wheel; the model can
+  no longer invent that number because the real one is printed beside him.
+- **Verified:** 18 suites / **320 checks** (`test_wheel` 32 → 40), both stress suites, preflight OK,
+  and the running app. Group D of `test_wheel.py` now pins the NEW rule as `label == threshold(p)` at
+  54 (adp, horizon) points, so the next person to touch it has to break an explicit contract.
+  (Principles 1, 3, 9)
+
+---
+
 ## L53 — THE HORIZON WAS THE WRONG PICK, and nobody computed the schedule (Jul 2026)
 - **Three user catches in one sitting, all the same root.** (1) Pre-draft at slot 10 the advisor said
   "rounds 3-7 give you picks in the 25-35 range" — the real R3-R7 are **#34/#39/#58/#63/#82**. (2) It

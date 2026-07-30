@@ -175,26 +175,70 @@ check("no `following` (final pick): horizon is None so NO wheel cell renders at 
 check("no `following`: no binding note, no crash", "computed to #" not in ctx_last)
 
 # =============================================================== D. rule lock (Tier 2 tripwire)
-print("\nD. _wheel_label's CURRENT rule is pinned — Tier 2 must break these on purpose")
+print("\nD. _wheel_label IS the banded survival probability — no ADP arithmetic left")
 
-check("adp before the horizon -> gone", advisor._wheel_label(10.0, 23) == "gone")
-check("adp exactly AT the horizon -> gone (boundary)", advisor._wheel_label(23.0, 23) == "gone")
-check("adp a full round past -> safe", advisor._wheel_label(40.0, 23) == "safe")
-check("adp exactly horizon+12 -> safe (boundary)", advisor._wheel_label(35.0, 23) == "safe")
-check("adp inside the round -> risky", advisor._wheel_label(30.0, 23) == "risky")
+
+def p_at(adp, H):
+    return float(advisor._survival_prob(pd.Series([adp]), H).iloc[0])
+
+
+def expected(p):
+    return ("gone" if p < advisor._WHEEL_GONE_P
+            else "safe" if p >= advisor._WHEEL_SAFE_P else "risky")
+
+
+# The strong form: the label must BE the thresholded probability everywhere, not approximate it.
+grid = [(adp, H) for H in (13, 19, 23, 49, 97, 145) for adp in (1.5, 8.0, 14.3, 22.9, 35.0, 60.0,
+                                                                90.0, 130.0, 175.0)]
+check("label == threshold(survival) at every one of 54 (adp, horizon) points",
+      all(advisor._wheel_label(a, H) == expected(p_at(a, H)) for a, H in grid))
+check("the label and the cell's own percentage never disagree",
+      all(advisor._wheel_odds(a, H)[0] == expected(advisor._wheel_odds(a, H)[1]) for a, H in grid))
+
+# The two regressions this re-base exists for.
+check("a COIN FLIP is no longer called gone (ADP 22.9 @ #23 = 49.5%, was 'gone')",
+      advisor._wheel_label(22.9, 23) == "risky" and 0.45 < p_at(22.9, 23) < 0.55)
+check("a 1-in-3 loss is no longer called safe (ADP 157.8 @ #145 = 67.5%, was 'safe')",
+      advisor._wheel_label(157.8, 145) == "risky" and 0.60 < p_at(157.8, 145) < 0.70)
+check("the genuinely hopeless is still gone (ADP 14.3 @ #23 = 9.0%)",
+      advisor._wheel_label(14.3, 23) == "gone")
+
+# The old rule's boundaries must NOT survive.
+check("`adp == horizon` (exactly 50%) is NOT gone any more", advisor._wheel_label(23.0, 23) != "gone")
+check("a flat 12-pick cushion no longer implies safe at every board position",
+      advisor._wheel_label(157.0, 145) != "safe")     # 12 past, but only ~66% late on the board
+check("the uncertain band is the widest, and skewed LOW — writing a player off is harder than "
+      "waiting on him, and both bars sit inside (0,1) in order",
+      0 < advisor._WHEEL_GONE_P < advisor._WHEEL_SAFE_P < 1
+      and (advisor._WHEEL_SAFE_P - advisor._WHEEL_GONE_P)
+          > max(advisor._WHEEL_GONE_P, 1 - advisor._WHEEL_SAFE_P)
+      and (advisor._WHEEL_GONE_P + advisor._WHEEL_SAFE_P) / 2 < 0.5)
 check("no ADP (undrafted) -> safe", advisor._wheel_label(float("nan"), 23) == "safe")
+
+# ---- Tier 3: the probability rides in the cell ----
+print("\nD2. the cell carries the number (Tier 3) — the model no longer has to invent one")
+
+PCT_RE = re.compile(r"(gone|risky|safe)→#(\d+) \((<1%|\d+%)\)")
+check("the cell renders label→#pick (probability)", PCT_RE.fullmatch(advisor._wheel_cell(60.0, 23, 23)))
+check("a near-certain-gone player reads <1%, never a misleading 0%",
+      advisor._wheel_cell(1.5, 23, 23).endswith("(<1%)"))
+check("the printed percentage matches the computed survival",
+      advisor._wheel_cell(60.0, 23, 23).endswith(f"({p_at(60.0, 23):.0%})"))
+check("every cell in a real context carries a percentage",
+      all(PCT_RE.search(s) for s in re.findall(r"(?:gone|risky|safe)→#\d+ \([^)]+\)", ctx_off)))
 
 # =============================================================== E. opponent-aware / fractional eff
 print("\nE. a fractional opponent-adjusted horizon never leaks a fake pick number")
 
-check("fractional eff labels off eff but displays the REAL pick",
-      advisor._wheel_cell(14.3, 21.37, 23) == "gone→#23")
-check("no '.' ever reaches a rendered pick number",
-      "." not in advisor._wheel_cell(14.3, 21.37, 23).split("#")[1])
+frac = advisor._wheel_cell(14.3, 21.37, 23)
+check("fractional eff labels off eff but displays the REAL pick", frac.startswith("gone→#23 ("))
+check("no '.' ever reaches a rendered pick number", "." not in frac.split("#")[1].split(" ")[0])
 check("label still tracks the effective horizon, not the shown pick",
-      advisor._wheel_cell(30.0, 2.0, 2) == "safe→#2"
-      and advisor._wheel_cell(30.0, 25.0, 2) == "risky→#2")
+      advisor._wheel_cell(30.0, 2.0, 2).startswith("safe→#2 (")
+      and advisor._wheel_cell(30.0, 25.0, 2).startswith("risky→#2 ("))
 check("numpy float horizon renders cleanly (eff values are numpy floats)",
-      advisor._wheel_cell(14.3, np.float64(21.37), np.float64(23.0)) == "gone→#23")
+      advisor._wheel_cell(14.3, np.float64(21.37), np.float64(23.0)) == frac)
+check("the percentage is computed off eff too, so word and number can never contradict",
+      advisor._wheel_cell(14.3, 21.37, 23).endswith(f"({p_at(14.3, 21.37):.0%})"))
 
 print(f"\nALL {passed} CHECKS PASS")
