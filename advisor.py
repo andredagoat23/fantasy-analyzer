@@ -264,6 +264,8 @@ Do not talk about "tiers" or scarcity as a separate factor: VONA already IS the 
 SURVIVAL / "will he wheel back to me?" REASONING — DO NOT DO THIS MATH YOURSELF
 Every number you need is precomputed and given to you; you must NEVER calculate pick numbers, picks-away, or wheel-back yourself (that arithmetic is where mistakes happen, and we can't afford them). Trust the given values verbatim:
 - The DRAFT POSITION line gives my exact pick on the clock, my next pick number(s), and picks-away — quote them, never recompute.
+- **The MY PICKS line lists EVERY pick I still own as `R<round> #<pick>`. ALL round↔pick conversion is READ from it — never computed, never estimated.** If you say anything about "rounds 3-5" or "by round 7", the pick numbers MUST come from MY PICKS. The snake means my picks are NOT evenly spaced and they differ completely by slot — deriving them yourself produces answers off by 40+ picks.
+- **Any claim of the form "X lasts to round N" needs a survival number for round N's pick.** You have exactly two such numbers: the `wheel` cell (ONE pick, and it names which) and the PUNT READ's `lasts ~R<n> (<p>%)`. If a question needs survival at some other pick, say the exact odds aren't in your context — do NOT estimate one.
 - The board's `wheel` column IS the wheel-back answer, computed from each player's ADP vs my next pick: **gone** = won't last to my next pick (take him now if I want him), **risky** = toss-up within a round, **safe** = will very likely still be there (I can wait and take a better-fit player now). Read this column; do NOT re-derive it from ADP.
 - The cell reads `label→#pick` (e.g. `safe→#23`, `gone→#2`). **The pick number is PART of the value** — it is the pick the label was computed against. Quote that number verbatim and NEVER infer which pick the column means from the DRAFT POSITION line, which may list more than one of my upcoming picks. A `safe→#2` means safe only as far as #2; it says NOTHING about #23.
 Let my RISK APPETITE break close ("risky") calls: risk-averse → grab him now; risk-tolerant → wait. Always state the tradeoff by quoting the cell's own pick number ("he's `safe→#23` — safe to #23, you can wait" / "he's `gone→#23` — take him now"). If a `wheel` value ever seems off, defer to it anyway and say you're going by the board — BUT if the cell's pick number is not the pick I asked you about, say so plainly instead of silently reconciling the two.
@@ -736,11 +738,36 @@ def _lineup_gaps(mine_df):
 
 
 def _horizon(draft_pos):
-    """Overall pick number of my NEXT chance after the pick being decided — the point I'd wait until
-    if I pass now. Drives both wheel-back and VONA."""
+    """Overall pick number of my next chance AFTER the pick being decided — the point I'd wait until
+    if I pass now. Drives both wheel-back and VONA. THE only implementation; the app calls this too.
+
+    ALWAYS `following`, in both turn states (L52 Tier 2). It used to return `next_pick` when it was NOT
+    my turn, which is the pick I am ABOUT to make — I cannot lose anyone before a pick I hold, so every
+    "will he still be there?" number was answered against the wrong pick. Pre-draft at slot 2 that made
+    an ADP-14.3 RB `safe` (to #2) and the advisor reported him safe to #23, where he is really 9%; at
+    slot 10 it put `best_wait[WR]` above Amon-Ra St. Brown, i.e. implying an elite WR falls to you.
+    `following` is None at the last pick — correct, there is no wait-decision left, and callers already
+    guard on a falsy horizon by dropping the wheel column entirely.
+    """
     if not draft_pos:
         return None
-    return draft_pos.get("following") if draft_pos.get("my_turn") else draft_pos.get("next_pick")
+    return draft_pos.get("following")
+
+
+def my_pick_schedule(slot, teams, total_rounds=16):
+    """Every pick I own as [(round, overall_pick), ...]. Snake: odd rounds count UP from my slot, even
+    rounds count DOWN. THE single source of truth for round<->pick conversion.
+
+    Exists because that conversion was being done ad hoc in two places and got it wrong both times:
+    the model invented "rounds 3-7 = picks in the 25-35 range" (slot 10's real R3-R7 are 34/39/58/63/82)
+    and `_pos_punt_loss` derived a "lasts ~R7" from floor(ADP/teams), which is the round the MARKET
+    takes him in and ignores my slot completely. Compute it here once; everything else reads it.
+    """
+    if not slot or not teams or int(slot) > int(teams):
+        return []
+    slot, teams = int(slot), int(teams)
+    return [(r, (r - 1) * teams + (slot if r % 2 else teams - slot + 1))
+            for r in range(1, int(total_rounds) + 1)]
 
 
 # Logistic scale for "is he still on the board at my next pick?" — ADP is ~a round noisy, so a player
@@ -1014,6 +1041,32 @@ def _wheel_cell(adp, eff_horizon, shown_pick):
 # one pick ahead, which under-credits a scarce RB/WR at a snake turn (lesson L11); the punt read looks
 # this far ahead instead. Tunable.
 _PUNT_LATE_ROUNDS = 5
+# Survival floor for calling a streamer "still there": used BOTH to pick the named streamer and to
+# decide which round we claim he lasts to, so the two can never disagree.
+_PUNT_STREAM_P = 0.5
+# Survival floor for a player to appear in TOP PICKS when it is NOT my turn yet. Deliberately LOW —
+# the job is only to remove the hopeless (an ADP-2 player 9 picks before my seat), not to prune real
+# long shots. _SHORTLIST_MIN keeps the filter from ever gutting the list.
+_SHORTLIST_P, _SHORTLIST_MIN = 0.10, 3
+
+
+def _lasts_round(adp, sched, floor=_PUNT_STREAM_P):
+    """(round, probability) of the LAST pick on MY schedule this player still clears `floor` at.
+
+    Replaces `lasts_round = floor((adp - 1) / teams) + 1`, which was the round the MARKET drafts him in
+    — the OPPOSITE of the round he survives to — and which ignored my slot entirely: ADP 77.8 reported
+    "lasts ~R7" whether the truth was 61% (slot 1, #73), 40% (slot 10, #82) or 36% (slot 12, #84).
+    Returns (None, None) when no pick in the window clears the floor, so the caller can say so instead
+    of naming a round it can't support.
+    """
+    if pd.isna(adp) or not sched:
+        return None, None
+    out = (None, None)
+    for r, pk in sched:                       # survival falls monotonically with pick -> last wins
+        p = float(_survival_prob(pd.Series([adp]), pk).iloc[0])
+        if p >= floor:
+            out = (r, p)
+    return out
 
 
 def _expected_best_survivor(pool, horizon, risk_adj=True):
@@ -1038,7 +1091,7 @@ def _expected_best_survivor(pool, horizon, risk_adj=True):
     return exp_best
 
 
-def _pos_punt_loss(available, pos, late_pick, teams):
+def _pos_punt_loss(available, pos, late_pick, sched):
     """Risk-adjusted value you LOSE by deferring a position to your fill window, computed identically
     for every position (no magic thresholds — a pure stats comparison):
 
@@ -1056,18 +1109,18 @@ def _pos_punt_loss(available, pos, late_pick, teams):
     elite = max(float(pool.loc[ei, "vols"]), 0.0) * (1.0 - e_bust)
     late_adj = _expected_best_survivor(pool, late_pick, risk_adj=True)
     # descriptors for the human-readable streamer text: the best SINGLE option likely to still be there
-    surv = pool[_survival_prob(pool["adp_rank"], late_pick) >= 0.5]
+    surv = pool[_survival_prob(pool["adp_rank"], late_pick) >= _PUNT_STREAM_P]
     if len(surv):
         i = surv["vols"].idxmax()
         late_vols = max(float(surv.loc[i, "vols"]), 0.0)
         bust = float(surv.loc[i, "p_bust"]) if "p_bust" in surv and pd.notna(surv.loc[i, "p_bust"]) else 0.0
         adp = surv.loc[i, "adp_rank"]
-        lasts_round = int((adp - 1) // teams) + 1 if pd.notna(adp) else None
+        lasts_round, lasts_p = _lasts_round(adp, sched)   # measured at MY pick, not floor(ADP/teams)
         late_name = str(surv.loc[i, "full_name"])
     else:
-        late_vols, bust, lasts_round, late_name = 0.0, 0.0, None, None
+        late_vols, bust, lasts_round, lasts_p, late_name = 0.0, 0.0, None, None, None
     return {"punt_loss": max(elite - late_adj, 0.0), "late_vols": late_vols, "late_bust": bust,
-            "lasts_round": lasts_round, "late_name": late_name, "late_pool": late_adj,
+            "lasts_round": lasts_round, "lasts_p": lasts_p, "late_name": late_name, "late_pool": late_adj,
             "elite_adp": pool.loc[ei, "adp_rank"]}                                   # for next-pick defer (L33)
 
 
@@ -1078,7 +1131,8 @@ def _pos_punt_loss(available, pos, late_pick, teams):
 _NEXT_DEFER_P = 0.6
 
 
-def _punt_read(available, open_1start, current_overall, teams, next_pick=None):
+def _punt_read(available, open_1start, current_overall, teams, next_pick=None, slot=None,
+               total_rounds=16, my_next=None):
     """For each UNFILLED 1-start slot (QB/TE), decide whether it's PUNT-ABLE — i.e. a startable player
     at that position still lasts to my realistic fill window, so an early pick there is high
     opportunity cost vs a scarce RB/WR (lesson L11). Data-driven, NOT a hardcoded QB/TE discount:
@@ -1094,14 +1148,29 @@ def _punt_read(available, open_1start, current_overall, teams, next_pick=None):
     reads = {}
     if not open_1start or not current_overall or not teams or "vols" not in available.columns:
         return reads, 0.0
-    late_pick = current_overall + _PUNT_LATE_ROUNDS * teams
+    # The fill window is MY pick _PUNT_LATE_ROUNDS rounds out — read off the snake schedule, not
+    # `current_overall + rounds*teams`, which counted from whoever is on the clock and was slot-blind
+    # (pre-draft it gave #61 for every seat; the real 5-rounds-out picks are #49/#72 at slot 1 and
+    # #58/#63 at slot 10). Falls back to the old flat estimate when we have no slot.
+    sched = my_pick_schedule(slot, teams, total_rounds)
+    # Anchor the FILL WINDOW on MY NEXT PICK — the pick I'd actually start filling from — not on
+    # `next_pick`, which since L52 Tier 2 carries the WAIT-horizon (the pick AFTER the one I'm
+    # deciding) for the L33 defer read below. Two different questions; conflating them shifted the
+    # window a round late and silently dropped the named streamer.
+    anchor = my_next or next_pick or current_overall
+    ahead = [(r, pk) for r, pk in sched if pk >= anchor] or sched
+    if ahead:
+        my_round = ahead[0][0]
+        late_pick = dict(sched).get(min(my_round + _PUNT_LATE_ROUNDS, len(sched)), ahead[-1][1])
+    else:
+        late_pick = current_overall + _PUNT_LATE_ROUNDS * teams
     # The bar: the biggest risk-adjusted punt_loss among RB/WR — the scarce skill value you'd lose by
     # deferring. A 1-start slot is punt-able iff deferring IT loses less than deferring the best RB/WR.
     rbwr_losses = [pl["punt_loss"] for p in ("RB", "WR")
-                   if (pl := _pos_punt_loss(available, p, late_pick, teams))]
+                   if (pl := _pos_punt_loss(available, p, late_pick, ahead))]
     best_rbwr = max(rbwr_losses) if rbwr_losses else 0.0
     for pos in open_1start:
-        r = _pos_punt_loss(available, pos, late_pick, teams)
+        r = _pos_punt_loss(available, pos, late_pick, ahead)
         if r is None:
             continue
         # Straight comparison, NO safety margin: cheaper to defer than the scarce RB/WR -> punt.
@@ -1247,14 +1316,20 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
     reads, best_rbwr = ({}, 0.0)
     if draft_pos and open_1start:
         reads, best_rbwr = _punt_read(available, open_1start, draft_pos.get("overall_now"),
-                                      draft_pos.get("teams"), next_pick=horizon)
+                                      draft_pos.get("teams"), next_pick=horizon,
+                                      slot=draft_pos.get("slot"),
+                                      total_rounds=draft_pos.get("total_rounds", 16),
+                                      my_next=draft_pos.get("next_pick"))
     punt_pos = {p for p, r in reads.items() if r["punt_able"]}
     defer_pos = {p for p, r in reads.items() if r.get("next_defer")}   # demoted because he lasts to my next pick (L33)
     punt_line = ""
     if reads:
         bits = []
         for p, r in reads.items():
-            lr = f"~R{r['lasts_round']}" if r["lasts_round"] else "late"
+            # State the round WITH its measured probability: "lasts ~R7" alone read as a promise when
+            # the number behind it was a coin flip (Fannin 40.3% at slot 10's #82).
+            lr = (f"~R{r['lasts_round']} ({r['lasts_p']:.0%})" if r["lasts_round"] and r.get("lasts_p")
+                  else f"~R{r['lasts_round']}" if r["lasts_round"] else "late (round not computable)")
             stream = (f"streamer {r['late_name']} lasts {lr}, bust {r['late_bust']:.0%}"
                       if r["late_name"] else "no startable one lasts")
             # Both numbers are risk-adjusted and the fallback prices the whole streamable pool (L28),
@@ -1318,6 +1393,24 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                     if stable_swap:
                         pool.loc[i, "_rk"] -= _RISK_PENALTY
                         pool.loc[i, "riskstack"] = True
+        # AVAILABILITY FILTER — only when it is NOT my turn (L52 Tier 2). Pre-draft at slot 10 this
+        # shortlist was the global top 6 (Gibbs/Bijan/CMC/Nacua/Chase/St.Brown) with EVERY entry
+        # labeled gone→#10, and the advisor duly told the user "the WR tier that lands at #10" was
+        # Nacua/Chase. A shortlist for a pick I have not reached has to be players I can plausibly
+        # still get. Drops only the hopeless (below _SHORTLIST_P); one or two picks away almost nothing
+        # is cut, so it self-scales with the gap. Never allowed to empty or gut the list.
+        shortlist_note = ""
+        if draft_pos and not draft_pos.get("my_turn") and draft_pos.get("next_pick"):
+            _at = draft_pos["next_pick"]
+            _keep = _survival_prob(pool["adp_rank"], _at) >= _SHORTLIST_P
+            _cut = int((~_keep).sum())
+            if _cut and int(_keep.sum()) >= _SHORTLIST_MIN:   # silent when nothing is actually cut
+                pool = pool[_keep]
+                shortlist_note = (
+                    f"[NOT MY TURN — I am up at #{_at}. This list is FILTERED to players with at "
+                    f"least a {_SHORTLIST_P:.0%} chance of still being there at #{_at}; {_cut} "
+                    f"player(s) who will almost certainly be gone were removed. So never describe an "
+                    f"elite who is missing here as 'landing' or 'falling' to #{_at}.] ")
         ok = (pool.sort_values(["_darttier", "_dartprio", "_rk"], ascending=[True, True, False])
               .head(25).drop(columns=["_darttier", "_dartprio"]))
         # Best VONA available at a position that fills an OPEN DEDICATED slot (not a punt-able QB) — the
@@ -1396,7 +1489,8 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
                        if getattr(r, "riskstack", False)
                        else "")
                 return f"{star}{r.full_name} ({r.pos_label}, VONA {r.vona:.0f}{w}{role}{tag})"
-            picks_line = ("TOP PICKS NOW — the value ranking, but it is STRATEGY-BLIND (Python doesn't "
+            picks_line = ("TOP PICKS NOW — " + shortlist_note
+                          + "the value ranking, but it is STRATEGY-BLIND (Python doesn't "
                           "read my plan): take #1 when it fits MY STRATEGY; when my plan directs elsewhere, "
                           "take the highest-ranked pick that FOLLOWS the plan (rule 0 — an absolute "
                           "instruction is binding). Within that, the order already blends "
@@ -1447,11 +1541,22 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
             if d.get("following"):
                 # Bind the wheel column to the pick it was actually computed against. The my_turn
                 # branch above has always done this; this branch never did, so pre-draft the model saw
-                # BOTH pick numbers and guessed the wrong one ("safe" to #2 reported as safe to #23).
-                dp_line += (f" Then #{d['following']} after that. The `wheel` column is computed to "
-                            f"#{d['next_pick']} — whether he lasts until I'm ON THE CLOCK — NOT to "
-                            f"#{d['following']}; never describe a wheel value as reaching "
-                            f"#{d['following']}.")
+                # BOTH pick numbers and guessed. Since L52 Tier 2 the horizon is `following` in BOTH
+                # turn states — the wait-decision is always about the pick AFTER the one I'm deciding.
+                dp_line += (f" Then #{d['following']} after that. The `wheel` column and VONA are both "
+                            f"computed to #{d['following']} — whether he survives from my pick at "
+                            f"#{d['next_pick']} through to #{d['following']}. So a `safe` here means "
+                            f"safe to #{d['following']}, and it says nothing about #{d['next_pick']}, "
+                            f"which is a pick I already hold.")
+        # MY PICKS — the whole remaining snake schedule, so round<->pick is READ, never derived. The
+        # model previously had only 3 pick numbers in 12,700 chars of context and invented the rest
+        # ("rounds 3-7 = picks 25-35"; slot 10's real R3-R7 are #34/#39/#58/#63/#82).
+        _sched = my_pick_schedule(d.get("slot"), d.get("teams"), d.get("total_rounds", 16))
+        _rem = [(r, pk) for r, pk in _sched if pk >= (d.get("overall_now") or 0)]
+        if _rem:
+            dp_line += (f"\nMY PICKS (slot {d.get('slot')} of {d.get('teams')}, snake) — every pick I "
+                        f"still own. READ round→pick from here, NEVER compute it: "
+                        + " · ".join(f"R{r} #{pk}" for r, pk in _rem))
         dp_line += "\n"
 
     # ROSTER RISK line (L23): tell the model how much bust risk each of my rooms already carries,

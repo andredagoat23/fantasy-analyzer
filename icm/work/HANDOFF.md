@@ -1,16 +1,16 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
 **How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
-docs the task needs. Everything below is CURRENT as of **Jul 29, 2026**.
+docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
 
 ## Where things stand right now
-- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = the **L52**
-  wheel-referent fix; `git log -3` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
+- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = **L53**, the
+  horizon + schedule fix; `git log -4` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
   deploying, always the user's call.**
-- **Health:** preflight **OK** (0 blocking, 0 warnings). **17 unit suites green — 264 checks.** Both
-  stress suites ALL PASS. Board + all priors regenerated **Jul 28**. **No open DATA flags. Two open
-  CODE items, both deliberate — L52 Tier 2 + Tier 3 (see Open questions).**
-- **⛔ CODE FREEZE Aug 3 — 5 days away. Draft Aug 7 — 9 days.** Last advisor-logic change Aug 3;
+- **Health:** preflight **OK** (0 blocking, 0 warnings). **18 unit suites green — 312 checks.** Both
+  stress suites ALL PASS. Board + all priors regenerated **Jul 28**. **No open DATA flags. ONE open
+  CODE item, deliberate — the `_wheel_label` re-base (see Open questions). L52 Tier 2 SHIPPED in L53.**
+- **⛔ CODE FREEZE Aug 3 — 4 days away. Draft Aug 7 — 8 days.** Last advisor-logic change Aug 3;
   Aug 4-6 = a full live mock, fixing only what the mock catches; Aug 7 = regen + preflight, no code.
   Rationale: this project's real bugs are caught by live mocks, not tests (L47 passed 195 checks and
   died in a mock). **Ship risky-but-verified changes INTO this window, not past it** (L51).
@@ -19,13 +19,24 @@ docs the task needs. Everything below is CURRENT as of **Jul 29, 2026**.
   therefore every VONA, wheel and horizon — depends on it. **Confirm the real slot before Aug 7** and
   never hardcode one. Practice mocks have run at slots 1/5/10.
 
-## Shipped this session (Jul 28-29) — all live
+## Shipped this session (Jul 28-30) — all live
+- **L53 (Jul 30) — the HORIZON was the wrong pick, and nothing computed the schedule.** Three user
+  catches, one root. (a) `MY PICKS` line: the context had **3 pick numbers in 12,746 chars** and the
+  model invented "rounds 3-7 = picks 25-35" (slot 10's real R3-R7 are #34/#39/#58/#63/#82) — now 17
+  pick numbers, read never computed. (b) **PUNT READ was fabricating in PYTHON** — `lasts_round` was
+  `floor(ADP/teams)`, the round the MARKET takes him in, rendered as the round he lasts to, slot-blind
+  ("~R7" was 61%/40%/36% at slots 1/10/12). **This one fires at `my_turn: True` and could have cost a
+  real pick.** Now measured at MY pick with the number shown: `lasts ~R6 (84%)`. (c) **L52 Tier 2**:
+  `_horizon()` now returns `following` in BOTH turn states; (d) TOP PICKS is filtered to reachable
+  players when it is not my turn (it was six `gone` players). `my_pick_schedule()` + `_horizon()` are
+  now single sources of truth and `app_pages/draft.py` calls both — the arithmetic was in FOUR places
+  and wrong in three.
 - **L52 WHEEL REFERENT (Jul 29).** The advisor told the user an ADP-14.3 RB was "safe to #23" at
   ~75% when true survival to #23 is **9.0%**. `_horizon()` returns `next_pick` (not `following`) when
   it is **NOT my turn**, so pre-draft the label was computed to the ON-DECK pick while the DRAFT
   POSITION line named two picks and the cell was a bare word. Fixed DISPLAY-ONLY: `_wheel_cell`
   renders `safe→#2`, the not-my-turn line binds the column, the prompt quotes the cell instead of
-  inferring `#X`. **No math touched.** `tests/test_wheel.py` (26) — and it is the FIRST suite to
+  inferring `#X`. **No math touched.** `tests/test_wheel.py` (32) — and it is the FIRST suite to
   exercise `my_turn: False`; every prior suite and mock set it True.
 - **Research `45_` (Jul 29).** 100 mocks × 12 slots = 1,200 drafts / 19,200 advised picks. Roster
   shape is near slot-invariant (1.0 QB / 6.4-6.7 RB / 6.2-6.5 WR / 1.0-1.1 TE / 1.0 K at EVERY seat)
@@ -87,8 +98,9 @@ docs the task needs. Everything below is CURRENT as of **Jul 29, 2026**.
 
 ---
 
-## Git / branch state (Jul 29)
-- **`main` = `origin/main` = `6cb7300` — DEPLOYED**, tree clean.
+## Git / branch state (Jul 30)
+- **`main` = `origin/main` = HEAD — DEPLOYED**, tree clean. Last four: L53 (horizon + schedule),
+  L52 (wheel referent), Research 45_, docs refresh.
 - **One branch UNMERGED:** `yahoo-probe` (`b8cb697`) — awaits the user's Yahoo dev-app + a mock.
   Doesn't touch `advisor.py`.
 
@@ -102,10 +114,10 @@ docs the task needs. Everything below is CURRENT as of **Jul 29, 2026**.
 5. **Commit the regenerated CSVs together** — the deployed app reads board + priors from the repo.
 
 ## Tests (plain-assert, run individually: `.venv/bin/python tests/<file>.py`)
-**17 suites, 264 checks, all green:** `test_bridge` (26), **`test_wheel` (26)**, `test_opponent` (25),
+**18 suites, 312 checks, all green:** `test_schedule` (38), **`test_wheel` (32)**, `test_bridge` (26), `test_opponent` (25),
 `test_dart` (23), `test_injury` (22), `test_cold` (21), `test_cohort_pull` (19), `test_handcuff` (16),
 `test_dst` (14), `test_sleeper` (13), `test_shape` (11), `test_cohort_skew` (10), `test_hedge` (8),
-`test_punt` (8), `test_defer` (8), `test_kicker` (7), `test_role_alpha` (7). Plus the two stress
+`test_punt` (12), `test_defer` (8), `test_kicker` (7), `test_role_alpha` (7). Plus the two stress
 suites in `mc_research/` (`11_` invariants + cohort LOSO, `12_` 24 offline drafts).
 
 ⚠️ **COVERAGE HOLE, now half-closed (L52).** Every suite and every offline mock (`12_`/`13_`/`14_`/
@@ -116,17 +128,11 @@ adding a suite, ask which turn state it covers.
 ---
 
 ## ⚠️ OPEN QUESTIONS / KNOWN IMPERFECTIONS (read before "fixing" anything)
-- **L52 TIER 2 — `_horizon()` + `_wheel_label`, the one real open code item.** Two halves, one root
-  cause. (a) `_horizon()` returns `next_pick` when it is NOT my turn, so pre-draft VONA and the wheel
-  label answer "what's left when I'm first on the clock" instead of "what's left at the pick AFTER the
-  one I'm deciding" — that is ALSO the source of the pre-draft VONA complaint (`best_wait[WR]` = 130.5
-  exceeding Amon-Ra St. Brown's 128.5, i.e. implying an elite WR falls to you; true at a next-pick of
-  ~6, false at any round-2 pick). (b) `_wheel_label` still buckets on raw ADP arithmetic with a flat
-  12-pick cushion while `_survival_prob` got L51's measured curve — measured across the board, `gone`
-  spans **0.0%-50.0%** true survival and `safe` spans **67.5%-100%** (Josh Allen at #23 is 49.5% and
-  labeled `gone`). Re-base the label on `_survival_prob`. **Group D of `test_wheel.py` pins the
-  current rule on purpose — those 6 checks MUST go red when you do this.** Behavior change to what
-  the model reads on every pick: needs both stress suites AND the Aug 3 mock.
+- **L52 TIER 2 is SHIPPED (L53).** What REMAINS of it: `_wheel_label` still buckets on raw ADP
+  arithmetic with a flat 12-pick cushion while `_survival_prob` has L51's measured curve — `gone` spans
+  **0.0%-50.0%** true survival, `safe` spans **67.5%-100%** (Josh Allen at #23 is 49.5%, labeled
+  `gone`). Re-basing the label on `_survival_prob` is the last piece. **Group D of `test_wheel.py` pins
+  the current rule on purpose — those 6 checks MUST go red when you do it.**
 - **L52 TIER 3 — put the probability in the cell** (`gone→#23 (9%)`). Tier 1 anchored the label; only
   a number kills the fabrication (the advisor invented "~75%" because the context contains no
   probability anywhere and the prompt forbids computing one).

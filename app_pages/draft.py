@@ -536,8 +536,9 @@ made = st.session_state.get("pick_count", 0) if sync_active else len(st.session_
 overall_now = made + 1
 # My pick numbers = my seat in a standard snake. Computed live from slot + teams (ESPN auto-sets
 # the slot, and the Draft settings popover lets me change it), so it always tracks the current
-# seat — no sticky hidden state. Enough rounds to cover a full draft.
-my_picks = [((r - 1) * teams + slot) if r % 2 else (r * teams - slot + 1) for r in range(1, 21)]
+# seat — no sticky hidden state. advisor.my_pick_schedule is the SINGLE source of truth for this
+# arithmetic (it used to be duplicated here and in the punt read, and the punt read's copy was wrong).
+my_picks = [pk for _, pk in advisor.my_pick_schedule(slot, teams, 16)]
 upcoming = [p for p in my_picks if p >= overall_now]
 next_pick = upcoming[0] if upcoming else None
 following = upcoming[1] if len(upcoming) > 1 else None
@@ -555,7 +556,10 @@ elif next_pick:
 
 # VONA — points you'd lose by waiting on a position until your next pick. Computed here on the WHOLE
 # available board so the AI advisor and the board's VONA column always agree (see advisor.add_vona).
-horizon = following if my_turn else next_pick   # my next real chance to pick
+# Delegated to advisor._horizon so there is exactly ONE definition: this line used to repeat the
+# expression, and when the advisor's copy was fixed (L52 Tier 2) a duplicate here would have silently
+# desynced the board's VONA column from the advisor's context.
+horizon = advisor._horizon(draft_pos)
 
 # Opponent-aware survival: when live-synced, fold the ACTUAL rosters of the teams picking before my
 # wheel into a per-position effective horizon (a position no one left needs survives longer; one

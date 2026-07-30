@@ -941,6 +941,51 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L53 — THE HORIZON WAS THE WRONG PICK, and nobody computed the schedule (Jul 2026)
+- **Three user catches in one sitting, all the same root.** (1) Pre-draft at slot 10 the advisor said
+  "rounds 3-7 give you picks in the 25-35 range" — the real R3-R7 are **#34/#39/#58/#63/#82**. (2) It
+  said "Harold Fannin lasts to ~R7" and "Matthew Stafford lasts to ~R7". (3) Its pre-draft shortlist
+  was six players it simultaneously labelled `gone`.
+- **Cause A — the model had no schedule to read.** The whole context was **12,746 chars containing
+  exactly THREE pick numbers** (1, 10, 15) and zero rounds, while the prompt forbids computing pick
+  numbers. Forbidden to compute, given nothing to read, asked a whole-draft question: it invented.
+  **Fixed:** a computed `MY PICKS` line (every pick I still own, `R<n> #<pick>`) + a prompt rule that
+  round↔pick is READ from it. 259 chars; pick numbers visible to the model went **3 → 17**.
+- **Cause B — Python itself fabricated the survival claim, which is worse.** `_pos_punt_loss` computed
+  `lasts_round = floor((adp - 1) / teams) + 1` — **the round the MARKET drafts him in** — and rendered
+  it as the round he *lasts to*, with no probability and no awareness of my slot. ADP 77.8 printed
+  "lasts ~R7" whether the truth was 61% (slot 1, #73), 40% (slot 10, #82) or 36% (slot 12, #84). The
+  model was quoting us. **This one fires at `my_turn: True`, so it could have cost a real pick on draft
+  day** — it is the read that says a 1-start slot is safe to punt. **Fixed:** `_lasts_round` measures
+  survival at MY actual pick and the render carries the number (`lasts ~R6 (84%)`).
+- **Cause C — the survival horizon was the wrong pick entirely (L52 Tier 2).** `_horizon()` returned
+  `following` when it was my turn but `next_pick` when it wasn't — **the pick I am about to make**. I
+  cannot lose anyone before a pick I already hold, so every "will he still be there?" number was
+  answered against a pick where the answer is trivially yes. That is why `best_wait[WR]` sat above
+  Amon-Ra St. Brown (implying an elite WR falls to you) and why an ADP-14.3 RB read `safe`. **Fixed:**
+  `following` in both states. The wait-decision is *always* about the pick AFTER the one being decided.
+- **Cause D — the shortlist was never filtered by availability.** `TOP PICKS` is
+  `sort_values("rank_composite").head(6)`, so before my turn it listed the global top 6 regardless of
+  whether I could reach them. Tier 2's horizon change does NOT fix this on its own — I predicted it
+  would and was wrong. **Fixed:** when it is not my turn, drop players below a 10% chance of reaching
+  my next pick and say so in the line. Self-scaling — one pick away it cuts nothing, nine picks away it
+  cuts the elites.
+- **THE STRUCTURAL LESSON: the same arithmetic lived in FOUR places and was wrong in three of them.**
+  The snake schedule was open-coded in `app_pages/draft.py`, re-derived wrongly in `_pos_punt_loss`, and
+  invented by the model; the horizon expression was duplicated in `draft.py` and `advisor._horizon`, so
+  fixing one would have silently desynced the board's VONA column from the advisor's context. Now
+  `my_pick_schedule()` and `_horizon()` are single sources of truth and `draft.py` calls both. **When a
+  fix touches derived arithmetic, grep for every other place that idea is computed BEFORE editing** —
+  this is L52's lesson recurring within 24 hours, which is why it earned its own entry.
+- **Process note that worked:** the existing suites caught three of my own errors during this change
+  (`test_punt` on the signature change, `test_opponent` and `test_wheel` on assertions that encoded the
+  OLD horizon). Assertions that pin current behaviour are what make a behaviour change safe to make.
+- **Verified:** 18 suites / **312 checks**, both stress suites, preflight OK, and the real app booted
+  and rendered the draft page with the new reads (`lasts ~R6 (84%)`, `risky→#13` for the ADP-14.3 RB,
+  and the filtered shortlist). (Principles 2, 3, 5, 9)
+
+---
+
 ## L52 — A LABEL WITHOUT A REFERENT: the wheel column lied about which pick it meant (Jul 2026)
 - **User catch, in pre-draft strategy chat.** The advisor said James Cook (ADP 14.3) was "safe" to
   wheel back to **#23** and put it at **~75%**, citing "the python wheel math." True survival to #23

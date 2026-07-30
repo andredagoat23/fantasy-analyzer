@@ -1,11 +1,11 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
-> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Jul 29, 2026**: the stack through
-> **L51**, DEPLOYED at `6cb7300`, tree clean, board + priors regenerated Jul 28.
-> Suites **17 / 264 green**, both stress suites pass, preflight OK, **no open data items; two
-> deliberate open code items (L52 Tier 2 + Tier 3)**.
+> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Jul 30, 2026**: the stack through
+> **L53**, DEPLOYED at HEAD, tree clean, board + priors regenerated Jul 28.
+> Suites **18 / 312 green**, both stress suites pass, preflight OK, **no open data items; one
+> deliberate open code item (re-basing `_wheel_label` on the measured curve)**.
 >
-> **⛔ CODE FREEZE Aug 3 (5 days). Draft Aug 7 (9 days).** The remaining work is OPERATIONAL, not
+> **⛔ CODE FREEZE Aug 3 (4 days). Draft Aug 7 (8 days).** The remaining work is OPERATIONAL, not
 > features: a live mock at the real slot on Aug 3, injury/FA watches Aug 5-6, a final regen Aug 7.
 >
 > **⚠️ THE DRAFT SLOT IS NOT SETTLED** — older docs said 7, the user says it could be anywhere, the app
@@ -21,11 +21,14 @@
 > **L51 per-player ADP survival curve** (one constant scale was ~4x too wide at the top; fixed from
 > 19,300 measured picks, behind `USE_MEASURED_SCALE`).
 >
-> **L52 (Jul 29):** the wheel column said `safe` without saying *to which pick*, and the advisor read a
-> "safe to my on-deck pick" as "safe to my round-2 pick" (told the user an ADP-14.3 RB was 75% to
-> reach #23; truth 9.0%). Tier 1 shipped — display-only, `safe→#2` now carries its referent. **Tier 2
-> (`_horizon` on the not-my-turn path + re-basing `_wheel_label` on the measured curve) is OPEN** and
-> is the same root cause as the pre-draft VONA complaint. See HANDOFF "Open questions".
+> **L52 + L53 (Jul 29-30):** the advisor was stating pick numbers and survival odds it had no grounded
+> input for. Three fixes shipped: the wheel cell now carries its referent (`gone→#23`); `_horizon()`
+> returns the pick AFTER the one being decided in BOTH turn states (it used to answer against a pick I
+> already hold); a computed `MY PICKS` line puts the whole snake schedule in the context (it had 3 pick
+> numbers in 12,746 chars and invented the rest); and the PUNT READ's "lasts ~R7" — which was
+> `floor(ADP/teams)`, the round the MARKET takes him in, and fired at `my_turn: True` — now measures
+> survival at MY pick and shows the number. `my_pick_schedule()` and `_horizon()` are single sources of
+> truth. **Still open: re-basing `_wheel_label` on the measured curve.** See HANDOFF "Open questions".
 >
 > **One open THREAD:** a non-repro'd R7 roster-state issue — diagnosable only from the next mock's
 > pick log (L47); don't patch the gate blind. **Two research lines are CLOSED** (per-player
@@ -90,7 +93,7 @@ scripts + saved output live in `work/mc_research/`.
 - **`work/HANDOFF.md` — the live state doc.** Read every session, updated at the end of every
   session. Never "clear" it.
 - **`work/mc_research/` + the findings docs** (`mc-research-findings.md`, `run-dynamics-findings.md`,
-  `r1-prerequisites-findings.md`) — **DURABLE evidence.** Numbered scripts `00_`-`44_` each with a
+  `r1-prerequisites-findings.md`) — **DURABLE evidence.** Numbered scripts `00_`-`45_` each with a
   `results_*.txt`. They are why several plausible features were killed, and re-deriving them costs
   hours. Large data (`*.parquet`, the Sleeper corpus, caches) is gitignored and regenerable.
 - **`work/diagnosis.md` + `work/plan.md`** — genuine scratch for the CURRENT task; overwrite freely.

@@ -97,31 +97,33 @@ qb_filled = {f"T{i}": {"QB": 1} for i in range(11)}
 owners_qbfull = [f"T{i}" for i in range(11)]
 r = read_with(owners_qbfull, qb_filled)
 check("opponent_read produces eff horizons + a summary", r and "eff" in r and r["summary"])
-check("QB effective horizon shrinks when everyone's QB is filled",
-      r["eff"]["QB"] < DP["next_pick"])
-check("RB effective horizon extends (blocked QB demand shifts to RB/WR)",
-      r["eff"]["RB"] > DP["next_pick"])
+# Compared against the horizon _horizon() actually returns, NOT a hardcoded DP["next_pick"]: since
+# L52 Tier 2 the wait-horizon is `following` in both turn states, and this test is about the RELATIVE
+# per-position shift, which is horizon-agnostic.
+_H = advisor._horizon(DP)
+check("QB effective horizon shrinks when everyone's QB is filled", r["eff"]["QB"] < _H)
+check("RB effective horizon extends (blocked QB demand shifts to RB/WR)", r["eff"]["RB"] > _H)
 check("summary names the window teams and their need, with survival arrows",
       "needs TE" in r["summary"] and "QB" in r["summary"] and "↑surv" in r["summary"])
 
 # direction check through add_vona: a QB's survival RISES (VONA falls) when QBs are filled around me
-base = advisor.add_vona(board(), DP["next_pick"])
-oppd = advisor.add_vona(board(), DP["next_pick"], opp=r["eff"])
+base = advisor.add_vona(board(), _H)
+oppd = advisor.add_vona(board(), _H, opp=r["eff"])
 mid_base = float(base.loc[base.full_name == "Mid QB", "vona"].iloc[0])
 mid_opp = float(oppd.loc[oppd.full_name == "Mid QB", "vona"].iloc[0])
 check("a mid QB's VONA drops once nearby teams have their QB (he'll survive)", mid_opp <= mid_base)
 
 # ---- IDENTITY: opp=None / opp={} reproduce the plain single-horizon math exactly ----
-plain = advisor.add_vona(board(), DP["next_pick"])
-none_opp = advisor.add_vona(board(), DP["next_pick"], opp=None)
-empty_opp = advisor.add_vona(board(), DP["next_pick"], opp={})
+plain = advisor.add_vona(board(), _H)
+none_opp = advisor.add_vona(board(), _H, opp=None)
+empty_opp = advisor.add_vona(board(), _H, opp={})
 check("add_vona(opp=None) == add_vona() (byte-identical VONA)",
       plain["vona"].round(9).equals(none_opp["vona"].round(9)))
 check("add_vona(opp={}) == add_vona() (empty dict is a no-op)",
       plain["vona"].round(9).equals(empty_opp["vona"].round(9)))
 # a per-position eff dict equal to the horizon everywhere is also a no-op
-same = advisor.add_vona(board(), DP["next_pick"],
-                        opp={p: DP["next_pick"] for p in ("QB", "RB", "WR", "TE")})
+same = advisor.add_vona(board(), _H,
+                        opp={p: _H for p in ("QB", "RB", "WR", "TE")})
 check("add_vona with eff==horizon for every position == plain",
       plain["vona"].round(9).equals(same["vona"].round(9)))
 
