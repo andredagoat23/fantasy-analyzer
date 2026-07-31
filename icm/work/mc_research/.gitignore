@@ -10,3 +10,11 @@ sleeper_drafts_2026.jsonl
 espn_hist_cache.json
 blend_cache_2019_2025.json
 adp_dispersion_cache.json
+# entanglement run (2026-07-31): seeded regenerable grader caches + the dead ESPN kona
+# history pull (verdict preserved in population.json) + backup copies of ignored/tracked files
+49_cache/
+50_cache/
+51_cache/
+espn_adp_hist/
+*.bak
+*.bak-*

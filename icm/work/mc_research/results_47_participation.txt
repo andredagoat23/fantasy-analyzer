@@ -1,0 +1,148 @@
+T0.1 — PARTICIPATION SEMANTICS + PASS-SNAP PARTICIPATION BUILDER
+script: 47_participation_semantics.py · run 2026-07-31 · all numbers [V] unless noted
+S14: instrumentation task — no hypothesis, no points endpoint, no FDR entry.
+
+== 0. ONE-PAGE STATEMENT: WHAT PARTICIPATION DATA THIS PROJECT HAS ==
+
+1. THERE IS NO ROUTES-RUN COLUMN ANYWHERE IN FREE NFLVERSE DATA. `route` in
+   load_participation is ONE label per play. In 2022 it describes the TARGETED
+   receiver's route and nothing else: present on 99.4% of targeted pass
+   plays, on 0.0% of untargeted pass plays, on 0 non-pass plays, 0 multi-label
+   rows. In 2024 it is still one label per play (98.7% of targeted plays)
+   but ALSO appears on 32.5% of UNtargeted pass plays (1489 plays —
+   intended-route charting on throwaways/sacks). Per-player route counts cannot
+   be built from it in any season.
+
+2. THE FILE IS TWO DATA PRODUCTS UNDER ONE NAME (S8), breaking at 2023:
+   - 2016-2022: offense_players non-empty on 91.3-91.6% of plays — but the
+     empty rows are NOT missing scrimmage data: classified for 2022, all
+     4292 are {'NOT_IN_PBP': 2158, 'no_play': 2134}
+     (no_play = pre-snap penalties; NOT_IN_PBP = timeouts/admin rows).
+     On REG dropbacks coverage is 100.0% in every season (2016: 1 play short).
+     Absent route is NaN (so .notna() and the honest test agree, ~36-39%).
+   - 2023-2025: offense_players 100.0%; absent route is EMPTY STRING, so
+     .notna() reports 100.0% while the honest rate is 41.6-42.5%. This is the
+     prior scoping's '100% coverage' artifact. ALWAYS .fillna('').str.len()>0.
+   - The route VOCABULARY also changed (HITCH/OUT/CROSS/IN/FLAT/ANGLE ->
+     HITCH/CURL, QUICK OUT, IN/DIG, DEEP OUT, SHALLOW CROSS/DRAG, SWING,
+     TEXAS/ANGLE). Never pool route labels across the 2022/2023 boundary.
+
+3. THE FREE CEILING IS PASS-SNAP PARTICIPATION — share of team dropbacks on
+   which a gsis_id appears in offense_players. Built here for 2016-2025 (10
+   seasons, 93045 player-week rows -> pass_snap_participation.parquet),
+   REG only. Denominator = dropbacks with non-empty offense_players, which is
+   measured to be a no-op safeguard (100.0% covered every season) — the ~9%
+   overall empty rate pre-2023 lives entirely in no_plays/admin rows.
+
+4. THE BLOCKER CONFLATION IS REAL BUT SMALLER THAN THE PRIOR SCOPING ASSUMED,
+   because coaches BENCH the blocking archetype on dropbacks. Classic blocking
+   TEs sit at 23%-29% pass-snap share (vs 80%-98% for route runners), so the
+   metric already separates the archetypes. The residual conflation: even at a
+   conservative per-route target-earn floor (half the route-runner minimum,
+   f=0.122/route), pass-snap share overstates the implied route-share upper
+   bound by: Luke Farrell >=5%, Charlie Woerner >=6%, Gus Edwards >=17%. Population-wide, bottom-
+   quartile TE target-earners still log 49% mean pass-snap share vs 75% for
+   top-quartile — a TE at ~50% share is ambiguous between a part-time route
+   runner and a full-time player who blocks on half his dropbacks. Every
+   conclusion built on pass-snap participation must carry this bound; it is
+   snap share restricted to dropbacks, NOT a route signal (charter 3.3.10).
+
+5. VALIDATION vs load_snap_counts: route runners' pass-snap share runs ABOVE
+   their overall offense_pct (+2.5% to +12.8% — they stay on for passing
+   downs); blockers/early-down RBs run BELOW (-18.9% to -8.1%). Both
+   directions are the expected physics, and no share left [0,1].
+
+== 1. WHAT PARTICIPATION DATA THIS PROJECT HAS (per season, measured now) ==
+   non-empty = .fillna('').str.len()>0  (NEVER .notna(): route is '' on non-pass
+   rows, so .notna() reports ~100% and is the documented artifact)
+   season      rows route .notna()  route non-empty  offense_players ne
+   2016       48434         38.7%           38.7%              91.5%
+   2017       47998         37.4%           37.4%              91.6%
+   2018       47875         37.4%           37.4%              91.3%
+   2019       48034         37.0%           37.0%              91.6%
+   2020       48513         37.5%           37.5%              91.4%
+   2021       50714         37.3%           37.3%              91.3%
+   2022       50150         36.2%           36.2%              91.4%
+   2023       46168        100.0%           42.5%             100.0%
+   2024       45919        100.0%           41.6%             100.0%
+   2025       45184        100.0%           41.8%             100.0%
+
+== 2. ROUTE SEMANTICS — one label per play, describing the TARGETED receiver ==
+   2022: route non-empty on 18176/49434 plays · on TARGETED pass plays 18176/18285 (99.4%) · on UNtargeted pass plays 0/4178 (0.0%) · on non-pass plays 0 · rows with multiple labels: 0
+   2024: route non-empty on 19110/49492 plays · on TARGETED pass plays 17611/17848 (98.7%) · on UNtargeted pass plays 1489/4581 (32.5%) · on non-pass plays 10 · rows with multiple labels: 0
+
+   route value counts, 2022 vs 2024 (top 12) — the VOCABULARY CHANGED (S8):
+   2022 label                    n   |   2024 label                        n
+   HITCH                      2937   |   QUICK OUT                      3462
+   FLAT                       2601   |   HITCH/CURL                     3299
+   OUT                        2528   |   SCREEN                         1995
+   CROSS                      2076   |   IN/DIG                         1760
+   GO                         1775   |   GO                             1683
+   SCREEN                     1711   |   DEEP OUT                       1435
+   IN                         1178   |   SHALLOW CROSS/DRAG             1286
+   SLANT                      1156   |   SLANT                          1085
+   POST                        854   |   CORNER                          949
+   ANGLE                       694   |   SWING                           891
+   CORNER                      570   |   POST                            838
+   WHEEL                        96   |   WHEEL                           229
+   labels only in 2022: ['ANGLE', 'CROSS', 'FLAT', 'HITCH', 'IN', 'OUT']
+   labels only in 2024: ['DEEP OUT', 'HITCH/CURL', 'IN/DIG', 'QUICK OUT', 'SHALLOW CROSS/DRAG', 'SWING', 'TEXAS/ANGLE']
+
+== 3. PASS-SNAP PARTICIPATION BUILD ==
+   definition: for each (season, week, gsis_id, team):
+     snaps_on_dropbacks = # REG-season plays with qb_dropback==1 where the id
+       appears in offense_players (joined pbp<->participation on
+       (nflverse_game_id, play_id); offense_players split on ';')
+     team_dropbacks = that team-week's dropbacks WITH non-empty offense_players.
+       Measured: an inert safeguard — dropback coverage is 100.0% in every
+       season (2016 is 1 play short); the pre-2023 ~9% empty rows are
+       no_plays and non-pbp admin rows, not scrimmage plays.
+     pass_snap_share = snaps_on_dropbacks / team_dropbacks
+   output: pass_snap_participation.parquet · 93045 rows
+   S8 per-year row counts (asserted >5000 for 2022-2025) + dropback coverage:
+     2016: 8820 rows · mean share 0.635 · players/wk 16.2 per team · REG dropbacks 20072, uncovered 1
+     2017: 9037 rows · mean share 0.623 · players/wk 16.6 per team · REG dropbacks 19414, uncovered 3
+     2018: 9001 rows · mean share 0.629 · players/wk 16.5 per team · REG dropbacks 19765, uncovered 1
+     2019: 8958 rows · mean share 0.630 · players/wk 16.5 per team · REG dropbacks 19922, uncovered 0
+     2020: 9169 rows · mean share 0.614 · players/wk 16.9 per team · REG dropbacks 20023, uncovered 0
+     2021: 9671 rows · mean share 0.619 · players/wk 16.8 per team · REG dropbacks 20907, uncovered 0
+     2022: 9606 rows · mean share 0.621 · players/wk 16.7 per team · REG dropbacks 20298, uncovered 0
+     2023: 9669 rows · mean share 0.619 · players/wk 16.8 per team · REG dropbacks 20770, uncovered 0
+     2024: 9562 rows · mean share 0.626 · players/wk 16.6 per team · REG dropbacks 20215, uncovered 0
+     2025: 9552 rows · mean share 0.626 · players/wk 16.6 per team · REG dropbacks 19828, uncovered 0
+
+== 4. VALIDATION vs load_snap_counts offense_pct ==
+   player                 pos    yr pass-snap%  offense% tgt/pass-snap  targets
+   -- route runners --
+   Justin Jefferson        WR  2022      94.6%     92.1%         0.265      184
+   Travis Kelce            TE  2022      86.0%     79.6%         0.244      152
+   Tyreek Hill             WR  2023      80.1%     67.3%         0.365      171
+   CeeDee Lamb             WR  2023      91.5%     83.7%         0.289      181
+   Amon-Ra St. Brown       WR  2024      92.3%     88.3%         0.256      141
+   Ja'Marr Chase           WR  2024      97.8%     92.3%         0.248      175
+   -- blocking TEs / early-down RBs --
+   Josh Oliver             TE  2023      29.2%     41.6%         0.135       28
+   Luke Farrell            TE  2023      22.5%     35.0%         0.094       15
+   Charlie Woerner         TE  2024      23.5%     42.4%         0.091       12
+   Gus Edwards             RB  2023      34.2%     42.3%         0.062       13
+   Derrick Henry           RB  2022      50.1%     66.5%         0.168       41
+
+== 5. THE BLOCKER CONFLATION, QUANTIFIED ==
+   route-runner target-earn rates (targets per pass snap): median 0.261, min 0.244
+   bound logic: routes <= pass snaps, and targets = routes x earn-per-route.
+   if a blocker earned targets at rate f per route, his route share is at most
+   (targets/team_dropbacks)/f. Overstatement >= pass_snap_share - that bound.
+   player                 pass-snap% route-share UB  UB @ f/2 overstate >=
+   Josh Oliver                 29.2%          16.2%     32.4%         0.0%
+   Luke Farrell                22.5%           8.7%     17.3%         5.2%
+   Charlie Woerner             23.5%           8.8%     17.5%         6.0%
+   Gus Edwards                 34.2%           8.8%     17.6%        16.7%
+   Derrick Henry               50.1%          34.6%     69.1%         0.0%
+
+   population view — all TE player-seasons 2022-25 with >=200 dropback snaps (n=205):
+   targets-per-pass-snap deciles: p10 0.098 · p25 0.123 · p50 0.162 · p75 0.189 · p90 0.217
+   bottom-quartile target-earners average pass-snap share 49.1% (n=52); top quartile 75.3% (n=52); gap +26.2%.
+
+   provenance: targets come from weekly.parquet (prior artifact of 01_build_panel,
+   raw pass-through of load_player_stats). Everything else pulled + computed now.
+

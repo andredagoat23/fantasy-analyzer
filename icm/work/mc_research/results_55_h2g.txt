@@ -1,0 +1,176 @@
+====================================================================================================
+55 — H2g: DEPTH CHARTS AS AN INDEPENDENT ROLE SIGNAL   (run date 2026-07-31)
+====================================================================================================
+All numbers [V] = computed this run unless marked [R] = read from a prior results file.
+Schema rule enforced: 2019/2023 depth-chart era (depth_team) NEVER loaded, NEVER pooled.
+PRIMARY ENDPOINT (S14, declared in the module docstring BEFORE running): 2025 RB/WR/TE
+disagreement rooms, both priced, league-scored points-above-price, depth-favored minus
+projection-favored, week-1 snapshot. ONE endpoint; everything else is SECONDARY.
+
+====================================================================================================
+SECTION A — CHEAP CHECK: 2026 board team_role vs latest 2026 depth-chart pos_rank [V]
+====================================================================================================
+2026 snapshot: dt=2026-07-31T09:40:30Z  skill rows=907  teams=32
+board (app_data.csv): 503 skill players; gsis_id present on 497
+matched board->snapshot: 499 of 503 ({'gsis': np.int64(438), 'name+pos': np.int64(60), 'espn': np.int64(1)})
+  unmatched board players (not on any current chart): Connor Heyward (TE LV, adp nan), Riley Nowakowski (TE PIT, adp nan), Andrew Beck (RB NYJ, adp 170), Reggie Gilliam (RB NE, adp 170)
+board-team vs snapshot-team mismatches among matched: 16 (snapshot team used for room grouping — it is the fresher fact)
+
+AGREEMENT (common-set re-rank within snapshot-team+position; player counted once):
+NOTE: the board's adp_rank carries ESPN's 170.0 UNDRAFTED SENTINEL, so the <=180 cut barely
+filters (498 of 499 matched pass it) — read the top-50/top-100 rows as the draftable range.
+  adp_rank <= 180 (sentinel-diluted) n= 498  ordering-agreement= 68.3%   raw pos_rank==team_role_num= 63.9%
+  top-100 ADP                        n=  85  ordering-agreement= 92.9%   raw pos_rank==team_role_num= 92.9%
+  top-50 ADP                         n=  45  ordering-agreement=100.0%   raw pos_rank==team_role_num=100.0%
+  all matched                        n= 499  ordering-agreement= 68.3%   raw pos_rank==team_role_num= 63.9%
+  by position (adp_rank <= 180, sentinel-diluted):
+    QB: n= 80  ordering-agreement= 77.5%
+    RB: n=116  ordering-agreement= 79.3%
+    TE: n=114  ordering-agreement= 64.9%
+    WR: n=188  ordering-agreement= 59.6%
+  room-leader agreement (rooms with >=2 matched): 92.2% (118/128 rooms)
+
+OVERRIDE POPULATION reproduced from players_with_outcomes.csv per value_board.py:89-112:
+  switched-team: 65   ascending leads: 1   union: 66 of 536 board players
+  reconciliation with the charter's '85 of 536': switched_team=True board-wide = 85
+  (all positions); the override code only touches RB/WR/TE (vols_pct is _rec-only), which
+  is the 65 counted here. Both are correct; different denominators.
+  override & draftable & matched: n=64  ordering-agreement=60.9%  (this is the population where role_pct IS the VOLS
+   percentile — census R5; a real depth-chart signal here competes with NOTHING)
+
+GATE (charter H2g): draftable ordering-agreement = 68.3% vs the 95% cosmetic bar -> MATERIAL, CONTINUE
+
+====================================================================================================
+SECTION B — 2025: week-1-adjacent depth chart vs 44_-blend projection-derived team_role [V]
+====================================================================================================
+snapshots: week-1-adjacent dt=2025-09-04T07:21:47Z   draft-day-equivalent dt=2025-08-07T11:57:14Z
+(the operational 2026 instrument is an Aug-07 chart — the Aug-07 2025 run below is the
+ lead-time sensitivity for exactly that)
+44_ blend cache 2025: 245 players (ADP 1-309); dup name+pos rows dropped: 0
+common set (blend  ∩ week-1 snapshot, name+pos join): 245 of 245 blend players
+  by position: {'WR': np.int64(98), 'RB': np.int64(71), 'TE': np.int64(41), 'QB': np.int64(35)}
+  unmatched blend players (not on any week-1 chart — injured/cut/suspended): 0; top-priced examples: 
+realized-role volume joined from weekly.parquet 2025 (gsis): 243 of 245 common-set players logged 2025 volume
+2025 switched-team (wk-1 team != last 2024 team): 34 of 245
+NOTE: the ASCENDING half of the override population is NOT reconstructed for 2025 (needs
+the 2025-preseason xppg file, which does not exist on disk) — stated, not hidden. The 2026
+agreement split in Section A covers the full override population.
+
+====================================================================================================
+SECTION C — outcome-above-price instruments [V]
+====================================================================================================
+PRICE INSTRUMENT (T0.2 contract, stated loudly): 2025 prices are ** Sleeper adp_ppr ** from
+seasons_2025repair.parquet — NOT ESPN ADP, NOT FFC. Fallback ecr_hist was not needed.
+curve fit pool: seasons_exp x seasons_league 2014-2024, rows/yr min=544 max=633 (S8 per-year counts: {2014: 544, 2015: 556, 2016: 557, 2017: 553, 2018: 577, 2019: 572, 2020: 602, 2021: 633, 2022: 608, 2023: 576, 2024: 588})
+league-scored expectation (pts/scheduled-game) at pos rank 1/5/12/24/36:
+  QB: 21.72 / 20.28 / 17.54 / 12.38 / 6.06
+  RB: 17.18 / 16.70 / 15.24 / 9.91 / 9.04
+  WR: 19.28 / 17.70 / 15.11 / 12.71 / 11.17
+  TE: 14.05 / 10.41 / 9.00 / 6.86 / 4.77
+2025 outcome rows: 608; priced (adp<= 300) with defined league expectation: 250; unplayed-graded-at-0 among priced: 1
+
+====================================================================================================
+SECTION D — head-to-head: does the chart's contradiction of the projection carry info? [V]
+====================================================================================================
+RB/WR/TE rooms with >=2 common-set players: 70
+disagreement rooms (dc No.1 != proj No.1): 6
+
+--- PRIMARY ENDPOINT [V] ---
+n disagreement pairs, both priced (adp<=300): 6
+mean paired diff, LEAGUE points-above-price (dc-favored - proj-favored): -5.8
+median -8.1   dc-favored wins 3/6 (50%)   sign-test p=1.000 (descriptive only)
+pair-bootstrap 95% CI [-58.3, +44.5] — DESCRIPTIVE ONLY: the S11 treatment unit is the SEASON and effective n = 1 cluster.
+VERDICT CAP: DIRECTIONAL-ONLY regardless of the number (n = 1 season; 2026 is the test).
+
+--- SECONDARIES [V] ---
+base-PPR currency (S12 secondary), same pairs: mean +3.3, dc wins 4/6
+raw league points, ALL 6 pairs (no price filter): mean -21.3, dc wins 2/6
+realized-role No.1 accuracy IN DISAGREEMENT ROOMS: depth chart 17% vs projection 50%  (n=6 rooms)
+realized-role No.1 accuracy, ALL rooms: depth chart 71% vs projection 74% (n=70)
+player-level rank agreement with realized role, priced<= 180 (n=150): depth 75% vs projection 78%
+
+PRIORITY SUB-POPULATION (pair involves a 2025 switched-team player): 2 pairs, 2 both-priced
+  league paa diff: mean -20.3, dc wins 1/2
+  realized No.1 in switched pairs: depth 0% vs proj 100%
+QB rooms (secondary): 0 disagreement rooms
+
+LEAD-TIME SENSITIVITY — Aug-07-2025 snapshot (the draft-day lead time): 10 disagreement rooms, 10 both-priced; league paa diff mean +1.4, dc wins 5/10; realized-No.1 depth 10% vs proj 60%
+
+disagreement pairs, week-1 2025 (both-priced set the primary was computed on):
+  DEN RB: chart=J.K. Dobbins (adp 103, paaL -20) vs proj=RJ Harvey (adp 64, paaL +77)  [switch]
+  SF WR: chart=Jauan Jennings (adp 112, paaL +8) vs proj=Ricky Pearsall (adp 96, paaL -83)
+  GB WR: chart=Jayden Reed (adp 124, paaL -96) vs proj=Matthew Golden (adp 88, paaL -102)
+  NE RB: chart=Rhamondre Stevenson (adp 132, paaL +50) vs proj=TreVeyon Henderson (adp 52, paaL +72)
+  CLE RB: chart=Jerome Ford (adp 161, paaL -69) vs proj=Dylan Sampson (adp 178, paaL -0)
+  PIT TE: chart=Pat Freiermuth (adp 213, paaL +22) vs proj=Jonnu Smith (adp 140, paaL -35)  [switch]
+
+====================================================================================================
+SECTION E — verdict + role census + the 2026 preregistration
+====================================================================================================
+
+HEADLINE (the conclusion a future reader should reconstruct from the numbers above):
+1. The cheap check is MATERIAL overall (68.3%) but the disagreement is PRICE-STRATIFIED: 100%
+   agreement in the top-50, 92.9% top-100, 92.2% of room leaders — the chart and the projection
+   only part company in the mid/late rounds and in the override population (60.9%, n=64), which
+   is exactly the population the charter said a role signal would compete with nothing in.
+2. On the one season of testable history, the depth chart did NOT beat the projection: primary
+   endpoint -5.8 league pts-above-price per disagreement pair (3/6 wins, n=6 — noise); realized-
+   role No.1 accuracy FAVORS THE PROJECTION in disagreement rooms (50% vs 17% wk-1; 60% vs 10%
+   at the Aug-07 lead time) and is a tie overall (74% vs 71% across 70 rooms).
+3. The chart carries a verified STALENESS hazard the projection does not: the 2026-07-31 chart
+   ranks a Sleeper-PUP player (Charbonnet) SEA RB1 (see the check below; project memory's
+   SEA-backfield note [R] said the same).
+=> DIRECTIONAL READ: H2g's REPLACE premise is unsupported — the evidence points to the census's
+   HYBRID option at most (order-from-chart only where it survives a freshness check, magnitude
+   from the projection), or to keeping the chart as a CONTRADICTION FLAG (a fact surfaced to the
+   advisor, like the health facts) rather than a rank input. The 2026 preregistration below is
+   the test that could reverse this.
+
+VERDICT: DIRECTIONAL-ONLY by construction. n = ONE season (2025) of new-schema history; the S11
+treatment unit is the season, so effective n = 1 cluster and no paired grade is attempted — at
+n=1 the MDE (S11: ~+45 pts needs 10 clusters at 80% power) makes any points claim meaningless.
+The real test is the 2026 season, pre-registered below.
+
+WHICH ROLE SITES A SWAP WOULD TOUCH (census results_60_censuses.txt, [R] — role lives in SIX
+sites, not five): R1 value_board.py:41-43 (team_role), R2 :48-51 (role_lead), R5 :98-112 (the
+override population where role_pct IS the VOLS pct), R8 app_pages/draft.py:90-94 (the silent
+byte-for-byte fallback duplicate of R1 — miss it and an old CSV resurrects the projection role),
+R18 cohort_priors.py:85 (role_rank kNN matching feature), plus consumers R11-R13/R16
+(advisor.py:364-385, :1465, :1573-1581) which inherit through role_lead. role_lead's MAGNITUDE
+(0.5 VONA/pt capped +/-10; +/-15-pt alpha prose; >=15 ascend gate) cannot come from an ordinal
+pos_rank — the census's option (a) HYBRID (order from the chart, magnitude = the projection gap
+along the chart's ordering, with a defined semantic for negative leads in disagreement rooms) is
+the reconstruction this script's evidence speaks to. Any swap touches 5 production files + 3 test
+suites AT ONCE (L52/L53: a partial fix to a duplicated concept is worse than no fix).
+
+2026 PREREGISTRATION (the real test — grade after the 2026 season):
+The Section-A disagreement pairs on TODAY'S board (frozen below, snapshot dt printed in Section
+A) are the treatment set. Endpoint, declared now: in each 2026 disagreement room, the realized
+2026 within-room No.1 by volume (carries+targets; attempts+carries for QB) decides the winner;
+secondary: league-scored points-above-price with the price = 2026 draft-day ESPN ADP already on
+the board. If the chart beats the projection on those rooms at a rate resembling the 2025
+direction, the H2g swap graduates from DIRECTIONAL to actionable; if not, it dies here.
+2026 disagreement rooms (at least one No.1 in the draftable range, from Section A):
+  LV QB: chart No.1 = Kirk Cousins (adp 170)  vs  board team_role No.1 = Fernando Mendoza (adp 166)
+  NE RB: chart No.1 = Rhamondre Stevenson (adp 110)  vs  board team_role No.1 = TreVeyon Henderson (adp 67)
+  SEA RB: chart No.1 = Zach Charbonnet (adp 156)  vs  board team_role No.1 = Jadarian Price (adp 75)
+  WAS RB: chart No.1 = Jacory Croskey-Merritt (adp 140)  vs  board team_role No.1 = Rachaad White (adp 122)
+  CAR TE: chart No.1 = Tommy Tremble (adp 170)  vs  board team_role No.1 = Ja'Tavion Sanders (adp 170)
+  LA TE: chart No.1 = Colby Parkinson (adp 171)  vs  board team_role No.1 = Terrance Ferguson (adp 167)
+  CHI WR: chart No.1 = Rome Odunze (adp 71)  vs  board team_role No.1 = Luther Burden (adp 76)
+  CLE WR: chart No.1 = Jerry Jeudy (adp 162)  vs  board team_role No.1 = KC Concepcion (adp 144)
+  DEN WR: chart No.1 = Courtland Sutton (adp 86)  vs  board team_role No.1 = Jaylen Waddle (adp 59)
+  JAX WR: chart No.1 = Brian Thomas (adp 101)  vs  board team_role No.1 = Parker Washington (adp 101)
+  (10 rooms of 128 with >=2 matched players)
+
+chart-staleness check — Sleeper live injury_status (FACTS feed) for the names above [V]:
+  SEA RB chart No.1 Zach Charbonnet: injury_status=PUP  <-- the chart still ranks an injured player No.1
+
+NOT DONE / LIMITS (honest-partial contract): (1) no paired-draft grade — forbidden at n=1 by
+the assignment itself; (2) the 2025 ASCENDING-lead half of the override population was not
+reconstructed (no 2025-preseason xppg on disk) — switched-team only; (3) realized role uses
+season-total volume ranked within the week-1 room grouping — mid-season movers blur it;
+(4) blend-cache roles exist only for its 245 cached players — camp bodies invisible to the
+projection side; (5) 2019/2023 depth-chart era untouched per the schema break; (6) the
+Aug-07 sensitivity shares the 2025 season with the primary — it is a lead-time probe, not
+replication (S2). Replication slice = the 2026 season, by preregistration above.

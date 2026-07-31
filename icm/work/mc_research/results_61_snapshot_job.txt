@@ -1,0 +1,251 @@
+61 — THE WEEKLY SNAPSHOT JOB (charter §9.2)
+run date: 2026-07-31 · deliverable: tools/weekly_snapshot.py + data/snapshots/ · results: this file
+Every number below is [V] (computed/observed in this run) unless explicitly labelled [R] (read from
+a prior results file) or JUDGMENT (a reasoned call, not a measurement — L54: say which is which).
+
+S14 note: this is an INSTRUMENTATION task (WS0/§9.2 infrastructure). No hypothesis endpoint is
+declared or run; nothing here feeds the FDR count. Its product is the instrument every WS3
+lead-time claim needs before it can graduate from DIRECTIONAL.
+
+WHY THIS EXISTS (charter, condensed): a season of dated snapshots is "the single most valuable
+asset this research programme can build" because it cannot be reconstructed later (the lesson of
+the permanently-unreconstructable FantasyPros projections), and per WS3's revised-data bias it is
+"the ONLY clean lead-time instrument this project will ever have" — in real time, a Week-3 snap
+count is not what a Week-3 snap count looks like in the archive.
+
+========================================================================================
+1. WHAT WAS BUILT
+========================================================================================
+tools/weekly_snapshot.py — NEW file, styled after tools/archive_projections.py (read first, per
+assignment), 519 lines. No existing file was modified; the frozen pipeline is untouched; the only
+repo import is utils.normalize_name. Request patterns reused READ-ONLY from load_espn_adp.py /
+load_espn_projections.py (kona headers + stat-id map; that file executes on import so its map is
+reproduced, not imported) and 48_source_verification.py (FFC browser-UA + hard asserts).
+
+Contracts (all demonstrated in section 3):
+  IMMUTABLE   — writes to data/snapshots/YYYY-MM-DD/; a dated dir containing MANIFEST.json is
+                finished and the script REFUSES to touch it (exit 1). A dated dir without a
+                manifest is a crashed run: rerunning the same day resumes it, never overwriting
+                existing files, and writes the manifest last as the commit marker.
+  FAIL-SAFE   — every source fetches independently inside its own try/except; one source down
+                cannot kill the others. Hard content asserts (FFC >100 players + non-null
+                total_drafts; kona >300 ADP rows; Sleeper universe >5000 + >200 adp_ppr; FP
+                ecr/sd/best/worst columns + >300 ppr rows; depth charts dt schema + >1000 rows)
+                make a hollow response FAIL LOUDLY into the manifest instead of silently writing
+                a 5-row file — the exact failure mode that poisoned the panel's 2025 prices
+                (48_ [R]: the FantasyPros 5-row preview became adp values 1.0–5.0).
+  MANIFEST    — MANIFEST.json per snapshot dir records, per source: ok, file, rows, bytes,
+                seconds, fetched_at_utc, error, and source-specific notes (drafts counted, scrape
+                dates and staleness, injury-status mixes, missing columns). Plus snapshot-level:
+                phase, completed_week, week_source, total_seconds, total_bytes.
+  S8-AWARE    — every nflreadpy frame is slimmed by INTERSECTION with an expected column list;
+                a schema change degrades to a "missing_cols" entry in the manifest, not a crash.
+                nflreadpy cache mode is forced to "memory" so a snapshot can never silently serve
+                last week's disk cache as today's data.
+  WEEK LOGIC  — completed_week = highest REG week whose games all predate today, from the live
+                schedule; if the schedules source is down, a date-arithmetic fallback anchored on
+                the 2026 week-1 final gameday (Mon 2026-09-14, read from the live schedule [V])
+                keeps the in-season block alive; manifest records which source decided the week.
+
+CAPTURED YEAR-ROUND (6 sources):
+  schedules.csv    272 games; Vegas total_line/spread_line AS KNOWABLE TODAY. S7's killer leak was
+                   season-averaged Vegas totals; the weekly series of this file is the cure —
+                   week-1/2 lines frozen before the season reveals anything. 51/272 populated
+                   today [V], and the fill-in rate across snapshots is itself a lead-time record.
+  espn_kona.csv    ESPN kona_player_info: ADP + the §3.3.15 ownership-momentum fields
+                   (averageDraftPositionPercentChange, percentOwned, percentStarted) + ESPN's own
+                   projected COMPONENT stats (re-scorable under any rules later).
+  ffc_adp.csv      FFC 12-team PPR ADP with per-player stdev/high/low/times_drafted (browser UA).
+  sleeper.csv      Sleeper adp_ppr/adp_std/adp_half_ppr/adp_2qb (stored RAW, 999 = undrafted
+                   sentinel per 48_), projection components, AND the live health-FACT fields:
+                   injury_status/injury_body_part/injury_notes/news_updated + depth_chart_order.
+  fp_ecr.csv       FantasyPros current draft ECR via load_ff_rankings("draft") — ecr, sd, best,
+                   worst for all 31 draft pages (5,281 rows; the league's page,
+                   /nfl/rankings/ppr-cheatsheets.php, has 511 [V] — matches the charter §3.3.1
+                   count exactly). This is the per-player expert-dispersion feed (F2) plus a free
+                   redraft-vs-dynasty contrast, snapshotted weekly.
+  depth_charts.csv load_depth_charts(2026), LATEST dt snapshot only (charter H2g's independent
+                   role signal, new-era pos_rank schema only — the 2019/2023 depth_team era is
+                   never touched, per the §3.3.2 schema-break correction).
+
+ADDED IN SEASON (4 more, once completed_week >= 1) — each SEASON-TO-DATE, not just the completed
+week, deliberately: next Tuesday's snapshot then captures any revision nflverse makes to earlier
+weeks, so diffing consecutive snapshots MEASURES the revised-data bias directly. That diff is
+unobtainable any other way and is the point of the whole exercise.
+  injuries.csv          weekly report_status/practice_status designations (H3a's independent
+                        mechanism feed)
+  snap_counts.csv       PFR offense snaps/pct
+  participation.parquet offense_players/personnel/route per play — the pass-snap participation
+                        source (T0.1); parquet because of the id-string columns
+  fp_ecr_week.csv       FantasyPros current WEEKLY rankings — the ex-ante start/sit consensus,
+                        i.e. the manager-policy instrument D1's ex-ante lineup grading needs
+
+========================================================================================
+2. SMOKE TEST — RAN ONCE FOR REAL, 2026-07-31 (all [V])
+========================================================================================
+data/snapshots/2026-07-31/MANIFEST.json: 6/6 sources ok, 1.77 MB, 5.5 s total, phase=preseason,
+completed_week=0 (week_source=schedules), in-season block skipped as designed.
+
+  source        rows   bytes    key notes
+  schedules      272   36,200   total_line populated 51/272 (charter [R]: 51/272 — match);
+                                results populated 0 (preseason, correct)
+  espn_kona    4,506  293,966   1,026 players with a positive ADP; 462 with projected components
+                                (load_espn_projections.py got ~460 on the same endpoint today —
+                                agreement); only 33 carry ESPN's appliedTotal, so the COMPONENT
+                                stats are the projection record, as with the archive tool
+  ffc_adp        247   14,627   3,899 drafts, window 2026-07-24..07-31, stdev on 247/247 —
+                                matches T0.2's same-day pull (247 players / 3,899 drafts) [R]
+  sleeper      3,233  350,771   3,224 adp_ppr values of which 245 are real (below the 999
+                                sentinel — early 2026 Sleeper draft volume; FFC serves 247, same
+                                ballpark). Health facts live NOW: PUP 18, IR 9, Questionable 78,
+                                Out 1, DNR 2 of 3,233 — the early-August PUP/NFI flag the charter
+                                routes to WS6/F6 fires TODAY and is in the snapshot record.
+  fp_ecr       5,281  837,750   31 pages, scrape_date 2026-07-31 (age 0 days), ppr page 511 rows
+  depth_charts 3,184  240,206   latest snapshot 2026-07-31T09:40:30Z, 32 teams, from a 388,004-row
+                                full pull — all three numbers match the charter §3.3.2 [V] anchors
+
+========================================================================================
+3. VERIFICATION OF THE CONTRACTS (all [V], this run)
+========================================================================================
+  IMMUTABILITY — second same-day invocation refused with exit 1, nothing touched.
+  FAIL-SAFE    — forced ffc_adp to raise inside the runner (scratch dir): error recorded in the
+                 manifest as AssertionError with message; the next source (schedules) fetched
+                 normally. Partial snapshots exit 2 so cron/user notices.
+  IN-SEASON CODE PATH — cannot run for 2026 until week 1 completes, so it was exercised against
+                 season 2025 via the built-in `--test-inseason 2025` mode (scratch dir, never
+                 data/snapshots): injuries 6,068 rows (weeks 1-22, report_status vocabulary
+                 {Out 1,396, Questionable 1,281, Doubtful 106, none 3,285} — matches the charter's
+                 corrected census: no PUP/NFI in this file); snap_counts 26,612 rows (REG 25,395 +
+                 playoffs, game_type recorded); participation 45,184 rows — EXACTLY T0.1's 2025
+                 census [R agreement], offense_players non-empty rate 1.0000 measured with the
+                 mandated .str.len()>0 test, never .notna(); fp_ecr_week 809 rows, scrape_date
+                 2025-12-30 with the staleness warning correctly attached (age 213 days — last
+                 season's final weekly scrape; the 2026 weekly mirror starts in September).
+  WEEK FALLBACK — date-arithmetic fallback checked against 8 known dates (2026-09-08 -> 0,
+                 09-15 -> 1, 09-21 -> 1, 09-22 -> 2, 12-29 -> 16, 2027-01-12 -> 18, cap 18): all
+                 correct. Anchor Mon 2026-09-14 read from the live 2026 schedule (wk-1 games run
+                 Wed 09-09 through Mon 09-14 [V] — note the Wednesday opener).
+
+========================================================================================
+4. RUNTIME AND STORAGE BUDGET
+========================================================================================
+MEASURED [V]: preseason snapshot 5.5 s wall (6 sources). In-season adds 4 fetchers measured at
+1.5 s COMBINED against full-season 2025 files (the worst case — an in-season 2026 pull is a
+partial season, strictly smaller). So a full in-season snapshot is ~10-20 s of work.
+BUDGET (JUDGMENT): under 1 minute typical; allow 5 minutes for a cold CDN/slow network; the
+10-minute Bash ceiling is never in play. The job is I/O-trivial — cadence, not compute, is the
+binding constraint.
+
+STORAGE [V measured, projection is arithmetic]: preseason snapshot 1.77 MB. Late-season in-season
+snapshot ~= 1.8 + injuries ~0.7 + snap_counts ~2.2 + participation ~0.85 + fp_week ~0.24 ~= 5.8 MB
+(2025 full-season sizes as the ceiling). Season total for ~6 preseason + 18 in-season Tuesdays:
+roughly 11 + 18 x ~4 MB average ~= 80-90 MB.
+COMMIT POLICY (JUDGMENT, recommended): data/snapshots is NOT in .gitignore [V] — snapshots commit
+by default, and they should: the entire value of this asset is that it survives; a laptop loss
+must not delete the season. ~90 MB/season is acceptable repo weight for the programme's
+self-described most valuable asset. If it ever isn't, move participation.parquet+snap_counts.csv
+to external backup — do NOT stop capturing them.
+
+========================================================================================
+5. CADENCE RECOMMENDATION: TUESDAY, SEASON-ROUND (+ ONE EXTRA RUN ON DRAFT MORNING)
+========================================================================================
+Run every TUESDAY (afternoon/evening ET), all year. Reasoning, labelled:
+
+  MEASURED [V]: NFL weeks close with Monday Night Football — every 2026 week's final game is a
+  Monday (regular weeks; occasional late-season Saturday closers only make Tuesday safer).
+  JUDGMENT (standard publication/league practice, verifiable in the first two in-season
+  snapshots): (a) nflverse's automated pipelines land the completed week's snap counts /
+  participation / injuries by Tuesday morning after MNF; (b) ESPN league waivers process
+  overnight Tuesday-into-Wednesday, so Wednesday-morning rosters already reflect claims;
+  (c) team practice/injury reports for the NEXT week begin Wednesday and finalize Friday.
+
+  Therefore Tuesday is the unique day that captures, in one shot:
+    - the completed week W's usage data, complete (after MNF, after the nflverse refresh),
+    - BEFORE Wednesday waivers — i.e. exactly the information set available at the week's
+      waiver/lineup decision, which is what WS3's lineup-timing rule requires ("a detection made
+      after Week W may only affect Week W+1's lineup, and no waiver claim may resolve before the
+      W+1 processing date"),
+    - BEFORE any of week W+1's practice reports exist — so the snapshot cannot leak the coming
+      week's injury news into a lead-time claim (S7's shape).
+  A Wednesday run would contaminate the price series with post-waiver moves and W+1 practice
+  reports; a Monday run misses MNF. Tuesday is not a preference, it is the seam between the two
+  information regimes.
+
+  SELF-CHECK PROTOCOL (falsifiable, pre-stated): each in-season manifest records the weeks
+  present per source. If the just-completed week W is ABSENT from a Tuesday snapshot's
+  injuries/snap_counts/participation notes twice in the first three in-season weeks, the nflverse
+  Tuesday-refresh assumption is wrong for 2026 — move the cadence to Wednesday 06:00 ET (still
+  pre-waivers in this league) and record the change in this file. The manifest makes the check a
+  10-second read.
+
+  EXTRA RUN, DRAFT MORNING (Fri 2026-08-07): the §9.1 pre-registration requires every named-player
+  call to be stated "relative to a RECORDED price, with the ADP snapshot file written down." The
+  2026-08-07 snapshot dir IS that file. Run the tool once before the draft; the regular Tuesday
+  Aug 4 run does not substitute (three days of ADP drift on the platform the league drafts on).
+
+  OPTIONAL, NOT MANDATED (JUDGMENT): a second weekly capture on Friday would record the final
+  practice designations that shape the start/sit decision. Valuable for a future start/sit study;
+  NOT required by any current workstream — do not let it dilute the one non-negotiable cadence.
+  The tool supports it as-is (dirs are dated by day).
+
+  PRESEASON (now -> Sep): same Tuesday cadence. ADP/ECR/depth charts drift daily through August;
+  the weekly series plus the draft-morning capture is the price record. First scheduled runs:
+  Aug 4, Aug 7 (draft morning), Aug 11, 18, 25, Sep 1, Sep 8; first in-season snapshot Tue Sep 15
+  (week 1 completes Mon Sep 14).
+
+  Nothing is automated by this task (no cron/launchd installed — that is a user decision about
+  their machine; the command is one line: .venv/bin/python tools/weekly_snapshot.py). Until
+  automated, a repeating Tuesday calendar reminder is the honest minimum. Committing + pushing
+  the new dir after each run is part of the ritual — an unpushed snapshot is one disk failure
+  away from not existing.
+
+========================================================================================
+6. PRE-SEASON vs IN-SEASON — WHAT CHANGES (assignment task 4)
+========================================================================================
+  ALWAYS (6): schedules (Vegas lines as knowable), espn_kona (ADP+ownership momentum+projection
+  components), ffc_adp (+stdev), sleeper (ADP triple + health facts + depth_chart_order), fp_ecr
+  (draft ECR + sd/best/worst), depth_charts (latest daily snapshot).
+  IN-SEASON ADDS (4): injuries, snap_counts, participation (all season-to-date so revisions to
+  prior weeks are captured — the revision diff IS the revised-data-bias measurement), fp_ecr_week
+  (the ex-ante start/sit consensus for D1's ex-ante lineup convention).
+  The switch is automatic (completed_week >= 1 from the live schedule, date-arithmetic fallback
+  if that source is down); no flags, no memory required on draft-season Tuesdays.
+  Also note what changes MEANING in season rather than availability: kona ADP drifts toward
+  outcomes once games start (48_ section B's S7 finding [R]) — the weekly snapshots are the only
+  record of what it said at each moment, which is precisely why price capture cannot start late;
+  and FFC's total_drafts/window fields let the thinning of its in-season sample be measured
+  rather than assumed.
+
+========================================================================================
+7. LIMITATIONS AND WHAT WAS NOT DONE (say it plainly)
+========================================================================================
+  * The 2026 in-season path has NOT run against 2026 — it cannot before week 1. It was exercised
+    against 2025 end-to-end (section 3). Residual risk: nflverse may lag publishing 2026
+    participation early in the season (2025 had a full file, but availability in week 1 of a new
+    season is not guaranteed); the fail-safe design records a miss rather than dying, and the
+    self-check protocol in section 5 covers the cadence consequence.
+  * NGS and pbp weekly captures are NOT included — the assignment scoped the in-season pull to
+    injuries/snap-counts/participation (charter §9.2 also names NGS/pbp). Cost to add later: one
+    ~15-line fetcher each in the established pattern (~100 KB/season-to-date for NGS; pbp slimmed
+    to 46_'s 23 columns ~175 KB). Recommend adding NGS before Week 1 if WS3 wants separation/
+    air-yards metrics in the lead-time record; pbp is lower priority (its revisions are partially
+    recoverable from nflverse release history, unlike prices, which vanish).
+  * ESPN kona ignores the X-Fantasy-Filter limit/sort in this view (returns the full 11,515-row
+    active set regardless) [V]. Harmless — the position filter reduces to 4,506 — but worth
+    knowing: the filter is decoration, not pagination.
+  * ESPN appliedTotal is served for only 33 players [V]; per-player component stats (462 players)
+    are the durable projection record — same convention as tools/archive_projections.py.
+  * A source that fails on snapshot day stays failed for that date (the dir seals with its
+    manifest). Deliberate: a retriable snapshot is a mutable snapshot. The outage record is data.
+  * Same-day partial reruns are supported ONLY for a crashed run (no manifest yet): existing
+    files are kept, missing ones fetched. Once the manifest exists the date is closed.
+  * Sleeper 2026 adp_ppr currently carries only 245 non-sentinel values [V] — thin early-market
+    depth, matching FFC's 247; expect both to deepen through August. The manifest tracks it.
+  * No hypothesis was tested and no points number is claimed anywhere in this task (S14: n/a).
+
+FILES
+  tools/weekly_snapshot.py                       the job (NEW; nothing existing edited)
+  data/snapshots/README.md                       written by the tool on first run
+  data/snapshots/2026-07-31/{MANIFEST.json, schedules.csv, espn_kona.csv, ffc_adp.csv,
+                             sleeper.csv, fp_ecr.csv, depth_charts.csv}   snapshot #1 [V]
+  icm/work/mc_research/results_61_snapshot_job.txt                        this file

@@ -1,0 +1,233 @@
+{
+  "written_by": "48_source_verification.py",
+  "written_at": "2026-07-31T12:43:07",
+  "filters": {
+    "positions": [
+      "QB",
+      "RB",
+      "WR",
+      "TE"
+    ],
+    "seasons": [
+      2014,
+      2025
+    ],
+    "season_type": "REG",
+    "priced_definition": "adp non-null AND adp <= 200 (primary); adp <= 300 via adp_ext_sleeper_2020_2025.csv (extended, 2020-2025 only)",
+    "price_instrument": {
+      "2014-2024": "FFC 12-team PPR (adp_hist.csv)",
+      "2025": "Sleeper adp_ppr via 48_ repair (adp_hist_2025repair.csv) \u2014 NOT ESPN, NOT FFC; ecr_hist.csv 2025 is the sensitivity fallback"
+    },
+    "espn_kona_verdict": "DEAD for prices: 2025 wiped to the 170 sentinel; earlier years contaminated by in-season drafts (S7). Do not retry."
+  },
+  "union_contract": {
+    "seasons_panel": "seasons_exp.parquet[season != 2025] UNION seasons_2025repair.parquet (608 rows, schema-identical)",
+    "adp_panel": "adp_hist.csv[season != 2025] UNION adp_hist_2025repair.csv"
+  },
+  "pool_assert": {
+    "teams": 12,
+    "rounds": 16,
+    "min_pool": 222,
+    "note": "FAILS at adp<=200 in ALL seasons; passes at <=300 only 2020-2025 \u2014 see per-season flags"
+  },
+  "cluster_units": {
+    "paired_drafts": "SEASON (12 clusters with 2025 restored)",
+    "regime_change": "team-season",
+    "playcaller_carryover": "coach-move (31 carryable events \u2014 section H)",
+    "in_season_detection": "event"
+  },
+  "per_season": {
+    "2014": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 544,
+      "rows_priced_le200": 159,
+      "max_adp": 161.5,
+      "rows_priced_le300_sleeper_ext": null,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": null,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 63,
+        "RB": 57,
+        "QB": 21,
+        "TE": 18
+      }
+    },
+    "2015": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 556,
+      "rows_priced_le200": 165,
+      "max_adp": 163.2,
+      "rows_priced_le300_sleeper_ext": null,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": null,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 64,
+        "RB": 58,
+        "QB": 23,
+        "TE": 20
+      }
+    },
+    "2016": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 557,
+      "rows_priced_le200": 158,
+      "max_adp": 163.3,
+      "rows_priced_le300_sleeper_ext": null,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": null,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 63,
+        "RB": 54,
+        "QB": 24,
+        "TE": 17
+      }
+    },
+    "2017": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 553,
+      "rows_priced_le200": 156,
+      "max_adp": 162.9,
+      "rows_priced_le300_sleeper_ext": null,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": null,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 62,
+        "RB": 57,
+        "QB": 20,
+        "TE": 17
+      }
+    },
+    "2018": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 577,
+      "rows_priced_le200": 164,
+      "max_adp": 166.8,
+      "rows_priced_le300_sleeper_ext": null,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": null,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 65,
+        "RB": 56,
+        "QB": 25,
+        "TE": 18
+      }
+    },
+    "2019": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 572,
+      "rows_priced_le200": 165,
+      "max_adp": 166.9,
+      "rows_priced_le300_sleeper_ext": null,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": null,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 64,
+        "RB": 59,
+        "QB": 24,
+        "TE": 18
+      }
+    },
+    "2020": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 602,
+      "rows_priced_le200": 170,
+      "max_adp": 164.2,
+      "rows_priced_le300_sleeper_ext": 216,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": false,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 65,
+        "RB": 62,
+        "QB": 24,
+        "TE": 19
+      }
+    },
+    "2021": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 633,
+      "rows_priced_le200": 179,
+      "max_adp": 172.7,
+      "rows_priced_le300_sleeper_ext": 215,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": false,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 68,
+        "RB": 64,
+        "QB": 26,
+        "TE": 21
+      }
+    },
+    "2022": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 608,
+      "rows_priced_le200": 146,
+      "max_adp": 153.8,
+      "rows_priced_le300_sleeper_ext": 212,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": false,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 58,
+        "RB": 53,
+        "QB": 20,
+        "TE": 15
+      }
+    },
+    "2023": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 576,
+      "rows_priced_le200": 177,
+      "max_adp": 169.1,
+      "rows_priced_le300_sleeper_ext": 233,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": true,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 74,
+        "RB": 59,
+        "QB": 24,
+        "TE": 20
+      }
+    },
+    "2024": {
+      "instrument": "FFC (adp_hist.csv)",
+      "rows_total": 588,
+      "rows_priced_le200": 176,
+      "max_adp": 177.5,
+      "rows_priced_le300_sleeper_ext": 251,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": true,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 71,
+        "RB": 59,
+        "QB": 26,
+        "TE": 20
+      }
+    },
+    "2025": {
+      "instrument": "Sleeper repair (48_)",
+      "rows_total": 608,
+      "rows_priced_le200": 166,
+      "max_adp": 700.9,
+      "rows_priced_le300_sleeper_ext": 250,
+      "pool_ok_222_at_200": false,
+      "pool_ok_222_at_300": true,
+      "n_team_clusters": 32,
+      "position_mix_le200": {
+        "WR": 65,
+        "RB": 56,
+        "QB": 23,
+        "TE": 22
+      }
+    }
+  }
+}

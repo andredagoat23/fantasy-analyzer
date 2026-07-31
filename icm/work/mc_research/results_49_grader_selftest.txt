@@ -1,0 +1,269 @@
+SELF-TEST OF THE THREE-ARM, TWO-MODE, FIVE-SLOT GRADER (charter T0.4 + T0.5)
+  library: 49_grader_lib.py · run: 49_run_selftest.py · 2026-07-31 13:01
+  All numbers [V] (computed this run) unless marked [R] (read from a prior results file).
+
+PRIMARY-ENDPOINT DECLARATION (S14, before any run): the grader's single primary endpoint
+is arm 3 MINUS arm 2 in LEAGUE points in the declared mode, season-clustered CI (S11),
+effective n = season clusters. Base PPR is the secondary currency (S12). Arm3−arm1 is
+never a headline. For THIS self-test the corrected-mode number is a FINDING about the
+instrument (expected to disagree with +5.2), not a hypothesis verdict.
+
+================================================================================================
+T0.5a — PROVENANCE: 33_harsh_backtest.py re-run unmodified, output diffed vs backup
+================================================================================================
+  [V] BYTE-IDENTICAL. Fixed seeds (default_rng(10_000+i)) reproduce on this
+      environment — the historical results file is untouched and trustworthy.
+
+================================================================================================
+POOLS (S8: per-year counts asserted; population.json asserted on load)
+================================================================================================
+  legacy pool 2015: n=165 · league-total join misses=0
+  legacy pool 2016: n=158 · league-total join misses=0
+  legacy pool 2017: n=156 · league-total join misses=0
+  legacy pool 2018: n=164 · league-total join misses=0
+  legacy pool 2019: n=165 · league-total join misses=0
+  legacy pool 2020: n=170 · league-total join misses=0
+  legacy pool 2021: n=179 · league-total join misses=0
+  legacy pool 2022: n=146 · league-total join misses=0
+  legacy pool 2023: n=177 · league-total join misses=0
+  legacy pool 2024: n=176 · league-total join misses=0
+  legacy pool = 33_'s exact population (seasons_exp, adp<=200, season>=2015; the 222
+  floor is WAIVED here BY DESIGN — the pool must equal 33_'s or the gate is meaningless).
+  population.json asserts OK for seasons [2021, 2022, 2024, 2025] (teams 12, rounds 16, min_pool 222; 2025 instrument = Sleeper repair)
+  seasons_exp∪repair per-year rows: 2019:572, 2020:602, 2021:633, 2022:608, 2023:576, 2024:588, 2025:608
+  corrected pool 2021: n=259 (cache 193 + ext pad 66) · weekly-join matched 216/259 (83%; cache-row match 99% of 193) · ambiguous nn+pos 0 · repl wk (lg) QB:17.8 RB:13.9 WR:14.7 TE:10.8
+  corrected pool 2022: n=255 (cache 183 + ext pad 72) · weekly-join matched 212/255 (83%; cache-row match 99% of 183) · ambiguous nn+pos 0 · repl wk (lg) QB:19.6 RB:13.6 WR:13.9 TE:9.0
+  corrected pool 2024: n=287 (cache 191 + ext pad 96) · weekly-join matched 252/287 (88%; cache-row match 99% of 191) · ambiguous nn+pos 0 · repl wk (lg) QB:16.9 RB:14.4 WR:15.0 TE:9.9
+  corrected pool 2025: n=336 (cache 184 + ext pad 152) · weekly-join matched 250/336 (74%; cache-row match 99% of 184) · ambiguous nn+pos 0 · repl wk (lg) QB:17.7 RB:11.9 WR:13.9 TE:11.0
+  corrected pools: blend-cache CLEAN seasons at adp<=220 (44_'s prep) + Sleeper-extension
+  padding to adp<=300 (T0.2's sanctioned option: priced-but-unplayed enter at real price,
+  zero projection). INSTRUMENT NOTE: 2025 prices are SLEEPER adp_ppr (T0.2 repair) — not
+  ESPN, not FFC; cache 2021-2024 adp is FFC-primary with Sleeper fallback (38_).
+
+================================================================================================
+T0.5b — LEGACY GATE: new grader, legacy config (ADP policy + prereq nudge, season totals,
+        flat noise 8.0, slot 7, 33_'s exact population & seeds). Stop-and-fix if missed.
+================================================================================================
+    slot 7 season 2015: Δleague   -70.1 · Δbase   -55.4 · identical 0%
+    slot 7 season 2016: Δleague   -37.9 · Δbase   -30.8 · identical 0%
+    slot 7 season 2017: Δleague   +71.9 · Δbase   +66.7 · identical 1%
+    slot 7 season 2018: Δleague   +84.5 · Δbase   +67.8 · identical 2%
+    slot 7 season 2019: Δleague    +8.1 · Δbase   +10.7 · identical 0%
+    slot 7 season 2020: Δleague  -102.2 · Δbase   -77.8 · identical 1%
+    slot 7 season 2021: Δleague   -20.4 · Δbase    -9.9 · identical 1%
+    slot 7 season 2022: Δleague    -7.3 · Δbase   +15.4 · identical 0%
+    slot 7 season 2023: Δleague   +45.1 · Δbase   +36.9 · identical 0%
+    slot 7 season 2024: Δleague   +50.1 · Δbase   +28.7 · identical 1%
+  [legacy] computed in 18s, cached
+
+  pinned 33_ result [R]: +5.2 mean · 51.5% win · 0.5% identical (2,500 paired drafts)
+  new grader (legacy):   +5.2 mean · 51.5% win · 0.5% identical (2500 paired drafts)
+  per-season Δbase: 2015:-55.4 2016:-30.8 2017:+66.7 2018:+67.8 2019:+10.7 2020:-77.8 2021:-9.9 2022:+15.4 2023:+36.9 2024:+28.7
+
+  GATE mean within ±2 of +5.2:  PASS (|+5.2 − 5.2| = 0.05)
+  GATE win within ±1pp of 51.5%: PASS (|51.5% − 51.5%| = 0.0%)
+  Equivalence note [V]: simulate() in legacy config was verified BITWISE-identical to
+  33_'s simulate() over 10 paired drafts in each of 2015/2020/2024 before this run.
+
+  SECONDARY (S12) — the identical drafts graded in LEAGUE points: +2.2
+  [clustered 95% CI -41.9, +46.2; n=10 seasons] — the old
+  base-PPR null holds in the real currency too on the legacy instrument.
+
+================================================================================================
+DIAGNOSTIC — same legacy bundle, opponents on the MEASURED dispersion curve (T0.4:
+  'Re-run the prerequisite bundle under both opponent models and report the delta.')
+================================================================================================
+    slot 7 season 2015: Δleague   -69.4 · Δbase   -55.6 · identical 0%
+    slot 7 season 2016: Δleague   -39.0 · Δbase   -26.3 · identical 0%
+    slot 7 season 2017: Δleague   +47.0 · Δbase   +45.3 · identical 1%
+    slot 7 season 2018: Δleague   +71.3 · Δbase   +56.9 · identical 0%
+    slot 7 season 2019: Δleague   +14.2 · Δbase   +19.0 · identical 0%
+    slot 7 season 2020: Δleague  -100.1 · Δbase   -79.5 · identical 0%
+    slot 7 season 2021: Δleague   -63.7 · Δbase   -46.9 · identical 0%
+    slot 7 season 2022: Δleague    +2.6 · Δbase   +18.2 · identical 0%
+    slot 7 season 2023: Δleague   +33.1 · Δbase   +26.1 · identical 0%
+    slot 7 season 2024: Δleague   +22.3 · Δbase    +9.6 · identical 0%
+  [legacy_measured] computed in 18s, cached
+
+  flat 8.0 opponents:      +5.2 mean · 51.5% win  [pinned 33_ [R]]
+  measured-sd opponents:   -3.3 mean · 48.9% win · clustered CI [-36.2, +29.5] (base PPR)
+  per-draft spread: 95% of paired diffs in [-330, +323] (33_ under flat noise: [-318, +319] [R])
+
+================================================================================================
+T0.5c — CORRECTED MODE: same prerequisite bundle in the corrected instrument
+  (arm 3 = composite + bundle vs arm 2 = composite · weekly hindsight-optimal lineups ·
+   league scoring · measured dispersion · slots 1/5/8/10/12 · CLEAN = 2021/22/24/25)
+================================================================================================
+    slot 1 season 2021: Δleague   -88.1 · Δbase   -63.5 · identical 0%
+    slot 1 season 2022: Δleague   -37.1 · Δbase   -24.1 · identical 5%
+    slot 1 season 2024: Δleague   -31.4 · Δbase   -30.8 · identical 17%
+    slot 1 season 2025: Δleague    +8.8 · Δbase    +9.0 · identical 5%
+    slot 5 season 2021: Δleague   -41.7 · Δbase   -26.1 · identical 5%
+    slot 5 season 2022: Δleague   -26.2 · Δbase   -17.4 · identical 9%
+    slot 5 season 2024: Δleague   -11.2 · Δbase   -14.5 · identical 10%
+    slot 5 season 2025: Δleague   +15.7 · Δbase   +12.8 · identical 2%
+    slot 8 season 2021: Δleague   -33.4 · Δbase   -21.0 · identical 5%
+    slot 8 season 2022: Δleague   -28.2 · Δbase   -18.2 · identical 13%
+    slot 8 season 2024: Δleague    -8.1 · Δbase   -12.2 · identical 10%
+    slot 8 season 2025: Δleague    +5.8 · Δbase    +7.2 · identical 6%
+    slot 10 season 2021: Δleague   -31.3 · Δbase   -20.1 · identical 5%
+    slot 10 season 2022: Δleague   -27.6 · Δbase   -17.3 · identical 12%
+    slot 10 season 2024: Δleague    +3.6 · Δbase    -3.2 · identical 5%
+    slot 10 season 2025: Δleague   +16.2 · Δbase   +17.5 · identical 6%
+    slot 12 season 2021: Δleague   -25.7 · Δbase   -16.2 · identical 1%
+    slot 12 season 2022: Δleague   -42.1 · Δbase   -30.1 · identical 6%
+    slot 12 season 2024: Δleague    -2.6 · Δbase    -8.0 · identical 9%
+    slot 12 season 2025: Δleague   +20.0 · Δbase   +17.8 · identical 4%
+  [corrected] computed in 174s, cached
+
+  PRIMARY ENDPOINT [T0.5c corrected]: Δ(treatment − base) LEAGUE points, season-clustered (S11, n=4 season clusters)
+    pooled mean -18.2 league pts · clustered 95% CI [-58.5, +22.1] · season SD 25.3 · eff n = 4 seasons
+    MDE at 80% power (this instrument): ±53 league pts (t-based, df=3; normal-approx ±35)
+    secondary currency (base PPR): -12.9 pts
+    drafts identical: 6.8% · mean picks changed 2.73 (when ≥1 changed: 2.93 picks, Δleague -18.7 pts)
+    per-season Δleague: 2021:-44 2022:-32 2024:-10 2025:+13
+    per-slot Δleague:   slot1:-37 slot5:-16 slot8:-16 slot10:-10 slot12:-13
+    win 41.5% · lose 51.7% · tie 6.8%
+
+  mode comparison on the SAME drafts (diagnostic):
+    weekly league -18.2 · season-total league -16.4 · weekly base -12.9 · season-total base -11.2
+
+================================================================================================
+ARM SANITY FLOOR — arm 2 (reconstructed composite) vs arm 1 (ADP-follow), paired seeds.
+  SECONDARY ONLY (charter: arm3−arm1 may never be a headline; this is arm2−arm1).
+================================================================================================
+  [arms21] computed in 99s, cached
+  arm2 − arm1 = +377.4 league pts/draft · clustered CI [+116.9, +637.9] · win 91% · n=4 seasons
+  per-slot: slot1:+343 slot5:+366 slot8:+373 slot10:+396 slot12:+409
+  (the reconstructed composite must not LOSE to naive ADP-following, or arm 2 is not a
+   credible reconstruction — a sanity check on the instrument, not a research finding)
+
+================================================================================================
+JACKKNIFE — zero the bundle for the single most-frequently-flag-drafted player, re-run
+  (charter reporting block #4: if one player moves the result by more than half, the
+   finding is one player, not a rule)
+================================================================================================
+  target: 'wan dale robinson' (drafted into a changed arm-3 roster 369 times; next: demario douglas:263, chuba hubbard:250, rashid shaheed:181)
+  [jackknife] computed in 179s, cached
+  with 'wan dale robinson' un-flagged: Δ = -30.8 league pts [clustered CI -51.5, -10.1]
+
+================================================================================================
+HEADLINE FINDING (T0.5c) — what the corrected instrument says about the SAME bundle
+================================================================================================
+  legacy instrument [R+V]: +5.2 base-PPR pts (reproduced this run to the decimal)
+  corrected instrument [V]: -18.2 LEAGUE pts [clustered 95% CI -58.5, +22.1, n=4 seasons]
+  The corrected grader was EXPECTED to disagree — reproducing +5.2 would have meant it
+  inherited the legacy defects (flat dispersion, availability blindness, base currency,
+  ADP-policy me). Divergence here is the instrument working, not a bug (charter T0.5c).
+
+  INSTRUMENT MDE (80% power, from the ACTUAL clustered SE, n=4 seasons):
+    ±53 league pts (t-based, df=3) · ±35 (normal approx) · charter's a-priori estimate: +90-100 [R]
+    Any Grading-phase bar below this MDE must be reported DIRECTIONAL-ONLY, not PASS
+    (S11). The composite arm exists for 4 seasons; that is the hard constraint
+    the charter names — the honest deliverable for small effects is a ranked hypothesis
+    list plus the 2026 live test, not a points verdict.
+
+ONE-PARAGRAPH NOTES ON THE 13 PRIOR SIMULATOR/GRADER SCRIPTS (charter T0.4 deliverable)
+Each note answers: what did this instrument get wrong, judged against the corrected grader's
+requirements (three arms / VONA policy / measured dispersion / multi-slot / weekly league scoring)?
+
+08_backtest_sim — Monte-Carlo OUTCOME simulator validating the Wave-1 constants (band coverage,
+  P(mult>=1.5), tier odds) per season. Not a draft simulator at all: it grades the projection's
+  calibration, never a drafting policy, on the base-scoring panel. It can certify honest bands and
+  still say nothing about whether any pick decision wins points.
+09_wave2_validation — the same family for the Wave-2 mover tilts. Panel calibration, base scoring,
+  no drafts, no arms, nothing incremental. Its findings shipped into the MC; as a GRADER it has no
+  opinion.
+11_stress_test — cohort LOSO validation plus board-invariant audit. A correctness harness: it
+  asserts identities (percentile ordering, probability sums), never points. A board can pass every
+  invariant here and still draft worse; it cannot detect that by design.
+12_full_system_stress — plays full drafts through the real advisor and asserts invariants at every
+  pick. Opponents are ADP + FLAT noise (the misspecified opponent model), only 3 slots x 2 seeds,
+  and there is NO scoring of the resulting rosters — it proves the machinery does not crash or
+  violate roster logic, not that it wins anything.
+13_strategy_bakeoff — the real advisor vs six classic strategies, slot 7 only, flat-noise ADP
+  bots. Fatal for grading: the lenses are OUR OWN projections (value/floor/injury-availability), so
+  the advisor is graded by the very numbers it drafts on — circular by construction. No actual
+  outcomes anywhere in the script.
+14_capture_top3 — records the MODAL first-three picks per slot for the Research page, stopping
+  each draft after round 3. A UI artifact, not a grader; inherits the flat-noise opponents and
+  grades nothing.
+16_scoring_robustness — audits the scoring/bonus math for linearity and edge cases across
+  alternative scoring settings, loading real pbp. No drafts. Nothing wrong on its own terms — it is
+  why the frozen chain's ARITHMETIC is trusted — but it is evidence about formulas, not about value.
+17_weight_backtest — grades composite WEIGHTS by Spearman correlation with finishes over 3
+  seasons, in-sample. Value signals are PRIOR-YEAR actuals (a backward proxy; the real board uses
+  forward projections), veterans only, base scoring, and rank correlation has no roster structure:
+  an ordering can improve while the drafted lineup gets worse (scarcity timing invisible).
+18_weight_backtest_full — the honest 13-season LOSO extension of 17_. Same proxy defect (backward
+  value signals judged the value weight unfairly low, stated in its own header), same no-draft
+  no-roster limitation, base scoring.
+33_harsh_backtest — the first points grader and the +5.2 result this self-test reproduces. What it
+  got wrong: FLAT opponent sd 8.0 (measured curve runs 1.8-17.9 — ~4.4x too loose at the top,
+  letting elite players free-fall to any seat, and it inflates the ±318 per-draft spread S4 quotes
+  as a rhetorical anchor); hard-wired slot 7; SEASON-TOTAL optimal lineup, availability-blind (a
+  200-pt/9-game season grades identical to 200/17 — yet 73-85% of busts in every band are
+  unavailability, so the instrument systematically understates availability signals and overstates
+  accumulation signals); BASE-PPR currency (S12: the league pays RB +64/WR +35/TE +25 mean bonus
+  points to top-12 finishers — all invisible); pool adp<=200 giving 146-179 players, under the 222
+  floor, so 192-pick drafts nearly exhaust the board and late rounds grade against fumes; and the
+  comparison is ADP+nudge vs ADP — nothing measures the treatment as INCREMENTAL to the composite
+  the user actually drafts with (the three-arm structure exists precisely to fix this).
+35_wr_bias_backtest — brought out-of-sample correction factors and paired seeds (both good), but
+  BOTH arms draft by raw VOLS while the real advisor drafts by VONA, flat noise, slot 7 only,
+  base currency, season totals. A calibration fix graded under a policy the app does not run.
+42_upgrade_backtest — introduced roster-need gating and the '% of drafts identical' report line
+  (which is what made C5's null legible and is now mandatory), but its header admits the core
+  defect: my picks are VOLS-scored, not VONA, which made the upgrade read structurally unable to
+  fire (100.0% identical) — the exact vacuousness 44_ was built to fix. Flat noise, slot 7, base
+  currency, season totals.
+44_survival_curve_backtest — the base template of this grader: it fixed the two big ones (my picks
+  through advisor.add_vona; opponents on the measured per-player dispersion) and ran five slots.
+  Still wrong for the charter's purpose: SEASON-TOTAL scoring (availability-blind, D1), base-PPR
+  'actual' from the blend cache as the only currency (S12), pool = cache adp<=220 = 183-193 real
+  rows (below the 222 floor; the last rounds graze the pool bottom), no third arm (it A/B'd its own
+  survival curve, so nothing measures a treatment against the composite), N=100/slot/season, and it
+  restates 43_'s pick-sd table as literals beside advisor's survival scale with nothing saying the
+  two tables are different objects — the exact two-curves trap T0.8 flags as M7. This library
+  imports both tables from their homes (advisor / 44_) rather than restating either.
+
+================================================================================================
+PROVENANCE, CONVENTIONS, AND WHAT WAS NOT DONE
+================================================================================================
+  CONVENTIONS BAKED INTO THE INSTRUMENT:
+  * D1: draft grading uses weekly HINDSIGHT-optimal lineups (weeks 1-17 for >=2021), fixed
+    replacement fill (per-season per-position mean weekly points of players season-ranked
+    REPL+1..REPL+6 — the waiver tier) for slots with no available player. Ex-ante lineups are for
+    in-season detector grading, a different instrument, per D1.
+  * Both currencies are graded from the SAME T0.3 panel (weekly_league.parquet pts_league /
+    pts_base) over the SAME weeks, so currency deltas are pure scoring-table effects. The blend
+    cache's 'actual' column is used ONLY to scale projections (44_'s prep, unchanged).
+  * The treatment enters the composite policy through the measured price-value curve:
+    adj_pts = V(adp − adj_slots) − V(adp), V = per-position monotone envelope of VOLS over ADP
+    (rolling-median smoothed). 'Move him N slots earlier on the value curve' — no invented
+    points-per-slot constant.
+  * Opponent dispersion: 43_'s measured pick-sd table, imported from 44_ (one home). Survival:
+    advisor._SCALE_ADP/_SCALE_S via advisor.add_vona (one curve). These are DIFFERENT objects
+    (pick-sd vs logistic scale) — restating either is the L52/L53 failure mode.
+  * Runtime invariants asserted per run: composite policy => VONA picks + measured dispersion +
+    advisor.USE_MEASURED_SCALE. Pool >= 222 asserted (corrected); PopulationMismatch /
+    PoolTooSmall / WeeklyPanelMissing are named aborts.
+
+  NOT DONE / LIMITS (stated per charter honesty rules):
+  * The 62.1% OOS band coverage and −11.5pp WR COLD figures were NOT re-run (T0.5 forbids;
+    settled, cited from their results files).
+  * T0.6 placebo calibration is NOT here — thresholds stay PROVISIONAL (S15) until it runs.
+  * Weekly-mode join coverage: ~99% of cache rows with an 'actual' value match the league panel;
+    unmatched pool rows are almost entirely extension-pad players who never played (graded 0,
+    correct) plus a few name-variant misses (counted per season above). Rookies with no prev_*
+    row get missed=0/durable=0 — identical to 33_'s NaN handling.
+  * Arm 2 is a RECONSTRUCTION (50/50 ESPN/Sleeper blend + VOLS + VONA + need-gating). It carries
+    no ceiling/floor/role/cohort terms, so treatments touching those graded against arm 2 see a
+    board that under-expresses the shipped composite (T0.8's false-null warning stands).
+  * K and D/ST are not drafted (panel has no league-scored K/DST history — T0.3 scope cut);
+    16 roster spots over QB/RB/WR/TE only, as in every prior template.
+  * 2019/2020 (backfilled Sleeper projections) and 2023 (31 cache rows) remain unusable for the
+    composite arm; the corrected instrument is n=4 season clusters until a new honest projection
+    source for those years exists (none is known).
+
+  total wall time 489s · caches in 49_cache/ (delete to re-run)

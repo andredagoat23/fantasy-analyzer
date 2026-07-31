@@ -1,0 +1,389 @@
+==============================================================================
+57 — H3d BLACKLIST VALIDATION + WS3 GROUND-TRUTH MACHINERY   (run 2026-07-31 13:11)
+==============================================================================
+
+0. PRE-REGISTRATION — copied verbatim from the module docstring, which was
+   written before any event table or detector was computed. ONE hypothesis,
+   ONE primary endpoint (S14): pooled RB/WR/TE precision at matched alert
+   volume, tau=0 PAR/week, league scoring, 2015-2024.
+   Verdict criteria: (1) blacklist families precision < 0.5 (more FP than
+   TP); (2) each blacklist family below EVERY usage family, pairwise-diff
+   cluster CI reported. Threshold curve, recall, per-season/position,
+   base-PPR, volume sensitivity, 2025 check: all SECONDARY, pre-declared.
+   This script contributes 1 primary endpoint to the charter FDR count.
+
+1. DATA + S8
+   weekly_league.parquet: 67,353 rows total [V]; per-year counts asserted
+   against 46_'s verified table (2015-2024 slice = 55921 rows) [V]
+   no duplicate (player_id, season, week) keys [V]; positions QB/RB/WR/TE
+   REG only (inherited from the panel; K/DST absent by construction).
+   Trigger-signal coverage (share of 2015-2024 rows non-null) [V]:
+     offense_pct        min 0.767 (season 2015) max 0.968
+     rush_attempt_team  min 0.894 (season 2024) max 0.913
+     pass_attempt_team  min 0.894 (season 2024) max 0.913
+     Missing team denominators fall back to panel-sum denominators
+     (QB/RB/WR/TE rows only; understates team attempts slightly — a
+     WITHIN-player share step is unaffected).
+     offense_pct nulls (join gaps in the frozen panel, worst 2015 at 23%)
+     shrink the snap family's alertable universe — noted in caveats.
+
+2. GROUND-TRUTH CONSTRUCTION (importable machinery)
+   Exact construction — see module docstring for the normative text:
+   - utils.startable_counts per (season, week) on realized pts_league;
+     LOCKED_STARTERS={'RB': 24, 'WR': 24, 'TE': 12}, FIXED_STARTERS={'QB': 12, 'K': 12},
+     N_FLEX=12 (12 teams by construction).
+   - replacement(pos, week) = counts[pos]-th best realized score that week
+   - PAR = pts_league - replacement; ABSENT week = 0 - replacement
+     (availability punished); inferred team no-game weeks excluded
+   - pre_rate = mean PAR over PLAYED weeks 1..W  (played-only, so an
+     injured star's return is not misread as a tier change)
+   - post_rate = mean PAR over ALL weeks W+2..last  (STRICT GAP WEEK W+1)
+   - detection weeks W in 4..12; eligibility = 4th+ played game
+   - EVENT at (player, W, tau): pre_rate < tau AND post_rate >= tau
+
+   eligible (player, W) records 2015-2024: 20634  [3722 player-season clusters]
+   S8 records per season:
+   season
+   2015    2040
+   2016    2062
+   2017    2073
+   2018    1967
+   2019    2015
+   2020    2049
+   2021    2107
+   2022    2088
+   2023    2116
+   2024    2117
+
+   replacement sanity (pooled 2015-2024 means) [V]:
+             n_start   repl
+   position                
+   QB          12.00  21.23
+   RB          25.14  12.98
+   TE          12.30  11.72
+   WR          34.56  13.51
+   (n_start floats with the weekly flex split; QB fixed at 12. Weekly
+   replacement is HIGHER than a season-total replacement divided by 17
+   because the weekly Nth-best is a different player each week — this is
+   the correct hurdle for a weekly startability decision, and it makes
+   PAR/week numbers here NOT comparable to season VOLS/17.)
+   mean weekly replacement by season (drift check, S8):
+   position    QB    RB    TE    WR
+   season                          
+   2015      21.8  13.1  12.8  14.1
+   2016      20.4  13.1  12.2  14.0
+   2017      19.7  12.8  11.2  12.8
+   2018      22.7  13.6  11.2  13.9
+   2019      21.4  13.1  12.1  13.5
+   2020      23.5  13.5  12.3  14.2
+   2021      21.4  13.1  11.5  13.7
+   2022      19.8  12.5  11.0  13.0
+   2023      20.3  12.3  11.3  12.6
+   2024      21.2  12.8  11.8  13.3
+
+3. TIER-CHANGE THRESHOLD CURVE (pre-registered: full curve, no single
+   cherry-picked cutoff; tau in PAR/week, league scoring)
+     tau event-weeks event-clusters  universe  base rate
+      -3        1612            492     20634      0.078
+      -2        1609            464     20634      0.078
+      -1        1567            425     20634      0.076
+       0        1469            411     20634      0.071
+       1        1326            387     20634      0.064
+       2        1174            334     20634      0.057
+       3        1065            320     20634      0.052
+
+==============================================================================
+4. H3d PRIMARY (tau=0, league scoring, matched volume =
+   per-season event-week count; alerts restricted to pre_rate < tau and
+   positive steps; TP = alert lands on an event-week)
+==============================================================================
+   true event-weeks: 1469  event player-seasons: 411
+   effective n (S11): clusters are PLAYER-SEASONS; see table columns.
+  family             alerts    TP    FP  FP/TP precision            95% CI  recall            95% CI clusters
+  ypc_spike             888   207   681   3.29     0.233     [0.185,0.280]   0.224     [0.182,0.265]      383
+  td_rate_spike        1208   281   927   3.30     0.233     [0.197,0.272]   0.363     [0.316,0.409]      635
+  snap_share_step      1469   153  1316   8.60     0.104     [0.080,0.131]   0.202     [0.163,0.238]      729
+  carry_share_step     1469   252  1217   4.83     0.172     [0.138,0.205]   0.263     [0.224,0.304]      635
+  target_share_step    1469   210  1259   6.00     0.143     [0.118,0.170]   0.326     [0.282,0.372]      902
+  (base rate = event-weeks / eligible universe rows = 0.071; random alerting at matched volume has expected precision ~ base rate of the pre<tau sub-universe)
+   pre<tau sub-universe base rate (the honest random-alert benchmark): 0.097
+   NOTE: ypc_spike and td_rate_spike could not FILL the matched budget —
+   their volume-gated candidate pools ran out (alerts column < 1469).
+   Their precision is therefore over their ENTIRE positive-spike pool,
+   not a top-of-ranking slice; the unequal n is stated, not hidden.
+
+   PAIRWISE precision differences (usage minus blacklist), cluster-
+   bootstrap 95% CI, clusters = player-seasons from the union:
+     snap_share_step    - ypc_spike       = -0.129  CI [-0.175,-0.083]  (n=1000 clusters)
+     carry_share_step   - ypc_spike       = -0.062  CI [-0.101,-0.021]  (n=723 clusters)
+     target_share_step  - ypc_spike       = -0.090  CI [-0.142,-0.040]  (n=1170 clusters)
+     snap_share_step    - td_rate_spike   = -0.128  CI [-0.164,-0.092]  (n=1193 clusters)
+     carry_share_step   - td_rate_spike   = -0.061  CI [-0.097,-0.026]  (n=980 clusters)
+     target_share_step  - td_rate_spike   = -0.090  CI [-0.128,-0.056]  (n=1233 clusters)
+
+   per-season precision (S4/S11 — never a pooled mean alone):
+    season     ypc_spike  td_rate_spik  snap_share_s  carry_share_  target_share  events
+      2015         0.277         0.260         0.095         0.158         0.158     158
+      2016         0.110         0.250         0.127         0.153         0.166     157
+      2017         0.216         0.257         0.157         0.249         0.151     185
+      2018         0.187         0.244         0.055         0.110         0.126     127
+      2019         0.265         0.220         0.108         0.128         0.108     148
+      2020         0.129         0.131         0.090         0.139         0.172     122
+      2021         0.250         0.221         0.049         0.139         0.131     122
+      2022         0.451         0.210         0.093         0.220         0.137     182
+      2023         0.262         0.314         0.157         0.213         0.150     127
+      2024         0.160         0.236         0.085         0.163         0.128     141
+
+   per-position precision (alert mix differs by family — YPC is RB-only
+   by eligibility; descriptive, secondary):
+     ypc_spike          RB 0.232 (n=880)  WR 0.200 (n=5)  TE 0.667 (n=3)
+     td_rate_spike      RB 0.218 (n=729)  WR 0.263 (n=346)  TE 0.233 (n=133)
+     snap_share_step    RB 0.202 (n=361)  WR 0.075 (n=799)  TE 0.065 (n=309)
+     carry_share_step   RB 0.169 (n=1305)  WR 0.185 (n=146)  TE 0.222 (n=18)
+     target_share_step  RB 0.154 (n=293)  WR 0.145 (n=820)  TE 0.129 (n=356)
+
+   precision across the FULL tau curve (secondary; CIs omitted for bulk):
+     tau     ypc_spike  td_rate_spik  snap_share_s  carry_share_  target_share
+      -3         0.333         0.330         0.183         0.224         0.213
+      -2         0.315         0.308         0.149         0.226         0.188
+      -1         0.272         0.290         0.124         0.207         0.172
+       0         0.233         0.233         0.104         0.172         0.143
+       1         0.185         0.202         0.084         0.152         0.132
+       2         0.153         0.175         0.070         0.124         0.111
+       3         0.128         0.145         0.057         0.099         0.096
+
+==============================================================================
+4b. DIAGNOSTIC — IS IT THE SPIKE OR THE GATE?  [POST-HOC, clearly
+    labelled: designed AFTER seeing section 4. The primary endpoint
+    verdict above stands unchanged; this section explains it.]
+==============================================================================
+   The efficiency families carry VOLUME GATES (window carries >= 8 /
+   window touches >= 8) without which a rate statistic is undefined.
+   The gate itself is a usage signal: a sub-replacement RB suddenly
+   carrying 8+ times in two weeks IS a usage step. So section 4's
+   cross-family comparison confounds the rate spike with the usage
+   embedded in its own eligibility. Ablation: within each family's own
+   gated universe, at the same per-season alert budget, rank by the
+   efficiency spike vs by DUMB WINDOW VOLUME (no rate involved):
+   ypc_spike:
+     gated universe: 1924 records / 525 player-season clusters; base rate 0.204 (vs 0.097 for the whole pre<tau universe —
+     the GATE ALONE more than doubles the hit rate before any ranking)
+     rank by ypc_spike        : precision 0.233
+     rank by win_carries (dumb volume): precision 0.271
+     spike-minus-volume diff: -0.038  95% cluster CI [-0.074,-0.003]  (n=441 clusters, 888 alerts/arm)
+   td_rate_spike:
+     gated universe: 3749 records / 1193 player-season clusters; base rate 0.206 (vs 0.097 for the whole pre<tau universe —
+     the GATE ALONE more than doubles the hit rate before any ranking)
+     rank by td_rate_spike    : precision 0.233
+     rank by win_touches (dumb volume): precision 0.248
+     spike-minus-volume diff: -0.016  95% cluster CI [-0.053,+0.024]  (n=773 clusters, 1208 alerts/arm)
+
+   descriptive: how usage-contaminated are the blacklist alerts?
+     ypc_spike: 74% of its alerts carry a concurrent
+       POSITIVE carry- or target-share step (share defined on 100%)
+     td_rate_spike: 80% of its alerts carry a concurrent
+       POSITIVE carry- or target-share step (share defined on 100%)
+
+==============================================================================
+5. SECONDARIES (all pre-declared)
+==============================================================================
+5a. ALERT-VOLUME SENSITIVITY (tau=0, league; precision at 0.5x/1x/2x
+    matched volume — ordering should be volume-stable):
+    family                0.5x      1x      2x
+    ypc_spike            0.243   0.233   0.233
+    td_rate_spike        0.218   0.233   0.232
+    snap_share_step      0.084   0.104   0.125
+    carry_share_step     0.203   0.172   0.153
+    target_share_step    0.158   0.143   0.137
+
+5b. BASE-PPR CURRENCY (S12 secondary; full recompute of replacement,
+    PAR, events and matched volumes under pts_base):
+    event-weeks 1444, event clusters 410
+    family             alerts    TP precision  recall
+    ypc_spike             920   208     0.226   0.217
+    td_rate_spike        1242   295     0.238   0.380
+    snap_share_step      1444   147     0.102   0.198
+    carry_share_step     1444   249     0.172   0.263
+    target_share_step    1444   210     0.145   0.310
+
+5c. 2025 OUT-OF-SLICE CHECK (S2; ONE season => n=1 season cluster,
+    DIRECTIONAL-ONLY by S11's n<40 cluster floor):
+    2025 records 2163, event-weeks 172, event clusters 43
+    family             alerts    TP precision  recall
+    ypc_spike              89    28     0.315   0.186
+    td_rate_spike         123    32     0.260   0.395
+    snap_share_step       172    17     0.099   0.256
+    carry_share_step      172    24     0.140   0.209
+    target_share_step     172    22     0.128   0.349
+
+==============================================================================
+6. VERDICT + BLACKLIST ENCODED AS DATA
+==============================================================================
+   PRE-REGISTERED criteria, reported as declared:
+   criterion 1 (precision < 0.5, more FP than TP): ypc_spike MET (0.233), td_rate_spike MET (0.233)
+   criterion 2 (below every usage family): ypc_spike NOT MET, td_rate_spike NOT MET
+
+   READING (verdict prose): the literal blacklist claim HOLDS — every
+   family, blacklist or usage, produces 3-9x more false positives than
+   true positives at matched volume; there is no high-precision trigger
+   in this table. The naive relative claim FAILS, but section 4b shows
+   why: the rate statistics are undefined without recent volume, and the
+   volume gate — not the rate — is what raises their hit rate. Within
+   their own gated universes, ranking by the rate spike is statistically
+   indistinguishable from (or worse than) ranking by dumb window volume.
+   So the OPERATIVE blacklist rule the charter wants encoded is:
+   never rank tier-change candidates by a YPC or TD-rate spike; if the
+   rate spike arrives with volume, act on the volume, which you can see
+   directly. The rate adds no measurable ranking information on top.
+
+   BLACKLIST_JSON (machine-readable; consumers key on
+   recommended_blacklist.*.blacklisted_as_tier_change_trigger):
+   {
+     "artifact": "H3d blacklist, 57_h3d_blacklist.py",
+     "date": "2026-07-31",
+     "discovery_slice": "2015-2024 weekly_league, RB/WR/TE, W 4-12",
+     "replication_slice": "2025 (directional, sec 5c) + 2026 live snapshots (pending)",
+     "tau_primary_par_per_week": 0,
+     "preregistered": {
+       "criterion_1_more_fp_than_tp": {
+         "ypc_spike": true,
+         "td_rate_spike": true
+       },
+       "criterion_2_below_every_usage_family": {
+         "ypc_spike": false,
+         "td_rate_spike": false
+       }
+     },
+     "diagnostic_post_hoc_gate_vs_spike": {
+       "ypc_spike": {
+         "gated_universe_base_rate": 0.204,
+         "spike_ranked_precision": 0.233,
+         "volume_ranked_precision": 0.271,
+         "spike_minus_volume": -0.038,
+         "diff_ci95": [
+           -0.074,
+           -0.003
+         ]
+       },
+       "td_rate_spike": {
+         "gated_universe_base_rate": 0.206,
+         "spike_ranked_precision": 0.233,
+         "volume_ranked_precision": 0.248,
+         "spike_minus_volume": -0.016,
+         "diff_ci95": [
+           -0.053,
+           0.024
+         ]
+       }
+     },
+     "recommended_blacklist": {
+       "ypc_spike": {
+         "blacklisted_as_tier_change_trigger": true,
+         "rule": "never rank tier-change candidates by YPC; a YPC spike's apparent hit rate is its embedded volume gate \u2014 act on the volume (carries), which is directly observable",
+         "precision_at_matched_volume": 0.233,
+         "fp_per_tp": 3.29
+       },
+       "td_rate_spike": {
+         "blacklisted_as_tier_change_trigger": true,
+         "rule": "never rank tier-change candidates by realized TD rate; same volume-gate mechanism; also charter 7.4 asymmetry: fading a low-TD player with an intact red-zone role is the more expensive error",
+         "precision_at_matched_volume": 0.233,
+         "fp_per_tp": 3.3
+       },
+       "snap_share_step": {
+         "blacklisted_as_tier_change_trigger": false,
+         "caveat": "usable at RB only in this harness (RB 0.202); at WR 0.075 and TE 0.065 it ran BELOW the 0.097 random benchmark \u2014 consistent with charter section 5/6 ('never rank TEs on snap share')",
+         "precision_at_matched_volume": 0.104
+       },
+       "carry_share_step": {
+         "blacklisted_as_tier_change_trigger": false,
+         "precision_at_matched_volume": 0.172
+       },
+       "target_share_step": {
+         "blacklisted_as_tier_change_trigger": false,
+         "precision_at_matched_volume": 0.143
+       }
+     }
+   }
+
+==============================================================================
+7. DIRECTIONAL LABELS AND REVISED-DATA BIAS (charter WS3 correction)
+==============================================================================
+   - Every number above is computed on nflverse AS IT STANDS TODAY:
+     retroactively corrected snap counts, team attempts, box scores.
+     Real-time week-W data will be noisier, so real-time precision is
+     plausibly LOWER than measured; treat levels as an UPPER bound.
+   - NO lead-time endpoint was computed, by design. Any reading of the
+     2-week step window as an achievable real-time lead time is
+     DIRECTIONAL ONLY until confirmed on dated 2026 snapshots (the
+     charter 9.2 snapshot job is WS3's load-bearing instrument).
+   - The 2025 check (5c) is one season = one cluster: DIRECTIONAL ONLY.
+     It preserves the family ORDERING (blacklist families' pooled-level
+     precision, snap worst), which is the only claim it can support.
+
+==============================================================================
+8. WS3 REUSE MAP — what H3a/H3b/H3c import from this module
+   (import via importlib: importlib.import_module('57_h3d_blacklist')
+   with icm/work/mc_research on sys.path — the name starts with a digit)
+==============================================================================
+   weekly_replacement(wl, points_col)
+     the league-scored WEEKLY replacement series + startable counts from
+     utils.startable_counts — the ground-truth currency for ALL of WS3.
+   build_records(wl, points_col, seasons) / gt57_records_league.parquet
+     the (player, season, W) panel: pre_rate (played-only PAR through W),
+     post_rate (PAR over W+2..last, absent=0-repl, byes excluded, STRICT
+     GAP WEEK), n_post_weeks, win_carries/win_touches, and the five step
+     statistics. Cached copy: gt57_records_league.parquet (20,634 rows).
+   events_at(records, tau)
+     tier-change event flags at any startability threshold; the full tau
+     curve in section 3 is the pre-registered threshold report.
+   matched_alerts() / score_family() / cluster_boot_ci() / boot_diff_ci()
+     the matched-alert-volume harness with EVENT-clustered (player-
+     season) CIs — S11-compliant scoring for any detector family.
+   Specifically:
+   - H3a (two-gate rule): join a mechanism feed (load_injuries report_
+     status/practice_status, roster deltas, transactions, coaching CSVs)
+     onto records by (player_id/team, season, W); gated vs ungated arms
+     are two matched_alerts() calls; the usage-derived-mechanism arm
+     must be run separately (charter warning). Ground truth: unchanged.
+   - H3b (change-point vs rolling): replace the step statistic with a
+     CUSUM/BOCPD score computed on the SAME weekly series; compare at
+     matched FPR via matched_alerts() on the score column; lead time
+     needs the alert week vs first event week — both already in records.
+   - H3c (earned vs vacated): classify each alert by participation-step
+     vs targets-per-pass-snap-step (join 47_'s pass_snap_participation.
+     parquet on gsis player_id + season + week); post_rate and the
+     weekly PAR series give persistence/reversion for the two classes.
+   - H3e (RB/WR suppression): apply the candidate suppression rule to
+     any family's alert set and report precision of the REMOVED set —
+     score_family() on the removed slice does it directly.
+
+==============================================================================
+9. NOT DONE / LIMITATIONS (stated, per charter)
+==============================================================================
+   - No lead-time measurement, no mechanism gate (H3a), no change-point
+     detector (H3b), no earned/vacated split (H3c) — post-draft WS3.
+   - No lineup-slot gating (charter 7.10): this harness carries no
+     roster state; alerts are position-level. The machinery accepts a
+     per-week startability gate when WS3 proper builds roster context.
+   - No waiver/acquisition friction (S9): precision/recall is the honest
+     instrument per the charter's corrected WS3 benchmark; points-per-
+     season from acting on alerts is NOT claimed anywhere above.
+   - snap_share_step operates on a reduced universe (offense_pct join
+     gaps: 23% of 2015 rows null). Its recall is disadvantaged; its
+     precision is comparable (alerts drawn where the stat exists).
+   - QB excluded from the arena (blacklist is a skill-position error;
+     QB tier changes are QB-change events, not usage steps). K/DST have
+     no league-scored history in the panel (46_ scope cut).
+   - Events are defined on the DETECTABLE universe (4+ played games by
+     W, W in 4..12): late-season (W>12) and week-1-3 tier changes are
+     out of scope; the W floor exists because a 2-week window needs a
+     baseline, the cap so every event has >= 4 outcome weeks.
+   - Volume gates (8 carries / 8 touches in-window) were fixed a priori
+     and not swept; a gate sweep is a different hypothesis (it would
+     measure the GATE, which section 4b shows is the active ingredient).
+   - mult/lift currencies appear nowhere; nothing here re-ranks a draft
+     board. This is detector instrumentation, not a drafting rule (C3).
+   - FDR bookkeeping: this script contributes exactly 1 primary endpoint
+     to the charter-wide Benjamini-Hochberg count (S14).
+
+   [16s total]

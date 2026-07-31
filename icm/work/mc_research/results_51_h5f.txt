@@ -1,0 +1,265 @@
+H5f — POSITIONAL REPLACEMENT LEVEL UNDER LEAGUE SCORING (charter WS5, "highest-EV item")
+Script: icm/work/mc_research/51_h5f_replacement.py · run 2026-07-31 · all numbers [V] unless
+marked [R]. Reconstruction: `measure`, then `grade --mult {0,0.5,1,2,4}`, `jackknife`, `report`
+(stages cache to 51_cache/ and resume). Inputs + pins: seasons_league.parquet (T0.3, per-year
+rows asserted), seasons.parquet (ADP), players_final.csv, blend_cache_2019_2025.json +
+adp_ext_sleeper_2020_2025.csv + seasons_2025repair.parquet via 49_grader_lib (population.json
+asserted). 2025 prices are SLEEPER adp_ppr (T0.2 instrument repair) — stated per T0.2.
+C12 GUARDRAIL: QB replacement stayed QB12 throughout — asserted at import on
+utils.FIXED_STARTERS and on 49_'s REPL; the treatment never redefines replacement.
+
+VERDICT (one line): FAIL — clean, well-powered null. The league's bonus structure shifts every
+position's replacement level a lot (RB +29.5, WR +29.3, TE +16.7, QB -11.5) but shifts them
+TOGETHER, so the cross-position VOLS tilt at the priced tier is ~2-5 pts and the paired grade of
+the induced allocation change is +2.7 league pts [95% CI -6.2,+11.5, n=4 season clusters,
+MDE ±12] — the pre-registered falsification fires and closes charter 4.1.1's headline claim at
+the ALLOCATION level. Player-level scoring channels (H5a/H5b/H5c) are separate lines, untouched.
+
+====================================================================================================
+SECTION 1 — MEASUREMENT (all numbers [V], computed this run)
+====================================================================================================
+
+1a. ANCHOR — mean bonus_points of the top 12 by total_points, players_final.csv [V]:
+    QB:   -8.9   (charter anchor   -8.9, delta +0.0)
+    RB:  +64.2   (charter anchor  +64.2, delta +0.0)
+    WR:  +34.9   (charter anchor  +34.9, delta +0.0)
+    TE:  +24.8   (charter anchor  +24.8, delta +0.0)
+    RB-vs-WR tilt +29.3 (charter +29.3); RB-vs-QB +73.1 (charter +73.1)
+
+1b. REPLACEMENT LEVEL per position per season, seasons_league.parquet 2015-2025.
+    Rule = compute_metrics.py's: flex-aware startable_counts (utils.py, read-only; QB
+    fixed 12 per C12), replacement = Nth best. Computed under EACH currency's own
+    counts, exactly as the pipeline would under that currency.
+    repl_B = base-PPR replacement, repl_L = league replacement, cnt = startable count
+      yr | QB: cntB cntL  replB  replL   L-B | RB: cntB cntL  replB  replL   L-B | WR: cntB cntL  replB  replL   L-B | TE: cntB cntL  replB  replL   L-B
+    2015 | QB:  12  12  342.5  330.8  -11.7| RB:  24  24  164.3  195.3  +31.0| WR:  36  36  173.3  205.6  +32.3| TE:  12  12  158.1  179.1  +21.0
+    2016 | QB:  12  12  318.1  310.2   -7.9| RB:  24  24  162.5  197.0  +34.5| WR:  36  36  185.5  215.0  +29.5| TE:  12  12  154.3  170.8  +16.5
+    2017 | QB:  12  12  308.6  294.7  -13.9| RB:  25  25  157.5  187.7  +30.2| WR:  35  35  158.4  190.3  +31.9| TE:  12  12  134.8  152.2  +17.4
+    2018 | QB:  12  12  341.0  331.1   -9.9| RB:  26  26  164.5  191.1  +26.6| WR:  34  34  165.4  189.5  +24.1| TE:  12  12  130.6  148.6  +18.0
+    2019 | QB:  12  12  311.7  305.2   -6.5| RB:  24  25  174.4  204.9  +30.5| WR:  36  35  171.7  206.4  +34.7| TE:  12  12  138.0  148.5  +10.5
+    2020 | QB:  12  12  340.1  339.7   -0.4| RB:  24  24  168.2  206.2  +38.0| WR:  36  36  183.1  210.6  +27.5| TE:  12  12  147.3  163.0  +15.7
+    2021 | QB:  12  12  318.0  304.0  -14.0| RB:  25  25  175.6  206.5  +30.9| WR:  35  35  170.3  203.2  +32.9| TE:  12  12  159.0  173.5  +14.5
+    2022 | QB:  12  12  321.0  315.5   -5.5| RB:  24  27  181.7  206.2  +24.5| WR:  36  33  172.4  202.5  +30.1| TE:  12  12  143.2  156.2  +13.0
+    2023 | QB:  12  12  316.5  292.9  -23.6| RB:  25  25  192.7  219.5  +26.8| WR:  35  35  196.2  224.9  +28.7| TE:  12  12  147.5  162.7  +15.2
+    2024 | QB:  12  12  329.4  311.4  -18.0| RB:  26  26  186.3  213.9  +27.6| WR:  34  34  184.4  210.2  +25.8| TE:  12  12  144.5  163.5  +19.0
+    2025 | QB:  12  12  325.7  310.9  -14.8| RB:  25  26  179.4  203.3  +23.9| WR:  35  34  172.7  197.8  +25.1| TE:  12  12  165.1  188.1  +23.0
+
+    Pooled 2015-2025 (mean +/- season SD, n=11 season clusters — descriptive, S11):
+    QB: replacement shift (league - base)  -11.5 +/-  6.4
+    RB: replacement shift (league - base)  +29.5 +/-  4.2
+    WR: replacement shift (league - base)  +29.3 +/-  3.5
+    TE: replacement shift (league - base)  +16.7 +/-  3.5
+
+1c. VOLS DELTA per position (dv = league VOLS - base VOLS), per season:
+    tier(ADP) = mean dv over the top-K priced players by ADP at the position
+    (K = that season's league startable count) — the decision-relevant tilt.
+      yr | QB: top12L tierL top12ADP tierADP | RB: top12L tierL top12ADP tierADP | WR: top12L tierL top12ADP tierADP | TE: top12L tierL top12ADP tierADP
+    2015 | QB:   +4.7  +4.7   +2.4   +2.4| RB:  +12.9  +6.9   +0.9   -2.7| WR:  +24.1 +12.7  +13.5   +3.5| TE:   +6.0  +6.0   +0.5   +0.5
+    2016 | QB:   +4.1  +4.1   +0.9   +0.9| RB:  +23.2 +11.4   +2.7   -3.7| WR:  +23.2 +11.5   +7.5   +2.9| TE:   +7.9  +7.9   +5.1   +5.1
+    2017 | QB:   +6.2  +6.2   +5.9   +5.9| RB:  +25.5 +14.7  +14.1   +2.7| WR:  +13.0  +3.7   +2.3   -3.6| TE:   +3.2  +3.2   -0.7   -0.7
+    2018 | QB:   +6.9  +6.9   -1.3   -1.3| RB:  +32.1 +19.9  +20.1   +7.5| WR:  +28.1 +17.2  +23.6  +10.8| TE:   +8.0  +8.0   -0.3   -0.3
+    2019 | QB:   +1.9  +1.9   +1.2   +1.2| RB:  +27.0 +15.6  +15.9  +10.9| WR:  +10.2  +2.5   -1.2   -2.2| TE:  +13.3 +13.3   +7.5   +7.5
+    2020 | QB:   +4.9  +4.9   -0.4   -0.4| RB:  +17.8  +5.5   +1.9   -2.2| WR:  +17.7  +9.8   +5.3   +3.9| TE:   +5.6  +5.6   +6.1   +6.1
+    2021 | QB:  +16.2 +16.2  +14.9  +14.9| RB:  +18.6 +13.8  +15.9   +4.8| WR:  +17.1  +5.2   +2.3   -2.2| TE:  +11.8 +11.8   +8.1   +8.1
+    2022 | QB:   +2.2  +2.2   +0.7   +0.7| RB:  +27.4 +18.0  +18.6  +10.3| WR:  +16.8  +6.4  +11.9   +0.9| TE:  +10.8 +10.8   +7.7   +7.7
+    2023 | QB:  +15.8 +15.8  +16.4  +16.4| RB:  +20.6 +15.7   +9.2   +6.1| WR:  +20.5 +11.6  +16.0   +6.7| TE:   +6.6  +6.6   +2.5   +2.5
+    2024 | QB:  +12.7 +12.7  +12.8  +12.8| RB:  +35.1 +21.4  +23.4  +13.3| WR:  +18.1 +10.2  +14.1   +4.5| TE:   +6.6  +6.6   -0.7   -0.7
+    2025 | QB:   +2.6  +2.6    nan    nan| RB:  +34.8 +25.8    nan    nan| WR:  +17.1 +14.2    nan    nan| TE:   -0.7  -0.7    nan    nan
+    (2025 ADP columns are nan where <8 priced rows: seasons.parquet 2025 has 5 priced
+     rows [V] — the T0.2-repaired prices live elsewhere; not needed: 2025 is never a
+     PRIOR season in the walk-forward tilt below.)
+
+    Pooled tier(ADP) dv, seasons with prices 2015-2024 (mean +/- season SD, n=10):
+    QB:   +5.3 +/-  6.8  (n=10)
+    RB:   +4.7 +/-  6.1  (n=10)
+    WR:   +2.5 +/-  4.4  (n=10)
+    TE:   +3.6 +/-  3.7  (n=10)
+
+1d. CROSS-POSITION ORDERING change in the draftable range (top 192 by base VOLS),
+    static VONA proxy — the dynamic answer is the paired grade (Section 3):
+      yr  spearman  mean|drank|  n(|drank|>=12)  max|drank|   top-24 mix B -> L
+    2015    0.9817          6.4              20          72   QB:2->2 RB:4->4 WR:14->13 TE:4->5
+    2016    0.9781          7.6              44          58   QB:3->3 RB:10->11 WR:10->9 TE:1->1
+    2017    0.9806          7.1              33          74   QB:1->1 RB:10->10 WR:10->10 TE:3->3
+    2018    0.9906          4.7              16          45   QB:1->1 RB:8->9 WR:12->11 TE:3->3
+    2019    0.9829          7.5              37          49   QB:3->2 RB:8->10 WR:9->8 TE:4->4
+    2020    0.9894          5.9              27          24   QB:6->6 RB:7->7 WR:9->9 TE:2->2
+    2021    0.9857          6.5              27          51   QB:7->6 RB:4->5 WR:11->11 TE:2->2
+    2022    0.9837          7.0              43          40   QB:4->4 RB:7->8 WR:12->10 TE:1->2
+    2023    0.9933          4.3              12          38   QB:4->4 RB:6->7 WR:10->10 TE:4->3
+    2024    0.9851          5.7              18          77   QB:4->4 RB:9->10 WR:7->7 TE:4->3
+    2025    0.9633          8.8              47          89   QB:4->3 RB:12->13 WR:7->7 TE:1->1
+
+1e. 2026 BOARD (players_final.csv): shipped total_points (league, bonuses in) vs
+    bonus-stripped (total_points - bonus_points). NOTE this isolates the BONUS layer
+    only — per-stat custom scoring (pass TD 6, sacks in custom_proj_points) stays in
+    both arms; it is the same decomposition as the charter's +64.2/-8.9 anchor.
+     pos  cnt(strip) cnt(ship)  repl(strip)  repl(ship)   shift
+      QB         12        12        341.9       324.8   -17.1
+      RB         25        30        180.7       213.4   +32.7
+      WR         35        30        179.9       214.4   +34.5
+      TE         12        12        155.8       177.1   +21.4
+
+    Board VOLS delta (ship - strip), mean over top-12 by total_points per pos:
+    QB:   +8.2
+    RB:  +31.5
+    WR:   +0.4
+    TE:   +3.5
+
+    add_vona (advisor.py, horizon=next pick 24) over the top 120 by ADP, shipped
+    vs bonus-stripped VOLS: spearman 0.9890, mean|drank| 2.9, n(|drank|>=10) 8, max 30
+    largest VONA-rank movers (strip -> ship):
+      Parker Washington        WR  93 -> 63
+      Jaxson Dart              QB  57 -> 73
+      Drake Maye               QB  44 -> 58
+      Justin Herbert           QB  74 -> 86
+      Luther Burden            WR  73 -> 62
+      Bo Nix                   QB  55 -> 44
+      David Montgomery         RB  81 -> 91
+      D'Andre Swift            RB  65 -> 75
+
+====================================================================================================
+SECTION 2 — C6 SEAM: projection bias vs scoring at the REPLACEMENT TIER (measurement
+only — C6 stays CLOSED; no player-level correction is applied anywhere in this script)
+====================================================================================================
+  Instruments, all at the grader's fixed tier counts REPL={QB12,RB24,WR24,TE12} on the
+  SAME blend-cache pool 44_/49_ reconstruct arm 2 from (adp<=220, espn+sleeper scaled
+  to realized mean, 50/50 blend — 44_'s exact prep):
+    A[pos] = replacement from PROJECTIONS (what arm 2 drafts on)
+    B[pos] = replacement from REALIZED base PPR (cache 'actual')
+    C[pos] = replacement from REALIZED league points (seasons_league join on nn+pos)
+  A-B = projection bias at the tier; B-C = scoring shift at the tier; cross-position
+  differences of each = the two shares of the cross-position baseline gap.
+
+      yr | RB:      A      B      C    A-B    B-C | WR:      A      B      C    A-B    B-C
+    2021 | RB:  157.7  175.6  201.9  -17.9  -26.3| WR:  188.3  213.5  246.5  -25.2  -33.0
+          cache-'actual' vs panel total_base agreement: median |diff| 0.0 pts on 192 joined rows (join misses: 1/193)
+    2022 | RB:  168.9  170.4  209.4   -1.5  -39.0| WR:  177.5  200.2  231.6  -22.7  -31.4
+          cache-'actual' vs panel total_base agreement: median |diff| 0.0 pts on 182 joined rows (join misses: 1/183)
+    2024 | RB:  168.2  191.8  226.1  -23.6  -34.3| WR:  200.0  209.5  241.1   -9.5  -31.6
+          cache-'actual' vs panel total_base agreement: median |diff| 0.0 pts on 189 joined rows (join misses: 2/191)
+    2025 | RB:  168.3  179.4  203.4  -11.1  -24.0| WR:  183.7  188.2  222.6   -4.5  -34.4
+          cache-'actual' vs panel total_base agreement: median |diff| 0.0 pts on 182 joined rows (join misses: 2/184)
+
+    All four positions, pooled over the 4 CLEAN seasons (mean +/- season SD, n=4):
+     pos   A-B (projection bias)   B-C (scoring shift)
+      QB      -19.7 +/- 24.6          +9.8 +/-  5.5
+      RB      -13.5 +/-  9.5         -30.9 +/-  7.0
+      WR      -15.5 +/- 10.0         -32.6 +/-  1.4
+      TE       -5.6 +/- 14.5         -14.6 +/-  2.8
+
+    RB-vs-WR VOLS BASELINE GAP decomposition (positive = RB baseline overstated
+    relative to WR under arm 2's instruments):
+    2021: total  +14.0 = projection-bias   +7.3 + scoring   +6.7
+    2022: total  +13.6 = projection-bias  +21.2 + scoring   -7.6
+    2024: total  -16.8 = projection-bias  -14.1 + scoring   -2.7
+    2025: total   +3.8 = projection-bias   -6.6 + scoring  +10.4
+    pooled: total   +3.7 = projection-bias   +2.0 (+/- 15.6) + scoring   +1.7 (+/- 8.3)   [n=4 seasons]
+
+====================================================================================================
+SECTION 2b — THE TREATMENT TILT (walk-forward, leakage-free per S7)
+====================================================================================================
+  tilt_s[pos] = mean over prior seasons 2015..s-1 of tier(ADP) dv (Section 1c).
+  Applied in the grader as a position-constant addition to MY VONA scores (x mult).
+    2021 (priors 2015-2020): QB   +1.4  RB   +2.1  WR   +2.6  TE   +3.0
+    2022 (priors 2015-2021): QB   +3.3  RB   +2.5  WR   +1.9  TE   +3.8
+    2024 (priors 2015-2023): QB   +4.5  RB   +3.8  WR   +2.3  TE   +4.1
+    2025 (priors 2015-2024): QB   +5.3  RB   +4.7  WR   +2.5  TE   +3.6
+  (A constant added to every candidate cancels in an argmax, so only the CROSS-
+   position spread of these numbers acts on picks.)
+
+  cached -> /Users/natearaskog/fantasy-analyzer/icm/work/mc_research/51_cache/h5f_measure.json
+
+====================================================================================================
+SECTION 3 — PAIRED GRADE (arm3 - arm2, corrected grader 49_, SEASON mode, 5 slots)
+====================================================================================================
+
+  PRIMARY ENDPOINT (declared in the module docstring BEFORE the runs; S14): pooled
+  arm3-minus-arm2 LEAGUE points, season mode, mult 1.0, slots (1,5,8,10,12), CLEAN seasons
+  (2021,2022,2024,2025), 100 paired drafts per slot-season = 2,000 paired drafts,
+  season-clustered 95% t-CI (df=3), effective n = 4 SEASON CLUSTERS (S11).
+  Arm 2 = 49_'s reconstructed composite (blend proj -> VOLS -> VONA + need gating, measured
+  opponent dispersion). Arm 3 = arm 2 + walk-forward positional tilt (Section 2b).
+  Both currencies from the SAME T0.3 panel; league primary, base secondary (S12).
+  2025 prices are SLEEPER adp_ppr (T0.2 repair) — instrument change propagated per T0.2.
+
+  MANDATORY REPORTING BLOCK (mult 1.0):
+  1. drafts identical: 69.2%  (firing rate 30.8%)
+  2. picks changed: mean 0.78 · p50/p75/p90/p99 = 0/2/3/5 · max 8
+  3. conditional on >=1 pick changed (n=615): mean +8.6 league pts, p5/p25/p50/p75/p95 = -140/-28/+0/+46/+181
+  4. jackknife — most-drafted-in flagged player = 'wan dale robinson' (47 changed-roster entries); zeroing his tilt: mean +2.7 -> +2.8 (moved 0.1 pts; does not fire per reporting rule 4). NOTE: a positional tilt flags EVERY player at the position,
+     so 'most-flagged' here means 'most often entered a changed roster'. top5: wan dale robinson 47, ashton jeanty 38, chuba hubbard 35, rhamondre stevenson 33, dylan sampson 32
+  5. per-slot Δleague:  slot1 -0.2  slot5 +1.1  slot8 +5.0  slot10 +8.2  slot12 -0.9
+  6. per-season Δleague: 2021 -1.8  2022 +0.4  2024 +1.3  2025 +10.8
+     season-clustered 95% CI [-6.2, +11.5] · season SD 5.6 · eff n = 4 clusters · MDE(80%) ±12 league pts
+  7. currencies — league +2.7 (PRIMARY) · base PPR +2.1 (secondary) · win 12.7% / lose 11.1% / tie 76.2%
+     (points-tie 76.2% > identical-picks 69.2%: some changed picks swap players who never enter the optimal lineup, netting 0.)
+
+  INSTRUMENT NOTE [V]: 49_grader_lib.report_primary builds its pooled D season-major
+  but NC/Db slot-major, so ITS printed 'when >=1 changed' conditional line (visible in
+  the per-run logs, e.g. '+0.1 pts' at 1x) is MISALIGNED garbage — self-consistency:
+  0.308 firing x its +0.1 conditional would give +0.03 pooled, not the actual +2.7.
+  Every number in THIS block is recomputed with consistent slot-major ordering
+  (0.308 x +8.6 = +2.7 checks out). Pooled means/CI/win-rates are unaffected by
+  ordering. Flagged upstream; 49_ is another agent's artifact and was not edited.
+
+  POWER (charter S-block): conditional-mean naive SE = 3.8 vs bar/3 = 8.3 — draft-count power is not binding; the binding limit is the
+  4-season cluster CI above (naive SEs understate truth per S11 and are shown only for
+  the power book-keeping the charter requires).
+
+  SENSITIVITY SWEEP (S3) — pooled Δleague by multiplier, clustered CI:
+     mult     mean              95% CI  seasonSD  identical
+      0.0     +0.0  [   +0.0,   +0.0]       0.0    100.0%
+      0.5     +1.2  [   -3.0,   +5.3]       2.6     81.7%
+      1.0     +2.7  [   -6.2,  +11.5]       5.6     69.2%
+      2.0     +5.4  [  -12.4,  +23.2]      11.2     52.5%
+      4.0     +5.5  [  -28.4,  +39.5]      21.3     26.5%
+    S3 shape verdict: point-estimate shape: monotone rise to a PLATEAU at 2x (+5.4 -> +5.5 from 2x to 4x). S3's 'raise the magnitude and re-grade' was already run here (2x/4x ARE the re-grades): the mean saturates while the season SD roughly doubles per doubling, and EVERY multiplier's clustered CI spans zero — the shape never emerges from noise, so shape cannot rescue the null primary endpoint.
+
+====================================================================================================
+SECTION 4 — VERDICT
+====================================================================================================
+  Bar: T0.6 placebo distribution NOT AVAILABLE at report time — 50_placebo.py was IN FLIGHT (its x1 arms done, sweep arms running, no results_50 file yet); its in-progress caches were deliberately not read (another agent's instrument, semantics unpinned). Bar = charter PROVISIONAL +25 (S15) — re-judge this row when the placebo lands; the verdict below is robust to ANY bar placement.
+  FAIL (clean null). CI [-6.2,+11.5] spans zero at n=4 clusters -> the positional-allocation change is WITHIN NOISE. The pre-registered falsification FIRES: the bonus structure is rank-preserving in the draftable range at the allocation level — each position's replacement level absorbs its own tilt (RB +29.5 vs WR +29.3 replacement shift), leaving a cross-position VOLS tilt of only ~2-3 points. This closes charter 4.1.1's headline claim AT THE ALLOCATION LEVEL (player-level channels are H5a/H5b/H5c, not graded here). This is an INFORMATIVE null, not an under-powered one: the treatment's own dispersion gives MDE ±12 — well below the +25 bar — and the CI's upper bound +11.5 sits BELOW the bar, so the conclusion survives wherever a future placebo bar lands (any bar is > the upper bound or > the point estimate).
+
+====================================================================================================
+SECTION 5 — READING, SIDE FINDINGS, AND WHAT WAS NOT DONE
+====================================================================================================
+  WHY THE 73-POINT TILT NETS TO ~NOTHING (the mechanism, from Section 1): the top-12 bonus
+  tilt (RB +64.2 vs QB -8.9 [V, anchor reproduced exactly]) is a LEVEL story. VOLS subtracts
+  each position's own replacement, and the replacement tier collects nearly the same bonus
+  as the startable tier ABOVE it once players are selected by PRICE rather than by realized
+  outcome: the priced-tier VOLS delta is QB +5.3 / RB +4.7 / WR +2.5 / TE +3.6 (+/- 4-7 by
+  season), a <=3-pt cross-position spread. Ranking the tier by REALIZED league points instead
+  inflates dv (RB top-12 +12..+35) — that is selection on outcome (boom seasons carry big
+  bonuses), not an ex-ante edge. The board's own projected top-12 RB VOLS delta (+31.5, 1e)
+  has the same flavor: apply_bonuses hands projected bell-cows their full projected volume
+  bonus, while measured priced-tier history nets to ~+5. That gap is a MEASUREMENT
+  (projection-conditional vs price-conditional), flagged for the Blueprint's C6-adjacent
+  notes — NOT a proposed correction (C6 stays closed).
+
+  C6 SEAM (Section 2): at the replacement tier the RB-vs-WR baseline gap decomposes to
+  projection-bias +2.0 (+/- 15.6) + scoring +1.7 (+/- 8.3) over n=4 seasons — signs flip
+  season to season; NO stable cross-position baseline distortion from either source at this
+  sample. The C6 surviving seam is measured and found EMPTY at the tier. C6 stays closed.
+
+  SIDE FINDING (not the primary endpoint): the per-season pattern at higher multipliers
+  (2022 -17 vs 2025 +29 at 4x) tracks how RB-friendly the realized season was — the tilt
+  helps in seasons where top-heavy RB/QB bonuses realized and hurts otherwise. At n=4
+  clusters this is colour, not evidence.
+
+  NOT DONE (stated plainly):
+  * T0.6 placebo bar — not built by any agent at report time; verdict uses the provisional
+    +25 and is robust to any bar (CI upper bound +11.5 < +25; MDE ±12).
+  * WEEKLY-mode grade — deliberately not run: the assignment declares SEASON mode (this is a
+    roster-construction/allocation question); distribution-shape channels belong to H5a/H5b.
+  * A within-position rank-dependent tilt — deliberately not tested; it would mix allocation
+    with within-position re-ranking and overlap H5b's per-player-rate territory.
+  * 2019/2020/2023 remain outside the composite arm (backfilled/thin projections — 38_/49_),
+    so the grade rests on n=4 season clusters; 2025 ADP-tier dv is not computable from
+    seasons.parquet (5 priced rows) and is not needed (2025 is never a walk-forward prior).
+  * BH/FDR across the charter's hypothesis family is the Blueprint's job; this file
+    contributes exactly ONE primary endpoint (S14).
+  * K and D/ST have no league-scored history in the panel (T0.3 scope cut) and are outside
+    every number here.
+

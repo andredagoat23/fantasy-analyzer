@@ -1,0 +1,267 @@
+==============================================================================
+46 — T0.3 LEAGUE-SCORED PANEL   (run 2026-07-31 12:36)
+==============================================================================
+
+WHAT THIS IS
+  Every player-week of icm/work/mc_research/weekly.parquet re-scored under the LEAGUE
+  table (scoring_config.py, the single source of truth — no constant restated in 46_).
+  Tiered 100/200/300/400 single-game bonuses are EXACT per week (a weekly row IS a game
+  row); 40+/50+ long-TD bonuses are CUMULATIVE, from pbp TD lengths (12 seasons pulled
+  per-season and cached as pbp_slim_YYYY.parquet for sibling agents).
+CURRENCIES (S12)
+  pts_base    = the existing panel's base points (weekly.parquet `pts`, built by
+                01_build_panel.py:39-43: base per-event scoring WITHOUT fumbles, bonuses,
+                sacks, kicking — the MC weekly proxy). Secondary currency.
+  pts_bucket1 = sum(SCORING[stat] * stat) — the exact analog of custom_scoring.py's
+                custom_proj_points (adds fumbles_lost, pat_made, fg_missed to pts_base).
+  pts_league  = pts_bucket1 + all bucket-2 bonuses, exact per week. Primary currency.
+
+---- pbp pull budget (charter: largest compute item; [V] this run) ----
+  2014:  47629 plays     0.9s  missing_cols=['nflverse_game_id']
+  2015:  48122 plays     0.9s  missing_cols=['nflverse_game_id']
+  2016:  47651 plays     0.8s  missing_cols=['nflverse_game_id']
+  2017:  47245 plays     1.0s  missing_cols=['nflverse_game_id']
+  2018:  47109 plays     1.9s  missing_cols=['nflverse_game_id']
+  2019:  47260 plays     0.7s  missing_cols=['nflverse_game_id']
+  2020:  47705 plays     0.8s  missing_cols=['nflverse_game_id']
+  2021:  49922 plays     0.9s  missing_cols=['nflverse_game_id']
+  2022:  49434 plays     2.7s  missing_cols=['nflverse_game_id']
+  2023:  49665 plays     1.6s  missing_cols=['nflverse_game_id']
+  2024:  49492 plays     0.7s  missing_cols=['nflverse_game_id']
+  2025:  48771 plays     0.7s  missing_cols=['nflverse_game_id']
+  TOTAL download+slim: 0.2 minutes across 12 seasons
+
+pbp slim caches, REG plays per season (S8 assert: 12 seasons, each >20k):
+season
+2014    45673
+2015    46141
+2016    45707
+2017    45268
+2018    45120
+2019    45339
+2020    45406
+2021    47651
+2022    47157
+2023    47399
+2024    47274
+2025    46452
+
+weekly.parquet: 67353 rows (charter says 67,353 [V-check: OK])
+bucket1 reconciles with panel base pts exactly (bucket1 - fumbles - PAT - FGmiss == pts) [V]
+fumbles_lost_total vs rush+rec+sack sum: 369 differing rows (0.55%) — all inspected diffs were special-teams fumbles; ESPN scores every fumble lost, so the total column is used [V]
+TD reconciliation pass: pbp count == weekly passing_tds on 100.00% of rows [V]
+TD reconciliation rec: pbp count == weekly receiving_tds on 99.99% of rows [V]
+TD reconciliation rush: pbp count == weekly rushing_tds on 100.00% of rows [V]
+consistency: rows where 40+ pass TDs exceed 40+ completions (should be ~0): 0 [V]
+
+---- S8: per-year row counts, weekly_league vs source weekly.parquet ----
+        weekly  weekly_league match
+season                             
+2014      5412           5412    OK
+2015      5423           5423    OK
+2016      5413           5413    OK
+2017      5448           5448    OK
+2018      5363           5363    OK
+2019      5411           5411    OK
+2020      5543           5543    OK
+2021      5866           5866    OK
+2022      5808           5808    OK
+2023      5797           5797    OK
+2024      5849           5849    OK
+2025      6020           6020    OK
+
+---- S8: per-season component sums (a dead column shows as a zero row) ----
+        b_rush_tier  b_rec_tier  b_pass_tier  b_rush_fd  b_rec_fd  b_sack  b_2pt  b_return  b_patmiss  b_fg_dist  b_ltd_pass  b_ltd_rec  b_ltd_rush
+season                                                                                                                                             
+2014          313.0       432.0        391.0     1458.0    3109.0   -1211     94    1952.0          0        0.0       132.0      264.0        95.0
+2015          294.0       438.0        418.0     1458.0    3110.0   -1187    160    1856.0          0        0.0       142.0      284.0        81.0
+2016          296.0       380.0        376.0     1490.0    3162.0   -1118    170    1718.0          0        0.0       118.0      237.0       123.0
+2017          258.0       288.0        310.0     1432.0    2938.0   -1196    124    1676.0          0        0.0       122.0      245.0       131.0
+2018          330.0       430.0        444.0     1588.0    3106.0   -1281    222    1398.0          0        0.0       130.0      260.0       103.0
+2019          331.0       418.0        434.0     1538.0    3076.0   -1274    184    1428.0          0        0.0       117.0      234.0       128.0
+2020          277.0       416.0        420.0     1759.0    3250.0   -1134    210    1466.0          0        0.0       104.0      207.0       115.0
+2021          314.0       372.0        368.0     1796.0    3196.0   -1244    246    1662.0          0        0.0       116.0      231.0       101.0
+2022          343.0       356.0        297.0     1825.0    3025.0   -1296    190    1572.0          0        0.0        95.0      189.0       121.0
+2023          248.0       380.0        330.0     1743.0    2992.0   -1410    214    1410.0          0        3.0       116.0      233.0        76.0
+2024          352.0       350.0        263.0     1830.0    3036.0   -1313    184    1746.0          0        0.0       112.0      223.0       126.0
+2025          295.0       304.0        216.0     1820.0    2914.0   -1286    202    2948.0          0        0.0        74.0      148.0       167.0
+components with zero-sum seasons (excl. kicker cols, ~0 for QB/RB/WR/TE): NONE
+
+---- per-position mean (pts_league - pts_base) per player-week, by season ----
+position     QB     RB     TE     WR
+season                              
+2014     -0.991  1.566  0.690  1.790
+2015     -0.816  1.589  0.734  1.703
+2016     -0.893  1.646  0.719  1.665
+2017     -1.128  1.655  0.577  1.518
+2018     -0.863  1.671  0.690  1.619
+2019     -1.021  1.656  0.680  1.542
+2020     -0.559  1.608  0.665  1.641
+2021     -0.715  1.671  0.659  1.522
+2022     -0.929  1.615  0.624  1.437
+2023     -1.110  1.451  0.608  1.468
+2024     -0.953  1.704  0.633  1.501
+2025     -1.105  1.924  0.615  1.695
+(a season with a missing component would break visibly from its column's band)
+
+seasons_league: 6974 player-seasons (seasons.parquet has 6974)
+---- S8: seasons_league player-season counts per year ----
+season
+2014    544
+2015    556
+2016    557
+2017    553
+2018    577
+2019    572
+2020    602
+2021    633
+2022    608
+2023    576
+2024    588
+2025    608
+
+==============================================================================
+SANITY ANCHOR — charter S12: players_final.csv top-12-by-position mean bonus_points
+==============================================================================
+recomputed anchor [V]: QB -8.9  RB +64.2  WR +34.9  TE +24.8   (charter [R]: RB +64.2, WR +34.9, TE +24.8, QB -8.9)
+
+panel analog = mean season bonus_total (pts_league - pts_bucket1) of the top 12
+by total_league, per position per season:
+          QB    RB    WR    TE
+season                        
+2014     3.6  56.2  58.7  26.8
+2015    -1.0  47.5  58.2  28.5
+2016     2.8  60.2  54.3  25.3
+2017    -2.6  57.9  46.4  21.8
+2018     2.6  60.3  53.8  26.8
+2019     1.9  61.2  45.2  25.3
+2020    10.2  58.5  46.2  23.0
+2021     7.2  51.7  51.4  26.7
+2022     3.7  54.9  48.1  24.8
+2023    -0.1  49.5  50.6  23.4
+2024    -0.5  64.7  44.7  26.6
+2025    -7.0  61.4  43.3  23.1
+
+pooled mean of season means (n=12 season clusters, S11; +/- season-level SD):
+  QB:    +1.8 +/-   4.5   vs anchor   -8.9
+  RB:   +57.0 +/-   5.2   vs anchor  +64.2
+  WR:   +50.1 +/-   5.3   vs anchor  +34.9
+  TE:   +25.2 +/-   2.0   vs anchor  +24.8
+
+mean games played by those top-12 (the anchor projects ~17-game seasons):
+        QB_games  RB_games  WR_games  TE_games
+season                                        
+2014        15.9      15.5      15.5      15.4
+2015        15.9      15.3      15.9      15.3
+2016        15.3      15.1      15.6      15.1
+2017        15.5      15.1      15.7      15.3
+2018        15.9      14.8      15.7      15.6
+2019        15.6      15.1      15.7      14.6
+2020        15.7      14.8      15.4      15.4
+2021        16.2      15.5      16.5      15.8
+2022        16.4      16.5      16.4      15.5
+2023        16.4      15.8      16.2      16.1
+2024        16.7      16.1      16.6      16.4
+2025        16.5      16.8      16.4      16.2
+
+wrote /Users/natearaskog/fantasy-analyzer/icm/work/mc_research/bonus_weekly.parquet (67353 rows), /Users/natearaskog/fantasy-analyzer/icm/work/mc_research/weekly_league.parquet (67353 rows), /Users/natearaskog/fantasy-analyzer/icm/work/mc_research/seasons_league.parquet (6974 rows)   [11s build]
+
+==============================================================================
+APPENDIX A — WHY THE ANCHOR GAPS ARE THE CHARTER'S OWN CLAIMS, QUANTIFIED [V]
+==============================================================================
+top-12-by-league-total mean season bonus by COMPONENT (pooled 2014-2025):
+          b_rush_tier  b_rec_tier  b_pass_tier  b_rush_fd  b_rec_fd  b_sack  b_2pt  b_return  b_patmiss  b_fg_dist  b_ltd_pass  b_ltd_rec  b_ltd_rush  bonus_total  games
+position                                                                                                                                                                 
+QB                0.4         0.0         15.7       11.1       0.0   -32.8    2.8       0.0        0.0        0.0         4.2        0.0         0.3          1.8   16.0
+RB               11.7         0.4          0.0       28.9       9.5    -0.0    0.9       1.6        0.0        0.0         0.0        0.7         3.3         57.0   15.5
+TE                0.0         2.9          0.0        0.5      20.6    -0.1    0.6       0.0        0.0        0.0         0.0        0.6         0.0         25.2   15.6
+WR                0.0        10.4          0.0        0.6      31.7    -0.1    0.7       3.1        0.0        0.0         0.0        3.7         0.1         50.1   16.0
+
+bonus at a 17-game pace (the anchor projects ~17-game seasons): {'QB': 2.0, 'RB': 62.7, 'TE': 27.6, 'WR': 53.5}
+
+GAP READINGS (anchor = players_final.csv bonus_points, a PROJECTION scored by
+apply_bonuses' league-rate linearization; panel = REALIZED top-12 seasons, exact):
+  TE +25.2 vs +24.8  -> agreement within noise; the reconstruction is sound.
+  RB +57.0 vs +64.2  -> games: realized top-12 average 15.5 games (16-game era +
+                        injuries); at a 17-game pace the panel gives +62.7 vs anchor +64.2.
+  QB  +1.8 vs  -8.9  -> the linearization understates elite-QB rush first downs: league-average
+                        FD/carry (what apply_bonuses applies to EVERY player) = 0.237, but
+                        realized top-12 QBs convert 0.357 FD/carry [V] — ~50% more, worth
+                        ~+4 pts/season on the rush-FD term alone; realized elite seasons also hit
+                        the 300/400 tiers more often than the league rate implies. Exactly the
+                        charter §7.4 weakness ("league-average rate per player").
+  WR +50.1 vs +34.9  -> concentration convexity, measured: for the SAME top-12 WR player-seasons,
+                        actual 100/200-yd tier points = 10.4/season vs 3.9 under the
+                        league-rate linearization [V] — a 2.7x understatement. Elite WR
+                        yardage is concentrated into big games, and top-12-by-OUTCOME selects
+                        boom-shaped seasons. This is §7.1 (the master rule) made empirical: the
+                        anchor is not wrong, it measures a linearized projection; the panel
+                        measures the realized threshold structure the linearization deletes.
+CONCLUSION: the panel reproduces the anchor where the anchor's instrument is unbiased
+(TE, RB-after-games), and diverges in the exact places and directions the charter's own
+§2.6/§7 analysis predicts the linearization must err. Reconstruction judged SOUND.
+
+==============================================================================
+APPENDIX B — DATA-QUALITY FLAGS RAISED (frozen files untouched)
+==============================================================================
+
+B1. `pt_return_tds` is ALL ZERO in every season of the panel (sums: {2014: 0, 2015: 0, 2016: 0, 2017: 0, 2018: 0, 2019: 0, 2020: 0, 2021: 0, 2022: 0, 2023: 0, 2024: 0, 2025: 0}), while
+    `special_teams_tds` is live (sums: {2014: 23, 2015: 19, 2016: 16, 2017: 17, 2018: 10, 2019: 12, 2020: 13, 2021: 11, 2022: 7, 2023: 11, 2024: 13, 2025: 19}). apply_bonuses.py line ~66 aggregates
+    rtd=("pt_return_tds","sum") from the SAME loader (load_player_stats) for 2024-25 — so the
+    shipped return-TD part of `ret_pts` is silently zero for everyone (yardage still flows).
+    Impact is small (~6 pts/season for a returner who scores once) but this is a dead-column
+    read in a frozen file: FLAG RAISED, not edited (CLAUDE.md boundary). 46_ uses
+    `special_teams_tds` instead (spot-checked rows: Hester/Ginn/Sproles return TDs [V]);
+    caveat: it may include rare non-return ST TDs (blocked-kick recoveries), <=23/season
+    league-wide across the whole panel.
+B2. `fumbles_lost_total` > rush+rec+sack fumble sum on 369/67,353 rows (0.55%) — inspected
+    rows are return-game fumbles. ESPN scores EVERY fumble lost, so 46_ scores the total
+    column; the 3-part sum (the loader's skill-play columns) would miss ST fumbles.
+B3. Receiver long-TD credit follows apply_bonuses' precedent (receiver_player_id on
+    pass_touchdown plays): a lateral after a catch credits the original receiver. Measured
+    ceiling of the error: rec-TD reconciliation pbp-vs-weekly matches 99.99% of rows.
+B4. KR yardage roughly doubles in 2025 (dynamic-kickoff era: 50878 yds vs
+    ~20-25k earlier) — real rule change, visible in b_return; not an error.
+B5. Return yardage scored CONTINUOUSLY (yds/25, yds/10 — apply_bonuses' convention). If ESPN
+    awards only whole increments per game, 46_ overstates returners by <~1-2 pts/season.
+    Unresolved because the league's live implementation can't be observed until a real week.
+B6. `passing_first_downs` is deliberately NOT scored: the league table (scoring_config) has
+    RFD/REFD for rushing/receiving first downs only. Stated so nobody reads it as an omission.
+B7. Panel is QB/RB/WR/TE only (inherited from 01_build_panel) — b_patmiss/b_fg_dist are ~0 by
+    construction and K/DST have no league-scored history here (charter §6 scope cut).
+
+==============================================================================
+APPENDIX C — PRE-REGISTERED FALSIFICATION (T0.3, verbatim commitment)
+==============================================================================
+
+If league-scored and base-scored grades agree within noise across ALL of WS5 (i.e. no
+WS5 hypothesis' verdict differs between the pts_league and pts_base currencies by more
+than the placebo-calibrated threshold of T0.6), then charter §4.1.1's headline claim —
+that custom-scoring divergence is the largest edge available — is WRONG, and the
+Blueprint must say so on page 1. Registered here, before any WS5 grading has run.
+Corollary already visible in this panel (descriptive, NOT a grade): the per-week
+league-minus-base gap is position-ordered RB ~ WR > TE > 0 > QB and roughly stable
+across 12 seasons, so scoring currency plausibly REORDERS positions at the margin —
+the falsification above is what turns that observation into a tested claim.
+
+==============================================================================
+APPENDIX D — ARTIFACTS, SCHEMAS, RERUN
+==============================================================================
+
+pbp_slim_2014..2025.parquet  (47629, 48122, 47651, 47245, 47109, 47260, 47705, 49922, 49434, 49665, 49492, 48771 plays)
+  columns: season, week, game_id, play_id, posteam, defteam, td_player_id, touchdown, pass_touchdown, rush_touchdown, yards_gained, air_yards, receiver_player_id, rusher_player_id, passer_player_id, complete_pass, pass_attempt, rush_attempt, qb_dropback, sack, yardline_100, season_type, two_point_conv_result
+  (nflverse_game_id absent from source — game_id IS the nflverse id, e.g. 2022_01_BUF_LAR)
+  REG+POST as delivered; 46_ filters season_type=='REG' at use. Written atomically for
+  sibling agents (charter T0.3 mandate).
+bonus_weekly.parquet   67,353 rows: keys (player_id, season, week, position, team) + long-TD
+  counts (n_pass_td/40/50, n_rec_td/40/50, n_rush_td/40/50) + the 13 b_* components + bonus_total.
+weekly_league.parquet  67,353 rows: every weekly.parquet column + pts_bucket1, pts_base,
+  the 13 b_* components, bonus_total, pts_league, lg_minus_base.
+seasons_league.parquet 6974 rows: (player_id, season, position, name_disp, games) +
+  total/ppg/wk_std/max/min/med/p25/p75/cv under BOTH currencies (_league, _base) +
+  total_bucket1 + per-season component sums + boom/bust rates under both currencies
+  (thresholds = 01_build_panel.py analysis constants, not scoring values).
+Merge key to seasons.parquet / seasons_exp.parquet: (player_id, season, position) — row
+count matches seasons.parquet exactly (6974 = 6974).
+RERUN: see module docstring. Scoring values come ONLY from scoring_config.py imports; a
+league rules change reruns cleanly with zero edits here.

@@ -1,0 +1,62 @@
+{
+ "2016": {
+  "rows": 48434,
+  "route_nonempty": 18767,
+  "route_notna": 18767,
+  "off_players_nonempty": 44341
+ },
+ "2017": {
+  "rows": 47998,
+  "route_nonempty": 17960,
+  "route_notna": 17960,
+  "off_players_nonempty": 43950
+ },
+ "2018": {
+  "rows": 47875,
+  "route_nonempty": 17926,
+  "route_notna": 17926,
+  "off_players_nonempty": 43722
+ },
+ "2019": {
+  "rows": 48034,
+  "route_nonempty": 17772,
+  "route_notna": 17772,
+  "off_players_nonempty": 43976
+ },
+ "2020": {
+  "rows": 48513,
+  "route_nonempty": 18214,
+  "route_notna": 18214,
+  "off_players_nonempty": 44361
+ },
+ "2021": {
+  "rows": 50714,
+  "route_nonempty": 18937,
+  "route_notna": 18937,
+  "off_players_nonempty": 46326
+ },
+ "2022": {
+  "rows": 50150,
+  "route_nonempty": 18176,
+  "route_notna": 18176,
+  "off_players_nonempty": 45858
+ },
+ "2023": {
+  "rows": 46168,
+  "route_nonempty": 19616,
+  "route_notna": 46168,
+  "off_players_nonempty": 46168
+ },
+ "2024": {
+  "rows": 45919,
+  "route_nonempty": 19110,
+  "route_notna": 45905,
+  "off_players_nonempty": 45919
+ },
+ "2025": {
+  "rows": 45184,
+  "route_nonempty": 18871,
+  "route_notna": 45175,
+  "off_players_nonempty": 45184
+ }
+}

@@ -1,0 +1,326 @@
+====================================================================================================
+56 — WS2 PREMISE GATES: H2a / H2b / H2c  (results_56_premise_gates.txt)
+====================================================================================================
+All numbers [V] (computed this run) unless labelled [R]. Charter: research-blueprint-
+prompt.md WS2. S14 primary endpoints + decision rules are in the script docstring,
+declared BEFORE any result was computed. This script contributes FOUR primary
+endpoints to the global FDR count: H2a, H2b, H2c gates + the team-stability split-out.
+NO POINTS TEST IS RUN ANYWHERE HERE: the charter demotes all three hypotheses to
+premise gates and declares the points test not reachable at n=31 (S12 both-currency
+reporting therefore N/A by design). Even PASS-PREMISE routes to the 2026
+preregistration, never to an under-powered paired grade.
+
+====================================================================================================
+TASK 1 — EVENT TABLE from data/playcallers_hist.csv
+====================================================================================================
+
+team-seasons in file: 224 (2019-2025, 32 teams)  [V]
+caller-change events: 78  [V]   (foundation/charter expected 78)
+  carryable (prior in-window history at a DIFFERENT team): 31  [V] (expected 31)
+  first-time callers: 46  [V]  + same-team-only prior: 1  [V]  (foundation T0.2: 47 = 46 + 1)
+
+Confirmed against foundation counts (78 / 31 / 47-as-46+1). The same-team-only case
+is Mike Kafka (NYG 2025) — carryover from
+a different team is undefined for him; excluded, matching T0.2's refinement.
+
+File-granularity limits (stated): one primary caller per team-season — midseason
+caller changes are not represented. Two committee cells exist and are events but can
+never match an individual's prior history: Godsey/Studesville (MIA 2021); Patricia/Judge (NE 2022)
+
+THE 31 CARRYABLE COACH-MOVES (the entire WS2 forecasting population):
+  2021 ATL  <- Arthur Smith           prior: TEN2019, TEN2020
+  2024 BUF  <- Joe Brady              prior: CAR2020, CAR2021
+  2023 CAR  <- Frank Reich            prior: IND2019, IND2020, IND2021, IND2022
+  2024 CAR  <- Dave Canales           prior: TB2023
+  2024 CHI  <- Shane Waldron          prior: SEA2021, SEA2022, SEA2023
+  2025 CHI  <- Ben Johnson            prior: DET2022, DET2023, DET2024
+  2020 CLE  <- Kevin Stefanski        prior: MIN2019
+  2025 DAL  <- Brian Schottenheimer   prior: SEA2019, SEA2020
+  2020 DEN  <- Pat Shurmur            prior: NYG2019
+  2023 DEN  <- Sean Payton            prior: NO2019, NO2020, NO2021
+  2023 IND  <- Shane Steichen         prior: LAC2020, PHI2022
+  2020 JAX  <- Jay Gruden             prior: WAS2019
+  2021 JAX  <- Darrell Bevell         prior: DET2019, DET2020
+  2022 JAX  <- Doug Pederson          prior: PHI2019, PHI2020
+  2025 JAX  <- Liam Coen              prior: TB2024
+  2023 LAC  <- Kellen Moore           prior: DAL2019, DAL2020, DAL2021, DAL2022
+  2024 LAC  <- Greg Roman             prior: BAL2019, BAL2020, BAL2021, BAL2022
+  2022 LV   <- Josh McDaniels         prior: NE2019, NE2020, NE2021
+  2024 LV   <- Luke Getsy             prior: CHI2022, CHI2023
+  2023 NE   <- Bill O'Brien           prior: HOU2019
+  2025 NE   <- Josh McDaniels         prior: LV2022, LV2023
+  2024 NO   <- Klint Kubiak           prior: MIN2021
+  2025 NO   <- Kellen Moore           prior: DAL2019, DAL2020, DAL2021, DAL2022, LAC2023, PHI2024
+  2024 NYG  <- Brian Daboll           prior: BUF2019, BUF2020, BUF2021
+  2023 NYJ  <- Nathaniel Hackett      prior: DEN2022
+  2022 PHI  <- Shane Steichen         prior: LAC2020
+  2024 PHI  <- Kellen Moore           prior: DAL2019, DAL2020, DAL2021, DAL2022, LAC2023
+  2024 PIT  <- Arthur Smith           prior: ATL2021, ATL2022, ATL2023, TEN2019, TEN2020
+  2025 SEA  <- Klint Kubiak           prior: MIN2021, NO2024
+  2023 TEN  <- Tim Kelly              prior: HOU2020, HOU2021
+  2024 WAS  <- Kliff Kingsbury        prior: ARI2019, ARI2020, ARI2021, ARI2022
+
+Events by season: 2020:10, 2021:11, 2022:14, 2023:14, 2024:16, 2025:13
+
+====================================================================================================
+DATA BUILD + S8 CHECKS
+====================================================================================================
+
+Personnel (participation offense_personnel joined to pbp_slim REG scrimmage plays,
+classified by RB/TE counts: 11 = 1RB/1TE, 12 = 1RB/2TE, 21 = 2RB/1TE):
+season  teams  scrim plays  personnel cov  lg r11  lg r12  lg r21
+2016       32       32,838        100.0%   0.601   0.187   0.079
+2017       32       32,523        100.0%   0.590   0.204   0.083
+2018       32       32,350        100.0%   0.639   0.177   0.079
+2019       32       32,629        100.0%   0.598   0.207   0.079
+2020       32       33,076        100.0%   0.587   0.199   0.083
+2021       32       34,603        100.0%   0.599   0.215   0.072
+2022       32       34,255        100.0%   0.621   0.199   0.081
+2023       32       34,458        100.0%   0.685   0.217   0.017
+2024       32       33,947        100.0%   0.657   0.252   0.017
+2025       32       33,455        100.0%   0.625   0.268   0.020
+
+S8 flags, visible above and handled: (a) offense_personnel is TWO ENCODINGS under one
+name — pre-2023 skill-only strings (raw-file non-empty ~76%), 2023+ full-XI strings
+(100%); RB/TE counts exist in both, which is what the parser extracts. On the ANALYSIS
+population (REG pass/rush attempts joined to pbp) coverage is shown in the table above —
+the pre-2023 raw-file gaps are no_play/admin rows, exactly as T0.1 [R] found for
+offense_players. (b) rates are computed on covered plays only; per-season league means
+printed so any era jump is visible.
+(c) load_ftn_charting has NO personnel column [V] — the assignment's 'ftn 2022+'
+personnel fallback does not exist; participation is the sole personnel source.
+(d) participation<->pbp scrim-play join rate by season: 2016:100.0%, 2017:100.0%, 2018:100.0%, 2019:100.0%, 2020:100.0%, 2021:100.0%, 2022:100.0%, 2023:100.0%, 2024:100.0%, 2025:100.0%
+
+Touch-concentration table (weekly.parquet REG, 2014-2025): 384 team-seasons, 32/season asserted (S8). Positions are the panel's QB/RB/WR/
+TE only — FB targets/touches are outside the panel and excluded from denominators.
+
+Inside-5 table (pbp_slim REG rush_attempt==1 & yardline_100<=5, rusher position via
+weekly panel map; unmapped rushers (FB/OL/DST) -> 'OTH'): 384 team-seasons, 32/season asserted (S8).
+League-wide inside-5 rushes/team-season: median 22, p10 14, p90 33 — the charter's
+'brutal denominators (~25-45)' warning is confirmed. Kneel plays at the opponent 5
+cannot be excluded (pbp_slim carries no qb_kneel column); they are rare end-of-half
+events and are noted as a small contaminant of qb_share.
+
+====================================================================================================
+H2a PREMISE GATE — personnel-profile carryover (11/12/21 rates)
+====================================================================================================
+
+Usable carryable coach-moves: n = 31 (of 31) — effective n / cluster count (S11)
+Caller prior-stint seasons pooled per event: median 2, max 6; recency gap (event yr - last stint yr): median 1, max 5
+
+--- PRIMARY (as declared): RAW personnel rates ---
+rate   predR2 null  predR2 caller  predR2 blend  fitR2 null  fitR2 +caller     dR2  dR2_adj
+r11         -0.355         -0.001         0.307       0.031          0.383   0.352    0.341   caller beta=+0.555
+r12         -0.696         -0.444        -0.140       0.000          0.082   0.082    0.051   caller beta=+0.293
+r21          0.400         -1.244         0.196       0.406          0.486   0.081    0.064   caller beta=+0.236
+mean Delta R2_adj across the three rates = +0.152  [95% CI +0.040, +0.318]   (raw in-sample mean dR2 = +0.171, upward-biased)
+H2a VERDICT (primary, raw rates): PASS-PREMISE  (rule pre-stated; threshold ~15%)
+
+Robustness check 1 — LEAVE-ONE-OUT CROSS-VALIDATION (guards against in-sample
+optimism in dR2_adj: each event predicted by a model fit on the other 30):
+rate   cvR2 null-model  cvR2 +caller  cv gain
+r11             -0.119         0.249   +0.368
+r12             -0.123        -0.130   -0.007
+r21              0.065         0.094   +0.029
+mean LOO-CV gain = +0.130 (confirms the in-sample primary)
+
+Robustness check 2 — LEAVE-ONE-EVENT-OUT JACKKNIFE on the primary statistic
+(C11 precedent: if one dropped event moves the result by more than half, the finding
+is one event, not a rule):
+jackknife primary over 31 drops: min +0.114 (dropping 2022 LV Josh McDaniels), max +0.198; drops below the 0.15 threshold: 14/31; drops below 0: 0/31
+
+SECONDARY (era-robust instrument-break control, NOT the declared primary): the 2023
+participation product changes the personnel LEVELS (league 21-personnel collapses from
+~8% to ~1.7% at the break — a charting change, not football). For 2024+ events the
+null (=Y-1) is measured in the same era as the outcome while older caller stints are
+not, which mechanically favors the null. Within-season cross-team z-scores remove the
+level shift; caller profile = cov-weighted mean of his stint-season z-scores.
+
+--- SECONDARY: within-season z-scored rates ---
+rate   predR2 null  predR2 caller  predR2 blend  fitR2 null  fitR2 +caller     dR2  dR2_adj
+z11         -0.476          0.231         0.239       0.001          0.372   0.371    0.361   caller beta=+0.630
+z12         -0.631         -0.395        -0.040       0.000          0.119   0.119    0.090   caller beta=+0.330
+z21          0.031         -0.616         0.067       0.150          0.189   0.040    0.011   caller beta=+0.207
+mean Delta R2_adj across the three rates = +0.154  [95% CI +0.058, +0.305]   (raw in-sample mean dR2 = +0.177, upward-biased)
+Secondary would read: PASS — reported for era-robustness only; the verdict above stands on the declared primary.
+
+====================================================================================================
+H2b PREMISE GATE — touch-concentration carryover (RB HHI / top-back / RB+TE tgt share)
+====================================================================================================
+
+Usable carryable coach-moves: n = 31 (of 31) — effective n / cluster count (S11)
+Caller profile = EQUAL-WEIGHT mean of his prior other-team stint-season metric values
+
+metric            mean|e| null  mean|e| caller  mean|e| blend  mean|e| lgmean  diff null-caller               95% CI  caller wins
+rb_hhi                  0.1133          0.1208         0.0934          0.0741           -0.0075   [-0.0390, +0.0236]         45% <-- PRIMARY
+top_back_share          0.1341          0.1418         0.1134          0.0889           -0.0076   [-0.0462, +0.0281]         52%
+rb_tgt_share            0.0412          0.0444         0.0412          0.0380           -0.0032   [-0.0166, +0.0110]         42%
+te_tgt_share            0.0583          0.0475         0.0452          0.0346           +0.0108   [-0.0118, +0.0317]         65%
+(shrinkage read: caller only carries INFORMATION where mean|e| caller < mean|e| lgmean as well as < mean|e| null)
+
+H2b PRIMARY (rb_hhi): diff(|e|null - |e|caller) = -0.007  [95% CI -0.039, +0.024]  on n = 31 coach-move clusters (S11)
+H2b VERDICT: FAIL-PREMISE  (rule pre-stated in docstring)
+
+ADP-control regressions (SECONDARY; charter: 'the concentration a caller ran is
+partly the back he had'). outcome ~ prior + caller  vs  ... + bestback_adp.
+bestback_adp defined for 31/31 events (min RB adp on receiving team, event season; union panel: seasons.parquet <2025 + T0.2 repair for 2025, whose price
+instrument is SLEEPER adp_ppr, NOT ESPN/FFC — stated per T0.2's downstream contract.
+Missing best-back ADP (no priced RB) filled at 200 for 0 events.
+metric            beta_caller (no ctl)  beta_caller (+adp ctl)  dR2_adj (no ctl)  dR2_adj (+ctl)
+rb_hhi                          -0.190                  -0.180            +0.010          +0.004
+top_back_share                  -0.202                  -0.189            +0.015          +0.009
+rb_tgt_share                    +0.176                  +0.181            -0.018          -0.019
+te_tgt_share                    +0.201                  +0.167            +0.015          +0.001
+
+====================================================================================================
+H2c PREMISE GATE — inside-5 goal-line tendency carryover
+====================================================================================================
+Bar stated in COACH-MOVES (charter [CORRECTED]): the carryover population is capped at
+31 coach-moves; 'rooms' never enter it. Directional at this n by construction.
+
+Usable carryable coach-moves: n = 31 (of 31) — effective n / cluster count (S11)
+Brutal denominators, as the charter warns: receiving-team inside-5 rushes in the event season: median 27, min 5, max 48; caller pooled prior plays: median 50, min 15
+Binomial noise floor on the OUTCOME itself: sampling SD of rb_share at median denominator ~ 0.082 — no predictor can beat that floor; intervals, not points.
+Caller share profile = POOLED raw inside-5 plays across prior other-team stints;
+concentration profile = play-weighted mean of per-stint-season values (identity of the
+top back does not travel; only the concentration level can).
+
+metric            mean|e| null  mean|e| caller  mean|e| blend  mean|e| lgmean  diff null-caller               95% CI  caller wins
+rb_share                0.1299          0.1402         0.1281          0.1192           -0.0103   [-0.0586, +0.0393]         45% <-- PRIMARY
+qb_share                0.1330          0.1406         0.1306          0.1162           -0.0076   [-0.0497, +0.0381]         58%
+nonqb_top_share         0.1811          0.1367         0.1420          0.1279           +0.0445   [-0.0011, +0.0911]         68%
+nonqb_hhi               0.1806          0.1234         0.1364          0.1204           +0.0571   [+0.0034, +0.1100]         68%
+(shrinkage read: caller only carries INFORMATION where mean|e| caller < mean|e| lgmean as well as < mean|e| null)
+
+H2c PRIMARY (rb_share): diff(|e|null - |e|caller) = -0.010  [95% CI -0.059, +0.039]  on n = 31 coach-move clusters (S11)
+H2c VERDICT: FAIL-PREMISE  (rule pre-stated in docstring)
+
+====================================================================================================
+SPLIT-OUT (separate, non-carryover hypothesis) — TEAM-LEVEL inside-5 concentration
+stability, ALL teams, ALL adjacent season pairs (the 'much larger population')
+====================================================================================================
+
+Team-season pairs: n = 352 (2015-2025); clusters = 32 TEAMS (S11 — the repeated unit here is the franchise)
+
+metric            YoY Pearson r    95% CI (team-clustered)
+nonqb_top_share           0.067           [-0.011, +0.142] <-- PRIMARY (declared)
+nonqb_hhi                 0.064           [-0.016, +0.138]
+rb_share                  0.348           [+0.210, +0.457]
+qb_share                  0.335           [+0.164, +0.456]
+
+SPLIT-OUT VERDICT: UNSTABLE  (pre-stated rule: STABLE if r >= 0.30 and CI excludes 0)
+Context: if even the SAME franchise's goal-line concentration barely persists year to
+year, a caller-carryover version of the same quantity has no stable target to carry.
+
+====================================================================================================
+VERDICT TABLE (4 primary endpoints from this script; all enter the global S14/FDR set)
+====================================================================================================
+gate         primary endpoint                                           n(clusters) verdict        
+H2a          mean dR2_adj of caller personnel profile over team-prior            31 PASS-PREMISE   
+H2b          |e|null - |e|caller, RB touch HHI                                   31 FAIL-PREMISE   
+H2c          |e|null - |e|caller, inside-5 RB share                              31 FAIL-PREMISE   
+split-out    YoY r of team inside-5 non-QB top-rusher share                32 teams UNSTABLE       
+
+ROUTING (charter-mandated, regardless of verdicts): NONE of these gates may proceed
+to a points test at n=31 clusters. A PASS-PREMISE routes to the 2026 preregistration +
+a future run on a hand-extended playcallers_hist (back to 2014, ~160 more team-seasons
+of MANUAL news verification — a budgeted human task, not code). A FAIL-PREMISE is a
+legitimate kill-list entry and closes the line cheaply, which the charter names as the
+expected and correct outcome.
+
+====================================================================================================
+INTERPRETATION
+====================================================================================================
+
+H2a — PASS-PREMISE, and honesty demands three qualifiers in the same breath:
+  (1) MARGINAL: the primary lands at +0.152 against a ~0.150 abandon threshold — at the
+      wire. The jackknife never goes below zero (min +0.114) but 14/31 single-event drops push
+      it under the threshold: the PASS/FAIL label is fragile even though the SIGN is not.
+  (2) The effect is almost entirely ONE rate: 11-personnel (dR2_adj +0.341, LOO-CV gain +0.368,
+      caller beta +0.56). 12- and 21-personnel carryover is ~nil (+0.051, +0.064 in-sample;
+      -0.007, +0.029 in LOO-CV). The surviving claim is narrow: "an incoming caller's
+      three-wide rate travels with him"; the TE-heavy / two-back shape does not measurably.
+  (3) It survived the checks that usually kill this kind of result here: LOO cross-validation
+      (+0.130 mean gain — not in-sample optimism), the era-robust z-scored rerun
+      (+0.154 [+0.058, +0.305] — not the 2023 charting break), and a null
+      predictor (team prior year) that is genuinely hard to beat elsewhere in this script.
+  A useful diagnostic fell out: after a carryable caller change, the receiving team's OWN
+  prior-year 11-rate has predictive R2 ~ -0.36 to 0.03 — i.e. WORSE than predicting the league
+  mean. Regime change really does reset the personnel mix; the new caller's history is the
+  better prior. That is the premise H2a needed, and it is the ONLY thing this gate certifies.
+  ROUTE: 2026 preregistration only (predicted personnel mixes for the teams receiving the
+  carryable 2026 callers), per charter. NOT a points test; NOT a board input.
+
+H2b — FAIL-PREMISE, kill-list entry with the numbers:
+  Caller profile LOSES to team-prior-year on rb_hhi (-0.0075), top_back_share (-0.0076) and
+  rb_tgt_share (-0.0032), and its one directional win (te_tgt_share +0.0108, CI includes 0)
+  fails the shrinkage comparator — the prior-season LEAGUE MEAN beats the caller profile on
+  ALL FOUR metrics (e.g. rb_hhi 0.0741 vs 0.1208). Touch concentration at the team level is
+  mean-reverting noise; there is nothing caller-shaped in it to carry. The charter-named
+  confound was addressed head-on: controlling the receiving team's best-back ADP barely moves
+  the caller coefficient (rb_hhi -0.190 -> -0.180), so the null is not the talent control's
+  artifact. Per the charter: step one failed, STOP — no fantasy test on a broken premise.
+
+H2c — FAIL-PREMISE, kill-list entry with the numbers:
+  Primary (inside-5 RB share): caller profile loses to team-prior (-0.0103, CI [-0.059,
+  +0.039]). The seductive secondary — nonqb_hhi +0.0571 with a CI excluding zero — is exposed
+  by the shrinkage comparator: the caller's pooled profile (mean|e| 0.1234) does NOT beat the
+  prior-season league mean (0.1204). A pooled multi-season profile wins against a noisy
+  one-season team value by variance reduction alone; it carries no caller-specific
+  information. The split-out explains why nothing could carry: the receiving-team quantity
+  itself has franchise-level YoY r = 0.067 — there is no stable target. Even the charter's
+  fallback use ("a committee tie-breaker only") is dead: the league mean is the better
+  tie-breaker. The goal-line denominators (median 27 outcome plays, binomial noise floor
+  ~0.08 on the outcome itself) were the charter's stated fear and are confirmed.
+
+SPLIT-OUT — team-level inside-5 stability (the larger-population, non-carryover question):
+  Goal-line CONCENTRATION (who among the non-QB rushers gets the carries) is UNSTABLE year to
+  year (r = 0.067 [-0.011, +0.142], 352 pairs, 32 team clusters). The QB-vs-RB MIX is
+  moderately persistent (rb_share r = 0.348 [+0.210, +0.457]; qb_share r = 0.335 [+0.164,
+  +0.456]) — a roster property (who your QB is), not shown here to be a caller property:
+  caller profiles did not beat team-prior on qb_share either (-0.0076). Descriptive, not
+  actionable: no board input follows from a stability coefficient.
+
+====================================================================================================
+NOT DONE / LIMITS (stated so the absence is not read as an omission)
+====================================================================================================
+
+* NO points test, in either currency (league or base PPR) — charter-mandated for all three
+  gates ("The points test is NOT reachable at this n and the charter does not pretend it is").
+  S12's both-currency rule is therefore N/A to this script by design.
+* The caller-profile definitions (play-weighted personnel pool; equal-weight stint mean for
+  concentration; pooled raw plays for inside-5 shares) are single pre-stated choices, not a
+  swept family — sweeping profile definitions on n=31 clusters would be S2-shaped overfitting,
+  so the sweep was deliberately not run. A recency-weighted profile is the one variant a 2026
+  preregistration could reasonably also carry for H2a.
+* playcallers_hist.csv granularity limits inherited: one primary caller per team-season
+  (midseason changes invisible); two committee cells (Godsey/Studesville MIA2021,
+  Patricia/Judge NE2022) can never match an individual's prior history; Mike Kafka (NYG 2025)
+  excluded per T0.2's same-team-only refinement.
+* The charter's "~15% of the receiving team's next-season mix" did not pin the exact
+  statistic; this script's reading (mean Delta R2_adj across the three rates, vs the
+  team-prior-year null) was declared in the docstring BEFORE the run. Under that reading H2a
+  passes at the boundary; a stricter reading (all three rates individually >= 15%) would FAIL
+  (only 11-personnel clears it). Both readings are reported above; the declared one governs.
+* qb_share carries rare end-of-half kneel contamination (pbp_slim has no qb_kneel column;
+  FTN's is_qb_sneak exists only 2022+ — 4 of 10 outcome years — and was not used).
+* 2025 prices in the best-back ADP control are the T0.2 repair instrument (Sleeper adp_ppr,
+  not ESPN/FFC).
+* load_ftn_charting has NO personnel column [V] — the assignment's "ftn 2022+" personnel
+  fallback does not exist; participation.offense_personnel (2016-2025) is the sole source.
+* FDR: this script contributes 4 primary endpoints (raw verdicts printed here); the global
+  Benjamini-Hochberg pass at q=0.10 across ALL charter primaries happens in the Blueprint,
+  not here.
+* Hand-extending playcallers_hist.csv to 2014 (~160 team-seasons of manual news verification)
+  remains the only lever that changes n=31. On these results it is justifiable ONLY for the
+  H2a personnel gate; spending it on H2b/H2c would be re-opening lines that died with the
+  league-mean comparator in hand.
+
+FILE INVENTORY (this run):
+  script   icm/work/mc_research/56_premise_gates.py
+  results  icm/work/mc_research/results_56_premise_gates.txt
+  caches   icm/work/mc_research/raw/personnel56_{2016..2025}.parquet (team-season
+           11/12/21 counts from participation x pbp_slim REG scrimmage plays)
+  inputs   data/playcallers_hist.csv (224 rows), weekly.parquet (67,353),
+           pbp_slim_{2014..2025}.parquet [T0.3], seasons.parquet + 
+           seasons_2025repair.parquet [T0.2], participation via nflreadpy .nflcache

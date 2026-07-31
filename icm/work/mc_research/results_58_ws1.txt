@@ -1,0 +1,288 @@
+========================================================================================
+58 — WS1 DECOMPOSITION (quantification only). Run 2026-07-31. All numbers [V]
+unless marked [R]. 2025 price instrument = Sleeper adp_ppr (T0.2 repair), NOT FFC/ESPN.
+========================================================================================
+S8 union panel rows/season: 2014:544 2015:556 2016:557 2017:553 2018:577 2019:572 2020:602 2021:633 2022:608 2023:576 2024:588 2025:608
+S8 weekly_league rows/season: 2014:5412 2015:5423 2016:5413 2017:5448 2018:5363 2019:5411 2020:5543 2021:5866 2022:5808 2023:5797 2024:5849 2025:6020
+
+priced rows (ADP instrument)/season: 2014:159 2015:165 2016:158 2017:156 2018:164 2019:165 2020:170 2021:179 2022:146 2023:177 2024:176 2025:591
+
+========================================================================================
+PART 1 — VARIANCE DECOMPOSITION of league-scored PPG (games>=6)
+========================================================================================
+Estimator: MoM cross-products. player = same-player pairs across seasons w/ DIFFERENT
+modal team (persistent-team leak excluded; all-pairs shown as sensitivity).
+team-season = teammate pairs. CONFOUNDS: co-location biases UP; same-position share
+cannibalization biases DOWN (C15: same-team RB r=-0.28) — treat as a bracket.
+CIs: leave-one-season-out jackknife, cluster = SEASON, n = 12 (S11).
+
+League-PPG market curve at ADP pos-rank 1/5/12/24/36 (fit on priced pool, in-sample):
+  QB:  23.3  22.4  20.7  16.7  11.4
+  RB:  21.9  21.4  18.3  13.2  11.6
+  WR:  22.1  19.9  17.0  14.9  13.2
+  TE:  16.3  12.4  11.2   8.2   6.3
+
+--- QB ---
+  RAW league PPG (full pool)   n= 502  totalSD= 6.62 ppg  (clusters: 12 seasons; pairs P/T 551/126)
+    player      14.2% ±15.1%   SD  2.49 ppg =  42.4 pts/17g   [all-pairs sens: 36.1%]
+    team-season -30.8% ±27.7%   SD  0.00 ppg =   0.0 pts/17g
+    residual    116.6% ±22.3%   SD  7.15 ppg = 121.5 pts/17g
+  RAW league PPG (priced pool) n= 278  totalSD= 4.91 ppg  (clusters: 0 seasons; pairs P/T 191/2)
+    player      -7.1%   SD  0.00 ppg =   0.0 pts/17g   [all-pairs sens: 24.1%]
+    team-season      n/a   SD   nan ppg =   nan pts/17g
+    residual    107.1%   SD  5.08 ppg =  86.4 pts/17g
+  ABOVE-PRICE league PPG       n= 278  totalSD= 4.34 ppg  (clusters: 0 seasons; pairs P/T 191/2)
+    player      -6.3%   SD  0.00 ppg =   0.0 pts/17g   [all-pairs sens:  2.2%]
+    team-season      n/a   SD   nan ppg =   nan pts/17g
+    residual    106.3%   SD  4.48 ppg =  76.2 pts/17g
+    NOT-TESTABLE at QB for the team-season term on the priced pool: only 2 same-position teammate pairs (a roster rarely prices two same-position QBs) — player/residual terms stand.
+    PRICING-ACCURACY GAP (the clean readout): the PLAYER (portable) share collapses -7.1% raw -> -6.3% above-price.
+    The market prices the persistent player component nearly completely; what survives price is dominated by the season residual.
+  ABOVE-PRICE base PPG (secondary) n= 278  totalSD= 3.70 ppg  (clusters: 0 seasons; pairs P/T 191/2)
+    player      -8.8%   SD  0.00 ppg =   0.0 pts/17g   [all-pairs sens:  0.2%]
+    team-season      n/a   SD   nan ppg =   nan pts/17g
+    residual    108.8%   SD  3.85 ppg =  65.5 pts/17g
+
+--- RB ---
+  RAW league PPG (full pool)   n=1326  totalSD= 6.46 ppg  (clusters: 12 seasons; pairs P/T 1138/1746)
+    player      46.8% ±22.3%   SD  4.42 ppg =  75.1 pts/17g   [all-pairs sens: 69.9%]
+    team-season -22.9% ±3.0%   SD  0.00 ppg =   0.0 pts/17g
+    residual    76.1% ±20.7%   SD  5.63 ppg =  95.8 pts/17g
+  RAW league PPG (priced pool) n= 657  totalSD= 6.01 ppg  (clusters: 12 seasons; pairs P/T 443/326)
+    player      36.6% ±29.9%   SD  3.64 ppg =  61.8 pts/17g   [all-pairs sens: 50.0%]
+    team-season -25.9% ±9.8%   SD  0.00 ppg =   0.0 pts/17g
+    residual    89.3% ±26.6%   SD  5.68 ppg =  96.6 pts/17g
+  ABOVE-PRICE league PPG       n= 657  totalSD= 4.40 ppg  (clusters: 12 seasons; pairs P/T 443/326)
+    player       5.7% ±15.9%   SD  1.05 ppg =  17.8 pts/17g   [all-pairs sens:  2.0%]
+    team-season -19.9% ±12.6%   SD  0.00 ppg =   0.0 pts/17g
+    residual    114.3% ±18.2%   SD  4.70 ppg =  80.0 pts/17g
+    PRICING-ACCURACY GAP (the clean readout): the PLAYER (portable) share collapses 36.6% raw ->  5.7% above-price.
+    The market prices the persistent player component nearly completely; what survives price is dominated by the season residual.
+  ABOVE-PRICE base PPG (secondary) n= 657  totalSD= 3.65 ppg  (clusters: 12 seasons; pairs P/T 443/326)
+    player       6.9% ±15.0%   SD  0.96 ppg =  16.3 pts/17g   [all-pairs sens:  3.5%]
+    team-season -18.4% ±12.1%   SD  0.00 ppg =   0.0 pts/17g
+    residual    111.5% ±16.5%   SD  3.85 ppg =  65.4 pts/17g
+
+--- WR ---
+  RAW league PPG (full pool)   n=2086  totalSD= 5.85 ppg  (clusters: 12 seasons; pairs P/T 2157/4779)
+    player      46.1% ±10.1%   SD  3.97 ppg =  67.5 pts/17g   [all-pairs sens: 77.2%]
+    team-season -10.8% ±1.5%   SD  0.00 ppg =   0.0 pts/17g
+    residual    64.7% ±9.7%   SD  4.70 ppg =  79.9 pts/17g
+  RAW league PPG (priced pool) n= 758  totalSD= 5.26 ppg  (clusters: 12 seasons; pairs P/T 608/490)
+    player      18.4% ±22.1%   SD  2.25 ppg =  38.3 pts/17g   [all-pairs sens: 40.8%]
+    team-season -1.1% ±8.3%   SD  0.00 ppg =   0.0 pts/17g
+    residual    82.7% ±22.8%   SD  4.78 ppg =  81.3 pts/17g
+  ABOVE-PRICE league PPG       n= 758  totalSD= 3.93 ppg  (clusters: 12 seasons; pairs P/T 608/490)
+    player      -0.9% ±14.2%   SD  0.00 ppg =   0.0 pts/17g   [all-pairs sens:  3.2%]
+    team-season  1.6% ±12.6%   SD  0.50 ppg =   8.5 pts/17g
+    residual    99.3% ±12.2%   SD  3.91 ppg =  66.5 pts/17g
+    PRICING-ACCURACY GAP (the clean readout): the PLAYER (portable) share collapses 18.4% raw -> -0.9% above-price.
+    The market prices the persistent player component nearly completely; what survives price is dominated by the season residual.
+  ABOVE-PRICE base PPG (secondary) n= 758  totalSD= 3.32 ppg  (clusters: 12 seasons; pairs P/T 608/490)
+    player      -1.5% ±13.2%   SD  0.00 ppg =   0.0 pts/17g   [all-pairs sens:  2.1%]
+    team-season  2.2% ±12.4%   SD  0.49 ppg =   8.4 pts/17g
+    residual    99.3% ±11.5%   SD  3.31 ppg =  56.3 pts/17g
+
+--- TE ---
+  RAW league PPG (full pool)   n=1094  totalSD= 4.32 ppg  (clusters: 12 seasons; pairs P/T 1014/1113)
+    player      49.5% ±8.7%   SD  3.04 ppg =  51.7 pts/17g   [all-pairs sens: 83.8%]
+    team-season -22.3% ±4.4%   SD  0.00 ppg =   0.0 pts/17g
+    residual    72.8% ±7.9%   SD  3.69 ppg =  62.7 pts/17g
+  RAW league PPG (priced pool) n= 241  totalSD= 4.11 ppg  (clusters: 0 seasons; pairs P/T 116/23)
+    player       9.5%   SD  1.27 ppg =  21.5 pts/17g   [all-pairs sens: 53.2%]
+    team-season      n/a   SD   nan ppg =   nan pts/17g
+    residual    90.5%   SD  3.91 ppg =  66.5 pts/17g
+  ABOVE-PRICE league PPG       n= 241  totalSD= 3.36 ppg  (clusters: 0 seasons; pairs P/T 116/23)
+    player       5.5%   SD  0.78 ppg =  13.3 pts/17g   [all-pairs sens: 13.2%]
+    team-season      n/a   SD   nan ppg =   nan pts/17g
+    residual    94.5%   SD  3.26 ppg =  55.5 pts/17g
+    NOT-TESTABLE at TE for the team-season term on the priced pool: only 23 same-position teammate pairs (a roster rarely prices two same-position TEs) — player/residual terms stand.
+    PRICING-ACCURACY GAP (the clean readout): the PLAYER (portable) share collapses  9.5% raw ->  5.5% above-price.
+    The market prices the persistent player component nearly completely; what survives price is dominated by the season residual.
+  ABOVE-PRICE base PPG (secondary) n= 241  totalSD= 2.92 ppg  (clusters: 0 seasons; pairs P/T 116/23)
+    player       4.2%   SD  0.60 ppg =  10.1 pts/17g   [all-pairs sens: 12.3%]
+    team-season      n/a   SD   nan ppg =   nan pts/17g
+    residual    95.8%   SD  2.86 ppg =  48.5 pts/17g
+
+CROSS-POSITION TEAMMATE ESTIMATOR (pooled, y demeaned within position-season):
+  shared 'team environment' covariance with same-pie competition reduced;
+  same-position covariance shown for contrast (= environment MINUS cannibalization).
+  RAW league PPG, full pool   : cross-pos share  +2.1% ± 0.8% (pairs 22767) = SD 0.85 ppg =  14.4 pts/17g | same-pos share -15.5% (pairs 7764)
+  RAW league PPG, priced      : cross-pos share  +2.4% ± 3.2% (pairs 3530) = SD 0.83 ppg =  14.1 pts/17g | same-pos share -13.9% (pairs 841)
+  ABOVE-PRICE league PPG      : cross-pos share  +5.8% ± 2.9% (pairs 3530) = SD 0.99 ppg =  16.8 pts/17g | same-pos share  -8.5% (pairs 841)
+
+PART 1 SUMMARY (league currency, priced pools; ts = same-position teammate bracket, see cross-position line for the environment read):
+  pos   player raw  player abv   ts raw   ts abv  abv totalSD pts/17g
+  QB         -7.1%       -6.3%      n/a      n/a              73.9
+  RB         36.6%        5.7%   -25.9%   -19.9%              74.8
+  WR         18.4%       -0.9%    -1.1%     1.6%              66.8
+  TE          9.5%        5.5%      n/a      n/a              57.0
+  caveat: the QB priced-pool player share is unstable — the different-team pair restriction leaves only team-switching QBs, a biased and thin subset; the full-pool QB estimate (player 14.2%) is the better-supported number.
+
+========================================================================================
+PART 2 — EMPIRICAL STABILIZATION LADDER (split-half odd/even weeks; YoY; leverage)
+========================================================================================
+G* = games-to-stabilize = k*(1-r)/r (Spearman-Brown inversion at mean half-size k).
+Leverage = league season pts (PPG*17) per +1 SD of the season metric, Fama-MacBeth
+by season (mean of per-season cross-sectional slopes; SE over seasons; S11).
+Half values are ratio-of-sums; z-scored within (position, season) before pooling.
+S8 pbp_slim REG plays/season: 2014:45673 2015:46141 2016:45707 2017:45268 2018:45120 2019:45339 2020:45406 2021:47651 2022:47157 2023:47399 2024:47274 2025:46452
+
+THE EMPIRICAL STABILIZATION LADDER (sorted by measured games-to-stabilize G*).
+G*full = all 8+ game player-seasons (population incl. backups: between-player
+spread inflates reliability, so G*full is a lower bound). G*priced = drafted
+players only — the fantasy-relevant read; USE THIS ONE for tier-change timing.
+  metric          pool      r(half)     ±     n G*full        95%CI r(prcd)    n G*prcd  YoY r  lev pts/SD
+  snap_share      RB/WR/TE    0.949 0.004  3475    0.4 [ 0.3,  0.4]   0.900 1696    0.8  0.682  +78.1± 1.5
+  pass_snap_share RB/WR/TE    0.938 0.005  3072    0.4 [ 0.4,  0.5]   0.879 1470    1.0  0.658  +73.9± 2.0
+  carry_share     RB          0.937 0.007  1014    0.4 [ 0.4,  0.5]   0.918  639    0.6  0.676  +87.4± 5.3
+  target_share    WR/TE       0.872 0.012  2371    1.0 [ 0.9,  1.1]   0.790 1055    1.9  0.737  +79.4± 2.9
+  gl_share        RB          0.780 0.028   583    1.5 [ 1.3,  1.7]   0.703  379    2.3  0.651  +85.8± 4.6
+  rz_opp_share    RB/WR/TE    0.655 0.024  3889    3.4 [ 3.1,  3.8]   0.561 1751    5.4  0.625  +80.6± 2.2
+  adot            WR/TE       0.621 0.028  1727    4.3 [ 3.8,  4.9]   0.672  974    3.5  0.632   +2.6± 3.6
+  tgt_per_psnap   RB/WR/TE    0.613 0.030  2409    4.4 [ 3.9,  5.0]   0.588 1330    5.0  0.600  +54.0± 3.6
+  fd_rate_rec     WR/TE       0.379 0.068  1452   11.4 [ 8.6, 15.4]   0.405  890   10.5  0.378  +21.0± 3.2
+  ypc             RB          0.254 0.081   732   20.4 [13.8, 33.2]   0.268  558   19.4  0.210  +37.1± 6.3
+  fd_rate_rush    RB          0.247 0.060   732   21.3 [15.8, 30.4]   0.264  558   19.8  0.225  +28.3± 9.8
+  td_rate         RB/WR/TE    0.209 0.044  1532   27.4 [21.3, 36.7]   0.221 1162   26.0  0.137  +32.5± 4.4
+
+DISAGREEMENTS WITH THE CHARTER'S INHERITED §5 TABLE (ours wins, per WS1 mandate).
+Verdict uses G*priced (drafted-player population) when computable, else G*full;
+the comparator population is stated because reliability is population-dependent.
+  snap_share       [priced] DISAGREES: charter 2-3, measured 0.8 (FASTER)
+  pass_snap_share  [priced] DISAGREES: charter 2-3, measured 1.0 (FASTER)
+  carry_share      [priced] DISAGREES: charter 2-3, measured 0.6 (FASTER)
+  target_share     [priced] DISAGREES: charter 4-6, measured 1.9 (FASTER)
+  gl_share         [priced] DISAGREES: charter 6-10, measured 2.3 (FASTER)
+  rz_opp_share     [priced] agrees (charter 5-7, measured 5.4)
+  adot             [priced] agrees (charter 3-4, measured 3.5)
+  tgt_per_psnap    [priced] DISAGREES: charter 6-8, measured 5.0 (FASTER)
+  fd_rate_rec      [priced] DISAGREES: charter 5-6, measured 10.5 (SLOWER)
+  ypc              [priced] DISAGREES: charter says never, measured G*=19.4
+  fd_rate_rush     [priced] DISAGREES: charter 4-5, measured 19.8 (SLOWER)
+  td_rate          [priced] DISAGREES: charter says never, measured G*=26.0
+
+========================================================================================
+PART 3 — MOVERS: earned opportunity ON TOP OF the Wave-2b proven/unproven control
+========================================================================================
+FIXED CONTROL [R: compute_outcomes.py:173-180, read-only]: proven mover = prior ppg
+>=10 & prior games >=12 (reconstructed here as prev_ppg/prev_games on the panel's
+base-formula ppg — a stated approximation of the pipeline's wk_mean).
+PRIMARY ENDPOINT (declared in header before running): RB team-changers with a price;
+HIGH-vs-LOW prior pass-snap participation (pool median), stratified within
+proven/unproven; outcome = LEAGUE season points above price; cluster = player-move.
+
+S2 slices, declared here BEFORE the replication run: discovery slice = RB
+team-changers 2017-2025 (the position Wave-2b's split was fit on); replication
+slice = WR team-changers 2017-2025 (same design, different position).
+
+RB priced team-changers 2017-2025: n=106 (psp feature coverage 98%, clusters = player-moves = rows)
+  control replication [proven  ]: n= 39 med mult(base)=1.03  bust(mult<=0.75)=28%  mean lg-pts-above-price= +15.1
+  control replication [unproven]: n= 67 med mult(base)=0.78  bust(mult<=0.75)=49%  mean lg-pts-above-price=  -6.4
+
+PRIMARY — prior pass-snap participation, league pts above price:
+  HIGH-LOW = +19.4 league pts/season  95% CI [-16.0, +52.2]  clusters=104 (52 hi/52 lo)  -> CI includes 0
+
+  per-season breakdown (S4): season: n, HIGH-LOW league pts above price
+    2017: n=  9    +31.9
+    2018: n=  7    -26.4
+    2019: n= 10    -14.7
+    2020: n= 10    +21.3
+    2021: n= 14     -3.2
+    2022: n=  5    -33.7
+    2023: n= 10    +68.6
+    2024: n= 16    +40.3
+    2025: n= 23    +32.1
+
+SECONDARY (same design):
+  prior target share          : +34.9 lg pts  CI [+10.3, +60.9]  clusters=106
+  prior targets-per-pass-snap : +23.1 lg pts  CI [-4.9, +49.7]  clusters=104
+  psp_share, BASE currency     : +18.1 base pts  CI [-9.0, +43.6]  clusters=104   (S12 secondary)
+  corr(psp, lg-pts-above) within proven  : r=+0.21 (n=39)
+  corr(psp, lg-pts-above) within unproven: r=+0.05 (n=65)
+
+REPLICATION SLICE (S2) — WR team-changers, same design, same features:
+  WR priced team-changers 2017-2025: n=153
+  prior pass-snap participation: +15.9 lg pts  CI [-11.1, +42.7]  clusters=153
+  prior target share          : -5.7 lg pts  CI [-35.7, +24.0]  clusters=153
+  prior targets-per-pass-snap : -16.6 lg pts  CI [-41.2, +6.2]  clusters=153
+
+========================================================================================
+S14 / MULTIPLE-TEST BLOCK
+========================================================================================
+tests run in this script: 25 declared, 25 with computable p.
+ONE primary endpoint (declared in header): movers psp_share stratified diff.
+Reliability r's are diagnostic (WS1 is a magnitude exercise) but counted per charter.
+The priced-pool ladder columns and the WR replication slice are robustness reads
+of already-counted quantities, not new endpoints; they carry no separate p.
+Benjamini-Hochberg q=0.10: adjusted threshold p<=7.959e-05; 24/25 pass.
+  PASS-adj  p=        0  [reliability] split-half snap_share
+  PASS-adj  p=        0  [reliability] YoY snap_share
+  PASS-adj  p=        0  [reliability] split-half pass_snap_share
+  PASS-adj  p=        0  [reliability] YoY pass_snap_share
+  PASS-adj  p=        0  [reliability] split-half carry_share
+  PASS-adj  p=        0  [reliability] YoY carry_share
+  PASS-adj  p=        0  [reliability] split-half target_share
+  PASS-adj  p=        0  [reliability] YoY target_share
+  PASS-adj  p=        0  [reliability] split-half tgt_per_psnap
+  PASS-adj  p=        0  [reliability] YoY tgt_per_psnap
+  PASS-adj  p=        0  [reliability] split-half adot
+  PASS-adj  p=        0  [reliability] YoY adot
+  PASS-adj  p=        0  [reliability] split-half rz_opp_share
+  PASS-adj  p=        0  [reliability] YoY rz_opp_share
+  PASS-adj  p=        0  [reliability] split-half gl_share
+  PASS-adj  p=        0  [reliability] YoY gl_share
+  PASS-adj  p=        0  [reliability] split-half fd_rate_rec
+  PASS-adj  p=        0  [reliability] YoY fd_rate_rec
+  PASS-adj  p=        0  [reliability] split-half td_rate
+  PASS-adj  p= 6.66e-16  [reliability] split-half fd_rate_rush
+  PASS-adj  p= 6.77e-10  [reliability] split-half ypc
+  PASS-adj  p= 3.15e-08  [reliability] YoY fd_rate_rush
+  PASS-adj  p= 9.37e-06  [reliability] YoY ypc
+  PASS-adj  p= 7.96e-05  [reliability] YoY td_rate
+  fail-adj  p=    0.387  [PRIMARY] PRIMARY movers psp_share stratified
+
+========================================================================================
+PART 4 — REQUIRED HONESTY PARAGRAPH (C3-anchored, points not variance)
+========================================================================================
+
+What is knowable before the season, after the market has spoken, in league points:
+(1) The portable PLAYER component of league PPG collapses once price is controlled —
+RB 37% raw -> 6% (±16%) above
+price, WR 18% -> -1% (±14%).
+The market prices the player almost completely; the unpriced player term is worth at most
+~18 pts/17g SD at RB and ~0 at WR, with CIs through zero.
+(2) The team-season 'situation' term, measured through same-position teammates, is
+NEGATIVE raw (RB -26%) — share cannibalization outweighs shared
+environment, C15/C7 made empirical. The cross-position environment read above price is
++5.8% (±2.9%) — small but statistically NONZERO — i.e.
+~17 pts/17g SD. THAT NUMBER is the
+measured pre-season situation ceiling among priced players (co-location selection biases
+it up; residual one-ball competition biases it down). There is a detectable unpriced
+situation pool, and it is worth roughly one bench-streamer of season points at 1 SD.
+(3) What is left above price is overwhelmingly the season RESIDUAL — total above-price
+SD ~75 pts/17g at RB, ~67 at WR — which
+is exactly the variance C16/S4 say you cannot forecast player-by-player pre-season.
+(4) The one live pre-season overlay tested here (Part 3): PRIMARY +19.4 league pts,
+CI [-16.0, +52.2] — includes zero. The pass-snap overlay is at least
+sign-consistent across slices (RB +19.4 / WR +15.9, both
+CIs through zero). The flashiest number, the target-share secondary
+(+34.9, CI [+10.3,
++60.9] on the RB discovery slice), FAILED its S2
+replication — WR slice -5.7, CI
+[-35.7, +24.0], sign flipped —
+so both overlays are HYPOTHESES for WS2 capped DIRECTIONAL-ONLY, not results.
+ANCHORED TO C3: the friendliest situation bundle ever tested here bought +5.2 points on
+~1,600, CI [-30, +40] [R]. Every ceiling measured in this script is the same order as
+that CI's width or smaller, so WS1 SHARPENS C3 rather than overturning it. VERDICT: the
+pre-season half of the charter is ALIVE ONLY AS CALIBRATION — it bounds nudge sizes and
+prior widths — NOT as a source of edge. Budget belongs with WS3 (the priced-pool ladder
+shows the job metrics — snap/pass-snap/carry/target share — reach r=0.5 discrimination
+in ~1-2 games even among drafted players, goal-line share in ~2, red-zone and
+targets-per-pass-snap in ~5, at 54-87 pts/SD leverage) and WS5 (scoring mechanics), exactly
+as the charter's falsification clause anticipated. 'Situation step changes are
+predictable' did NOT survive in the mean; per the shipped Wave-2b control [R] it
+survives only in the variance (sigma inflation for unproven movers).
+
+Done. All [V] numbers computed this run from committed artifacts;
+[R] numbers cite results_33/compute_outcomes/charter as marked.

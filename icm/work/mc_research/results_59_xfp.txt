@@ -1,0 +1,323 @@
+==============================================================================
+59 — T0.9 + H5e: LEAGUE-SCORING xFP + CHEAP CHECK   (run 2026-07-31 13:13)
+==============================================================================
+
+S14 PRE-REGISTRATION (verbatim from the module docstring; declared before any
+measurement ran):
+  GATE  : cheap check — within (position, season) Spearman(league-xPPG,
+          standard-xPPG), draftable range (priced adp <= 200; >= 8 REG games).
+          If >= 0.98 in EVERY position x season cell -> CLEAN NULL, stop; the
+          board's existing xppg is the same role signal and no points test runs.
+  PRIMARY (only if the gate falsifies the null): delta predictive Spearman vs
+          next-season league points-above-price, clustered on season-pair
+          (11 clusters -> DIRECTIONAL-ONLY per the S11 n<40 floor, stated now).
+  SECONDARY (reported regardless): the 171 no-xppg players — failure mode named
+          up front: value_board.py:90-93 role_pct falls back to target-share pct
+          then 0.5 on NaN xppg; league-xFP shares ff_opportunity's rows, so its
+          coverage is IDENTICAL by construction and cannot help that population.
+
+---- S8: per-year row counts after concat (ffopp slim caches) ----
+season
+2014    5520
+2015    5478
+2016    5473
+2017    5549
+2018    5586
+2019    5633
+2020    5820
+2021    6065
+2022    6038
+2023    6081
+2024    6005
+2025    6054
+
+position filter to QB/RB/WR/TE: kept 63938 rows; dropped positions {'SPEC': 147, 'DB': 120, 'OL': 82, 'P': 69, 'FS': 45, 'G': 42, 'OLB': 40, 'LB': 26, 'DT': 25, 'DE': 22, 'T': 17, 'SS': 16, 'DL': 15, 'K': 12, 'C': 6, 'CB': 1, 'NT': 1}
+REG filter (wk<=17 pre-2021, <=18 after): dropped 2727 postseason rows
+DATA-QUALITY FLAG (raised, frozen file untouched): the FROZEN pipeline's
+load_ff_opportunity.py:43-58 aggregates ALL weeks — it has no REG filter, so
+the shipped xppg mixes postseason weeks into playoff-team players' games and
+per-game rates. 59_ filters REG for research; the flag is for the pipeline owner.
+
+---- standard-scoring formula, verified against the file's own columns [V] ----
+pass  = 0.04*yds + 4*TD - 2*INT + 2*2pt          max|resid| = 7.11e-15
+rec   = 1*rec + 0.1*yds + 6*TD + 2*2pt - 2*fumL  max|resid| = 7.11e-15
+rush  = 0.1*yds + 6*TD + 2*2pt - 2*fumL          max|resid| = 7.11e-15
+total = pass + rec + rush                        max|resid| = 7.11e-15
+exp side uses the SAME formula (pass check)      max|resid| = 4.08e-02 (rounding of stored cols)
+=> nflverse 'standard' = 4-pt pass TD, full PPR, -2 INT/fumble, NO first
+   downs, NO tiers, NO long-TD bonuses, NO sacks. League deltas vs it:
+   pass TD 6 (vs 4), +0.5/rush FD, +0.5/rec FD, tiers 3/5 rush 2/4 rec 3/5 pass,
+   long-TD +0.5/1 pass +1/2 rec +2/3 rush (cumulative). No sack/fumble/return exp exists in the source (omitted BOTH sides).
+
+---- approximation (a): tier crossing curves P(actual >= T | expected x) ----
+logistic-in-x, fit on 2014-2019 only; out-of-era calibration below [V]
+  rush: fit rows 11366, 100+ games 581, 200+ games 12; logit(100+) = -7.568 + 0.0816x, logit(200+) = -12.600 + 0.0790x
+   rec: fit rows 23979, 100+ games 1142, 200+ games 26; logit(100+) = -6.754 + 0.0689x, logit(200+) = -10.887 + 0.0597x
+  pass: fit rows 3536, 300+ games 728, 400+ games 84; logit(300+) = -7.701 + 0.0244x, logit(400+) = -12.054 + 0.0279x
+
+  out-of-era calibration (2020-2025): predicted vs actual TIER POINTS per season
+  (actual = exact tier points from the same rows' actual yardage)
+family   pass    rec   rush
+season                     
+2020    1.066  1.012  1.066
+2021    1.151  1.143  1.089
+2022    1.146  1.010  0.979
+2023    0.927  0.936  1.268
+2024    1.143  0.989  0.995
+2025    1.399  1.116  1.072
+  (ratio = predicted/actual league-wide; 1.00 = perfectly calibrated)
+
+  top-decile-of-x calibration (the range that matters for draftable players):
+    rush: x >= 69 (1292 rows)  pred 1551 vs actual 1442  (ratio 1.076)
+     rec: x >= 65 (2583 rows)  pred 1699 vs actual 1732  (ratio 0.981)
+    pass: x >= 315 (390 rows)  pred 886 vs actual 842  (ratio 1.052)
+
+---- approximation (b): long-TD rates per position x component (2014-2019) [V] ----
+expected long-TD BONUS POINTS per expected TD (position-constant — cannot
+reorder within position except via td_exp weighting; stated limit):
+     pass    rec   rush
+QB  0.157  0.321  0.041
+RB  0.158  0.227  0.306
+WR  0.283  0.424  0.723
+TE  0.158  0.121  0.274
+
+---- league-xFP assembly (constants imported from scoring_config only) ----
+SCORING keys with no expectation in the source, omitted: ['fg_missed', 'fumbles_lost', 'pat_made']
+joined weekly_league actuals: pts_league present on 98.0% of rows (gap = ff_opportunity rows outside the T0.3 panel, e.g. 0-stat weeks)
+
+---- S8: per-season mean per-row (league-xFP - standard-xFP) by position ----
+position     QB     RB     TE     WR
+season                              
+2014      4.110  1.424  0.772  1.338
+2015      4.193  1.412  0.807  1.346
+2016      4.175  1.512  0.814  1.301
+2017      3.812  1.466  0.714  1.177
+2018      4.323  1.552  0.744  1.325
+2019      4.250  1.588  0.765  1.294
+2020      4.541  1.583  0.817  1.345
+2021      4.226  1.625  0.779  1.259
+2022      4.081  1.573  0.702  1.216
+2023      3.647  1.583  0.698  1.164
+2024      3.848  1.604  0.706  1.206
+2025      3.767  1.629  0.714  1.158
+(a dead component would break a column's band visibly)
+
+wrote /Users/natearaskog/fantasy-analyzer/icm/work/mc_research/league_xfp_weekly.parquet (61211 rows, 16 cols) — emitted regardless of the H5e verdict (T0.9 deliverable for WS3)
+
+==============================================================================
+CHEAP CHECK (H5e gate) — draftable range = priced adp <= 200 (2025 instrument = Sleeper adp_ppr per T0.2), games >= 8
+==============================================================================
+---- S8/S5: draftable-pool size per season x position ----
+position  QB  RB  TE  WR
+season                  
+2014      20  46  15  58
+2015      21  47  17  56
+2016      23  43  17  58
+2017      18  48  14  57
+2018      23  51  15  62
+2019      22  54  16  61
+2020      22  52  18  57
+2021      23  56  20  60
+2022      18  48  15  56
+2023      20  54  19  71
+2024      25  55  19  66
+2025      21  49  22  60
+
+---- Spearman(xppg_league, xppg_std) per position x season [V] ----
+position      QB      RB      TE      WR
+season                                  
+2014      0.9865  0.9961  0.9964  0.9993
+2015      0.9948  0.9946  0.9951  0.9984
+2016      0.9753  0.9965  0.9975  0.9989
+2017      0.9876  0.9798  1.0000  0.9994
+2018      0.9960  0.9964  1.0000  0.9989
+2019      0.9932  0.9941  1.0000  0.9990
+2020      0.9864  0.9961  1.0000  0.9985
+2021      0.9951  0.9946  0.9970  0.9992
+2022      0.9938  0.9963  1.0000  0.9992
+2023      0.9895  0.9966  0.9930  0.9990
+2024      0.9962  0.9964  0.9982  0.9989
+2025      0.9870  0.9943  0.9977  0.9988
+
+---- per-position summary over the 12 seasons ----
+          n_seasons  pooled_min  pooled_median  pooled_mean
+position                                                   
+QB               12      0.9753         0.9913       0.9901
+RB               12      0.9798         0.9961       0.9943
+TE               12      0.9930         0.9980       0.9979
+WR               12      0.9984         0.9990       0.9990
+
+sensitivity variants (median rho by position — does the verdict depend on the
+distributional assumptions?):
+            full  no_tier  no_longTD  analytic_only
+position                                           
+QB        0.9913   0.9889     0.9921         0.9912
+RB        0.9961   0.9981     0.9961         0.9981
+TE        0.9980   0.9981     0.9973         0.9991
+WR        0.9990   0.9992     0.9988         0.9992
+
+minimum cell: rho = 0.9753  (QB 2016, n = 23)
+pre-registered rule: >= 0.98 in EVERY cell -> CLEAN NULL, stop.
+GATE VERDICT: FALSIFIED — at least one cell < 0.98; run `predict` (primary endpoint).
+
+---- level shift by position (league-xPPG minus standard-xPPG, draftable pool) ----
+          mean   std   min   max
+position                        
+QB        5.18  1.16  2.45  8.50
+RB        2.14  1.00  0.22  6.44
+TE        1.33  0.50  0.40  3.13
+WR        1.82  0.71  0.42  4.18
+(cross-position level shifts are REAL under the league table but role_pct is a
+ WITHIN-position percentile — value_board.py:90 — so ranks are the decision object)
+
+---- biggest within-(position,season) rank movers in the draftable pool [V] ----
+ season position           full_name  games  xppg_std  xppg_league  rk_sd  rk_lg  rk_move
+   2017       RB         James White     14     10.63        12.01   17.0   27.0    -10.0
+   2017       RB     Jamaal Williams     14     10.11        12.35   28.0   21.0      7.0
+   2017       RB        Duke Johnson     16     10.57        12.16   19.0   25.0     -6.0
+   2017       RB      Marshawn Lynch     15     10.36        12.63   25.0   19.0      6.0
+   2019       RB         Marlon Mack     14     12.19        15.57   26.0   20.0      6.0
+   2025       RB        J.K. Dobbins     10     10.88        13.42   29.0   23.0      6.0
+   2017       RB          Matt Forte     12     10.17        11.43   27.0   32.0     -5.0
+   2019       RB         James White     15     13.36        15.08   18.0   23.0     -5.0
+   2020       RB         James White     14      8.23         9.34   35.0   40.0     -5.0
+   2025       RB           RJ Harvey     17     11.12        12.88   24.0   29.0     -5.0
+   2021       RB       Chuba Hubbard     16      9.36        11.26   41.0   36.0      5.0
+   2015       RB      Danny Woodhead     16     13.77        15.67    9.0   14.0     -5.0
+   2021       RB Rhamondre Stevenson     12      9.53        11.44   39.0   35.0      4.0
+   2024       RB       Derrick Henry     17     15.21        19.32   14.0   10.0      4.0
+   2024       RB         Josh Jacobs     17     15.79        19.33   13.0    9.0      4.0
+
+mean |rank move| by position: {'QB': 0.5, 'RB': 0.97, 'TE': 0.13, 'WR': 0.44}
+
+==============================================================================
+SECONDARY — the 171 no-xppg players (failure mode named BEFORE any test)
+==============================================================================
+value_board.csv: 536 players, 171 with xppg NaN [V] (charter says 171 [R] — MATCH)
+by position: {'K': 33, 'QB': 26, 'RB': 32, 'TE': 26, 'WR': 54}
+
+FAILURE MODE (value_board.py:90-93): on NaN xppg, role_pct falls back to
+target-share pct, then neutral 0.5. VERDICT ON THE SECONDARY CLAIM: league-xFP
+CANNOT address this population — it is computed from the SAME ff_opportunity
+player-weeks as standard xFP, so a player with no standard xppg has no league
+xppg either, identically, by construction. The 171-player gap is a COVERAGE
+problem (rookies + <8-game players + K/DST), not a scoring-currency problem.
+Any fix routes through a different signal (depth charts H2g, participation
+T0.1), not through H5e.
+
+[0s build]  gate state -> /Users/natearaskog/fantasy-analyzer/icm/work/mc_research/xfp_cheap_check_59.json
+==============================================================================
+59 predict — H5e PRIMARY ENDPOINT   (run 2026-07-31 13:13)
+==============================================================================
+joined signal-year t -> outcome-year t+1: 1476 player-season-pairs, 11 outcome seasons
+2025 outcome prices use the T0.2 Sleeper repair (instrument stated).
+
+per position: mean delta Spearman (league - standard) vs next-season
+league points-above-price, clustered on season-pair [V]:
+  QB: delta = -0.0103 +/- 0.0203 (95% CI, 11 season clusters, t = -1.00, p = 0.342)  [DIRECTIONAL-ONLY: 11 < 40 clusters, S11]
+  RB: delta = +0.0003 +/- 0.0115 (95% CI, 11 season clusters, t = +0.04, p = 0.966)  [DIRECTIONAL-ONLY: 11 < 40 clusters, S11]
+  TE: delta = +0.0120 +/- 0.0116 (95% CI, 11 season clusters, t = +2.01, p = 0.072)  [DIRECTIONAL-ONLY: 11 < 40 clusters, S11]
+  WR: delta = -0.0009 +/- 0.0065 (95% CI, 11 season clusters, t = -0.26, p = 0.797)  [DIRECTIONAL-ONLY: 11 < 40 clusters, S11]
+
+S14 FDR: the primary endpoint splits into 4 position comparisons —
+Benjamini-Hochberg at q = 0.10 across the 4, raw and adjusted verdicts:
+position   delta       t  p_raw  bh_crit raw_verdict bh_verdict  clusters  zero_cells
+      TE  0.0120  2.0145 0.0716    0.025        null       null        11           4
+      QB -0.0103 -0.9984 0.3416    0.050        null       null        11           0
+      WR -0.0009 -0.2645 0.7967    0.075        null       null        11           0
+      RB  0.0003  0.0440 0.9658    0.100        null       null        11           0
+(zero_cells = season-cells where the two xFPs rank identically, delta exactly 0)
+
+full table:
+ season position  n  rho_lg  rho_sd   delta
+   2015       QB 19 -0.0175  0.0632 -0.0807
+   2015       RB 41 -0.1146 -0.1303  0.0157
+   2015       TE 17  0.3186  0.2868  0.0319
+   2015       WR 49  0.0381  0.0402 -0.0021
+   2016       QB 21 -0.2429 -0.2377 -0.0052
+   2016       RB 41 -0.0739 -0.0883  0.0145
+   2016       TE 15  0.2643  0.2357  0.0286
+   2016       WR 49 -0.0855 -0.0928  0.0072
+   2017       QB 19 -0.1825 -0.1404 -0.0421
+   2017       RB 38  0.2115  0.2494 -0.0379
+   2017       TE 16  0.0206  0.0029  0.0176
+   2017       WR 54 -0.2177 -0.2071 -0.0106
+   2018       QB 20  0.0211 -0.0256  0.0466
+   2018       RB 44 -0.2426 -0.2083 -0.0342
+   2018       TE 15 -0.0750 -0.0750  0.0000
+   2018       WR 52  0.1738  0.1843 -0.0105
+   2019       QB 22 -0.2885 -0.3010  0.0124
+   2019       RB 45  0.2339  0.2246  0.0092
+   2019       TE 14  0.2396  0.2396  0.0000
+   2019       WR 58 -0.0531 -0.0586  0.0055
+   2020       QB 20  0.1263  0.1173  0.0090
+   2020       RB 48 -0.0252 -0.0397  0.0145
+   2020       TE 17 -0.0784 -0.0564 -0.0221
+   2020       WR 54 -0.0308 -0.0509  0.0201
+   2021       QB 19  0.2737  0.2754 -0.0018
+   2021       RB 49 -0.1344 -0.1415  0.0071
+   2021       TE 19  0.2456  0.2456  0.0000
+   2021       WR 55  0.0302  0.0462 -0.0159
+   2022       QB 18  0.1207  0.1022  0.0186
+   2022       RB 39  0.1320  0.1249  0.0071
+   2022       TE 14  0.1385  0.1077  0.0308
+   2022       WR 50  0.1886  0.1842  0.0044
+   2023       QB 21  0.1234  0.1442 -0.0208
+   2023       RB 47 -0.1434 -0.1374 -0.0060
+   2023       TE 18 -0.2157 -0.2157  0.0000
+   2023       WR 60  0.3570  0.3492  0.0078
+   2024       QB 20 -0.0842 -0.0496 -0.0346
+   2024       RB 48  0.1883  0.1716  0.0167
+   2024       TE 18  0.1950  0.1517  0.0433
+   2024       WR 59 -0.2348 -0.2310 -0.0038
+   2025       QB 20 -0.4947 -0.4797 -0.0150
+   2025       RB 42  0.2710  0.2749 -0.0039
+   2025       TE 20 -0.1489 -0.1504  0.0015
+   2025       WR 52  0.0120  0.0236 -0.0117
+
+A positive material delta would route to WS6 as a bounded role_pct swap
+candidate, to be graded in the paired harness (T0.4) — NOT claimed here.
+
+==============================================================================
+FINAL VERDICT — T0.9 + H5e
+==============================================================================
+
+1. T0.9 DELIVERED. league_xfp_weekly.parquet: weekly xFP 2014-2025 (REG,
+   QB/RB/WR/TE) in BOTH currencies with the league components broken out
+   (lgx_base / lgx_2pt / lgx_fd / lgx_tier / lgx_ltd) and exact league-scored
+   actuals (pts_league) joined for WS3's change-point work. Approximations:
+   tier bonuses via out-of-era-calibrated crossing curves; long-TD bonuses via
+   position-constant per-TD rates; sacks / fumbles / returns / PAT-FG absent
+   from the source's expectation model and therefore from BOTH currencies.
+
+2. H5e GATE: strictly falsified but only just — 0.9753 was the minimum
+   of 48 position x season Spearman cells (QB 2016; RB 2017 = 0.9798 the only
+   other cell under 0.98); 46/48 cells >= 0.98, every position's MEDIAN >= 0.99.
+   The divergence archetype is real but small: the league's FD + yardage-tier
+   structure promotes early-down volume RBs (Henry, Jacobs, Lynch, Jamaal
+   Williams +4..+7 rank slots) and demotes satellite pass-catch RBs (James
+   White -5..-10, Duke Johnson, Woodhead) — i.e. it claws back part of PPR's
+   satellite-back premium; QB moves come from 6-pt (vs 4) pass TDs plus rush
+   FDs and are ~0.5 slots on average.
+
+3. H5e PRIMARY ENDPOINT: NULL. Delta predictive Spearman vs next-season league
+   points-above-price, 11 season-pair clusters: QB -0.010, RB +0.000, TE +0.012,
+   WR -0.001. 0 of 4 position comparisons survive Benjamini-Hochberg at
+   q = 0.10; every one is DIRECTIONAL-ONLY under the S11 n<40 cluster floor
+   anyway. The league-currency xFP does NOT better predict next-season league
+   points above price than the standard xFP the board already uses. The
+   existing xppg role signal is fine; do NOT ship a league-xFP swap.
+
+4. SECONDARY (the 171 no-xppg players): league-xFP cannot help by construction
+   — identical row coverage to standard xFP. Coverage fixes route through H2g /
+   T0.1 signals, not scoring currency.
+
+5. WHAT THIS DOES NOT SAY: (a) nothing here grades LEAGUE-scored OUTCOMES —
+   seasons_league (T0.3) remains the grading currency for every WS5 hypothesis;
+   this null is only about the xFP ROLE-SIGNAL currency. (b) Sack- and fumble-
+   driven league divergence is invisible to both xFPs (H5c owns sacks).
+   (c) No paired-draft points grade was run — the predictive null made that
+   moot; if anyone revives league-xFP, the T0.4 harness is the bar. (d) The
+   tier/long-TD expectations are assumption-bearing; the sensitivity variants
+   (no_tier / no_longTD / analytic_only medians all >= 0.989) show the gate
+   conclusion does not hinge on them.

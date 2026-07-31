@@ -1,0 +1,278 @@
+==============================================================================
+54 — H5c: THE SACK TAX — staleness / invisibility / shrinkage (NOT existence)
+==============================================================================
+54 — H5c: the sack tax — STALENESS, INVISIBILITY, SHRINKAGE (NOT existence).
+
+The per-QB EB-shrunk sack rate ALREADY SHIPS (apply_bonuses.py:34-41, K=12 from
+scoring_config.py:42, pooled 2023-25 pbp with NO season_type filter, applied at
+apply_bonuses.py:98 as pass_att * rate * SACK, SACK=-1). The charter is explicit:
+do not rebuild it. This script answers the three live questions:
+
+  (a) STALENESS (absorbing H2e): does a QB's shrunken sack rate carry when he changed
+      teams or his OL turned over? Pre-registered expectation for the OL half: NULL.
+  (b) INVISIBILITY: quantify, from weekly_league.parquet, the per-season league-point
+      value of the sack term across QB1-QB24 — what every base-PPR backtest missed.
+  (c) SHRINKAGE: cross-validate K instead of assuming 12; does NGS avg_time_to_throw
+      improve the sack-rate FORECAST over last-year's shrunk rate?
+
+PRIMARY ENDPOINT — DECLARED HERE, BEFORE ANY ANALYSIS RAN (S14, one endpoint, no OR):
+  The out-of-sample sack-rate forecast improvement in LEAGUE POINTS at the QB level:
+    MAE_pts(M0) - MAE_pts(M2), where per QB-season t
+      err_pts = |rate_hat - rate_t| * throws_t * |SACK|   (volume held at truth, so the
+                RATE forecast is isolated; SACK=-1 so 1 sack = 1 league point)
+      M0 (incumbent, the shipped construction shifted to a forecast): pooled seasons
+         t-3..t-1, K=12, shrunk toward the pool league rate.
+      M2 (challenger): WLS fit on train seasons < t only (expanding window):
+         rate ~ a + b*shrunk_last1(K* nested) + c*avg_time_to_throw(t-1).
+    Population: QB-seasons t in 2019-2025 with throws_t >= 200, throws_{t-1} >= 200,
+    and an NGS t-1 avg_time_to_throw row. Paired per QB-season; CI clustered on SEASON
+    (S11; 7 clusters -> DIRECTIONAL-ONLY by the n<40 cluster floor, stated up front).
+  Everything else in this file is a cheap check, a descriptive quantification, or a
+  secondary sensitivity, and is labelled as such.
+
+C12 GUARDRAIL: nothing here touches VOLS denominators or the QB12 replacement. All
+outputs are rate-forecast and bonus-term diagnostics; no replacement redefinition.
+
+INSTRUMENT CORRECTION (verified this run): the task scoped H2e to "new-schema depth
+charts only, 2023-2025" — but load_depth_charts(2024) returns the OLD schema
+(club_code/depth_team, 37,312 rows [V]), same as 2019/2023; only 2025/2026 carry the
+new ESPN schema. Inside 2023-2025 there is therefore ZERO usable new-schema
+year-over-year OL pair. OL continuity is instead instrumented from SNAP COUNTS
+(the charter's own named instrument, "snap-weighted five-man overlap", line 342),
+which has a stable schema across all years. No depth-chart schemas were pooled.
+
+
+pbp slims loaded, plays/season (REG+POST) [V]:
+  2014:47629  2015:48122  2016:47651  2017:47245  2018:47109  2019:47260  2020:47705  2021:49922  2022:49434  2023:49665  2024:49492  2025:48771
+QB-season sack panel: 1286 rows (all passers), league sack/throw by season [V]:
+  2014:0.0676  2015:0.0646  2016:0.0608  2017:0.0681  2018:0.0721  2019:0.0711  2020:0.0627  2021:0.0661  2022:0.0714  2023:0.0766  2024:0.0734  2025:0.0734
+
+==============================================================================
+1. ANCHOR REPRODUCTION + CHEAP CHECK (b): THE BOARD ALREADY PRICES IT
+==============================================================================
+Drake Maye [V]: bonus_points -25.9  custom_proj rank 3  total_points rank 10  (charter said -25.9 / 2nd -> 10th = 8 spots; T0.8 re-pin: Lamar Jackson has drifted above Maye on custom_proj, so today it is 3rd -> 10th = 7 spots; the -25.9 and rank-10 anchors hold)
+shipped-rate reproduction [V]: pooled 2023-25 REG+POST, K=12, league rate 0.0744 (4203 sacks / 56495 throws)
+top-30 QBs: sack term explains R2=0.82 of bonus_points variance;
+  Spearman(total, custom)                 = +0.975
+  Spearman(total, custom + sack term only)= +0.996   <- the sack term alone recovers nearly all of the QB re-ranking
+  Maye decomposition [V]: sack term -54.7  vs total bonus -25.9 (remainder = tiers/FD/long-TD, positive)
+VERDICT (b): WE ALREADY PRICE IT — the board carries the pooled-2023-25 K=12 rate
+  at 100% strength by construction; the sack term alone reproduces the bulk of the
+  QB bonus re-ranking. Any H5c proposal must therefore be graded as a CHANGE to the
+  shipped rate (recency / K / TTT), never as adding a sack term — that would double-count.
+
+==============================================================================
+2. CHEAP CHECK (a): IS THE MARKET PRICING IT? (ADP residual regression)
+==============================================================================
+population: QB-seasons with a price (FFC ADP; 2025 = Sleeper adp_ppr [T0.2]),
+  adp_pos_rank <= 24, prior-season throws >= 100: n = 228 rows, 11 seasons (2015-2025)
+
+(a1) ADP-residual regression: resid_league_psg ~ prior shrunk sack rate, per season:
+  2015:+12(n=20)  2016:-15(n=22)  2017:-2(n=20)  2018:-93(n=22)  2019:+159(n=22)  2020:+104(n=21)  2021:-29(n=18)  2022:-16(n=19)  2023:-56(n=22)  2024:-92(n=20)  2025:-8(n=22)
+  pooled slope (league psg per unit rate): -3.2, 95% CI [-54.3, +47.8], p=0.890, clusters=11 seasons
+  in points: p25->p75 prior rate (IQR 0.028) moves expected SEASON outcome by -1.5 league pts vs price (17-game season) [V]
+
+(a2) price regression: adp_pos_rank ~ prior league psg + prior sack rate (n=228):
+  sack-rate coefficient -25.4 ranks per unit rate (-0.70 ADP ranks per IQR); R2 0.396 -> 0.403 (adds +0.0062)
+  reading: the market prices QB production, in which sacks are ~invisible under
+  STANDARD scoring — a near-zero coefficient here means the room is NOT separately
+  discounting sack-prone QBs. Our league scores SACK=-1, so whatever (a1) shows is
+  edge retained/lost vs that standard-scoring room.
+
+==============================================================================
+3. STALENESS (H2e absorbed): DOES THE SHRUNK RATE CARRY ACROSS CHANGE?
+==============================================================================
+instrument note [V]: 2024 depth charts are OLD schema (club_code/depth_team,
+  37,312 rows) — only 2025/2026 carry the new ESPN schema, so inside the mandated
+  2023-2025 scope there is NO new-schema YoY OL pair. OL continuity is computed from
+  SNAP COUNTS (charter line 342's own instrument: snap-weighted five-man overlap).
+  No depth-chart schema pooling occurred; depth charts were not used at all.
+OL continuity built: 352 team-seasons 2015-2025; distribution p10/p50/p90 = 0.42/0.77/1.00 [V]
+
+PRIMARY SCOPE (2023-2025, per task): 87 QB-season pairs (throws>=150 both years)
+  [n < 40 clusters -> DIRECTIONAL-ONLY per S11, stated in advance]
+
+  -- primary 2023-2025 --
+  STAYED : n= 69 QB-seasons | carry slope +0.43 | r +0.45 | wMAE(rate_t vs shrunk_(t-1)) 0.0194 (~10 pts/500 throws)
+  MOVED  : n= 18 QB-seasons | carry slope +0.56 | r +0.53 | wMAE(rate_t vs shrunk_(t-1)) 0.0200 (~10 pts/500 throws)
+  OL-continuity split (STAYERS only, median 0.75): carry slope LOW-cont +0.39 (n=34) vs HIGH-cont +0.42 (n=35)
+    slope diff (high-low) +0.03, bootstrap 95% CI [-0.55, +0.63] (clusters = QB-season rows per task directive)
+  movers, listed: Joe Flacco 2023 (NYJ->CLE, prior 0.053 -> realized 0.039); Derek Carr 2023 (LV->NO, prior 0.054 -> realized 0.056); Jimmy Garoppolo 2023 (SF->LV, prior 0.059 -> realized 0.082); Baker Mayfield 2023 (CAR->TB, prior 0.106 -> realized 0.070); Mac Jones 2024 (NE->JAX, prior 0.064 -> realized 0.053); Gardner Minshew 2024 (IND->LV, prior 0.069 -> realized 0.094); Justin Fields 2024 (CHI->PIT, prior 0.117 -> realized 0.099); Russell Wilson 2024 (DEN->PIT, prior 0.099 -> realized 0.098); Joe Flacco 2024 (CLE->IND, prior 0.041 -> realized 0.072); Kirk Cousins 2024 (MIN->ATL, prior 0.055 -> realized 0.062); Justin Fields 2025 (PIT->NYJ, prior 0.097 -> realized 0.130); Aaron Rodgers 2025 (NYJ->PIT, prior 0.068 -> realized 0.058); Joe Flacco 2025 (IND->CIN, prior 0.072 -> realized 0.043); Geno Smith 2025 (SEA->LV, prior 0.086 -> realized 0.122); Jacoby Brissett 2025 (NE->ARI, prior 0.109 -> realized 0.088); Sam Darnold 2025 (MIN->SEA, prior 0.088 -> realized 0.056); Daniel Jones 2025 (NYG->IND, prior 0.083 -> realized 0.057); Mac Jones 2025 (JAX->SF, prior 0.054 -> realized 0.055)
+
+SECONDARY POWER EXTENSION (2016-2025, snap-count instrument — no schema issue; outside the task's depth-chart scope and labelled so): 282 pairs
+
+  -- extension 2016-2025 --
+  STAYED : n=230 QB-seasons | carry slope +0.46 | r +0.48 | wMAE(rate_t vs shrunk_(t-1)) 0.0181 (~9 pts/500 throws)
+  MOVED  : n= 52 QB-seasons | carry slope +0.45 | r +0.41 | wMAE(rate_t vs shrunk_(t-1)) 0.0193 (~10 pts/500 throws)
+  OL-continuity split (STAYERS only, median 0.77): carry slope LOW-cont +0.43 (n=115) vs HIGH-cont +0.49 (n=115)
+    slope diff (high-low) +0.06, bootstrap 95% CI [-0.22, +0.36] (clusters = QB-season rows per task directive)
+
+  movers 2016-2025 (n=52): weighted mean signed error (realized - carried) = -0.0019 rate (-0.9 pts/500 throws) — carried rate too HIGH on average
+
+==============================================================================
+4. SHRINKAGE: CROSS-VALIDATE K; TTT FORECAST — PRIMARY ENDPOINT
+==============================================================================
+NGS passing season aggregates (week==0, REG): 407 QB-seasons 2016-2025, avg_time_to_throw p10/p50/p90 = 2.55/2.77/2.98s [V]
+evaluation frame: 229 QB-seasons 2017-2025 (throws>=200 both years); t-1 TTT present on 229 [V]
+
+K SWEEP — throws-weighted OOS MSE(x1e4) of rate forecast, t=2017-2025
+  (predictor uses only <=t-1 data at every K; picking K on this table is the
+   in-sample-for-K view — the PRIMARY endpoint below picks K nested, train-only)
+      K   last-1yr   pool-3yr
+      0      5.761      4.771
+      1      5.747      4.765
+      2      5.733      4.760
+      4      5.705      4.749
+      8      5.652      4.727
+     12      5.601      4.707
+     16      5.552      4.687
+     24      5.459      4.650
+     32      5.374      4.616
+     48      5.222      4.554
+     64      5.092      4.501
+     96      4.881      4.413
+    128      4.722      4.343
+    192      4.505      4.242
+    256      4.375      4.173
+    384      4.254      4.093
+    512      4.224      4.055
+    768      4.263      4.043
+   1024      4.340      4.067
+   1536      4.491      4.152
+   2048      4.610      4.242
+    INF      5.309      5.252
+  minima: last-1yr K*=512, pool-3yr K*=768   (shipped: pool-3yr K=12);
+  INF row = ignore the QB entirely, use the 3yr league rate — its MSE 5.252 vs best pooled 4.043: the per-QB rate DOES carry OOS signal, but far less than K=12 assumes
+  shipped-vs-best pooled construction: MSE 4.707 vs 4.043 (+14.1% excess)
+
+PRIMARY ENDPOINT (declared in module docstring before analysis):
+  M0 incumbent  = pooled t-3..t-1, K=12 (shipped construction as a forecast)
+  M1 secondary  = last-year-only, K* chosen on train seasons < t (nested)
+  M2 challenger = WLS on train: rate ~ shrunk_last1(K*) + avg_time_to_throw(t-1)
+  M3 secondary  = pooled t-3..t-1 with NESTED-CV K (the K-only fix to the shipped
+                  construction; not the primary — added after the K sweep was designed,
+                  before it ran)
+  err_pts = |rate_hat - rate_t| * throws_t * |SACK|;  population = eval frame with TTT
+
+per-season (points MAE per QB-season; d02 = M0 - M2 = PRIMARY, + is better):
+         n   K1    K3  b_ttt   mae0  mae1  mae2   mae3   d02   d01   d03
+season                                                                  
+2019    24  768  1536   0.06   6.12  6.89  9.60   6.27 -3.48 -0.77 -0.15
+2020    26  768  1024   0.03   8.46  8.56  8.97   7.78 -0.50 -0.10  0.68
+2021    24  768  1024   0.03   7.67  8.13  8.16   7.78 -0.49 -0.46 -0.11
+2022    30  768  1024   0.02   5.30  7.22  7.14   6.22 -1.85 -1.92 -0.92
+2023    22  512   512   0.02   5.12  5.45  5.58   4.49 -0.46 -0.33  0.63
+2024    26  512   512   0.02   6.99  6.61  6.40   6.74  0.59  0.38  0.25
+2025    27  512   512   0.02  11.18  9.28  9.31  10.38  1.87  1.90  0.80
+
+PRIMARY RESULT: OOS improvement M0->M2 = -0.62 league pts per QB-season,
+  95% CI [-2.19, +0.96], p=0.375, clusters = 7 seasons, QB-level win rate 47% (n=179 QB-seasons)
+  DIRECTIONAL-ONLY by S11 (7 < 40 clusters), whatever the p-value.
+secondary decomposition: recency/K alone (M0->M1) = -0.19 [-1.26, +0.89], p=0.687; TTT increment (M1->M2) = -0.43
+secondary M3 (K-only fix, pooled 3yr @ nested K): M0->M3 = +0.17 [-0.40, +0.73], p=0.496, QB-level win rate 50%
+
+==============================================================================
+5. INVISIBILITY: WHAT EVERY BASE-PPR BACKTEST MISSED (weekly_league b_sack)
+==============================================================================
+per season, QBs ranked by total_league (the corrected instrument):
+        sack_QB1_12  sack_QB13_24  sd_top24  spread_p90_p10  mean_abs_rankshift  max_shift  top12_flips
+season                                                                                                 
+2014          -28.3         -35.5       9.6            24.0                 0.8          4            2
+2015          -34.3         -33.8       9.4            23.5                 1.0          3            2
+2016          -28.6         -34.2       8.5            22.8                 1.6          4            2
+2017          -31.7         -31.4       9.9            25.1                 1.0          3            0
+2018          -34.6         -33.8      13.1            32.1                 1.0          5            0
+2019          -36.3         -30.8      10.0            25.4                 1.2          3            0
+2020          -29.1         -29.1      10.5            26.2                 0.4          2            2
+2021          -30.4         -35.8       6.7            13.4                 0.3          2            0
+2022          -36.6         -27.7      10.8            24.7                 0.9          3            0
+2023          -33.6         -33.4       9.3            17.9                 0.5          3            0
+2024          -35.0         -34.0      13.4            33.3                 0.5          2            0
+2025          -35.2         -26.8      10.0            21.1                 0.7          4            0
+
+pooled over 12 seasons (mean +/- season SD, S11 clusters=12):
+  sack term, QB1-12:  -32.8 +/- 3.0 pts/season
+  sack term, QB13-24: -32.2 +/- 3.0 pts/season
+  within-top-24 SD:   10.1; p90-p10 spread 24.1 pts
+  removing the sack term shifts a top-24 QB 0.8 ranks on average (max 5); 0.7 QB1/QB2-tier membership flips per season
+  charter's '-42 pts/season ~ QB6->QB12 gap' claim vs measured: mean top-12 sack term -32.8; QB6-QB12 total_league gap = 56.2 pts [V]
+
+==============================================================================
+6. VERDICT SUMMARY (one primary endpoint declared; everything else secondary)
+==============================================================================
+
+PRIMARY (declared pre-run, S14): OOS sack-rate forecast improvement in league points
+  at the QB level, M0(shipped pooled-3yr K=12) -> M2(last1 K*-nested + TTT):
+  -0.62 pts/QB-season, 95% CI [-2.19, +0.96], p=0.375, 7 season
+  clusters, win rate 47% on 179 QB-seasons.
+  VERDICT: NULL / slightly NEGATIVE — the challenger does NOT beat the shipped
+  construction. DIRECTIONAL-ONLY (clusters < 40). TTT increment alone is negative:
+  avg_time_to_throw adds NO OOS forecast value over the shrunk rate (kill-list entry).
+
+SECONDARY, the one live improvement: K. The CV curve has an INTERIOR minimum far past
+  K=12 for BOTH constructions (last-1yr K*=512, pooled-3yr K* = 768; K=12 carries
+  +14.1% excess MSE). The league-rate-only forecast (K=INF) is clearly WORSE
+  (5.252 vs 4.043 MSEx1e4), so the per-QB rate carries real OOS signal —
+  but a 3-year starter (~1,500 pooled throws) should keep only 66% of his own
+  deviation from league average, not the 99% K=12 grants; a 2-season QB like Maye
+  (~900 pooled throws) keeps ~54%, i.e. his -25.9 sack tax roughly HALVES its
+  distance from the league mean. In points-MAE terms the K-only fix (M3) is real but
+  tiny: +0.17 [-0.40, +0.73] pts/QB-season, p=0.496, win rate 50% —
+  the misspecification's main consequence is the BOARD SPREAD (rank ordering of
+  sack-prone QBs), not forecast accuracy, so it must be graded in the paired harness,
+  not shipped on this number. DIRECTIONAL-ONLY, same clusters. Exact 2026 rebuilt
+  column deliberately not produced (frozen file, propose-only).
+
+CHEAP CHECK (a) market: ADP-residual slope on prior sack rate -3.2 psg/unit,
+  CI [-54.3, +47.8], p=0.890 (11 seasons) — -1.5 league pts per
+  prior-rate IQR over a 17-game season. The market shows NO exploitable mispricing
+  signal on prior sack rate, and the price itself barely loads on it
+  (dR2=+0.0062). VERDICT: null — no ADP edge hiding in sack rate beyond
+  what the board already prices mechanically.
+
+CHEAP CHECK (b) our board: prices the pooled-2023-25 K=12 rate at 100% by
+  construction; the sack term alone recovers the bulk of the QB bonus re-ranking.
+  Any future sack proposal must grade AGAINST the shipped rate (anti-double-count).
+
+STALENESS (H2e, absorbed): pre-registered null CONFIRMED on both halves.
+  Primary 2023-2025 (n=69+18): carry slope stayers +0.43 vs movers +0.56;
+  OL-continuity split diff +0.03, bootstrap CI [-0.55, +0.63].
+  Extension 2016-2025 (n=230+52): stayers +0.46 vs movers +0.45;
+  OL split diff +0.06 CI [-0.22, +0.36]. The carried rate is NOT
+  measurably staler for movers or turned-over lines — the rate travels with the QB
+  more than with the line at these sample sizes. H2e CLOSED as the charter expected.
+  (Note the carry slope ~0.45 << 1 for EVERYONE is itself the K finding restated.)
+
+INVISIBILITY (descriptive, the S12 payload): top-12 QBs carry -32.8 pts/season of
+  sack tax (top-24 within-range p90-p10 spread 24.1 pts, SD 10.1); ignoring it
+  shifts a top-24 QB 0.8 ranks on average, 0.7 top-12 membership flips/season.
+  Every base-PPR backtest in this repo mis-scored QBs by ~33 pts/season LEVEL and up to
+  ~24 pts/season SPREAD inside the startable range. The charter's '-42 pts' figure
+  is the right order of magnitude but ~25% high vs measured top-12 realized seasons;
+  the QB6->QB12 league gap is 56 pts, so the sack SPREAD (~24) is roughly half
+  that gap, not all of it.
+
+C12: replacement stayed QB12 throughout; no VOLS denominator touched.
+
+==============================================================================
+7. WHAT WAS NOT DONE (honest gaps)
+==============================================================================
+
+- The charter's H5c shipping bar ("league points in VOLS terms, corrected grader,
+  placebo 95th pct or +15") was NOT evaluated: no T0.6 placebo distribution existed at
+  run time and the paired-draft harness re-grade is outside this assignment's tasks.
+  This file delivers the grader's ingredients (forecast deltas + invisibility table).
+- The best-K rebuilt 2026 board column was NOT produced (apply_bonuses is frozen;
+  proposal only). The proposal, precisely: change scoring_config.K for the SACK term
+  only if re-graded — the long-TD terms share the same K and were NOT cross-validated
+  here (H5b territory; a shared-K change must clear both).
+- Depth charts were NOT used (2024 is old-schema [V]; no new-schema YoY pair exists
+  inside 2023-2025). OL continuity = snap-count five-man overlap instead.
+- In-season TTT (first-2-games) as a change-point detector was not tested — this file
+  tested the PRESEASON forecast per the assignment; the in-season question is WS3's.
+- POST-season plays are excluded from the analysis panel (REG only), while the shipped
+  rate pools REG+POST; the reproduction in section 1 used REG+POST to match exactly.
+- 2025 prices are Sleeper adp_ppr, not FFC (T0.2 instrument change), stated at use.
+- BH/FDR: this file contributes exactly ONE primary endpoint (p=0.375) to the
+  charter-wide S14 correction pool; secondaries here must not enter that pool.
+

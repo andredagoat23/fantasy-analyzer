@@ -1,0 +1,227 @@
+==============================================================================
+52 — H5a: WR ARCHETYPE (aDOT TERCILES) UNDER LEAGUE SCORING, IN VOLS
+run 2026-07-31 12:54 — all numbers [V] unless labelled [R]
+==============================================================================
+
+PRIOR (stated before running): (1) chain-mover (lower/mid aDOT, high volume) wins
+expected league VOLS at matched draft price; (2) deep threat (high aDOT) wins ceiling
+(absolute league-scored p80 minus replacement — C13: never an upside multiplier).
+PRIMARY ENDPOINT (S14, count = 1): mean ADP-matched paired league-VOLS gap, T3 minus T1,
+season-cluster bootstrap 95% CI. Bar: CI excludes 0. All else is SECONDARY.
+FALSIFICATION: primary CI covers 0 and ceiling-p80 shows no ordering -> aDOT is not an
+archetype axis worth carrying.
+
+S8 — seasons_league rows per year (2015-2025): 2015:556  2016:557  2017:553  2018:577  2019:572  2020:602  2021:633  2022:608  2023:576  2024:588  2025:608
+
+==============================================================================
+INSTRUMENT A — SEASON-TOTAL-DERIVED (pipeline-style linearized game tiers)
+==============================================================================
+  WR: rec-tier 3.954 pts/1000 rec yds, rush-tier 0.235 pts/1000 rush yds (pooled 2015-2025 panel rates)
+  TE: rec-tier 1.683 pts/1000 rec yds, rush-tier 2.587 pts/1000 rush yds (pooled 2015-2025 panel rates)
+  RB: rec-tier 0.490 pts/1000 rec yds, rush-tier 5.995 pts/1000 rush yds (pooled 2015-2025 panel rates)
+  (QB pass-tier left exact — QBs never enter the flex-aware WR replacement.)
+  A = B - actual game-tier points + league-rate x season yards; every other
+  component is linear in season totals, so A needs nothing weekly.
+
+==============================================================================
+WR REPLACEMENT PER SEASON (utils.startable_counts, flex-aware, per instrument)
+==============================================================================
+  season   k_league repl_league  k_lin  repl_lin  k_base  repl_base
+  2015           36       205.6     36     201.4      36      173.3
+  2016           36       215.0     36     214.7      36      185.5
+  2017           35       190.3     35     190.4      35      158.4
+  2018           34       189.5     34     190.6      34      165.4
+  2019           35       206.4     35     206.4      36      171.7
+  2020           36       210.6     36     211.7      36      183.1
+  2021           35       203.2     35     204.5      35      170.3
+  2022           33       202.5     33     203.4      36      172.4
+  2023           35       224.9     35     225.7      35      196.2
+  2024           34       210.2     34     212.7      34      184.4
+  2025           34       197.8     34     199.6      35      172.7
+
+==============================================================================
+aDOT — pbp air yards per target, with two cross-checks
+==============================================================================
+aDOT cache reused: /Users/natearaskog/fantasy-analyzer/icm/work/mc_research/adot_wr_2014_2025.parquet (6029 rows) [V]
+cross-check 1 (panel rec_air_yards/targets, WR targets>=25, n=1358): Pearson r=1.0000, median |diff|=0.000 yds [V]
+cross-check 2 (pfr_advstats adot, 2019-2025, name-joined, n=812): Pearson r=0.9979, median |diff|=0.038 yds [V]
+
+==============================================================================
+PRICES — FFC 2015-2024 + SLEEPER-instrument 2025 repair (T0.2 union contract)
+==============================================================================
+  dropped 5 poisoned 2025 FFC/FP rows; 2025 uses SLEEPER adp_ppr (2644 rows) — the 2025 price is a DIFFERENT INSTRUMENT (T0.2 flag).
+  priced WR rows per season: 2015:68  2016:65  2017:63  2018:65  2019:66  2020:66  2021:69  2022:58  2023:74  2024:72  2025:1171
+  panel WR seasons with a price: 2015:64  2016:63  2017:62  2018:65  2019:64  2020:65  2021:68  2022:58  2023:74  2024:71  2025:234
+
+==============================================================================
+POPULATION + WITHIN-SEASON aDOT TERCILES (priced AND targets >= 25)
+==============================================================================
+  qualified: 744 WR-seasons | priced-but-under-floor/no-aDOT dropped: 144 (their mean realized league VOLS -174.1 — these are mostly injury/role busts; floor conditions mildly on realized volume, stated as a limitation; knowable-at-draft variant below has no such floor)
+
+  per-season tercile boundaries (aDOT yds):
+  2015:10.7/13.1  2016:10.4/13.2  2017:10.5/12.8  2018:10.1/12.4  2019:9.9/12.5  2020:9.5/12.3  2021:9.7/12.0  2022:9.8/11.9  2023:10.2/12.7  2024:9.9/11.8  2025:9.9/12.4
+  n per (season-pooled) tercile: {'T1': 252, 'T3': 248, 'T2': 244}
+
+==============================================================================
+DESCRIPTIVE — ARCHETYPE PROFILES AND THE §7.12 PER-TARGET ORDERING
+==============================================================================
+terc                  T1      T2      T3
+n                 252.00  244.00  248.00
+adot                8.08   11.28   14.13
+adp               113.72  102.60  108.08
+targets            98.23   99.14   84.34
+catch_rate          0.68    0.62    0.58
+rec_yds           761.13  810.34  729.93
+games              14.12   14.25   13.80
+total_league      203.33  203.61  176.52
+total_base        174.12  175.34  151.79
+v_league           -1.50   -1.30  -28.34
+b_rec_fd           19.01   19.58   16.90
+b_ltd_rec           1.33    2.02    2.21
+b_rec_tier          3.75    4.21    3.78
+yds_per_tgt         7.75    8.17    8.65
+lg_pts_per_tgt      2.07    2.05    2.09
+base_pts_per_tgt    1.77    1.77    1.80
+fd_per_tgt          0.39    0.39    0.40
+fd_per_rec          0.57    0.63    0.70
+
+  §7.12 check — 'football EV per target' (yds/tgt) vs 'league pts per target': if the two
+  orderings across terciles disagree, catch-rate/aDOT trade off differently under this
+  table than in football EV — read the two rows above.
+  bonus mix (season means): b_rec_fd (chain-mover pay) vs b_ltd_rec (deep pay) vs
+  b_rec_tier (concentration pay) — the mechanism rows above.
+
+==============================================================================
+PRIMARY ENDPOINT — ADP-MATCHED PAIRED LEAGUE-VOLS GAP, T3 (deep) - T1 (short)
+==============================================================================
+  T3-T1 [PRIMARY on v_league]: 180 pairs across 11 seasons | ADP balance: hi-arm mean 117.7 vs lo-arm 117.6 (median |dlog|=0.038)
+    v_league   mean gap   -20.2  95% cluster CI [  -31.1,    -8.5]  p=0.000  (effective n = 11 season clusters)
+    v_lin      mean gap   -20.9  95% cluster CI [  -31.8,    -9.3]  p=0.000  (effective n = 11 season clusters)
+    v_base     mean gap   -17.5  95% cluster CI [  -27.0,    -8.0]  p=0.000  (effective n = 11 season clusters)
+    (v_league row = THE primary; v_lin/v_base rows = secondary currencies S12)
+    NOTE: within a season, replacement is a constant, so each pair's VOLS diff
+    IS its league-points diff — the VOLS denomination matters for levels and for
+    cross-season commensurability, not for the paired gap itself.
+    example 2024 pairs (tightest ADP matches):
+      Mike Williams          aDOT 15.2 ADP 116.1 vLg  -146.4   vs Khalil Shakir          aDOT  5.5 ADP 117.4 vLg    -3.2
+      Jordan Addison         aDOT 13.0 ADP 134.1 vLg   +28.3   vs Jakobi Meyers          aDOT  9.9 ADP 131.7 vLg   +39.3
+      Terry McLaurin         aDOT 13.3 ADP  70.2 vLg   +98.6   vs Chris Godwin Jr.       aDOT  5.7 ADP  68.4 vLg   -47.4
+      DK Metcalf             aDOT 13.7 ADP  40.7 vLg   +10.5   vs Stefon Diggs           aDOT  8.7 ADP  41.8 vLg   -72.3
+      Keon Coleman           aDOT 15.2 ADP  88.1 vLg   -84.7   vs Jaxon Smith-Njigba     aDOT  8.7 ADP  90.5 vLg   +77.8
+
+SECONDARY CONTRASTS (same matched design):
+  T3-T2: 181 pairs across 11 seasons | ADP balance: hi-arm mean 118.5 vs lo-arm 118.7 (median |dlog|=0.031)
+    v_league   mean gap   -16.8  95% cluster CI [  -29.7,    -2.0]  p=0.029  (effective n = 11 season clusters)
+  T2-T1: 179 pairs across 11 seasons | ADP balance: hi-arm mean 120.9 vs lo-arm 121.3 (median |dlog|=0.046)
+    v_league   mean gap    -0.1  95% cluster CI [  -10.3,    +9.6]  p=0.941  (effective n = 11 season clusters)
+
+  per-season breakdown of the primary paired gap (S4):
+        count  mean
+season             
+2015       13 -29.6
+2016       14 -64.6
+2017       12   1.4
+2018       17 -28.0
+2019       14   2.5
+2020       18 -31.7
+2021       16 -22.9
+2022       16  14.9
+2023       18 -10.5
+2024       16 -15.5
+2025       26 -30.1
+
+==============================================================================
+CEILING (SECONDARY-1) — ABSOLUTE LEAGUE-SCORED p80 MINUS REPLACEMENT (C13)
+==============================================================================
+  computed as p80 of VOLS (= p80 of total_league - same-season replacement) within
+  each MATCHED arm; gap = p80(T3 arm) - p80(T1 arm); season-cluster bootstrap CI.
+  p80 VOLS: T3 arm +28.5 vs T1 arm +54.3  ->  gap -25.8  95% CI [-40.3, -7.6]  p=0.007
+  (base-PPR secondary: T3 +27.8 vs T1 +51.8, gap -23.9 [-37.7, -12.1], p=0.003)
+
+==============================================================================
+WEEKLY-EXACT MINUS SEASON-TOTAL INSTRUMENT (B - A), BY TERCILE — §7.1 quantified
+==============================================================================
+      count  mean   std
+terc                   
+T1      252  0.74  3.21
+T2      244  1.01  3.26
+T3      248  0.89  2.96
+  (positive = the player's real game-level tier points exceed what the linearized
+   season-total instrument credits — the concentration the board cannot see)
+
+==============================================================================
+SENSITIVITIES (all SECONDARY; primary is declared above and does not move)
+==============================================================================
+
+S-A: target floor 50 (was 25):
+  T3-T1 @ floor50: 147 pairs across 11 seasons | ADP balance: hi-arm mean 98.1 vs lo-arm 98.7 (median |dlog|=0.047)
+    v_league   mean gap   -18.0  95% cluster CI [  -29.7,    -4.2]  p=0.015  (effective n = 11 season clusters)
+
+S-A2: target floor 10 (weakest selection on realized volume):
+  T3-T1 @ floor10: 203 pairs across 11 seasons | ADP balance: hi-arm mean 165.6 vs lo-arm 166.1 (median |dlog|=0.033)
+    v_league   mean gap   -23.6  95% cluster CI [  -36.9,    -9.7]  p=0.000  (effective n = 11 season clusters)
+
+S-B: fixed WR30 replacement (instead of computed flex-aware k):
+  T3-T1 mean gap -20.2  CI [-31.1, -8.5]  p=0.000 — IDENTICAL to the primary BY CONSTRUCTION: any per-season replacement constant cancels in a within-season pair diff. Replacement choice moves VOLS LEVELS (e.g. the ceiling p80 rows), never the paired gap. Kept as a check that the code does what the algebra says.
+
+S-F: common ADP support, ADP <= 170 in every season (FFC's effective depth —
+     removes the 2025 Sleeper-instrument depth advantage, ~1,171 priced 2025 WRs
+     vs ~58-74 FFC rows/season):
+  T3-T1 @ ADP<=170: 162 pairs across 11 seasons | ADP balance: hi-arm mean 86.4 vs lo-arm 86.8 (median |dlog|=0.044)
+    v_league   mean gap   -23.1  95% cluster CI [  -39.1,    -8.6]  p=0.000  (effective n = 11 season clusters)
+
+S-C: exclude 2025 (Sleeper price instrument):
+  T3-T1 ex-2025: 154 pairs across 10 seasons | ADP balance: hi-arm mean 88.4 vs lo-arm 88.6 (median |dlog|=0.044)
+    v_league   mean gap   -18.5  95% cluster CI [  -31.6,    -5.6]  p=0.004  (effective n = 10 season clusters)
+
+S-D: pooled (cross-year) terciles instead of within-season:
+  T3-T1 pooled-terciles: 172 pairs across 11 seasons | ADP balance: hi-arm mean 119.7 vs lo-arm 119.8 (median |dlog|=0.039)
+    v_league   mean gap   -27.8  95% cluster CI [  -36.9,   -18.5]  p=0.000  (effective n = 11 season clusters)
+
+S-E: KNOWABLE-AT-DRAFT variant — tercile from PRIOR-season aDOT (t-1, targets>=25
+     in t-1); no realized-volume floor at season t; priced-but-unplayed WRs kept at
+     0 points (VOLS = -replacement). This is the variant a draft board could use.
+  priced WR rows without ANY panel season (unplayed -> not includable without imputation): 2015:4  2016:2  2017:1  2018:0  2019:2  2020:1  2021:1  2022:0  2023:0  2024:1  2025:937
+  population: 673 priced WR-seasons with a prior-year aDOT
+  T3-T1 prior-aDOT: 157 pairs across 11 seasons | ADP balance: hi-arm mean 132.3 vs lo-arm 131.9 (median |dlog|=0.048)
+    v_league   mean gap   -10.5  95% cluster CI [  -23.6,    +2.5]  p=0.115  (effective n = 11 season clusters)
+  prior-aDOT ceiling p80 VOLS: T3 +48.3 vs T1 +44.4, gap +3.9 [-13.6, +16.9] p=0.834
+
+==============================================================================
+VERDICT — H5a
+==============================================================================
+  primary endpoints in this script: 1 (S14). BH-FDR across the programme is the
+  orchestrator's job; the raw p above is what feeds it.
+  PRIMARY: T3-T1 matched league-VOLS gap -20.2 [-31.1, -8.5] p=0.000 on 11 season clusters -> SEPARATION
+
+READING (what a future reader needs, without the chat transcript):
+1. PRIOR PART 1 (chain-mover wins EV at matched price): CONFIRMED, with a shape
+   refinement — the axis is a HIGH-aDOT TAX, not a low-aDOT premium. T2-T1 is a flat
+   ~0; the whole separation is the deep tercile losing ~20 league VOLS (= league
+   points, replacement cancels in pairs) per season at the same ADP.
+2. PRIOR PART 2 (deep threat wins ceiling): REFUTED. Under C13's absolute definition
+   (league-scored p80 minus replacement) the deep arm's ceiling is LOWER
+   (gap -25.8, CI excludes 0). The 'deep threat = upside' folklore is a
+   spread-relative-to-price intuition — exactly the multiplier reading C13 closed.
+3. MECHANISM (descriptive table above): the deep profile's compensations are real but
+   tiny — b_ltd_rec runs ~+0.9/season above T1 and fd_per_rec RISES with aDOT
+   (0.57 -> 0.70), yet catch rate falls 0.68 -> 0.58 and realized targets run ~14%
+   lighter, so per-TARGET league points are FLAT across terciles (~2.05-2.09) while
+   football yds/target rises 7.75 -> 8.65 (the §7.12 divergence, on this data). A
+   market pricing the football ordering at a flat league pay-per-target overprices
+   the high-aDOT profile — that is the ~20-point wedge.
+4. INSTRUMENT: the answer does NOT depend on the weekly-exact transform — the
+   season-total instrument (A) gives the same gap (concentration premium B-A is
+   ~+1 pt/season and near-flat across terciles). H5a is a volume/catch-rate story,
+   not a concentration story; the §7.1 machinery matters elsewhere (46_ showed it
+   at the elite top-12), not on this axis.
+5. CARRY IT? Same-season aDOT is not knowable at draft. The knowable variant
+   (prior-season aDOT, S-E) attenuates to about half the effect and its CI covers 0
+   on 11 clusters -> DIRECTIONAL-ONLY (S11) for any 2026 board use. Honest routing:
+   a prose-level caution on high-aDOT WR profiles at draft (WS6 layer 'advisor READ',
+   the lowest-risk layer), NOT a rank nudge; a rank change would need the paired-draft
+   harness with the T0.6 placebo bar, which this script deliberately did not run.
+FALSIFICATION CHECK: 'no separation' did NOT occur — aDOT IS an archetype axis, but
+   its payload is the opposite sign of folklore on ceiling, and only its non-knowable
+   form clears significance.
+  [4s total]
