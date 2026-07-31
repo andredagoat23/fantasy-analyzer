@@ -265,6 +265,7 @@ SURVIVAL / "will he wheel back to me?" REASONING — DO NOT DO THIS MATH YOURSEL
 Every number you need is precomputed and given to you; you must NEVER calculate pick numbers, picks-away, or wheel-back yourself (that arithmetic is where mistakes happen, and we can't afford them). Trust the given values verbatim:
 - The DRAFT POSITION line gives my exact pick on the clock, my next pick number(s), and picks-away — quote them, never recompute.
 - **The MY PICKS line lists EVERY pick I still own as `R<round> #<pick>`. ALL round↔pick conversion is READ from it — never computed, never estimated.** If you say anything about "rounds 3-5" or "by round 7", the pick numbers MUST come from MY PICKS. The snake means my picks are NOT evenly spaced and they differ completely by slot — deriving them yourself produces answers off by 40+ picks.
+- **For ANY question about a pick BEYOND my next one, read the WHO'S REALISTICALLY LEFT AT MY PICKS block.** It gives, for each of my next picks, the best players with at least a 50% chance of still being there AT THAT EXACT PICK. The `wheel` cell answers ONLY my next pick — never restate it for a later pick, and never call a player "still alive" at a pick where he is not listed in that block. Inside it the names are ordered BEST-VALUE FIRST, so the percentages RISE as you read right; that rise IS the wait-or-take trade-off, so NEVER re-order them by probability (doing so recommends the worst player on the line).
 - **Any claim of the form "X lasts to round N" needs a survival number for round N's pick.** You have exactly two such numbers: the `wheel` cell (ONE pick, and it names which) and the PUNT READ's `lasts ~R<n> (<p>%)`. If a question needs survival at some other pick, say the exact odds aren't in your context — do NOT estimate one.
 - The board's `wheel` column IS the wheel-back answer — a MEASURED probability that he is still on the board at that pick, banded: **gone** = under 20% (don't count on him; take him now if I want him), **risky** = 20-70% (genuinely uncertain — this is the band my RISK APPETITE breaks), **safe** = 70%+ (I can wait and take a better-fit player now). Read this column; do NOT re-derive it from ADP.
 - The cell reads `label→#pick (probability)` — e.g. `safe→#23 (81%)`, `gone→#10 (<1%)`. **Both the pick number and the percentage are PART of the value.** The pick is what the label was computed against: quote it verbatim and NEVER infer which pick the column means from the DRAFT POSITION line, which may list more than one of my upcoming picks — a `safe→#2` means safe only as far as #2 and says NOTHING about #23. The percentage is the ONLY survival number you have for that player: quote it, never round it into a different claim, and never state a survival figure that is not printed somewhere in this context.
@@ -1104,6 +1105,74 @@ def _lasts_round(adp, sched, floor=_PUNT_STREAM_P):
     return out
 
 
+# Rest-of-draft lookahead. R2-R9 from R1 is the window the draft is actually decided in (mock research
+# `45_`); R10+ is DART territory and the names there are noise.
+_LOOKAHEAD_PICKS, _LOOKAHEAD_TOP, _LOOKAHEAD_POS = 8, 3, 3
+
+
+def available_at_my_picks(available, draft_pos, bar=_PUNT_STREAM_P):
+    """WHO'S REALISTICALLY LEFT AT MY PICKS — for each of my next `_LOOKAHEAD_PICKS` picks, the best
+    players by our composite whose MEASURED survival at THAT pick clears `bar`.
+
+    Exists because every OTHER survival number in the context is anchored to exactly one pick — my
+    next one. Asked a whole-draft question the model had only that number and reused it: at slot 6 it
+    read Josh Allen's 68% @ #19 and called him "could still be alive" at #30, where he is 20.9%.
+    MY PICKS (L53) gave the model the pick NUMBERS; this gives it the ODDS at those numbers.
+
+    Starts at `_horizon` — never my CURRENT pick, where everyone still in `available` is available
+    with certainty and a probability would be nonsense.
+
+    ORDER IS VALUE, NOT ODDS. Within a position the percentages ASCEND left-to-right, because the
+    better the player the less likely he survives. That ascent IS the wait-or-take trade-off; the
+    header says so explicitly, because a reader who "fixes" the sort by probability ends up
+    recommending the worst player on the line.
+    """
+    horizon = _horizon(draft_pos)
+    if not draft_pos or not horizon:
+        return ""
+    if not {"adp_rank", "position", "full_name"} <= set(available.columns):
+        return ""
+    sched = my_pick_schedule(draft_pos.get("slot"), draft_pos.get("teams"),
+                             draft_pos.get("total_rounds", 16))
+    ahead = [(r, pk) for r, pk in sched if pk >= horizon][:_LOOKAHEAD_PICKS]
+    pool = available[available["position"].isin(("QB", "RB", "WR", "TE"))].dropna(subset=["adp_rank"])
+    if "rank_composite" in pool.columns:
+        pool = pool.sort_values("rank_composite")
+    if not ahead or not len(pool):
+        return ""
+
+    lines = []
+    for r, pk in ahead:
+        p = _survival_prob(pool["adp_rank"], pk)
+        surv = pool[p >= bar]
+        if not len(surv):
+            continue                       # nothing clears the bar this late — drop the row, don't
+        sp = p.loc[surv.index]              # print a blank one (late rounds are darts, not planning)
+
+        def cell(i):
+            return f"{surv.loc[i, 'full_name']} {sp.loc[i]:.0%}"
+
+        best = " · ".join(cell(i) for i in surv.index[:_LOOKAHEAD_TOP])
+        by = []
+        for pos in ("RB", "WR", "QB", "TE"):
+            idx = surv[surv["position"] == pos].index[:_LOOKAHEAD_POS]
+            if len(idx):
+                by.append(f"{pos} " + "/".join(cell(i) for i in idx))
+        lines.append(f"  R{r} #{pk} BEST: {best}")
+        if by:
+            lines.append("          by pos: " + " | ".join(by))
+    if not lines:
+        return ""
+    # Header stays lean — the "read this for later picks, never re-order it" instruction lives in the
+    # system prompt. What MUST be here is what can't be inferred from the rows: the bar, the ordering,
+    # and the two assumptions.
+    return (f"WHO'S REALISTICALLY LEFT AT MY PICKS — best by OUR value with >={bar:.0%} odds of being "
+            "there AT THAT EXACT PICK. Ordered BEST-VALUE FIRST, so the % RISES as you read right — "
+            "that rise IS the wait-or-take trade-off; never re-order by probability. Assumes I draft "
+            "nobody in between; marginal ADP odds, directional not exact.\n"
+            + "\n".join(lines))
+
+
 def _expected_best_survivor(pool, horizon, risk_adj=True):
     """Expected VOLS of the BEST player at `pool`'s position still on the board at `horizon` — each
     candidate weighted by P(he survives) × P(everyone better is gone). Same expectation form add_vona
@@ -1592,6 +1661,11 @@ def build_context(available, mine_df, scarcity, draft_pos=None, top_n=35, my_dst
             dp_line += (f"\nMY PICKS (slot {d.get('slot')} of {d.get('teams')}, snake) — every pick I "
                         f"still own. READ round→pick from here, NEVER compute it: "
                         + " · ".join(f"R{r} #{pk}" for r, pk in _rem))
+        # Rest-of-draft lookahead: the ODDS at those pick numbers. Without it every survival figure in
+        # the context sat at ONE pick and the model reused it for later rounds (L55).
+        _look = available_at_my_picks(available, d)
+        if _look:
+            dp_line += "\n" + _look
         dp_line += "\n"
 
     # ROSTER RISK line (L23): tell the model how much bust risk each of my rooms already carries,

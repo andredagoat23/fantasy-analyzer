@@ -1,8 +1,8 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
 > ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Jul 30, 2026**: the stack through
-> **L54**, DEPLOYED at HEAD, tree clean, board + priors regenerated Jul 28.
-> Suites **18 / 320 green**, both stress suites pass, preflight OK, **NO open code or data items** —
+> **L55**, DEPLOYED at HEAD, tree clean, board + priors regenerated Jul 28.
+> Suites **18 / 339 green**, both stress suites pass, preflight OK, **NO open code or data items** —
 > what remains before Aug 7 is operational only.
 >
 > **⛔ CODE FREEZE Aug 3 (4 days). Draft Aug 7 (8 days).** The remaining work is OPERATIONAL, not
@@ -30,7 +30,10 @@
 > survival at MY pick and shows the number. `my_pick_schedule()` and `_horizon()` are single sources of
 > truth. **L54** then re-based the wheel bands on measured survival (`gone <20%` / `safe >=70%`,
 > replacing `adp<=horizon` = a flat 50% and `adp>=horizon+12` = anywhere from 66% to 99.9%) and put the
-> probability in the cell: `risky→#13 (59%)`. See HANDOFF "Open questions" for what is still judgment.
+> probability in the cell: `risky→#13 (59%)`. **L55** added the rest-of-draft lookahead —
+> `WHO'S REALISTICALLY LEFT AT MY PICKS` gives odds at my next EIGHT picks, not just the next one
+> (the advisor had 25 survival figures all anchored to one pick and reused them for later rounds).
+> See HANDOFF "Open questions" for what is still judgment.
 >
 > **One open THREAD:** a non-repro'd R7 roster-state issue — diagnosable only from the next mock's
 > pick log (L47); don't patch the gate blind. **Two research lines are CLOSED** (per-player

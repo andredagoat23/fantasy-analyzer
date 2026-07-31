@@ -4,13 +4,13 @@
 docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
 
 ## Where things stand right now
-- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = **L54**, the wheel
-  re-base; `git log -5` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
+- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = **L55**, the rest-of-draft
+  lookahead; `git log -6` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
   deploying, always the user's call.**
-- **Health:** preflight **OK** (0 blocking, 0 warnings). **18 unit suites green — 320 checks.** Both
+- **Health:** preflight **OK** (0 blocking, 0 warnings). **18 unit suites green — 339 checks.** Both
   stress suites ALL PASS. Board + all priors regenerated **Jul 28**. **No open DATA flags. NO open
-  CODE items** — L52 Tier 2 shipped in L53, Tier 3 + the `_wheel_label` re-base in L54. What remains
-  before Aug 7 is OPERATIONAL only.
+  CODE items** — L52 Tier 2 shipped in L53, Tier 3 + the `_wheel_label` re-base in L54, the
+  rest-of-draft lookahead in L55. What remains before Aug 7 is OPERATIONAL only.
 - **⛔ CODE FREEZE Aug 3 — 4 days away. Draft Aug 7 — 8 days.** Last advisor-logic change Aug 3;
   Aug 4-6 = a full live mock, fixing only what the mock catches; Aug 7 = regen + preflight, no code.
   Rationale: this project's real bugs are caught by live mocks, not tests (L47 passed 195 checks and
@@ -21,6 +21,14 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
   never hardcode one. Practice mocks have run at slots 1/5/10.
 
 ## Shipped this session (Jul 28-30) — all live
+- **L55 (Jul 30) — REST-OF-DRAFT LOOKAHEAD.** Pre-draft at slot 6 the advisor quoted Josh Allen
+  `risky→#19 (68%)` and called him "still alive" at **R3 #30**, where he is **20.9%**. The pick numbers
+  were right (L53 working) but **every survival figure in the context sat at ONE pick** — measured: 25
+  figures, all `#19`, with #30/#43/#54/#67 carrying none. New `available_at_my_picks()` renders
+  `WHO'S REALISTICALLY LEFT AT MY PICKS` for my next 8 picks: best 3 overall + top 3 per position, bar
+  50% (`_PUNT_STREAM_P`). Picks with odds: **1 → 8**. +23% context. **Two traps captured in tests:**
+  the list is ordered BEST-VALUE first so the % ASCENDS (re-sorting by probability picks the worst
+  player), and the block must start at `_horizon`, never my current pick.
 - **L54 (Jul 30) — wheel bands re-based on measured survival + the probability now rides in the cell.**
   The old rule failed at each boundary for a DIFFERENT reason: `adp <= horizon` is exactly p=50% at
   every board position (scale-invariant but misplaced — it called Josh Allen at **49.5%** "gone"),
@@ -123,7 +131,7 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
 5. **Commit the regenerated CSVs together** — the deployed app reads board + priors from the repo.
 
 ## Tests (plain-assert, run individually: `.venv/bin/python tests/<file>.py`)
-**18 suites, 320 checks, all green:** `test_schedule` (38), **`test_wheel` (40)**, `test_bridge` (26), `test_opponent` (25),
+**18 suites, 339 checks, all green:** `test_schedule` (57), **`test_wheel` (40)**, `test_bridge` (26), `test_opponent` (25),
 `test_dart` (23), `test_injury` (22), `test_cold` (21), `test_cohort_pull` (19), `test_handcuff` (16),
 `test_dst` (14), `test_sleeper` (13), `test_shape` (11), `test_cohort_skew` (10), `test_hedge` (8),
 `test_punt` (12), `test_defer` (8), `test_kicker` (7), `test_role_alpha` (7). Plus the two stress

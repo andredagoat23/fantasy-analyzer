@@ -175,4 +175,92 @@ check("prompt requires a number behind any 'lasts to round N' claim",
       'Any claim of the form "X lasts to round N"' in advisor.SYSTEM)
 check("prompt tells it to decline rather than estimate", "do NOT estimate one" in advisor.SYSTEM)
 
+# =============================================================== F. rest-of-draft lookahead
+print("\nF. WHO'S REALISTICALLY LEFT AT MY PICKS — odds at every pick, not just the next one")
+
+# The regression: MY PICKS gave the model the pick NUMBERS, but every survival figure still sat at
+# ONE pick (my next). Asked about R3 it reused the R2 number — at slot 6 it read Josh Allen 68% @ #19
+# and called him "still alive" at #30, where he is 20.9%.
+LOOK_RE = re.compile(r"R(\d+) #(\d+) BEST:")
+PCT_RE = re.compile(r"([A-Z][\w'.\- ]+?) (\d+)%")
+
+
+def look(slot, my_turn=True, now=None, teams=12):
+    sch = dict(advisor.my_pick_schedule(slot, teams, 16))
+    now = now if now is not None else sch[1]
+    ahead = [pk for _, pk in advisor.my_pick_schedule(slot, teams, 16) if pk >= now]
+    d = {"slot": slot, "teams": teams, "overall_now": now, "my_turn": my_turn,
+         "next_pick": ahead[0], "picks_away": ahead[0] - now,
+         "following": ahead[1] if len(ahead) > 1 else None, "total_rounds": 16}
+    return advisor.available_at_my_picks(BOARD_FULL, d), d
+
+
+BOARD_FULL = pd.read_csv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                      "app_data.csv"))
+BOARD_FULL["position"] = BOARD_FULL["pos_label"].str.extract(r"([A-Z]+)")
+
+blk, d6 = look(6)
+picks = [int(pk) for _, pk in LOOK_RE.findall(blk)]
+check("the block renders", bool(blk) and "WHO'S REALISTICALLY LEFT" in blk)
+check("it starts at _horizon, NOT my current pick (everyone in the pool is already available there)",
+      picks[0] == advisor._horizon(d6) and d6["overall_now"] not in picks)
+check("slot 6 on the clock at #6 -> the block starts at #19", picks[0] == 19)
+check("every pick listed is one of MY picks", set(picks) <= {pk for _, pk in advisor.my_pick_schedule(6, 12, 16)})
+check("picks are in ascending order, no repeats", picks == sorted(set(picks)))
+check(f"capped at _LOOKAHEAD_PICKS ({advisor._LOOKAHEAD_PICKS})", len(picks) <= advisor._LOOKAHEAD_PICKS)
+
+# every printed probability must be real, and must clear the bar at ITS OWN pick
+bad = []
+for seg in blk.split("\n")[1:]:
+    m = LOOK_RE.search(seg)
+    pk = int(m.group(2)) if m else pk
+    for name, pct in PCT_RE.findall(seg):
+        row = BOARD_FULL[BOARD_FULL.full_name == name.strip()]
+        if row.empty:
+            continue
+        true_p = float(advisor._survival_prob(pd.Series([row.adp_rank.iloc[0]]), pk).iloc[0])
+        if abs(true_p * 100 - int(pct)) > 0.51 or true_p < advisor._PUNT_STREAM_P:
+            bad.append((name, pk, pct, round(true_p, 3)))
+check("every printed % equals _survival_prob at THAT pick and clears the bar", not bad, )
+
+# THE ordering contract — value first, so odds ascend. Re-sorting by odds is the failure mode.
+rb_line = next(l for l in blk.split("\n") if "by pos: RB" in l)
+rb_seg = rb_line.split("RB ", 1)[1].split(" | ")[0]
+rb_names = [n.strip() for n, _ in PCT_RE.findall(rb_seg)]
+comp = [int(BOARD_FULL[BOARD_FULL.full_name == n].rank_composite.iloc[0]) for n in rb_names
+        if not BOARD_FULL[BOARD_FULL.full_name == n].empty]
+check("within a position the order is OUR VALUE (composite ascending), not probability",
+      comp == sorted(comp) and len(comp) >= 2)
+check("the header warns that the % rises and must not be re-sorted",
+      "RISES as you read right" in blk and "never re-order by probability" in blk)
+check("the header states both assumptions (my own picks, marginal odds)",
+      "draft nobody in between" in blk and "directional not exact" in blk)
+
+# slot-sensitivity + degradation
+b12, _ = look(12)
+check("a different seat gives a different block", [int(p) for _, p in LOOK_RE.findall(b12)] != picks)
+late, _ = look(6, now=dict(advisor.my_pick_schedule(6, 12, 16))[15])
+check("near the end it degrades quietly (no blank rows, no crash)",
+      "BEST:" not in late or all("BEST:" in l or "by pos" in l or l.startswith("WHO")
+                                 for l in late.split("\n") if l.strip()))
+check("no draft_pos -> empty string, no crash", advisor.available_at_my_picks(BOARD_FULL, None) == "")
+check("no horizon (final pick) -> empty string",
+      advisor.available_at_my_picks(BOARD_FULL, {"slot": 6, "teams": 12, "overall_now": 192,
+                                                 "my_turn": True, "next_pick": 192,
+                                                 "following": None, "total_rounds": 16}) == "")
+
+# wired into the context, and the prompt points at it
+sc = {"QB": 5, "RB": 20, "WR": 30, "TE": 8, "K": 5}
+ctx6 = advisor.build_context(advisor.add_vona(BOARD_FULL.copy(), advisor._horizon(d6)),
+                             BOARD_FULL.head(0), sc, d6)
+check("the block is present in the real context", "WHO'S REALISTICALLY LEFT AT MY PICKS" in ctx6)
+check("the context now carries survival at MORE than one pick",
+      len({int(x) for x in re.findall(r"#(\d+) BEST:", ctx6)}) >= 4)
+check("prompt sends later-pick questions to the block",
+      "WHO'S REALISTICALLY LEFT AT MY PICKS block" in advisor.SYSTEM)
+check("prompt forbids restating the wheel cell for a later pick",
+      "never restate it for a later pick" in advisor.SYSTEM)
+check("prompt forbids re-ordering the block by probability",
+      "NEVER re-order them by probability" in advisor.SYSTEM)
+
 print(f"\nALL {passed} CHECKS PASS")

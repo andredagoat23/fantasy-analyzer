@@ -941,6 +941,43 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L55 — Numbers for ONE pick can't answer questions about the whole draft (Jul 2026)
+- **User catch, third in the same family.** Pre-draft at slot 6 the advisor laid out a round-by-round
+  plan — and the pick numbers were all CORRECT this time (R3 #30, R4 #43, R5 #54, R6 #67 are exactly
+  slot 6's picks; L53's `MY PICKS` line working). But it quoted **Josh Allen `risky→#19 (68%)`** and
+  said he "could still be alive" at **R3 #30**, where he is **20.9%**. It also put Justin Jefferson
+  (0.4% at #30) in the "R4/R5" window.
+- **Cause, and it's a whole class:** every per-player number in the context was computed against
+  exactly ONE horizon — my next pick. Measured on the real context: **25 survival figures, all of them
+  `#19`.** Picks #30/#43/#54/#67 appeared (from MY PICKS) with **no odds attached to any of them**.
+  Asked a whole-draft question, the model reused the only number it had.
+- **Note what the earlier fixes DID buy.** It printed `risky→#19 (68%)` — the correct referent,
+  honestly labelled (L52), and correct pick numbers (L53). It never claimed "68% at #30". The failure
+  degraded from *fabrication* to *misapplication*. Each layer of fix narrowed it; this one closes it.
+- **Fixed** with `available_at_my_picks()` — a `WHO'S REALISTICALLY LEFT AT MY PICKS` block giving,
+  for each of my next 8 picks, the best players by our composite whose measured survival at THAT pick
+  clears 50% (`_PUNT_STREAM_P`, the bar the punt read already uses — one bar, one meaning). Best 3
+  overall plus top 3 per position, so "who are the top 3 WRs at my R5" is answerable at any of the 8.
+  Distinct picks carrying odds went **1 → 8**. +2,833 chars (+23%, ~4,000 tokens total).
+- **THE DESIGN TRAP, worth remembering:** within a position the list is ordered BEST-VALUE FIRST, so
+  the percentages **ASCEND** left to right (`WR Drake London 54% / Rashee Rice 63% / A.J. Brown 77%`).
+  That looks like a sorting bug and is the single most useful thing in the block — it IS the
+  wait-or-take trade-off. Unlabelled, a reader (or the model) "fixes" the sort by probability and
+  recommends the WORST player on the line. Both the header and the prompt say so, and a test asserts
+  the order is composite, not probability.
+- **Second trap:** the block must start at `_horizon`, never at my current pick — everyone still in
+  `available` at the pick I'm making IS available, so a probability there is meaningless. Same
+  distinction L52/L53 kept getting wrong from the other direction.
+- **Scope discipline that paid off:** my first proposal was 105 raw survival columns bolted onto the
+  board table. The user cut it to "I just want to see who's realistically left at each of my picks" —
+  which is a *different and better* artifact: per-pick answers instead of per-player probabilities,
+  and cheaper. **Build the read the user is actually going to make, not the data that technically
+  contains it.**
+- **Verified:** 18 suites / **339 checks** (`test_schedule` 38 → 57), both stress suites, preflight
+  OK, and the running app. (Principles 1, 3, 9, 10)
+
+---
+
 ## L54 — Two boundaries of one rule failed in OPPOSITE ways; ship the measurement before the judgment call (Jul 2026)
 - **Closes L52 Tier 3 + the `_wheel_label` re-base — the last open code item before the freeze.**
 - **The finding worth keeping: a single 3-band rule was broken at each boundary for a DIFFERENT
