@@ -501,14 +501,16 @@ in-season event-level metrics may PASS, with event-clustered CIs; end-of-season 
   end-to-end against 2025 instead, with a pre-stated cadence self-check for the residual risk.
   NGS/pbp weekly fetchers are not yet in the snapshot job (~15 lines each; NGS recommended before
   Week 1). Nothing is automated — the Tuesday runs are a human ritual until a scheduler is chosen.
-- **The Sleeper mock corpus re-run (charter §0.5 exception 2).** Not run by any agent this cycle
-  (results_48 §I lists it as budgeted elsewhere). The window is early August — the 1QB sample
-  under the survival stack remains 111 drafts. **OWNER AND DATE (assigned at the audit fix pass,
-  2026-07-31): the user, in the next working session, on Tue 2026-08-04 alongside the scheduled
-  snapshot run — `.venv/bin/python icm/work/mc_research/21_sleeper_run_corpus.py`. Hard deadline:
-  before the 2026-08-07 draft. It is read-only, so the Aug-3 code freeze does not block it
-  (charter §0.5 names it a permitted, URGENT exception); the window closes permanently in early
-  August.**
+- **The Sleeper mock corpus re-run (charter §0.5 exception 2) — COMPLETED 2026-07-31**, by the
+  orchestrator in parallel with this run (the audit fix pass could not see it and wrongly assigned
+  it to the user for Aug 4; corrected same day). Result: **300 one-QB / 2,001 total drafts** (from
+  111 / 1,162), resume-safe, prior corpus backed up. Follow-up already run: the L51 survival-curve
+  recheck on the fattened corpus (`results_62_dispersion_recheck.txt` [V], 62,890 matched picks vs
+  43_'s 19,300) — **7 of 8 ADP buckets hold within the ±30% band**; the one outlier (ADP 7-12,
+  measured s 1.91 vs shipped 2.80, −32%) is marginal, and every deviation is small and in one
+  direction (measured dispersion ~11-18% tighter than shipped), consistent with ADP staleness in
+  the older drafts as a confound. Verdict: L51 independently confirmed at 3.3x the pick sample; no
+  pre-freeze constants change recommended; revisit post-draft with draft-date controlled.
 - **Failures worth naming:** the charter's assumed 2025 price repair path (ESPN kona) failed
   outright and was replaced with the Sleeper instrument — every 2025-priced number in this
   programme now carries that instrument change; `49_grader_lib.report_primary`'s conditional-line

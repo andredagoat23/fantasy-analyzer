@@ -81,11 +81,11 @@ run) [R results_61]. First snapshot exists: `data/snapshots/2026-07-31/` (6/6 so
   Tuesday snapshot's injuries/snap_counts/participation manifests twice in the first three
   in-season weeks, move to Wednesday 06:00 ET and record the change [R results_61 §5].
 - Recommended before Week 1 (not yet done): add the ~15-line NGS fetcher [R results_61 §7].
-- **Sleeper mock-corpus refresh (charter §0.5 exception 2) — OWNER: the user, next working
-  session; DATE: Tue 2026-08-04, with the scheduled snapshot run; hard deadline before the
-  2026-08-07 draft** (`.venv/bin/python icm/work/mc_research/21_sleeper_run_corpus.py`; read-only,
-  so the Aug-3 code freeze does not block it; the window closes permanently in early August — the
-  1QB survival-stack sample is stuck at 111 drafts until this runs).
+- **Sleeper mock-corpus refresh (charter §0.5 exception 2) — DONE 2026-07-31**: 300 one-QB /
+  2,001 total drafts (from 111 / 1,162). The L51 curve recheck on the fattened corpus
+  (`results_62_dispersion_recheck.txt`) holds in 7 of 8 buckets; no pre-freeze change. An optional
+  incremental re-crawl closer to the draft remains cheap (the crawler is resume-safe) but is no
+  longer load-bearing.
 
 ## 3. THE 2026 HYPOTHESES (directional prediction · threshold · primary endpoint · slices · abandon condition)
 

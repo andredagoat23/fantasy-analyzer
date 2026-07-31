@@ -1,0 +1,15 @@
+L51 CURVE RECHECK on 62890 picks from the fattened corpus (43_ fitted on 19,300 picks / 111 drafts)
+
+  bucket             n      sd   new s  shipped s    delta   verdict (±30% band)
+  1-6             1795     3.8    2.10       1.80     +17%   HOLDS
+  7-12             898     3.5    1.91       2.80     -32%   <-- OUTSIDE BAND
+  13-24           3584     7.9    4.38       4.60      -5%   HOLDS
+  25-40           3895    10.2    5.65       6.90     -18%   HOLDS
+  41-60           5695    13.2    7.26       8.70     -17%   HOLDS
+  61-90           9258    16.5    9.09      10.40     -13%   HOLDS
+  91-130         10956    24.0   13.24      15.00     -12%   HOLDS
+  131-200        17507    28.7   15.84      17.90     -11%   HOLDS
+
+  ADP<=6 lasting to pick 24+: 1.50% (L51's motivating number was ~0.5% real vs 4.1% under the old constant scale)
+
+VERDICT: the shipped curve has at least one bucket OUTSIDE the ±30% band — flag to the user BEFORE the Aug 3 freeze; the fix is a constants change gated by a 44_ rerun
