@@ -120,6 +120,16 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
   L52 (wheel referent), Research 45_, docs refresh.
 - **One branch UNMERGED:** `yahoo-probe` (`b8cb697`) — awaits the user's Yahoo dev-app + a mock.
   Doesn't touch `advisor.py`.
+- **2026-07-31 — ENTANGLEMENT run committed and PUSHED: commit `b93a78b`, pushed
+  2026-07-31T19:55:03Z.** Contains `icm/work/entanglement/BLUEPRINT.md` and
+  **`icm/work/entanglement/PREREGISTRATION.md` in DRAFT state — that push timestamps the P1–P8
+  hypothesis-level predictions** (charter §9.1 lock protocol: the named-player fill from the
+  2026-08-07 snapshot is the second, LOCK push, whose SHA gets its own entry here), plus scripts
+  `46_`–`60_`, `results_46..61`, `population.json`, the research parquets,
+  `tools/weekly_snapshot.py`, `data/snapshots/2026-07-31/`, and
+  `data/projection_archive/2026_preseason_2026-07-31.csv`. The 49/50/51 caches, `espn_adp_hist/`
+  (~31MB dead kona pull), and `*.bak` files are now ignored via `icm/work/mc_research/.gitignore`.
+  No app code touched — the deploy was a no-op.
 
 ## Regeneration ritual (last run Jul 28 — rerun the morning of the draft)
 1. **Board:** `.venv/bin/python run_all.py` (14 steps; refreshes live ESPN ADP + projections).
