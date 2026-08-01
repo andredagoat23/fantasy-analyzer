@@ -1,0 +1,38 @@
+!!! RETRACTED 2026-08-01 — same bimodal-median error as 63_. See L57 and 64_allen_conditional.py.
+The natural_round column is NOT a policy: it is bimodal (elite QB taken ~R2 when he reaches the
+seat, ~R8-11 when he does not). This script also wrote data/qb_timing.csv, which has been deleted.
+-----------------------------------------------------------------------------------------------
+QB TIMING ACROSS SLOTS — 12 slots x 7 arms x 80 seeds = 6720 drafts
+Does the R6-R7 optimum found at slot 2 generalise, or is it seat-specific?
+
+ slot  natural QB rd         R4       R5       R6       R7       R8       R9
+------------------------------------------------------------------------
+    1              9      -13.2    -13.2    +17.7    +17.6     +1.7     +1.7
+    2              8      -21.9    -16.4    +13.9    +14.1     +1.0     +1.4
+    3              2      -20.8    -12.5     +6.6     +5.9     +0.7     +0.9
+    4              6      -18.1    -11.6     +8.8     +8.4     +0.2     +0.6
+    5              2      -17.1     -8.9     +5.6     +4.0     +0.2     +0.7
+    6              2      -17.7     -6.4     +5.2     +5.0     -0.8     +0.4
+    7              6      -24.7     -5.1     +7.4     +8.1     +0.2     +1.1
+    8              8      -29.4     -1.5    +10.2     +6.8     +0.4     +2.1
+    9              8      -30.9     -0.2     +9.5     +8.4     -0.3     +2.6
+   10             10      -35.3     +3.3     +7.7     +4.5     -1.9     +2.4
+   11             10      -36.6     +3.3     +0.3     +2.9     +1.4     +3.5
+   12             10      -36.8     +4.1     -0.1     +1.6     +1.6     +3.0
+
+(numbers = risk-adjusted points vs letting the advisor decide; + means the rule BEATS it)
+
+BEST forced round per slot, and whether it clears its own noise:
+  slot  1: best = R6  +17.7 +/- 2.9  CLEARS zero
+  slot  2: best = R7  +14.1 +/- 3.2  CLEARS zero
+  slot  3: best = R6  +6.6 +/- 3.0  CLEARS zero
+  slot  4: best = R6  +8.8 +/- 2.9  CLEARS zero
+  slot  5: best = R6  +5.6 +/- 2.5  CLEARS zero
+  slot  6: best = R6  +5.2 +/- 2.2  CLEARS zero
+  slot  7: best = R7  +8.1 +/- 2.9  CLEARS zero
+  slot  8: best = R6  +10.2 +/- 3.6  CLEARS zero
+  slot  9: best = R6  +9.5 +/- 4.6  CLEARS zero
+  slot 10: best = R6  +7.7 +/- 4.5  CLEARS zero
+  slot 11: best = R9  +3.5 +/- 1.8  CLEARS zero
+  slot 12: best = R5  +4.1 +/- 5.6  inside noise
+wrote lookup table -> /Users/natearaskog/fantasy-analyzer/data/qb_timing.csv
