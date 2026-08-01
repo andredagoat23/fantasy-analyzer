@@ -1,7 +1,7 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
 > ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Jul 30, 2026**: the stack through
-> **L55**, DEPLOYED at HEAD, tree clean, board + priors regenerated Jul 28.
+> **L56**, DEPLOYED at HEAD, tree clean, board + priors regenerated **Jul 31**.
 > Suites **18 / 339 green**, both stress suites pass, preflight OK, **NO open code or data items** —
 > what remains before Aug 7 is operational only.
 >

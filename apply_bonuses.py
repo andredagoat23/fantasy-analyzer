@@ -6,9 +6,10 @@ from projections import blended_components   # FP+ESPN consensus components (sin
 # note + the tier/threshold meaning of each constant). Edit values THERE, not here.
 from scoring_config import (PTD40, PTD50, RETD40, RETD50, RTD40, RTD50, P300, P400, RY100, RY200,
                             REY100, REY200, RFD, REFD, FG0, FG40, FG50, FG60, SACK, TWOPT, PATM,
-                            KR25, PR10, RETTD, K)
+                            KR25, PR10, RETTD, K, K_SACK)
 
 K = max(int(K), 1)           # shrinkage MUST be > 0 (K=0 -> 0/0 for players with no historical TDs)
+K_SACK = max(int(K_SACK), 1)   # sacks shrink SEPARATELY — see scoring_config (~1,500 throws vs ~60 TDs)
 
 # ============ 1. league rates + per-player long-TD rates (2023-25) ============
 pbp = nfl.load_pbp(seasons=[2023, 2024, 2025]).to_pandas()
@@ -38,7 +39,7 @@ thr_by = (pbp[(pbp["pass_attempt"] == 1) & (pbp["sack"] == 0)].dropna(subset=["p
           .groupby("passer_player_id").size().rename("throws"))
 sdf = pd.concat([sk_by, thr_by], axis=1).fillna(0)
 L_sack = sdf["sacks"].sum() / sdf["throws"].sum()
-sack_rate = (sdf["sacks"] + K*L_sack) / (sdf["throws"] + K)
+sack_rate = (sdf["sacks"] + K_SACK*L_sack) / (sdf["throws"] + K_SACK)   # K_SACK, not K (L56)
 
 # 2pt conversion league rates, tied to TD volume (too rare/situational for per-player shrinkage).
 # A successful 2pt PASS scores BOTH the passer and the receiver, so per-rec-TD rate ~= per-pass-TD rate.

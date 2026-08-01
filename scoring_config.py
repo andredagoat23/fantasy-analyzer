@@ -41,6 +41,16 @@ KR25, PR10, RETTD = 1, 1, 6  # return: 1 per 25 KR yд, 1 per 10 PR yд, 6 per r
 # hits 0/0 and drops off the board. apply_bonuses.py clamps to >=1 defensively.
 K = 12
 
+# SACK rate gets its OWN shrinkage, because it has a completely different denominator. Over 2023-25 a
+# starter has ~60 long-TD chances but ~1,500 throws, so the SAME K=12 that shrinks long-TD rates a
+# sensible ~12% toward league shrinks sack rate by only ~0.8% — i.e. the board trusts a QB's personal
+# sack rate ~99%. Cross-validated on 7 seasons / 179 QB-seasons (`mc_research/54_`, L56): the optimal
+# K is 768 pooled-3yr (512 last-1yr); K=12 carries +14.1% excess out-of-sample MSE. At 768 a 3-year
+# starter keeps ~66% of his own deviation, which is what the data supports.
+# NOTE: the OOS forecast gain is real but the POINTS delta is small (+0.17 [-0.40, +0.73]); this ships
+# for correctness of the QB ordering, not for an expected points win. Same posture as L51.
+K_SACK = 768
+
 # ---- Projection consensus (projections.py): FantasyPros + ESPN blend weights (should sum to 1) ----
 # The board is built on the BLENDED projection. Set PROJ_W_ESPN = 0 for FP-only (the pre-consensus board,
 # byte-identical). "Lean ESPN" — ESPN is the platform the draft actually runs on, so its projections match

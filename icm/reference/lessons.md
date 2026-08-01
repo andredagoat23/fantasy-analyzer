@@ -941,6 +941,41 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L56 — One shrinkage constant, two denominators: the sack rate needed its own K (Jul 2026)
+- **First frozen-file change in this arc, made only on the user's explicit instruction** ("No lets fix
+  QB go"). CLAUDE.md's frozen boundary allows exactly that and nothing less.
+- **The finding** (`mc_research/54_`, from the entanglement run): `apply_bonuses.py` shrinks each QB's
+  personal sack rate toward the league with `K=12`. Cross-validated on 7 seasons / 179 QB-seasons the
+  optimum is **K=768 pooled-3yr (512 last-1yr)**; K=12 carries **+14.1% excess out-of-sample MSE**.
+- **THE TRAP, and the reason this could have gone badly: `K` was SHARED.** The same constant shrinks
+  the per-player long-TD 40+/50+ rates (`blended()`, line 25) AND the sack rate (line 42). Same number,
+  completely different denominators over 2023-25: a starter has **~60 long-TD chances but ~1,500
+  throws**. So K=12 shrinks long-TD rates a sensible ~12% toward league and the sack rate by only
+  **~0.8%** — the board was trusting a QB's own sack rate ~99%. **One constant was simultaneously right
+  and wrong depending on which rate it was applied to.** A global K=768 would have silently moved every
+  long-TD bonus, a quantity the research never tested. Fixed with a separate `K_SACK` in
+  `scoring_config.py`; `K` untouched.
+- **Verified isolation after the regen:** top-12 `bonus_points` change was RB **+0.02**, WR **+0.00**,
+  TE **−0.09** (max |Δ| < 1 pt — pure projection refresh) vs QB max |Δ| **9.42**. Exactly the intended
+  surface and nothing else.
+- **What it actually does to the board:** predicted swings landed almost exactly (Maye predicted +7.3 →
+  actual +7.0; Allen −3.5 → −3.5; Nix −7.5 → −7.1). Maye QB10→QB8, Dart QB13→QB11, and 11 of the top 14
+  QBs shift by 1-2 spots. **Josh Allen stays QB1 by 56 points**, so nothing changes at the only QB pick
+  this roster realistically makes early.
+- **THE JUDGMENT, recorded because it was close:** I recommended NOT shipping this, on the grounds that
+  the paired-grade points delta is **+0.17 [−0.40, +0.73]** and every re-rank sits in the QB4-15 band
+  where the PUNT READ already says stream. The user overruled and was entitled to — a measurably wrong
+  input in a frozen file is worth correcting on correctness grounds, the same posture L51 shipped under
+  (−3.0 pts, shipped anyway). **Record the disagreement and the reasoning, not just the outcome.**
+- **Process note:** a `run_all.py` regen also refreshes ESPN ADP + projections, so a before/after board
+  diff is NEVER a clean read of a code change. Attribution here only worked because the swings had been
+  predicted from the raw pbp beforehand. **Predict the delta before you regen, or you cannot tell your
+  own change from the market's.**
+- **Verified:** 18 suites / 339 checks, both stress suites, preflight OK, name audit 182/200, injury
+  watch re-run (3 HARD flags: Kittle, Pierce, Charbonnet — all PUP/surgery). (Principles 1, 7, 9)
+
+---
+
 ## L55 — Numbers for ONE pick can't answer questions about the whole draft (Jul 2026)
 - **User catch, third in the same family.** Pre-draft at slot 6 the advisor laid out a round-by-round
   plan — and the pick numbers were all CORRECT this time (R3 #30, R4 #43, R5 #54, R6 #67 are exactly

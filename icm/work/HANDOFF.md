@@ -4,11 +4,11 @@
 docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
 
 ## Where things stand right now
-- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = **L55**, the rest-of-draft
-  lookahead; `git log -6` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
+- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = **L56**, the QB sack-shrinkage
+  fix + full regen; `git log -8` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
   deploying, always the user's call.**
 - **Health:** preflight **OK** (0 blocking, 0 warnings). **18 unit suites green — 339 checks.** Both
-  stress suites ALL PASS. Board + all priors regenerated **Jul 28**. **No open DATA flags. NO open
+  stress suites ALL PASS. Board + all priors regenerated **Jul 31** (L56 regen; 540 players). **No open DATA flags. NO open
   CODE items** — L52 Tier 2 shipped in L53, Tier 3 + the `_wheel_label` re-base in L54, the
   rest-of-draft lookahead in L55. What remains before Aug 7 is OPERATIONAL only.
 - **⛔ CODE FREEZE Aug 3 — 4 days away. Draft Aug 7 — 8 days.** Last advisor-logic change Aug 3;
@@ -20,7 +20,16 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
   therefore every VONA, wheel and horizon — depends on it. **Confirm the real slot before Aug 7** and
   never hardcode one. Practice mocks have run at slots 1/5/10.
 
-## Shipped this session (Jul 28-30) — all live
+## Shipped this session (Jul 28-31) — all live
+- **L56 (Jul 31) — QB SACK SHRINKAGE FIXED (frozen-file change, on the user's explicit instruction).**
+  `apply_bonuses.py` shrank each QB's sack rate with `K=12`; CV on 7 seasons/179 QB-seasons says
+  **K=768** (+14.1% excess OOS MSE at 12). **The trap: `K` was SHARED with the long-TD 40+/50+ rates** —
+  ~60 TD chances vs ~1,500 throws over 2023-25, so the same constant shrank TDs a sensible ~12% and
+  sacks only ~0.8%. Fixed with a separate **`K_SACK = 768`** in `scoring_config.py`; `K` untouched.
+  Isolation verified: RB/WR/TE top-12 `bonus_points` moved <1 pt, QB moved 9.42. Board effect: Maye
+  QB10→QB8, Dart QB13→QB11, 11 of top-14 QBs shift 1-2 spots, **Allen stays QB1 by 56 pts**. Full regen
+  + priors + D/ST rerun; 339 checks, both stress suites, preflight all green. I recommended NOT
+  shipping (points delta +0.17 [-0.40,+0.73]); the user overruled on correctness grounds — see L56.
 - **L55 (Jul 30) — REST-OF-DRAFT LOOKAHEAD.** Pre-draft at slot 6 the advisor quoted Josh Allen
   `risky→#19 (68%)` and called him "still alive" at **R3 #30**, where he is **20.9%**. The pick numbers
   were right (L53 working) but **every survival figure in the context sat at ONE pick** — measured: 25
