@@ -1,0 +1,13 @@
+CONDITIONAL TEST — slot 2, decision pick #23 (R2). Josh Allen ADP 22.8
+400 seeds; only the seeds where he is genuinely available count.
+
+He was available at #23 in 127/400 seeds (32%); the advisor took him in 99% of those.
+
+lens           TAKE him       PASS   paired diff          95% CI  take wins
+----------------------------------------------------------------------------
+value              2166       2150         +16.1  [+11.8, +20.4]       67%
+floor              1522       1493         +29.2  [+22.2, +36.1]       63%
+risk-adj           1862       1844         +17.9  [+13.3, +22.5]       65%
+
+When you PASS, the QB you end up with comes at round 8 (median); taking him is round 2.
+paired risk-adj: median +16.4 · worst -58.9 · best +86.5

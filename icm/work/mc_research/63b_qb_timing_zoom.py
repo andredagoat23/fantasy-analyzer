@@ -1,5 +1,7 @@
 """63 — QB TIMING FROM SLOT 2: risk-adjusted points gained/lost by taking a QB earlier vs later.
 
+*** RETRACTED — see the header of results_63_qb_timing.txt and L57. Superseded by 64_. ***
+
 The user's question, from a real draft: planning said "QB later", the advisor said Josh Allen early.
 What does waiting actually COST, in points, from this seat?
 

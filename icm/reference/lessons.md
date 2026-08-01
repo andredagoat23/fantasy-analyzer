@@ -941,6 +941,45 @@ Format: **Symptom → Root cause → Fix → Principle it teaches.**
 
 ---
 
+## L57 — A MEDIAN OVER A BIMODAL DISTRIBUTION IS NOT A POLICY (Aug 2026)
+- **The user caught this, from memory of his own mocks: "in every single mock it ALWAYS takes Josh
+  Allen in round 2 or 3, so I don't get what you're saying about the average being round 8."** He was
+  right and three of my experiments were wrong.
+- **What I did.** Built `63_` to answer "what does taking a QB earlier vs later cost from slot 2",
+  read its `natural` arm's **median QB round of 8**, and concluded the advisor "waits about two rounds
+  too long" — then built `63b_`/`63c_` on top, recommended a draft-day override, and was one message
+  from shipping a `data/qb_timing.csv` advisory read that would have told the advisor to pass on him.
+- **THE ERROR: the distribution is BIMODAL.** Measured over 100 seeds at slot 2:
+  `{R2: 34, R8: 23, R9: 6, R10: 15, R11: 22}`. **No draft in that set resembles "round 8."** It is
+  34% "took the elite QB at R2" and 66% "he was gone, settled for a streamer late". The median sits
+  in the empty valley between two modes and describes nothing.
+- **The real behaviour:** Josh Allen (ADP 22.8) survives to slot 2's R2 pick (#23) in **32-34%** of
+  drafts, and **when he does the advisor takes him 99-100% of the time** [V]. It never waits. The
+  PUNT READ correctly flips from punt-able to **"QB is a CLIFF — GRAB the elite"** (VONA 37.3 vs 3.1
+  for the best non-QB), which is exactly the L28 behaviour that was already litigated and upheld.
+- **SECOND ERROR, same family: an arm that did not draft what its name said.** `63_`'s "MUST take QB
+  by R2" arm drafted **Lamar Jackson 68%** of the time, because the elite QB was usually already
+  gone. So the arm I presented as "the cost of taking Allen at pick 2" measured "the cost of taking
+  Lamar at pick 2". **Check WHO an arm actually drafts, not just that its constraint fired.**
+- **The corrected design (`64_`): CONDITION ON THE DECISION BEING AVAILABLE.** Keep only the seeds
+  where the elite QB is genuinely on the board, then pair take-him against hide-him-for-one-pick.
+  Result: **+17.9 risk-adj pts [95% CI +13.3, +22.5], +29.2 on floor, wins 65%** on 127 qualifying
+  seeds — but worst case **−58.9**, so it is positive-EV with real variance, not a free lunch. The
+  mechanism: passing does not buy you an RB, it buys you **the QB you get in round 8** instead.
+- **THE RULE:** before reading a central tendency as a policy, **plot or bucket the distribution.**
+  If it is multi-modal the mean and median are describing a world that does not exist. This is the
+  same class as S5 (prevalence measured under the wrong policy) — a statistic computed over a
+  population that mixes two different decisions.
+- **PROCESS: this was the THIRD instrument failure in one day** — the research panel scored in base
+  PPR, the +5.2 harsh-backtest result was an opponent-model artifact, and now this. **The pattern is
+  that the instrument fails more often than the hypothesis does.** The user's habit of checking
+  claims against what he actually saw in mocks is the highest-yield review in this project; a smoke
+  test at n=40 also over-stated this effect (+30 and "never lost" vs +17.9 and loses 35%), so **do
+  not report a smoke-test magnitude as if it were the finding.**
+- `63_`/`63b_`/`63c_` retracted in place with headers pointing here; `64_` supersedes. (Principles 1, 9)
+
+---
+
 ## L56 — One shrinkage constant, two denominators: the sack rate needed its own K (Jul 2026)
 - **First frozen-file change in this arc, made only on the user's explicit instruction** ("No lets fix
   QB go"). CLAUDE.md's frozen boundary allows exactly that and nothing less.

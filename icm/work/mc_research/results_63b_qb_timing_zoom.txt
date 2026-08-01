@@ -1,3 +1,12 @@
+!!! RETRACTED 2026-08-01 — DO NOT CITE THE 'natural' BASELINE OR ANY CONCLUSION DRAWN FROM IT.
+The 'natural' arm's median QB round (8) is a MIXTURE ARTIFACT, not a policy. Measured in 64_:
+the elite QB survives to the R2 pick in only ~32% of drafts, and when he does the advisor
+takes him 99-100% of the time. The round distribution is BIMODAL {R2:34, R8:23, R9:6, R10:15,
+R11:22} — no draft resembles 'round 8'. The 'force QB by R2' arm also drafted Lamar Jackson
+68% of the time, not the elite QB, so it never tested the question it was named for.
+SUPERSEDED BY 64_allen_conditional.py (conditional on availability): taking the elite QB when
+he IS there is +17.9 risk-adj pts [95% CI +13.3, +22.5], wins 65%. See L57.
+---------------------------------------------------------------------------------------
 QB TIMING FROM SLOT 2 — 6 arms x 150 paired seeds = 900 drafts
   R1 #2 · R2 #23 · R3 #26 · R4 #47 · R5 #50 · R6 #71 · R7 #74 · R8 #95 · R9 #98
 
