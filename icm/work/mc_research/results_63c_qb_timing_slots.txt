@@ -1,0 +1,19 @@
+QB TIMING ACROSS SLOTS — 5 slots x 7 arms x 80 seeds = 2800 drafts
+Does the R6-R7 optimum found at slot 2 generalise, or is it seat-specific?
+
+ slot  natural QB rd         R4       R5       R6       R7       R8       R9
+------------------------------------------------------------------------
+    1              9      -13.2    -13.2    +17.7    +17.6     +1.7     +1.7
+    2              8      -21.9    -16.4    +13.9    +14.1     +1.0     +1.4
+    5              2      -17.1     -8.9     +5.6     +4.0     +0.2     +0.7
+    8              8      -29.4     -1.5    +10.2     +6.8     +0.4     +2.1
+   12             10      -36.8     +4.1     -0.1     +1.6     +1.6     +3.0
+
+(numbers = risk-adjusted points vs letting the advisor decide; + means the rule BEATS it)
+
+BEST forced round per slot, and whether it clears its own noise:
+  slot  1: best = R6  +17.7 +/- 2.9  CLEARS zero
+  slot  2: best = R7  +14.1 +/- 3.2  CLEARS zero
+  slot  5: best = R6  +5.6 +/- 2.5  CLEARS zero
+  slot  8: best = R6  +10.2 +/- 3.6  CLEARS zero
+  slot 12: best = R5  +4.1 +/- 5.6  inside noise

@@ -1,0 +1,30 @@
+QB TIMING FROM SLOT 2 — 6 arms x 150 paired seeds = 900 drafts
+  R1 #2 · R2 #23 · R3 #26 · R4 #47 · R5 #50 · R6 #71 · R7 #74 · R8 #95 · R9 #98
+
+SCOPE: this is what the BOARD believes on the 2026 projections. Opponent-draw variance is
+the only noise. It is NOT an outcome backtest — it cannot say the projections are right.
+
+arm                 value    floor  risk-adj      vs natural (risk-adj)
+--------------------------------------------------------------------------
+natural (advisor decides)     2148     1488      1840              — (baseline)
+MUST take QB by R5     2153     1454      1825          -14.5 ± 3.0  (59% worse)
+MUST take QB by R6     2161     1503      1854          +14.8 ± 2.4  (6% worse)
+MUST take QB by R7     2161     1502      1854          +14.2 ± 2.4  (8% worse)
+MUST take QB by R8     2151     1488      1841           +1.1 ± 1.0  (18% worse)
+MUST take QB by R9     2150     1489      1841           +1.5 ± 1.0  (13% worse)
+
+WHEN the QB actually gets taken, and who:
+arm              median QB rd        most common QB  % of drafts
+natural (advisor decides)            8            Jared Goff         33%
+MUST take QB by R5            5            Joe Burrow         57%
+MUST take QB by R6            6                Bo Nix         46%
+MUST take QB by R7            7                Bo Nix         53%
+MUST take QB by R8            8            Josh Allen         32%
+MUST take QB by R9            8            Jared Goff         33%
+
+PAIRED cost of waiting, risk-adjusted (negative = waiting COSTS you):
+  MUST take QB by R5           -14.5 pts   median   -10.7   worst   -68.6   best   +24.2
+  MUST take QB by R6           +14.8 pts   median   +17.6   worst   -12.4   best   +50.7
+  MUST take QB by R7           +14.2 pts   median   +17.6   worst   -15.1   best   +43.9
+  MUST take QB by R8            +1.1 pts   median    +0.0   worst   -13.6   best   +25.2
+  MUST take QB by R9            +1.5 pts   median    +0.0   worst   -12.4   best   +25.2
