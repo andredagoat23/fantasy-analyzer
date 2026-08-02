@@ -1,17 +1,17 @@
 # SESSION HANDOFF — read this first if you're a fresh session
 
 **How to use this file:** read `icm/CONTEXT.md` (the router) first, then this, then whatever reference
-docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
+docs the task needs. Everything below is CURRENT as of **Aug 1, 2026**.
 
 ## Where things stand right now
-- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **HEAD**, tree clean (HEAD = **L56**, the QB sack-shrinkage
-  fix + full regen; `git log -8` for hashes). Streamlit Cloud auto-deploys on push — **pushing =
-  deploying, always the user's call.**
+- **DEPLOYED & CLEAN.** Local `main` = `origin/main` = **`7c96583`**, tree clean. The LIVE BOARD is
+  the **`fc185e5` (L56)** state — every commit after it is research/docs and changed no app code.
+  Streamlit Cloud auto-deploys on push — **pushing = deploying, always the user's call.**
 - **Health:** preflight **OK** (0 blocking, 0 warnings). **18 unit suites green — 339 checks.** Both
   stress suites ALL PASS. Board + all priors regenerated **Jul 31** (L56 regen; 540 players). **No open DATA flags. NO open
-  CODE items** — L52 Tier 2 shipped in L53, Tier 3 + the `_wheel_label` re-base in L54, the
-  rest-of-draft lookahead in L55. What remains before Aug 7 is OPERATIONAL only.
-- **⛔ CODE FREEZE Aug 3 — 4 days away. Draft Aug 7 — 8 days.** Last advisor-logic change Aug 3;
+  CODE items.** L52-L55 closed the advisor's survival/horizon defects; L56 fixed the QB sack
+  shrinkage. What remains before Aug 7 is OPERATIONAL only.
+- **⛔ CODE FREEZE Aug 3 — 2 days away. Draft Aug 7 — 6 days.** Last advisor-logic change Aug 3;
   Aug 4-6 = a full live mock, fixing only what the mock catches; Aug 7 = regen + preflight, no code.
   Rationale: this project's real bugs are caught by live mocks, not tests (L47 passed 195 checks and
   died in a mock). **Ship risky-but-verified changes INTO this window, not past it** (L51).
@@ -20,7 +20,30 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
   therefore every VONA, wheel and horizon — depends on it. **Confirm the real slot before Aug 7** and
   never hardcode one. Practice mocks have run at slots 1/5/10.
 
-## Shipped this session (Jul 28-31) — all live
+## ⚡ IF YOU READ NOTHING ELSE (Aug 1)
+1. **The live mock at the real slot is the single highest-value item left.** Not started. Three things
+   to probe: (a) does the two-option PLAN-FIRST format appear when the advisor deviates from a stated
+   strategy? (b) does the R6-R7 QB window survive contact? (c) the L47 R7 roster-state thread.
+2. **The slot is STILL not settled.** Everything keys off it.
+3. **A methodology warning that cost half of Aug 1:** three of this session's QB-timing claims were
+   WRONG and were caught by the user checking them against his own mocks — see **L57**. The paired
+   MEASUREMENTS held up every time; the NARRATIVES about why did not. Before repeating any aggregate
+   as a finding, look at the underlying names and the distribution shape.
+4. **`icm/work/entanglement/PREREGISTRATION.md` is a DRAFT.** Its named-player list MUST be filled
+   from the 2026-08-07 ADP snapshot, then committed AND pushed, with the SHA recorded here. That
+   second push is the LOCK.
+5. **Tuesday snapshot ritual** — `.venv/bin/python tools/weekly_snapshot.py`, plus a mandatory extra
+   run on **Fri Aug 7 (draft morning)**. A season of dated snapshots cannot be reconstructed later.
+
+## Shipped this session (Jul 28 - Aug 1) — all live
+- **L57 (Aug 1) — a bimodal median is not a policy (RETRACTION lesson, no code).** Three QB-timing
+  claims withdrawn; `63_`/`63b_`/`63c_`/`63d_` retracted in place. See L57 and the QB-timing block
+  under Open Questions for what actually replaced them.
+- **Research `62_` (Jul 31) — the L51 survival curve CONFIRMED at 3.3x the picks.** The Sleeper
+  corpus re-crawl grew it to **300 one-QB / 2,001 drafts** (was 111/1,162); re-measuring dispersion on
+  **62,890 matched picks** (was 19,300) holds in **7 of 8 ADP buckets** within ±30%. The one outlier
+  (ADP 7-12, s 1.91 vs shipped 2.80) is marginal and every deviation is small and one-directional.
+  No pre-freeze change. `advisor._SCALE_S` stands.
 - **L56 (Jul 31) — QB SACK SHRINKAGE FIXED (frozen-file change, on the user's explicit instruction).**
   `apply_bonuses.py` shrank each QB's sack rate with `K=12`; CV on 7 seasons/179 QB-seasons says
   **K=768** (+14.1% excess OOS MSE at 12). **The trap: `K` was SHARED with the long-TD 40+/50+ rates** —
@@ -124,9 +147,11 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
 
 ---
 
-## Git / branch state (Jul 30)
-- **`main` = `origin/main` = HEAD — DEPLOYED**, tree clean. Last four: L53 (horizon + schedule),
-  L52 (wheel referent), Research 45_, docs refresh.
+## Git / branch state (Aug 1)
+- **`main` = `origin/main` = `7c96583` — pushed, tree clean.** The DEPLOYED BOARD is `fc185e5` (L56);
+  `242858d` / `d50b83c` / `19ef3c8` / `7c96583` are research + docs only and changed no app code.
+- Recent: `7c96583` Research 65_ · `19ef3c8` retract 63d_ · `d50b83c` L57 + Research 64_ ·
+  `242858d` Research 63_ (RETRACTED) · `fc185e5` **L56 (the live board)**.
 - **One branch UNMERGED:** `yahoo-probe` (`b8cb697`) — awaits the user's Yahoo dev-app + a mock.
   Doesn't touch `advisor.py`.
 - **2026-07-31 — ENTANGLEMENT run committed and PUSHED: commit `b93a78b`, pushed
@@ -140,7 +165,7 @@ docs the task needs. Everything below is CURRENT as of **Jul 30, 2026**.
   (~31MB dead kona pull), and `*.bak` files are now ignored via `icm/work/mc_research/.gitignore`.
   No app code touched — the deploy was a no-op.
 
-## Regeneration ritual (last run Jul 28 — rerun the morning of the draft)
+## Regeneration ritual (last run Jul 31 for L56 — RERUN THE MORNING OF THE DRAFT)
 1. **Board:** `.venv/bin/python run_all.py` (14 steps; refreshes live ESPN ADP + projections).
 2. **Priors** — NOT in the chain, rerun all three after any board rebuild: `cohort_priors.py`,
    `sos_priors.py`, `role_priors.py`.
@@ -170,6 +195,18 @@ adding a suite, ask which turn state it covers.
   insensitive to the exact numbers). The probability now prints beside the label, so a borderline band
   is self-correcting for the reader. Don't retune these on a hunch — if they ever get revisited, it
   should be a paired backtest like `mc_research/18_`, after Aug 7.
+- **QB TIMING — what survived Aug 1, and what did NOT.** `63_`/`63b_`/`63c_`/`63d_` are **RETRACTED**
+  (L57): their "natural" baseline read a BIMODAL median as a policy. **Withdrawn:** "the advisor waits
+  two rounds too long", "taking a QB at pick 2 costs 18.6", "the PUNT READ errs early at middle seats",
+  and a proposed `data/qb_timing.csv` advisory read (never built; the emitted file was deleted).
+  **What replaced them, measured conditionally on the elite QB actually being available (`64_`/`65_`,
+  127/400 qualifying seeds at slot 2):** Josh Allen reaches slot 2's #23 in **32%** of drafts and the
+  advisor takes him **99-100%** of the time when he does — it does NOT wait. Taking him beats
+  executing a clean R6-R7 plan by **+9.1 risk-adj [+5.6,+12.7] / +24.1 floor**, not the +17.9 that
+  `64_`'s drifting-to-R8 baseline suggested. The real trade is **Allen + a ~48%-bust R6 flier vs Chase
+  Brown (VOLS 96.0, VALUE +12) + Bo Nix (46% bust)**. NOTE the corrected mechanism: both arms take a
+  ~47%-bust R6 player — what differs is that Nix is a forced STARTER while the flier is depth.
+  **Judgment, not a shipping proposal:** projections held fixed, so this is what the board believes.
 - **The R7 roster-state thread** (L47) — a 4th RB recommended at R7 with WR2 open, never reproduced
   offline. Per-pick logging is in place: after a weird pick, **Draft settings → "Download pick log"**.
   **Don't patch the gate blind.** This is the main thing the Aug 3 mock is for.
@@ -186,14 +223,21 @@ adding a suite, ask which turn state it covers.
   correctness/trust, not for points. If the mock shows anything odd, flip `USE_MEASURED_SCALE`.
 
 ## PRE-DRAFT CHECKLIST (the remaining work is operational, not features)
-- **Aug 3 — FREEZE, then a full live mock at the REAL slot.** Highest-value item left. It validates
-  L51 + the COLD read live AND is the only way to close the R7 thread. Download the pick log.
+- **Aug 3 — FREEZE, then a full live mock at the REAL slot.** Highest-value item left, NOT started.
+  It validates L51-L56 live AND is the only way to close the R7 thread. Download the pick log.
+  **Probe three things:** (a) set a strategy with a hard constraint and tempt a deviation — does the
+  two-option PLAN-FIRST format actually render? (b) does the R6-R7 QB window hold up in a real draft?
+  (c) the R7 roster-state thread.
+- **Aug 4 (Tue) — `tools/weekly_snapshot.py`.** Start the weekly ritual; commit AND push each dated dir.
 - **Aug 5-6 — rerun `injury_watch.py` and `fa_watch.py`.** Preseason week 1 turns both lists over.
-- **Aug 7 morning — `run_all.py` + priors + preflight + injury watch. NO CODE.**
-- **Watch list as of Jul 29:** 4 HARD injury flags — **George Kittle (TE9, ADP 87, PUP/surgery)**,
-  Alec Pierce (94), Tucker Kraft (110), Charbonnet (156). Three live unsigned FAs with fresh news —
-  **Diggs (165), Tyreek Hill (169), Deebo Samuel (170)**; if any signs, re-run `run_all.py` to
-  project them onto the board.
+- **Aug 7 morning — `run_all.py` + priors + `load_dst.py` + preflight + injury watch. NO CODE.**
+  Then **`tools/weekly_snapshot.py`** (the draft-morning capture the preregistration is stated
+  against), then FILL the prereg's named-player list, commit, **push**, and record the SHA above.
+- **Watch list as of Jul 31 (re-run after the L56 regen):** 3 HARD flags, all PUP/surgery —
+  **George Kittle (TE9, ADP 90.2, ~R8)**, **Alec Pierce (WR27, ADP 94.7, ~R8)**,
+  **Zach Charbonnet (RB43, ADP 154.2, ~R13)**. Kittle and Pierce both land in range around R8.
+  **Stefon Diggs (ADP 165.6) is still UNSIGNED** and correctly absent from the board — if he signs
+  before Aug 7, re-run `run_all.py` to project him on. (Tucker Kraft cleared since Jul 29.)
 
 ---
 

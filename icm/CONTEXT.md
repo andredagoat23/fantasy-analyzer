@@ -1,11 +1,13 @@
 # ICM Workspace — Fantasy Draft Assistant (Layer 1: Routing)
 
-> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Jul 30, 2026**: the stack through
-> **L56**, DEPLOYED at HEAD, tree clean, board + priors regenerated **Jul 31**.
+> ⭐ **NEW SESSION? READ `work/HANDOFF.md` NEXT.** Current as of **Aug 1, 2026**: the stack through
+> **L57**. `main` = `origin/main` = `7c96583`, tree clean. The LIVE BOARD is `fc185e5` (L56) —
+> everything after it is research/docs. Board + priors regenerated **Jul 31** (540 players).
 > Suites **18 / 339 green**, both stress suites pass, preflight OK, **NO open code or data items** —
 > what remains before Aug 7 is operational only.
 >
-> **⛔ CODE FREEZE Aug 3 (4 days). Draft Aug 7 (8 days).** The remaining work is OPERATIONAL, not
+> **⛔ CODE FREEZE Aug 3 (2 days). Draft Aug 7 (6 days).** The live mock at the real slot is the
+> single highest-value item left and has NOT been run. The remaining work is OPERATIONAL, not
 > features: a live mock at the real slot on Aug 3, injury/FA watches Aug 5-6, a final regen Aug 7.
 >
 > **⚠️ THE DRAFT SLOT IS NOT SETTLED** — older docs said 7, the user says it could be anywhere, the app
@@ -33,7 +35,11 @@
 > probability in the cell: `risky→#13 (59%)`. **L55** added the rest-of-draft lookahead —
 > `WHO'S REALISTICALLY LEFT AT MY PICKS` gives odds at my next EIGHT picks, not just the next one
 > (the advisor had 25 survival figures all anchored to one pick and reused them for later rounds).
-> See HANDOFF "Open questions" for what is still judgment.
+> See HANDOFF "Open questions" for what is still judgment. **L56** then gave the QB sack rate its
+> own shrinkage constant (`K_SACK=768`; `K` was shared with the long-TD rates and shrank sacks only
+> ~0.8%). **L57** is a RETRACTION lesson — three QB-timing claims were withdrawn after the user
+> checked them against his own mocks; a bimodal median is not a policy. Read it before trusting any
+> aggregate in `mc_research/63*` (all retracted in place).
 >
 > **One open THREAD:** a non-repro'd R7 roster-state issue — diagnosable only from the next mock's
 > pick log (L47); don't patch the gate blind. **Two research lines are CLOSED** (per-player
@@ -98,7 +104,7 @@ scripts + saved output live in `work/mc_research/`.
 - **`work/HANDOFF.md` — the live state doc.** Read every session, updated at the end of every
   session. Never "clear" it.
 - **`work/mc_research/` + the findings docs** (`mc-research-findings.md`, `run-dynamics-findings.md`,
-  `r1-prerequisites-findings.md`) — **DURABLE evidence.** Numbered scripts `00_`-`45_` each with a
+  `r1-prerequisites-findings.md`) — **DURABLE evidence.** Numbered scripts `00_`-`65_` each with a
   `results_*.txt`. They are why several plausible features were killed, and re-deriving them costs
   hours. Large data (`*.parquet`, the Sleeper corpus, caches) is gitignored and regenerable.
 - **`work/diagnosis.md` + `work/plan.md`** — genuine scratch for the CURRENT task; overwrite freely.
