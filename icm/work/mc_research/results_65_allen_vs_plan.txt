@@ -1,0 +1,32 @@
+ALLEN AT R2 vs EXECUTING THE R6-R7 PLAN — slot 2, decision at pick #23
+Josh Allen ADP 22.8. 400 seeds; only those where he is genuinely available count.
+
+He was available at #23 in 127/400 seeds (32%).
+TAKE arm gets: Josh Allen at R2 (99% of seeds)
+PLAN-R6 gets: Bo Nix (70%), then Matthew Stafford (26%)
+PLAN-R7 gets: Bo Nix (83%), then Matthew Stafford (13%)
+
+THE ACTUAL SWAP — who you take at pick #23 instead of Allen:
+  PLAN-R6: Chase Brown 65% · Omarion Hampton 10% · A.J. Brown 7% · Brock Bowers 7% · Rashee Rice 6%
+  PLAN-R7: Chase Brown 65% · Omarion Hampton 10% · A.J. Brown 7% · Brock Bowers 7% · Rashee Rice 6%
+
+WHAT EACH ARM SPENDS ITS R6 PICK ON (the piece I had not checked):
+  TAKE (already has Allen): Parker Washington 49% · Travis Kelce 18% · Bhayshul Tuten 15% · Tony Pollard 9%
+     mean bust of that pick: 48% · mean floor 128
+  PLAN-R6 (takes the QB): Bo Nix 70% · Matthew Stafford 26% · Brock Purdy 4%
+     mean bust of that pick: 46% · mean floor 260
+
+  So the trade is:  Josh Allen  +  [R6 QB]
+     vs (PLAN-R6):  Chase Brown  +  Bo Nix
+     vs (PLAN-R7):  Chase Brown  +  Bo Nix
+
+comparison                lens           TAKE    PLAN     diff            95% CI  take wins
+----------------------------------------------------------------------------------
+Allen@R2 vs QB@R6         value          2166    2157     +9.1     [+6.4, +11.9]       74%
+                          floor          1522    1498    +24.1    [+18.1, +30.1]       79%
+                          risk-adj       1862    1853     +9.1     [+5.6, +12.7]       64%
+
+Allen@R2 vs QB@R7         value          2166    2158     +8.6     [+6.0, +11.2]       71%
+                          floor          1522    1497    +24.9    [+18.9, +30.9]       77%
+                          risk-adj       1862    1853     +9.2     [+5.7, +12.8]       68%
+
