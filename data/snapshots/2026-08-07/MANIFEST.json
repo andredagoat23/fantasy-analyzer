@@ -1,0 +1,115 @@
+{
+  "snapshot_date": "2026-08-07",
+  "created_at_utc": "2026-08-07T15:42:09+00:00",
+  "season": 2026,
+  "tool": "tools/weekly_snapshot.py",
+  "sources": {
+    "schedules": {
+      "ok": true,
+      "file": "schedules.csv",
+      "rows": 272,
+      "bytes": 36218,
+      "seconds": 0.6,
+      "fetched_at_utc": "2026-08-07T15:42:10+00:00",
+      "error": null,
+      "notes": {
+        "games": 272,
+        "total_line_populated": 52,
+        "results_populated": 0,
+        "missing_cols": []
+      }
+    },
+    "espn_kona": {
+      "ok": true,
+      "file": "espn_kona.csv",
+      "rows": 4514,
+      "bytes": 294828,
+      "seconds": 4.5,
+      "fetched_at_utc": "2026-08-07T15:42:15+00:00",
+      "error": null,
+      "notes": {
+        "players": 4514,
+        "with_adp": 1026,
+        "with_projected_components": 462,
+        "with_applied_total": 67
+      }
+    },
+    "ffc_adp": {
+      "ok": true,
+      "file": "ffc_adp.csv",
+      "rows": 256,
+      "bytes": 15154,
+      "seconds": 0.1,
+      "fetched_at_utc": "2026-08-07T15:42:15+00:00",
+      "error": null,
+      "notes": {
+        "players": 256,
+        "total_drafts": 4929,
+        "window": "2026-07-31..2026-08-07",
+        "stdev_populated": 256
+      }
+    },
+    "sleeper": {
+      "ok": true,
+      "file": "sleeper.csv",
+      "rows": 3236,
+      "bytes": 351642,
+      "seconds": 0.6,
+      "fetched_at_utc": "2026-08-07T15:42:15+00:00",
+      "error": null,
+      "notes": {
+        "universe": 12211,
+        "kept": 3236,
+        "with_adp_ppr": 3228,
+        "adp_ppr_below_999_sentinel": 311,
+        "injury_status_counts": {
+          "none": 3089,
+          "Questionable": 97,
+          "IR": 24,
+          "NA": 13,
+          "PUP": 10,
+          "DNR": 2,
+          "Sus": 1
+        }
+      }
+    },
+    "fp_ecr": {
+      "ok": true,
+      "file": "fp_ecr.csv",
+      "rows": 6056,
+      "bytes": 959106,
+      "seconds": 0.7,
+      "fetched_at_utc": "2026-08-07T15:42:16+00:00",
+      "error": null,
+      "notes": {
+        "rows": 6056,
+        "pages": 31,
+        "ppr_cheatsheet_rows": 523,
+        "scrape_date": "2026-08-07",
+        "scrape_age_days": 0
+      }
+    },
+    "depth_charts": {
+      "ok": true,
+      "file": "depth_charts.csv",
+      "rows": 3222,
+      "bytes": 242938,
+      "seconds": 0.3,
+      "fetched_at_utc": "2026-08-07T15:42:16+00:00",
+      "error": null,
+      "notes": {
+        "latest_snapshot": "2026-08-07T08:11:40Z",
+        "rows": 3222,
+        "teams": 32,
+        "full_pull_rows": 410431,
+        "missing_cols": []
+      }
+    }
+  },
+  "week_source": "schedules",
+  "completed_week": 0,
+  "phase": "preseason",
+  "in_season_block": "skipped \u2014 no completed regular-season week yet",
+  "total_seconds": 6.7,
+  "total_bytes": 1899886
+}
