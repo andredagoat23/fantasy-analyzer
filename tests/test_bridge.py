@@ -134,4 +134,38 @@ check("fetch tolerates null/empty mailbox", out == {"picks": [], "meta": {}})
 out = _fetch_with({"picks": "not-a-list", "meta": "not-a-dict"})
 check("fetch guards against wrong-typed fields", out == {"picks": [], "meta": {}})
 
+# ---- meta_updates: LATCH ON SUCCESS, NOT ON ATTEMPT (L58) ----
+# The exact draft-day regression. The userscript posts a teams-only meta the moment it reads the
+# league size, while ESPN's API is still resolving the seat; the real meta lands seconds later.
+# Latching on the first one left the roster empty and the seat at the setup default, unrecoverable
+# from the UI. cur_teams/cur_slot below are the setup-page defaults the app boots with.
+partial = {"teams": 12, "myTeam": ""}
+u, latch = bridge.meta_updates(partial, cur_teams=12, cur_slot=12, latched=False)
+check("partial meta emits no change when teams already match", u == {})
+check("partial meta does NOT latch — it carries no seat", latch is False)
+
+real = {"teams": 12, "slot": 11, "myTeam": "Like a good Naber Malik is gone"}
+u, latch = bridge.meta_updates(real, cur_teams=12, cur_slot=12, latched=latch)
+check("the real seat still gets applied after a partial meta", u == {"slot": 11})
+check("meta latches once the seat actually arrives", latch is True)
+
+# Once latched, manual tweaks must stick — the original reason the latch exists at all.
+u, latch2 = bridge.meta_updates({"teams": 12, "slot": 11}, cur_teams=12, cur_slot=7, latched=True)
+check("a latched app ignores further shape (manual slot sticks)", u == {} and latch2 is True)
+
+# Idempotence — re-polling an already-applied meta must not keep firing reruns every 4s.
+u, _ = bridge.meta_updates(real, cur_teams=12, cur_slot=11, latched=False)
+check("no update when the values already match (no rerun storm)", u == {})
+
+u, latch = bridge.meta_updates({"teams": 10, "slot": 3}, cur_teams=12, cur_slot=12, latched=False)
+check("a complete meta applies both teams and slot", u == {"teams": 10, "slot": 3})
+check("a complete meta latches immediately", latch is True)
+
+u, latch = bridge.meta_updates({}, cur_teams=12, cur_slot=12, latched=False)
+check("empty meta changes nothing and does not latch", u == {} and latch is False)
+u, latch = bridge.meta_updates(None, cur_teams=12, cur_slot=12, latched=False)
+check("null meta (empty mailbox) changes nothing and does not latch", u == {} and latch is False)
+u, latch = bridge.meta_updates({"teams": 12, "slot": 0}, cur_teams=12, cur_slot=12, latched=False)
+check("slot 0 is not a seat — does not latch", latch is False)
+
 print(f"\n{passed} checks passed ✅")

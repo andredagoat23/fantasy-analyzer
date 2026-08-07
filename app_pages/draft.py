@@ -440,17 +440,24 @@ elif bridge_url:
             # Apply the league shape ESPN gave us — ONCE, so manual tweaks afterward stick. teams/slot
             # go through the same *_pending path the AI advisor uses (app.py applies them before the
             # widgets render); myPicks + the team name are stored for mine-detection below.
-            if meta and not st.session_state.bridge_meta_applied:
-                pend = False
-                if meta.get("teams"):
-                    st.session_state["teams_pending"] = int(meta["teams"]); pend = True
-                if meta.get("slot"):
-                    st.session_state["slot_pending"] = int(meta["slot"]); pend = True
-                if meta.get("myTeam"):
-                    st.session_state.bridge_detected_team = meta["myTeam"]
+            #
+            # The decision itself is bridge.meta_updates (pure + unit-tested): keep listening until
+            # ESPN actually gives us the SEAT, and only emit values that really changed (L58).
+            updates, latch_now = bridge.meta_updates(
+                meta, st.session_state.get("teams"), st.session_state.get("slot"),
+                st.session_state.bridge_meta_applied)
+            for key, val in updates.items():
+                st.session_state[f"{key}_pending"] = val
+            if latch_now:
                 st.session_state.bridge_meta_applied = True
-                if pend:
-                    st.rerun(scope="app")   # let app.py apply teams/slot, then re-poll
+            if updates:
+                st.rerun(scope="app")   # let app.py apply teams/slot, then re-poll
+
+            # The detected team is refreshed on EVERY poll, outside the latch above: it is ground truth
+            # from ESPN, and the "Which team is yours?" dropdown still overrides it three lines down,
+            # so a late-arriving name can never stomp a manual choice.
+            if meta.get("myTeam"):
+                st.session_state.bridge_detected_team = meta["myTeam"]
 
             # Your roster = picks whose fantasy owner is YOUR team (auto-detected from ESPN, or the
             # dropdown). Ground truth from the draft site — never guessed from seat numbers, which is

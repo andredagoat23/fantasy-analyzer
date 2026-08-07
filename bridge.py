@@ -56,6 +56,33 @@ def fetch_raw(url):
     return fetch(url)["picks"]
 
 
+def meta_updates(meta, cur_teams=None, cur_slot=None, latched=False):
+    """What a mailbox `meta` should change about the league shape, and whether to stop listening.
+
+    LATCH ON SUCCESS, NOT ON ATTEMPT (L58). The userscript posts a PARTIAL meta — teams only,
+    e.g. {"teams": 12, "myTeam": ""} — as soon as it reads the league size, before ESPN's API
+    resolves the seat and team name. The app used to apply that and immediately stop listening,
+    which froze it with no team (resolve() then returns an EMPTY roster by design) and the seat
+    left at the setup-page default, so every pick number, VONA and wheel band was computed for
+    a seat the user wasn't in. No control in the UI could un-stick the seat.
+
+    Returns (updates, latch_now):
+      updates    {"teams": n} / {"slot": n}, ONLY for values that differ from what's applied.
+                 Filtering to real changes is what keeps the caller from firing a rerun every
+                 poll when a meta never resolves a slot (a rerun storm mid-draft).
+      latch_now  True once meta actually carries a seat — that's the success condition.
+    """
+    if latched or not meta:
+        return {}, bool(latched)
+    updates = {}
+    teams, slot = meta.get("teams"), meta.get("slot")
+    if teams and int(teams) != int(cur_teams or 0):
+        updates["teams"] = int(teams)
+    if slot and int(slot) != int(cur_slot or 0):
+        updates["slot"] = int(slot)
+    return updates, bool(slot)
+
+
 def _pick_no(p):
     """The overall pick number if this row carries a valid one (v0.2.0 stamps it on every row),
     else None. bool is excluded because it's an int subclass in Python."""
